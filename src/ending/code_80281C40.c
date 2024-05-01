@@ -1,5 +1,4 @@
-#include <ultra64.h>
-#include <PR/gu.h>
+#include <libultraship.h>
 #include <macros.h>
 
 #include "code_80281C40.h"

@@ -6,7 +6,7 @@
     code:
       - '#include <assets/data_800E45C0.h>'
     header:
-      - '#include <ultra64.h>'
+      - '#include <libultraship.h>'
       - '#include <common_structs.h>'
   tables:
     D_800E45C0:

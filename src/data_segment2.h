@@ -1,7 +1,7 @@
 #ifndef DATA_SEGMENT2_H
 #define DATA_SEGMENT2_H
 
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 
 extern Vtx D_02007B38[];
 

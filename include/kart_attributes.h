@@ -1,7 +1,7 @@
 #ifndef KART_ATTRIBUTES_H
 #define KART_ATTRIBUTES_H
 
-#include <PR/ultratypes.h>
+#include <libultra/types.h>
 
 extern f32 D_800E2360[8];
 extern f32 D_800E2380[8];

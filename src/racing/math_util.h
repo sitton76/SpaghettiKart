@@ -1,7 +1,7 @@
 #ifndef MATH_UTIL_H
 #define MATH_UTIL_H
 
-#include <PR/ultratypes.h>
+#include <libultra/types.h>
 
 
 //#define sins(x) gSineTable[(u16) (x) >> 4]

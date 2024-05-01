@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <common_structs.h>
 
@@ -16,7 +16,7 @@ void setup_camera_podium_ceremony(void) {
 
     camera = &cameras[0];
     func_80283648(camera);
-    
+
     x_dist = camera->lookAt[0] - camera->pos[0];
     y_dist = camera->lookAt[1] - camera->pos[1];
     z_dist = camera->lookAt[2] - camera->pos[2];

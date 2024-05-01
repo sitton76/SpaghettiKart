@@ -1,16 +1,16 @@
 #include <actors.h>
 #include <main.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include "courses/mario_raceway/course_data.h"
 #include "courses/royal_raceway/course_data.h"
 
 /**
  * @brief Renders the piranha plant actor.
  * Actor used in Mario Raceway and Royal Raceway.
- * 
- * @param arg0 
- * @param arg1 
- * @param arg2 
+ *
+ * @param arg0
+ * @param arg1
+ * @param arg2
  */
 void render_actor_piranha_plant(Camera *arg0, Mat4 arg1, struct PiranhaPlant *arg2) {
     UNUSED s32 pad;

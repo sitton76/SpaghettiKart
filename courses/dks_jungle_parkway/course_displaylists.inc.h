@@ -1,4 +1,4 @@
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include "macros.h"
 
 extern Gfx d_course_dks_jungle_parkway_packed_dl_0[];

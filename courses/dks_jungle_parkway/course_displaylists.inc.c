@@ -1,6 +1,6 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <actor_types.h>
 #include <course.h>
 

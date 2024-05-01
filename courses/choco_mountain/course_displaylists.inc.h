@@ -1,4 +1,4 @@
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include "macros.h"
 
 extern Gfx d_course_choco_mountain_packed_dl_0[];

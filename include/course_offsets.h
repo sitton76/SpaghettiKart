@@ -1,7 +1,7 @@
 #ifndef COURSE_OFFSETS_H
 #define COURSE_OFFSETS_H
 
-#include <PR/ultratypes.h>
+#include <libultra/types.h>
 
 typedef struct
 {

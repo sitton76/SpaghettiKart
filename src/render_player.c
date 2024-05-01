@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <mk64.h>
 #include <common_structs.h>
@@ -106,7 +106,7 @@ u16 check_player_camera_collision(Player *player, Camera *camera, f32 arg2, f32 
     s16 var_v0;
     u16 ret;
 
-    ret = FALSE;
+    ret = false;
     switch (gActiveScreenMode) {                              /* irregular */
     case SCREEN_MODE_1P:
         var_v0 = 0x293C;
@@ -135,7 +135,7 @@ u16 check_player_camera_collision(Player *player, Camera *camera, f32 arg2, f32 
     sp5C = ((sp44 - player->pos[2]) * (sp58 - player->pos[0])) - ((sp4C - player->pos[2]) * (sp50 - player->pos[0]));
 
     if (((sp64 >= 0) && (sp60 >= 0) && (sp5C >= 0)) || (((sp64) <= 0) && (sp60 <= 0) && (sp5C <= 0))) {
-        ret = TRUE;
+        ret = true;
     }
     return ret;
 }
@@ -152,7 +152,7 @@ u16 func_8001FD78(Player *player, f32 posX, UNUSED f32 arg2, f32 posZ) {
     f32 thing1;
     u16 ret;
 
-    ret = FALSE;
+    ret = false;
 
     sp58 = (70.0f * coss(((player->unk_0C0 - player->rotation[1]) -  0x71C))) + player->pos[2];
     sp64 = (70.0f * sins(((player->unk_0C0 - player->rotation[1]) -  0x71C))) + player->pos[0];
@@ -165,7 +165,7 @@ u16 func_8001FD78(Player *player, f32 posX, UNUSED f32 arg2, f32 posZ) {
     thing0   = ((sp54 - posZ) * (sp5c - posX)) - ((sp50 - posZ) * (sp60 - posX));
     thing1   = ((sp50 - posZ) * (sp64 - posX)) - ((sp58 - posZ) * (sp5c - posX));
     if (((temp_f14 >= 0) && (thing0 >= 0) && (thing1 >= 0)) || ((temp_f14 <= 0) && (thing0 <= 0) && (thing1 <= 0))) {
-        ret = TRUE;
+        ret = true;
     }
     return ret;
 }
@@ -710,7 +710,7 @@ void mtxf_scale2(Mat4 arg0, f32 scale) {
  * This function writes a fixed-point value to each Mtx entry. This is not how the Mtx struct works.
  * The first half of Mtx only holds s16 whole numbers and the second half holds the s16 decimal (fractional) parts.
  * See convert_to_fixed_point_matrix() for correct calculations. Note that each Mtx entry is the size of s32.
- * This means each Mtx entry holds two s16 values. 
+ * This means each Mtx entry holds two s16 values.
  * The first sixteen entries contain only the integer parts and the second sixteen entries hold only the decimal (fractional) parts.
  */
 UNUSED void failed_fixed_point_matrix_conversion(Mtx *dest, Mat4 src) {
@@ -793,9 +793,9 @@ bool adjust_angle(s16 *angle, s16 targetAngle, s16 step) {
         }
     }
     if (targetAngle == *angle) {
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
 
 void move_s32_towards(s32 *startingValue, s32 targetValue, f32 somePercent) {
@@ -1063,12 +1063,12 @@ bool is_player_under_light_luigi_raceway(Player *player, s8 arg1) {
                 change_player_color_effect_rgb(player, arg1, COLOR_LIGHT, 0.3f);
                 change_player_color_effect_cmy(player, arg1, 0xE0, 0.3f);
                 D_80164B80[arg1] = 0;
-                return TRUE;
+                return true;
             }
-            return FALSE;
+            return false;
 
         default:
-            return FALSE;
+            return false;
     }
 }
 
@@ -1214,7 +1214,7 @@ void func_800235AC(Player *player, s8 arg1) {
             return;
         }
     }
-    if (is_player_under_light_luigi_raceway(player, arg1) != TRUE) {
+    if (is_player_under_light_luigi_raceway(player, arg1) != true) {
         if (((player->boundingBoxCorners[3].unk_14 & 1) == 1)
         || ((player->boundingBoxCorners[3].unk_14 & 2) == 2)
         || ((player->boundingBoxCorners[0].unk_14 & 3) == 3)) {
@@ -1296,7 +1296,7 @@ void render_player_shadow(Player *player, s8 arg1, s8 arg2) {
     convert_to_fixed_point_matrix(&gGfxPool->mtxShadow[arg1 + (arg2 * 8)], sp118);
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxShadow[arg1 + (arg2 * 8)]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    
+
     gSPDisplayList(gDisplayListHead++, D_0D008D58);
     gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
     gDPLoadTextureBlock(gDisplayListHead++, D_8018D474, G_IM_FMT_I, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR
@@ -1304,14 +1304,14 @@ void render_player_shadow(Player *player, s8 arg1, s8 arg2) {
     func_8004B414(0, 0, 0, 0xFF);
     gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
     gSPVertex(gDisplayListHead++, &D_800E51D0[0], 4, 0);
-    
+
     gSPDisplayList(gDisplayListHead++, common_square_plain_render);
     gDPLoadTextureBlock(gDisplayListHead++, (D_8018D474 + SOME_TEXTURE_POINTER_MATH), G_IM_FMT_I, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR
         | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     func_8004B414(0, 0, 0, 0xFF);
     gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
     gSPVertex(gDisplayListHead++, &D_800E5210[0], 4, 0);
-    
+
     gSPDisplayList(gDisplayListHead++, common_square_plain_render);
     gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
 }
@@ -1346,9 +1346,9 @@ void render_player_shadow_credits(Player *player, s8 playerId, s8 arg2) {
     mtxf_translate_rotate(sp118, spCC, spC4);
     mtxf_scale2(sp118, gCharacterSize[player->characterId] * player->size);
     convert_to_fixed_point_matrix(&gGfxPool->mtxShadow[playerId + (arg2 * 8)], sp118);
-    
+
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxShadow[playerId + (arg2 * 8)]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    
+
     gSPDisplayList(gDisplayListHead++, D_0D008D58);
     gDPSetTextureLUT(gDisplayListHead++, G_TT_NONE);
     gDPLoadTextureBlock(gDisplayListHead++, D_8018D474, G_IM_FMT_I, G_IM_SIZ_8b, 64, 32, 0,
@@ -1356,14 +1356,14 @@ void render_player_shadow_credits(Player *player, s8 playerId, s8 arg2) {
     func_8004B414(0, 0, 0, 0x000000D0);
     gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
     gSPVertex(gDisplayListHead++, &D_800E51D0[0], 4, 0);
-    
+
     gSPDisplayList(gDisplayListHead++, common_square_plain_render);
     gDPLoadTextureBlock(gDisplayListHead++, (D_8018D474 + SOME_TEXTURE_POINTER_MATH), G_IM_FMT_I, G_IM_SIZ_8b, 64, 32, 0,
         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     func_8004B414(0, 0, 0, 0x000000D0);
     gDPSetRenderMode(gDisplayListHead++, G_RM_ZB_CLD_SURF, G_RM_ZB_CLD_SURF2);
     gSPVertex(gDisplayListHead++, &D_800E5210[0], 4, 0);
-    
+
     gSPDisplayList(gDisplayListHead++, common_square_plain_render);
     gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
 }
@@ -1705,7 +1705,7 @@ void func_80026A48(Player *player, s8 arg1) {
     }
 
     temp_f0 = ((player->unk_094 * (1.0f + player->unk_104)) / 18.0f) * 216.0f;
-    if ((temp_f0 <= 1.0f) || (gIsPlayerTripleBButtonCombo[arg1] == TRUE)) {
+    if ((temp_f0 <= 1.0f) || (gIsPlayerTripleBButtonCombo[arg1] == true)) {
         player->unk_240 = 0;
     } else {
         player->unk_240 += D_800DDE74[(s32)(temp_f0 / 12.0f)];

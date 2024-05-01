@@ -1,13 +1,13 @@
 #include <actors.h>
 #include <code_800029B0.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <main.h>
 
 /**
  * @brief Renders the fake item box actor.
- * 
- * @param camera 
- * @param fakeItemBox 
+ *
+ * @param camera
+ * @param fakeItemBox
  */
 void render_actor_fake_item_box(Camera *camera, struct FakeItemBox *fakeItemBox) {
     Vec3s someRot;

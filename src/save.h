@@ -1,7 +1,7 @@
 #ifndef SAVE_H
 #define SAVE_H
 
-#include "PR/os.h"
+#include <libultraship.h>
 #include "common_structs.h"
 
 /* define symbols */

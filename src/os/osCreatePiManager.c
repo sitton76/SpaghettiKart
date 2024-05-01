@@ -3,7 +3,7 @@
 #define OS_PI_MGR_MESG_BUFF_SIZE 1
 
 //! @todo In libreultra this is in an include
-#ifdef VERSION_SH 
+#ifdef VERSION_SH
 extern OSPiHandle *CartRomHandle;
 extern OSPiHandle *LeoDiskHandle;
 #endif
@@ -39,7 +39,7 @@ void osCreatePiManager(OSPri pri, OSMesgQueue *cmdQ, OSMesg *cmdBuf, s32 cmdMsgC
             osSetThreadPri(NULL, pri);
         }
         int_disabled = __osDisableInt();
-        __osPiDevMgr.initialized = TRUE;
+        __osPiDevMgr.initialized = true;
         __osPiDevMgr.mgrThread = &piMgrThread;
         __osPiDevMgr.cmdQueue = cmdQ;
         __osPiDevMgr.eventQueue = &__osPiMesgQueue;

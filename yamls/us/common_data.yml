@@ -7,8 +7,8 @@
     - '#include <defines.h>'
     - '#include <assets/common_data.h>'
     header:
-    - '#include <PR/gbi.h>'
-    - '#include <ultra64.h>'
+    - '#include <libultra/gbi.h>'
+    - '#include <libultraship.h>'
     - '#include <common_structs.h>'
   tables:
     common_grand_prix_human_item_curve:
@@ -225,7 +225,7 @@ itemBoxQuestionMarkModel:
   symbol: itemBoxQuestionMarkModel
   type: gfx
   offset: 0x3008
-  
+
 D_0D003090:
   symbol: D_0D003090
   type: gfx

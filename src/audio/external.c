@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <mk64.h>
 #include <defines.h>
@@ -12,6 +12,7 @@
 #include "code_800029B0.h"
 #include "code_80005FD0.h"
 #include "code_80091750.h"
+#include <stdbool.h>
 
 s8 D_8018EF10;
 UnkStruct8018EF18 D_8018EF18[16];
@@ -31,7 +32,7 @@ u8 sSoundBankFreeListFront[SOUND_BANK_COUNT];
 u8 sNumSoundsInBank[SOUND_BANK_COUNT];
 u8 D_80192AB8[SOUND_BANK_COUNT][8][8];
 u8 D_80192C38;
-ubool8 sSoundBankDisabled[SOUND_BANK_COUNT];
+bool sSoundBankDisabled[SOUND_BANK_COUNT];
 struct ChannelVolumeScaleFade D_80192C48[SOUND_BANK_COUNT];
 struct_D_80192CA8_entry D_80192CA8[3][5];
 u8 D_80192CC6[3];
@@ -244,7 +245,7 @@ void audio_reset_session_eu(OSMesg presetId) {
     osRecvMesg(D_800EA3B4, &mesg, 0);
     osSendMesg(D_800EA3B0, presetId, 0);
     osRecvMesg(D_800EA3B4, &mesg, 1);
-    if (mesg != presetId) {
+    if (mesg.data32 != presetId.data32) {
         osRecvMesg(D_800EA3B4, &mesg, 1);
     }
 }
@@ -931,7 +932,8 @@ void func_800C2A2C(u32 arg0) {
         break;
     case 15:
         D_800EA1C0 = (arg0 & 0xFF00) >> 8;
-        audio_reset_session_eu((void *) test);
+        // UTODO: Stubbed
+        // audio_reset_session_eu((void *) test);
         D_800EA1F4[0] = test;
         func_800CBBE8(0x46020000U, why);
         func_800C5C40();
@@ -963,14 +965,14 @@ u16 func_800C3508(u8 player) {
 }
 
 u8 func_800C357C(s32 arg0) {
-    u8 var_v1;
+    bool var_v1;
     u8 i;
 
     i = D_800EA1E8;
-    var_v1 = TRUE;
+    var_v1 = true;
     for(i = D_800EA1E8; i < (s32) D_800EA1E4; i++) {
         if ((u32) arg0 == D_80192CD0[i]) {
-            var_v1 = FALSE;
+            var_v1 = false;
             i = D_800EA1E4;
         }
     }
@@ -1237,9 +1239,9 @@ void func_800C4084(u16 bankMask) {
 
     for (bank = 0; bank < SOUND_BANK_COUNT; bank++) {
         if (bankMask & 1) {
-            sSoundBankDisabled[bank] = TRUE;
+            sSoundBankDisabled[bank] = true;
         } else {
-            sSoundBankDisabled[bank] = FALSE;
+            sSoundBankDisabled[bank] = false;
         }
         bankMask = bankMask >> 1;
     }
@@ -1258,7 +1260,7 @@ void play_sound(u32 soundBits, Vec3f *position, u8 cameraId, f32 *arg3, f32 *arg
     struct Sound *temp_v0;
 
     bank = soundBits >> 0x1C;
-    if (sSoundBankDisabled[bank] == FALSE) {
+    if (sSoundBankDisabled[bank] == false) {
         temp_v0 = &sSoundRequests[sSoundRequestCount];
         temp_v0->soundBits = soundBits;
         temp_v0->position = position;
@@ -1276,37 +1278,37 @@ void func_800C41CC(u8 arg0, struct SoundCharacteristics *arg1) {
     struct Sound *sound;
 
     for (soundId = sNumProcessedSoundRequests; soundId != sSoundRequestCount; soundId++) {
-        found = FALSE;
+        found = false;
         sound = &sSoundRequests[soundId];
         switch (arg0) {
             case 0:
                 if ((sound->soundBits & 0xF0000000) == (arg1->soundBits & 0xF0000000)) {
-                    found = TRUE;
+                    found = true;
                 }
                 break;
             case 1:
                 if (((sound->soundBits & 0xF0000000) == (arg1->soundBits & 0xF0000000)) && (sound->position == arg1->unk00)) {
-                    found = TRUE;
+                    found = true;
                 }
                 break;
             case 2:
                 if (sound->position == arg1->unk00) {
-                    found = TRUE;
+                    found = true;
                 }
                 break;
             case 3:
                 if ((sound->position == arg1->unk00) && (sound->soundBits == arg1->soundBits)) {
-                    found = TRUE;
+                    found = true;
                 }
                 break;
             case 4:
                 if ((sound->cameraId == arg1->cameraId) && (sound->soundBits == arg1->soundBits)) {
-                    found = TRUE;
+                    found = true;
                 }
                 break;
             case 5:
                 if (sound->soundBits == arg1->soundBits) {
-                    found = TRUE;
+                    found = true;
                 }
                 break;
         }
@@ -1806,7 +1808,7 @@ void sound_init(void) {
         sSoundBankUsedListBack[var_v0] = 0;
         sSoundBankFreeListFront[var_v0] = 1;
         sNumSoundsInBank[var_v0] = 0;
-        sSoundBankDisabled[var_v0] = FALSE;
+        sSoundBankDisabled[var_v0] = false;
         D_80192C48[var_v0].current = 1.0f;
         D_80192C48[var_v0].remainingFrames = 0;
     }

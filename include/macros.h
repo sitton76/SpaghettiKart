@@ -1,6 +1,8 @@
 #ifndef _MACROS_H_
 #define _MACROS_H_
 
+#include <math.h>
+#include <libultraship.h>
 
 #ifndef __sgi
 #define GLOBAL_ASM(...)
@@ -88,5 +90,7 @@
  * - 0x07000000 : get just the offset
  **/
 #define GET_PACKED_END(dl) (((u8 *) dl) + sizeof(dl) - sizeof(dl[0]) - 0x07000000)
+
+void gSPDisplayList(Gfx* pkt, Gfx* dl);
 
 #endif

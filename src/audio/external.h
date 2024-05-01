@@ -345,7 +345,7 @@ extern u8 sSoundBankFreeListFront[SOUND_BANK_COUNT];
 extern u8 sNumSoundsInBank[SOUND_BANK_COUNT];
 extern u8 D_80192AB8[SOUND_BANK_COUNT][8][8];
 extern u8 D_80192C38;
-extern u8 sSoundBankDisabled[SOUND_BANK_COUNT];
+extern bool sSoundBankDisabled[SOUND_BANK_COUNT];
 extern struct ChannelVolumeScaleFade D_80192C48[SOUND_BANK_COUNT];
 extern struct_D_80192CA8_entry D_80192CA8[3][5];
 extern u8  D_80192CC6[3];

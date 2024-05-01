@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <mk64.h>
 #include <common_structs.h>
@@ -44,9 +44,7 @@ s32 func_80290C20(Camera *camera) {
 }
 
 void parse_course_displaylists(uintptr_t addr) {
-    s32 segment = SEGMENT_NUMBER2(addr);
-    s32 offset = SEGMENT_OFFSET(addr);
-    TrackSections *section = (TrackSections *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    TrackSections *section = (TrackSections *) addr;
 
     while(section->addr != 0) {
         if (section->flags & 0x8000) {
@@ -74,10 +72,8 @@ extern u32 isFlycam;
 void load_surface_map(uintptr_t addr, struct UnkStruct_800DC5EC *arg1) {
     Player *player = arg1->player;
     Camera *camera = arg1->camera;
-    u32 segment = SEGMENT_NUMBER2(addr);
-    u32 offset = SEGMENT_OFFSET(addr);
     //! @todo Should be Gfx*
-    s32 *gfx = (s32 *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    Gfx* gfx = (Gfx*) addr;
     s16 var_a3;
     s16 temp_v1;
     s16 sp1E;
@@ -125,12 +121,12 @@ void load_surface_map(uintptr_t addr, struct UnkStruct_800DC5EC *arg1) {
                     temp_v1 = arg1->pathCounter;
                 } else if (player->unk_110.unk3C[2] > 30.0f) {
                     temp_v1 = arg1->pathCounter;
-                } else { 
+                } else {
                     temp_v1 = temp_v0_3;
                 }
             } else if (camera->unk_54.unk3C[2] > 30.0f) {
                 temp_v1 = arg1->pathCounter;
-            } else { 
+            } else {
                 temp_v1 = sp1E;
             }
         } else {
@@ -163,7 +159,7 @@ void load_surface_map(uintptr_t addr, struct UnkStruct_800DC5EC *arg1) {
                         temp_v1 = arg1->pathCounter;
                     } else if (player->unk_110.unk3C[2] > 30.0f) {
                         temp_v1 = arg1->pathCounter;
-                    } else { 
+                    } else {
                         temp_v1 = temp_v0_3;
                     }
                     break;
@@ -173,14 +169,14 @@ void load_surface_map(uintptr_t addr, struct UnkStruct_800DC5EC *arg1) {
         temp_v1 = func_802ABD40(camera->unk_54.unk3A);
         if (camera->unk_54.unk3C[2] > 30.0f) {
             temp_v1 = arg1->pathCounter;
-        } else if (temp_v1 == 255) { 
+        } else if (temp_v1 == 255) {
             temp_v1 = arg1->pathCounter;
         }
     }
 
     arg1->pathCounter = temp_v1;
     temp_v1 = ((temp_v1 - 1) * 4) + var_a3;
-    
+
     gSPDisplayList(gDisplayListHead++, gfx[temp_v1]);
 }
 
@@ -866,7 +862,7 @@ void render_luigi_raceway(struct UnkStruct_800DC5EC *arg0) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     load_surface_map((uintptr_t) luigi_raceway_dls, arg0);
-    
+
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     // d_course_luigi_raceway_packed_dl_E0
@@ -940,48 +936,48 @@ void render_moo_moo_farm(struct UnkStruct_800DC5EC *arg0) {
 
     if ((temp_s0 < 14) && (temp_s0 > 10)) {
         if ((temp_s1 == 2) || (temp_s1 == 3) || (temp_s1 == 1))
-            // 
+            //
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_13FF8);
-        
+
     } else if (temp_s0 < 16) {
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_13FF8);
     } else if (temp_s0 < 19) {
-        if (temp_s1 != 2) 
+        if (temp_s1 != 2)
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_13FF8);
-        
+
     } else if (temp_s0 < 20) {
-        if (temp_s1 == 0) 
+        if (temp_s1 == 0)
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_13FF8);
-        
+
     }
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
     if ((temp_s0 >= 16) && (temp_s0 < 24)) {
-        if ((temp_s1 == 2) || (temp_s1 == 3)) 
+        if ((temp_s1 == 2) || (temp_s1 == 3))
             // d_course_moo_moo_farm_packed_dl_5410
             gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07005410));
-        
+
     } else if (temp_s0 < 9) {
-        if (temp_s1 == 2) 
+        if (temp_s1 == 2)
             // d_course_moo_moo_farm_packed_dl_5410
             gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07005410));
-        
+
     }
     if (temp_s0 < 4) {
         if (temp_s1 != 0)
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_14060);
-        
+
     } else if (temp_s0 < 8) {
         if (temp_s1 == 2)
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_14060);
-        
+
     } else if (temp_s0 >= 22) {
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_14060);
     } else if (temp_s0 >= 18) {
         if ((temp_s1 == 0) || (temp_s1 == 3))
             gSPDisplayList(gDisplayListHead++, d_course_moo_moo_farm_dl_14060);
-        
+
     }
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
@@ -1412,7 +1408,7 @@ void func_80295D88(void) {
     gCourseMaxX = 0;
     gCourseMaxY = 0;
     gCourseMaxZ = 0;
-    
+
     D_8015F59C = 0;
     D_8015F5A0 = 0;
     func_80295D6C();

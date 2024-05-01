@@ -1,11 +1,11 @@
 :config:
   segments:
     - [0x0B, 0x821D10]
-  header: 
+  header:
     code:
     - '#include <assets/ceremony_data.h>'
     header:
-    - '#include <ultra64.h>'
+    - '#include <libultraship.h>'
     - '#include <common_structs.h>'
     - '#include <waypoints.h>'
 

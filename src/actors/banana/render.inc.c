@@ -1,13 +1,13 @@
 #include <actors.h>
 #include <code_800029B0.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 
 /**
  * @brief Render the banana actor
- * 
- * @param camera 
- * @param arg1 
- * @param banana 
+ *
+ * @param camera
+ * @param arg1
+ * @param banana
  */
 void render_actor_banana(Camera *camera, UNUSED Mat4 arg1, struct BananaActor *banana) {
     UNUSED s32 pad[2];

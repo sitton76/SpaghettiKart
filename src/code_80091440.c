@@ -16,10 +16,8 @@ void func_800914A0(void) {
 UNUSED void func_800914E0(void) {
     UNUSED Vec3f sp64 = {0.0f, -20.0f, 150.0f};
     UNUSED Vec3f sp58 = {0.0f, -6.0f, 4.0f};
-    uintptr_t segment = SEGMENT_NUMBER2(D_8015F718[0]);
-    uintptr_t offset = SEGMENT_OFFSET(D_8015F718[0]);
     Camera *camera = &cameras[0];
-    struct ActorSpawnData *sp48 = (struct ActorSpawnData *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct ActorSpawnData *sp48 = D_8015F718[0];
     struct ActorSpawnData *tempData;
 
     s16 temp3 = (s16) D_80152308;
@@ -31,7 +29,7 @@ UNUSED void func_800914E0(void) {
     camera->up[0] = 0;
     camera->up[1] = 1;
     camera->up[2] = 0;
-        
+
     if(1) {} // waa?
 
     temp = temp2 - temp3;

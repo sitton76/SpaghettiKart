@@ -2,12 +2,12 @@
   vram:
     addr: 0x800E8700
     offset: 0xE9300
-  header: 
+  header:
     code:
-      - '#include <ultra64.h>'
+      - '#include <libultraship.h>'
       - '#include <assets/data_800E8700.h>'
     header:
-      - '#include <ultra64.h>'
+      - '#include <libultraship.h>'
   tables:
     D_800E8900:
       range: [0x800E8900, 0x800E89C0]

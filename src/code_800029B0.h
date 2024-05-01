@@ -2,7 +2,7 @@
 #define CODE_800029B0_H
 
 #include <macros.h>
-#include <ultra64.h>
+#include <libultraship.h>
 #include <actor_types.h>
 #include "camera.h"
 

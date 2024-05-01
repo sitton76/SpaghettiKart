@@ -1,11 +1,11 @@
 :config:
   segments:
     - [0x06, 0x825800]
-  header: 
+  header:
     code:
       - '#include <assets/startup_logo.h>'
     header:
-      - '#include <ultra64.h>'
+      - '#include <libultraship.h>'
       - '#include <common_structs.h>'
 
 dl1:

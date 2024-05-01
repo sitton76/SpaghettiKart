@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include "audio/synthesis.h"
 #include "audio/heap.h"
@@ -7,7 +7,7 @@
 #include "audio/seqplayer.h"
 #include "audio/internal.h"
 //#include "audio/external.h"
-#include "PR/abi.h"
+#include <libultra/abi.h>
 
 #define aSetLoadBufferPair(pkt, c, off)                                                                \
     aSetBuffer(pkt, 0, c + DMEM_ADDR_WET_LEFT_CH, 0, DEFAULT_LEN_1CH - c);                             \
@@ -127,7 +127,7 @@ void func_800B6FB4(s32 updateIndexStart, s32 noteIndex) {
 
     for (i = updateIndexStart + 1; i < gAudioBufferParameters.updatesPerFrame; i++) {
         if (!gNoteSubsEu[gMaxSimultaneousNotes * i + noteIndex].needsInit) {
-            gNoteSubsEu[gMaxSimultaneousNotes * i + noteIndex].enabled = FALSE;
+            gNoteSubsEu[gMaxSimultaneousNotes * i + noteIndex].enabled = false;
         } else {
             break;
         }
@@ -144,9 +144,9 @@ void synthesis_load_note_subs_eu(s32 updateIndex) {
         dest = &gNoteSubsEu[gMaxSimultaneousNotes * updateIndex + i];
         if (src->enabled) {
             *dest = *src;
-            src->needsInit = FALSE;
+            src->needsInit = false;
         } else {
-            dest->enabled = FALSE;
+            dest->enabled = false;
         }
     }
 }
@@ -161,7 +161,8 @@ Acmd *synthesis_execute(Acmd *acmd, s32 *writtenCmds, s16 *aiBuf, s32 bufLen) {
         process_sequences(i - 1);
         synthesis_load_note_subs_eu(gAudioBufferParameters.updatesPerFrame - i);
     }
-    aSegment(cmd++, 0, 0);
+    // UTODO: Stubbed
+    // aSegment(cmd++, 0, 0);
     aiBufPtr = (u32 *) aiBuf;
     for (i = gAudioBufferParameters.updatesPerFrame; i > 0; i--) {
         if (i == 1) {
@@ -307,7 +308,7 @@ Acmd *synthesis_do_one_audio_update(s16 *aiBuf, s32 bufLen, Acmd *acmd, s32 upda
     }
     for (; i < notePos; i++) {
         temp = updateIndex * gMaxSimultaneousNotes;
-        if (IS_BANK_LOAD_COMPLETE(gNoteSubsEu[temp + noteIndices[i]].bankId) == TRUE) {
+        if (IS_BANK_LOAD_COMPLETE(gNoteSubsEu[temp + noteIndices[i]].bankId)) {
             acmd = synthesis_process_note(noteIndices[i],
                                  &gNoteSubsEu[temp + noteIndices[i]],
                                  &gNotes[noteIndices[i]].synthesisState,
@@ -319,7 +320,8 @@ Acmd *synthesis_do_one_audio_update(s16 *aiBuf, s32 bufLen, Acmd *acmd, s32 upda
 
     temp = bufLen * 2;
     aSetBuffer(acmd++, 0, 0, DMEM_ADDR_TEMP, temp);
-    aInterleave(acmd++, DMEM_ADDR_LEFT_CH, DMEM_ADDR_RIGHT_CH);
+    // UTODO: Stubbed
+    // aInterleave(acmd++, DMEM_ADDR_LEFT_CH, DMEM_ADDR_RIGHT_CH);
     aSaveBuffer(acmd++, DMEM_ADDR_TEMP, VIRTUAL_TO_PHYSICAL2(aiBuf), temp * 2);
     return acmd;
 }
@@ -603,14 +605,16 @@ GLOBAL_ASM("asm/non_matchings/audio/synthesis/synthesis_process_note.s")
 Acmd *load_wave_samples(Acmd *acmd, struct NoteSubEu *noteSubEu, struct NoteSynthesisState *synthesisState, s32 nSamplesToLoad) {
     s32 a3;
     s32 repeats;
-    aLoadBuffer(acmd++, VIRTUAL_TO_PHYSICAL2(noteSubEu->sound.samples), 0x1A0, 128);
+    // UTODO: Stubbed
+    // aLoadBuffer(acmd++, VIRTUAL_TO_PHYSICAL2(noteSubEu->sound.samples), 0x1A0, 128);
 
     synthesisState->samplePosInt &= 0x3f;
     a3 = 64 - synthesisState->samplePosInt;
     if (a3 < nSamplesToLoad) {
         repeats = (nSamplesToLoad - a3 + 63) / 64;
         if (repeats != 0) {
-            aDMEMMove2(acmd++, repeats, 0x1A0, 0x1A0 + 128, 128);
+            // UTODO: Stubbed
+            // aDMEMMove2(acmd++, repeats, 0x1A0, 0x1A0 + 128, 128);
         }
     }
     return acmd;

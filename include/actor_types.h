@@ -1,7 +1,7 @@
 #ifndef ACTOR_TYPES_H
 #define ACTOR_TYPES_H
 
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <common_structs.h>
 
@@ -13,25 +13,25 @@
  * gActorList should be understood to be populated by generic Actor structs.
  * However, for human readability, many functions interacting with actor list elements expect one of the many
  * specialized types found in this file.
- * 
+ *
  * Note that specialized types must be the same size as a plain Actor. Don't be mislead into thinking that
  * because its a separate type that it can modified separately from plain Actor. If you modify/add an actor type
  * and its size is different from plain Actor's, you WILL run into buggy (potentially crash inducing) behaviour.
- * 
+ *
  * Specialized structs are customizable so long as the following member specifications are met:
- * 
+ *
  * In general:
  *     0x00 -> s16 type
  *     0x02 -> s16 flags
  *     0x30 -> Collision unk30
- * 
+ *
  * If player can collide with the actor:
  *     0x0C -> f32 boundingBoxSize
- * 
+ *
  * If the actor makes sound (necessary for doppler/volume stuff):
  *     0x18 -> Vec3f pos
  *     0x24 -> Vec3f velocity
- * 
+ *
  * Other members are more flexible, and even the non-general specifications can be ignored IF AND ONLY IF you know
  * exactly what you're doing.
  */

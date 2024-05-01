@@ -1,8 +1,8 @@
 #ifndef BOWSERS_CASTLE_COURSE_DATA_H
 #define BOWSERS_CASTLE_COURSE_DATA_H
 
-#include <ultra64.h>
-#include <PR/gbi.h>
+#include <libultraship.h>
+#include <libultra/gbi.h>
 #include <actor_types.h>
 #include <waypoints.h>
 #include <course.h>

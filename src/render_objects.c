@@ -3,9 +3,9 @@
  * A more suitable name may be print.c
 **/
 
-#include <ultra64.h>
+#include <libultraship.h>
 #include <mk64.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <macros.h>
 #include <defines.h>
 #include <common_structs.h>
@@ -153,7 +153,7 @@ UNUSED void func_8004398C(s32 arg0, s32 arg1, u16 arg2, f32 arg3, Vtx *vtx, s32 
     gSPVertex(gDisplayListHead++, vtx, 4, 0);
     gSPDisplayList(gDisplayListHead++, common_rectangle_display);
 }
-    
+
 s32 func_80043A54(s32 arg0) {
     s32 temp_a1;
     s32 phi_v0;
@@ -252,7 +252,7 @@ void func_80044DA0(u8 *image, s32 width, s32 height) {
     // This macro ought to be equivalent to the block of macros below but it doesn't match
     // See comment above the `gDPLoadBlock` macro
     // gDPLoadTextureBlock_4b(gDisplayListHead++, image, G_IM_FMT_I, width, height, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    
+
     gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_16b, 1, image);
     gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_16b, 0, G_TX_RENDERTILE, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
     gDPLoadSync(gDisplayListHead++);
@@ -268,7 +268,7 @@ void func_80044F34(u8 *image, s32 width, s32 height) {
     // This macro ought to be equivalent to the block of macros below but it doesn't match
     // See comment above the `gDPLoadBlock` macro
     // gDPLoadTextureBlock_4b(gDisplayListHead++, image, G_IM_FMT_I, width, height, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    
+
     gDPSetTextureImage(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_16b, 1, image);
     gDPSetTile(gDisplayListHead++, G_IM_FMT_I, G_IM_SIZ_16b, 0, G_TX_RENDERTILE, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOLOD);
     gDPLoadSync(gDisplayListHead++);
@@ -831,7 +831,7 @@ void func_800485C4(Vec3f arg0, Vec3su arg1, f32 arg2, s32 arg3, u8 *tlut, u8 *te
 
     set_transparency(arg3);
     draw_rectangle_texture_overlap(tlut, texture, arg6, arg7, arg8, arg9, argA);
-    
+
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
 }
 
@@ -1683,7 +1683,7 @@ void func_8004C6FC(s16 arg0, s16 arg1, u8 *texture, u32 width, u32 arg4) {
         athing += var_s4 * 0;
         var_s4 += heigth;
     }
-    
+
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 #else
@@ -2074,7 +2074,7 @@ void func_8004DF5C(s32 arg0, s32 arg1, u8 *texture, s32 width, s32 arg4, s32 hei
     s32 var_s0 = var_s0 = arg1 - (arg4 / 2);
     u8 *img = texture;
     s32 i;
-    
+
     for (i = 0; i < arg4 / height; i++) {
             rsp_load_texture(img, width, height);
             func_8004B97C(arg0 - (width / 2), var_s0, width, height, 1);
@@ -3270,7 +3270,7 @@ void render_ice_block(s32 arg0) {
     for (playerId = 0; playerId < gPlayerCountSelection1; playerId++) {
         objectIndex = gIndexLakituList[playerId];
         if (objectIndex) {}
-        if (func_80072320(objectIndex, 4) != FALSE) {
+        if (func_80072320(objectIndex, 4) != false) {
             func_8005285C(playerId);
         }
         func_80072320(objectIndex, 0x00000010);
@@ -3633,7 +3633,7 @@ void render_object_paddle_boat_smoke_particles(s32 cameraId) {
     UNUSED s32 pad[2];
     Camera *camera;
     s32 i;
- 
+
     camera = &camera1[cameraId];
     gSPDisplayList(gDisplayListHead++, D_0D007AE0);
 
@@ -4420,18 +4420,18 @@ UNUSED void func_800573BC(void) {
 }
 
 UNUSED void func_800573C4(void) {
-    
+
 }
 
 UNUSED void func_800573CC(void) {
-    
+
 }
 UNUSED void func_800573D4(void) {
-    
+
 }
 
 UNUSED void func_800573DC(void) {
-    
+
 }
 
 
@@ -4473,7 +4473,7 @@ void debug_print_number(s32 *x, s32 *y, s32 number, u32 numDigits)
         debug_wrap_text(x, y);
         n = -number;
     }
-      
+
     *D_801657B8 = -1;
     ptr = D_801657B8;
     if (n != 0) {
@@ -4485,7 +4485,7 @@ void debug_print_number(s32 *x, s32 *y, s32 number, u32 numDigits)
     } else {
         *++ptr = 0;
     }
-    
+
     do {
         func_800573E4(*x, *y, *ptr--);
         debug_wrap_text(x, y);
@@ -4502,7 +4502,7 @@ void func_8005762C(s32 *x, s32 *y, s32 pathCount, u32 numDigits) {
     s8 *ptr;
     s32 count;
     s8 remainder;
-    
+
     debug_wrap_text(x, y);
     *D_801657B8 = -1;
     ptr = D_801657B8;
@@ -4518,7 +4518,7 @@ void func_8005762C(s32 *x, s32 *y, s32 pathCount, u32 numDigits) {
     } else {
         *++ptr = 0;
     }
-    
+
     do {
         func_800573E4(*x, *y, *ptr--);
         debug_wrap_text(x, y);

@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <defines.h>
 #include <segments.h>
@@ -20,6 +20,8 @@
 #include "main.h"
 #include "menus.h"
 #include "render_courses.h"
+
+#define bcopy memcpy
 
 u8 defaultCharacterIds[] = {
     1, 2, 3, 4, 5, 6, 7, 0
