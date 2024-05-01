@@ -1,6 +1,6 @@
 #include <macros.h>
-#include <PR/ultratypes.h>
-#include <PR/gbi.h>
+#include <libultra/types.h>
+#include <libultra/gbi.h>
 #include "data_segment2.h"
 #include <assets/startup_logo.h>
 

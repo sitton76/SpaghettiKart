@@ -1,15 +1,15 @@
 #include <actors.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <main.h>
 #include <assets/common_data.h>
 #include "courses/all_course_data.h"
 
 /**
  * @brief Renders the tree actor in Mario rawceay.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_mario_raceway(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -36,10 +36,10 @@ void render_actor_tree_mario_raceway(Camera *camera, Mat4 arg1, struct Actor *ar
 
 /**
  * @brief Renders the tree actor in Yoshi Valley.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_yoshi_valley(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -66,10 +66,10 @@ void render_actor_tree_yoshi_valley(Camera *camera, Mat4 arg1, struct Actor *arg
 
 /**
  * @brief Renders the tree actor in Royal Raceway.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_royal_raceway(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -96,10 +96,10 @@ void render_actor_tree_royal_raceway(Camera *camera, Mat4 arg1, struct Actor *ar
 
 /**
  * @brief Renders the tree actor in Moo Moo Farm.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_moo_moo_farm(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -154,10 +154,10 @@ void func_80299864(Camera *camera, Mat4 arg1, struct Actor *arg2) {
 
 /**
  * @brief Renders the tree actor in Bowser's Castle.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_bowser_castle(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -184,10 +184,10 @@ void render_actor_tree_bowser_castle(Camera *camera, Mat4 arg1, struct Actor *ar
 
 /**
  * @brief Renders the bush actor in Bowser's Castle.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_bush_bowser_castle(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -214,10 +214,10 @@ void render_actor_bush_bowser_castle(Camera *camera, Mat4 arg1, struct Actor *ar
 
 /**
  * @brief Renders the tree actor in Frappe Snowland.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_frappe_snowland(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -243,10 +243,10 @@ void render_actor_tree_frappe_snowland(Camera *camera, Mat4 arg1, struct Actor *
 
 /**
  * @brief Renders the a first variant of cactus in Kalimari Desert.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_cactus1_kalimari_desert(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -272,10 +272,10 @@ void render_actor_tree_cactus1_kalimari_desert(Camera *camera, Mat4 arg1, struct
 
 /**
  * @brief Renders the a second variant of cactus in Kalimari Desert.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_cactus2_kalimari_desert(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;
@@ -301,10 +301,10 @@ void render_actor_tree_cactus2_kalimari_desert(Camera *camera, Mat4 arg1, struct
 
 /**
  * @brief Renders the a third variant of cactus in Kalimari Desert.
- * 
- * @param camera 
- * @param arg1 
- * @param arg2 
+ *
+ * @param camera
+ * @param arg1
+ * @param arg2
  */
 void render_actor_tree_cactus3_kalimari_desert(Camera *camera, Mat4 arg1, struct Actor *arg2) {
     f32 temp_f0;

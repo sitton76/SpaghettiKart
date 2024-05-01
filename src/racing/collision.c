@@ -1,6 +1,6 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <mk64.h>
 #include <common_structs.h>
 #include <actor_types.h>
@@ -10,16 +10,11 @@
 #include "math_util.h"
 #include "code_800029B0.h"
 
-#pragma intrinsic (sqrtf)
-
 // Used to delete the choco mountain guard rail
 void nullify_displaylist(uintptr_t addr) {
-    s32 segment = SEGMENT_NUMBER2(addr);
-    s32 offset = SEGMENT_OFFSET(addr);
-
     Gfx *macro;
 
-    macro = (Gfx *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    macro = (Gfx *) addr;
     macro->words.w0 = (G_ENDDL << 24);
     macro->words.w1 = 0;
 }
@@ -127,7 +122,7 @@ s32 func_802AAE4C(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
     f32 temp_f10;
     f32 temp_f0_3;
     f32 temp_f2_2;
-    s32 bool = 1;
+    s32 flag = 1;
 
     if (surfaceMap->gravity < -0.9f)
         return 0;
@@ -160,7 +155,7 @@ s32 func_802AAE4C(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
         temp_f2_2 = (z3 - posZ) * (x1 - posX) - (x3 - posX) * (z1 - posZ);
 
         if ((temp_f0_3 * temp_f2_2) < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
 
@@ -170,22 +165,22 @@ s32 func_802AAE4C(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
             temp_f2_2 = (z3 - posZ) * (x1 - posX) - (x3 - posX) * (z1 - posZ);
 
             if ((temp_f10 * temp_f2_2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
             if ((temp_f10 * temp_f0_3) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 temp_f2_2 = (z3 - posZ) * (x1 - posX) - (x3 - posX) * (z1 - posZ);
                 if (temp_f2_2 != 0) {
                     if ((temp_f0_3 * temp_f2_2) < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    if (!bool) {
+    if (!flag) {
         return 0;
     }
     temp_f0_5 = ((surfaceMap->height * posX) + (surfaceMap->gravity * posY) + (surfaceMap->rotation * posZ)
@@ -222,7 +217,7 @@ s32 func_802AB288(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
     f32 x3;
     f32 y3;
     UNUSED f32 pad2[1];
-    
+
     UNUSED f32 pad3[5];
     f32 x2;
     f32 y2;
@@ -232,7 +227,7 @@ s32 func_802AB288(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
     f32 temp_f2_2;
     f32 temp_f0_2;
     f32 temp_f2_3;
-    s32 bool = 1;
+    s32 flag = 1;
 
     if (surfaceMap->vtx31 > posX) {
         return 0;
@@ -272,29 +267,29 @@ s32 func_802AB288(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
         temp_f2_3 = (y3 - posY) * (x1 - posX) - (x3 - posX) * (y1 - posY);
 
         if ((temp_f0_2 * temp_f2_3) < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
         temp_f0_2 = (y2 - posY) * (x3 - posX) - (x2 - posX) * (y3 - posY);
         if (!temp_f0_2) {
             temp_f2_3 = (y3 - posY) * (x1 - posX) - (x3 - posX) * (y1 - posY);
             if (temp_f2_2 * temp_f2_3 < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
             if ((temp_f2_2 * temp_f0_2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 temp_f2_3 = ((y3 - posY) * (x1 - posX)) - ((x3 - posX) * (y1 - posY));
                 if (temp_f2_3 != 0) {
                     if ((temp_f0_2 * temp_f2_3) < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    if (!bool) {
+    if (!flag) {
         return 0;
     }
     temp_f0_4 = ((surfaceMap->height * posX) + (surfaceMap->gravity * posY) + (surfaceMap->rotation * posZ) + surfaceMap->height2) - boundingBoxSize;
@@ -325,7 +320,7 @@ s32 func_802AB288(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
 
 s32 func_802AB6C4(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY, f32 posZ, u16 index) {
     mk64_surface_map_ram *surfaceMap = &gSurfaceMap[index];
-    s32 bool = 1;
+    bool flag = 1;
     UNUSED f32 pad[7];
     f32 sp20;
     f32 temp_f8;
@@ -375,7 +370,7 @@ s32 func_802AB6C4(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
         temp_f2_3 = ((sp20 - posY) * (sp24 - posZ)) - ((temp_f8 - posZ) * (temp_f4 - posY));
 
         if ((temp_f0_2 * temp_f2_3) < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
 
@@ -385,23 +380,23 @@ s32 func_802AB6C4(Collision *collision, f32 boundingBoxSize, f32 posX, f32 posY,
             temp_f2_3 = ((sp20 - posY) * (sp24 - posZ)) - ((temp_f8 - posZ) * (temp_f4 - posY));
 
             if ((temp_f2_2 * temp_f2_3) < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
 
             if ((temp_f2_2 * temp_f0_2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 temp_f2_3 = ((sp20 - posY) * (sp24 - posZ)) - ((temp_f8 - posZ) * (temp_f4 - posY));
                 if (temp_f2_3 != 0) {
                     if ((temp_f0_2 * temp_f2_3) < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    if (!bool) {
+    if (!flag) {
         return 0;
     }
 
@@ -447,7 +442,7 @@ s32 func_802ABB04(f32 posX, f32 posZ, u16 index) {
     f32 temp_f2_2;
     f32 temp_f2_3;
     f32 temp_f0_2;
-    s32 bool = 1;
+    s32 flag = 1;
 
     x1 = surfaceMap->vtxPoly1->v.ob[0];
     z1 = surfaceMap->vtxPoly1->v.ob[2];
@@ -467,29 +462,29 @@ s32 func_802ABB04(f32 posX, f32 posZ, u16 index) {
         temp_f2_3 = (z3 - posZ) * (x1 - posX) - (x3 - posX) * (z1 - posZ);
 
         if ((temp_f0_2 * temp_f2_3) < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
         temp_f0_2 = (z2 - posZ) * (x3 - posX) - (x2 - posX) * (z3 - posZ);
         if (!temp_f0_2) {
             temp_f2_3 = (z3 - posZ) * (x1 - posX) - (x3 - posX) * (z1 - posZ);
             if (temp_f2_2 * temp_f2_3 < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
             if ((temp_f2_2 * temp_f0_2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 temp_f2_3 = ((z3 - posZ) * (x1 - posX)) - ((x3 - posX) * (z1 - posZ));
                 if (temp_f2_3 != 0) {
                     if ((temp_f0_2 * temp_f2_3) < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    return bool;
+    return flag;
 }
 
 s8 get_surface_type(u16 index) {
@@ -777,7 +772,7 @@ s32 is_colliding_with_drivable_surface(Collision *collision, f32 boundingBoxSize
     f32 area;
     f32 area2;
     f32 area3;
-    s32 bool = 1;
+    s32 flag = 1;
 
     if (tile->vtx31 > x1) {
         return 0;
@@ -810,7 +805,7 @@ s32 is_colliding_with_drivable_surface(Collision *collision, f32 boundingBoxSize
         area2 = (z3 - z1) * (x4 - x1) - (x3 - x1) * (z4 - z1);
         area3 = (z4 - z1) * (x2 - x1) - (x4 - x1) * (z2 - z1);
         if (area2 * area3 < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
 
@@ -822,22 +817,22 @@ s32 is_colliding_with_drivable_surface(Collision *collision, f32 boundingBoxSize
             area3 = (z4 - z1) * (x2 - x1) - (x4 - x1) * (z2 - z1);
 
             if (area * area3 < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
             if ((area * area2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 area3 = (z4- z1) * (x2 - x1) - (x4 - x1) * (z2 - z1);
                 if (area3 != 0) {
                     if (area2 * area3 < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    if (bool == 0) {
+    if (flag == 0) {
         return 0;
     }
 
@@ -884,11 +879,11 @@ s32 is_colliding_with_wall2(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
     UNUSED s32 pad2[3];
     f32 temp_f0_4;
     f32 temp_f4_2;
-    UNUSED s32 pad3[2]; 
+    UNUSED s32 pad3[2];
     f32 area;
     f32 area2;
     f32 area3;
-    s32 bool = 1;
+    s32 flag = 1;
     if (tile->vtx31 > x1) {
         return 0;
     }
@@ -925,7 +920,7 @@ s32 is_colliding_with_wall2(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
 
 
         if (area2 * area3 < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
 
@@ -936,23 +931,23 @@ s32 is_colliding_with_wall2(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
 
 
             if ((area * area3) < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
             if ((area * area2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 area3 = (y4 - y1) * (x2 - x1) - (x4 - x1) * (y2 - y1);
 
                 if (area3 != 0) {
                     if ((area2 * area3) < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    if (bool == 0) {
+    if (flag == 0) {
         return 0;
     }
 
@@ -1054,7 +1049,7 @@ s32 is_colliding_with_wall2(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
 */
 s32 is_colliding_with_wall1(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1, f32 z1, u16 arg5, f32 arg6, f32 arg7, f32 arg8) {
     mk64_surface_map_ram *tile = &gSurfaceMap[arg5];
-    s32 bool = 1;
+    s32 flag = 1;
     UNUSED s32 pad[7];
     f32 y4;
     f32 z4;
@@ -1065,7 +1060,7 @@ s32 is_colliding_with_wall1(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
     UNUSED s32 pad3[2];
     f32 temp_f0_4;
     f32 temp_f4_2;
-    UNUSED s32 pad4[2]; 
+    UNUSED s32 pad4[2];
     f32 area;
     f32 area2;
     f32 area3;
@@ -1106,7 +1101,7 @@ s32 is_colliding_with_wall1(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
 
 
         if (area2 * area3 < 0.0f) {
-            bool = 0;
+            flag = 0;
         }
     } else {
 
@@ -1117,23 +1112,23 @@ s32 is_colliding_with_wall1(Collision *arg, f32 boundingBoxSize, f32 x1, f32 y1,
 
 
             if ((area * area3) < 0.0f) {
-                bool = 0;
+                flag = 0;
             }
         } else {
             if ((area * area2) < 0.0f) {
-                bool = 0;
+                flag = 0;
             } else {
                 area3 = (y4 - y1) * (z2 - z1) - (z4 - z1) * (y2 - y1);
 
                 if (area3 != 0) {
                     if ((area2 * area3) < 0.0f) {
-                        bool = 0;
+                        flag = 0;
                     }
                 }
             }
         }
     }
-    if (bool == 0) {
+    if (flag == 0) {
         return 0;
     }
 
@@ -1246,7 +1241,7 @@ u16 func_802AD950(Collision *collision, f32 boundingBoxSize, f32 x1, f32 y1, f32
     u16 flags = 0;
     s32 temp1;
     s32 temp2;
-    
+
     u16 i;
 
     collision->unk30 = 0;
@@ -1341,7 +1336,7 @@ u16 func_802AD950(Collision *collision, f32 boundingBoxSize, f32 x1, f32 y1, f32
             }
         }
         phi_s2++;
-        
+
     }
     return flags;
 }
@@ -1386,7 +1381,7 @@ u16 func_802ADDC8(Collision* collision, f32 boundingBoxSize, f32 posX, f32 posY,
     if (var_s4 == (0x4000 | 0x2000 | 0x8000)) {
         return var_s4;
     }
-    
+
     temp_f4 = (s32) gCourseMaxX - gCourseMinX;
     temp_f6 = (s32) gCourseMaxZ - gCourseMinZ;
 
@@ -1396,7 +1391,7 @@ u16 func_802ADDC8(Collision* collision, f32 boundingBoxSize, f32 posX, f32 posY,
     temp_f10 = (posX - gCourseMinX) / temp1;
     temp_f16 = (posZ - gCourseMinZ) / temp2;
 
-    
+
     if (temp_f10 < 0) {
         return 0;
     }
@@ -1577,10 +1572,10 @@ void func_802AE434(Vtx *vtx1, Vtx *vtx2, Vtx *vtx3, s8 surfaceType, u16 sectionI
     tile->vtxPoly1 = vtx1;
     tile->vtxPoly2 = vtx2;
     tile->vtxPoly3 = vtx3;
-    if ((tile->vtxPoly1->v.flag == 4) && 
-        (tile->vtxPoly2->v.flag == 4) && 
+    if ((tile->vtxPoly1->v.flag == 4) &&
+        (tile->vtxPoly2->v.flag == 4) &&
         (tile->vtxPoly3->v.flag == 4)) {
-        
+
         return;
     }
 
@@ -1680,7 +1675,7 @@ void func_802AE434(Vtx *vtx1, Vtx *vtx2, Vtx *vtx3, s8 surfaceType, u16 sectionI
     if (maxZ > gCourseMaxZ) {
         gCourseMaxZ = maxZ;
     }
-    
+
     tile->height = normalX;
     tile->gravity = normalY;
     tile->rotation = normalZ;
@@ -1782,7 +1777,7 @@ void set_vtx_from_quadrangle(u32 line, s8 surfaceType, u16 sectionId) {
     vtx2 = vtxBuffer[vert2];
     vtx3 = vtxBuffer[vert3];
     vtx4 = vtxBuffer[vert4];
-    
+
     // Triangle 1
     func_802AE434(vtx1, vtx2, vtx3, surfaceType, sectionId);
     // Triangle 2
@@ -1794,9 +1789,7 @@ void set_vtx_from_quadrangle(u32 line, s8 surfaceType, u16 sectionId) {
  */
 void set_vtx_buffer(uintptr_t addr, u32 numVertices, u32 bufferIndex) {
     u32 i;
-    u32 segment = SEGMENT_NUMBER2(addr);
-    u32 offset = SEGMENT_OFFSET(addr);
-    Vtx *vtx = (Vtx *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    Vtx *vtx = (Vtx *) addr;
     for (i = 0; i < numVertices; i++) {
         vtxBuffer[bufferIndex] = vtx;
         vtx++;
@@ -1986,7 +1979,7 @@ void set_vertex_data_with_default_section_id(Gfx *gfx, s8 surfaceType) {
 extern u32 D_8015F58C;
 
 /**
- * Recursive search and set for vertex data 
+ * Recursive search and set for vertex data
  */
 void find_and_set_vertex_data(Gfx *addr, s8 surfaceType, u16 sectionId) {
     s32 opcode;
@@ -1994,9 +1987,7 @@ void find_and_set_vertex_data(Gfx *addr, s8 surfaceType, u16 sectionId) {
     uintptr_t hi;
     s32 i;
 
-    s32 segment = SEGMENT_NUMBER2(addr);
-    s32 offset = SEGMENT_OFFSET(addr);
-    Gfx *gfx = (Gfx *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    Gfx *gfx = (Gfx *) addr;
     D_8015F6FA = 0;
     D_8015F6FC = 0;
 
@@ -2036,15 +2027,13 @@ void find_and_set_vertex_data(Gfx *addr, s8 surfaceType, u16 sectionId) {
  * Search for G_SETTILESIZE and set its args.
  */
 void find_and_set_tile_size(uintptr_t addr, s32 uls, s32 ult) {
-    u32 segment = SEGMENT_NUMBER2(addr);
-    u32 offset = SEGMENT_OFFSET(addr);
-    Gfx *gfx = (Gfx *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    Gfx *gfx = (Gfx *) addr;
     u32 opcode;
 
     uls = (uls << 12) & 0xFFF000;
     ult &= 0xFFF;
 
-    while(TRUE) {
+    while(true) {
 
         opcode = GFX_GET_OPCODE(gfx->words.w0);
 
@@ -2060,10 +2049,8 @@ void find_and_set_tile_size(uintptr_t addr, s32 uls, s32 ult) {
 }
 
 void set_vertex_colours(uintptr_t addr, u32 vertexCount, UNUSED s32 vert3, s8 alpha, u8 red, u8 green, u8 blue) {
-    s32 segment = SEGMENT_NUMBER2(addr);
-    s32 offset = SEGMENT_OFFSET(addr);
     s32 i;
-    Vtx *vtx = (Vtx *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    Vtx *vtx = (Vtx *) addr;
 
     for (i = 0; (u32)i < vertexCount; i++) {
         if (red) {
@@ -2080,14 +2067,12 @@ void set_vertex_colours(uintptr_t addr, u32 vertexCount, UNUSED s32 vert3, s8 al
  * Recursive search for vertices and set their colour values.
  */
 void find_vtx_and_set_colours(uintptr_t displayList, s8 alpha, u8 red, u8 green, u8 blue) {
-    s32 segment = SEGMENT_NUMBER2(displayList);
-    s32 offset = SEGMENT_OFFSET(displayList);
-    Gfx *gfx = (Gfx *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    Gfx *gfx = (Gfx *) displayList;
     uintptr_t lo;
     uintptr_t hi;
     s32 opcode;
 
-    while(TRUE) {
+    while(true) {
         lo = gfx->words.w0;
         hi = gfx->words.w1;
         opcode = GFX_GET_OPCODE(lo);
@@ -2122,7 +2107,7 @@ u16 process_collision(Player *player, KartBoundingBoxCorner *corner, f32 cornerP
     f32 cornerPos3;
     f32 boundingBoxSize;
     f32 temp_f0;
-    
+
     s32 temp_v0_2;
     s32 temp_v1;
 
@@ -2183,7 +2168,7 @@ u16 process_collision(Player *player, KartBoundingBoxCorner *corner, f32 cornerP
     }
 
     // If the surface flags are not set then try setting them.
-        
+
     temp_v0_2 = (s32) gCourseMaxX - gCourseMinX;
     temp_v1 = (s32) gCourseMaxZ - gCourseMinZ;
 

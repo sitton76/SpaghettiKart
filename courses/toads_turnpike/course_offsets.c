@@ -1,4 +1,4 @@
-#include <PR/ultratypes.h>
+#include <libultra/types.h>
 #include <PR/mbi.h>
 #include <assets/common_data.h>
 #include "course_offsets.h"

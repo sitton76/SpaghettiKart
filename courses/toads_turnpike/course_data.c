@@ -1,7 +1,7 @@
 //! @todo Replace addresses with variables
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <actor_types.h>
 #include <waypoints.h>
 #include <course.h>
@@ -8432,4 +8432,3 @@ TrackSections d_course_toads_turnpike_addr[] = {
     { d_course_toads_turnpike_packed_dl_51C8, 255, 255, 0x0000 },
     { 0x00000000, 0, 0, 0x0000 },
 };
-

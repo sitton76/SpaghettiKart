@@ -1,12 +1,11 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
-#include <PR/os.h>
 #include <mk64.h>
 #include <sounds.h>
 #include <common_structs.h>
 #include <actor_types.h>
 #include <defines.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 
 #include "code_800029B0.h"
 #include "main.h"
@@ -396,7 +395,7 @@ void func_802977E4(Player *arg0) {
 // Invert green and red on green shell texture
 void init_red_shell_texture(void) {
     s16 *red_shell_texture = (s16 *) &gTLUTRedShell[0];
-    s16 *green_shell_texture = (s16 *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[SEGMENT_NUMBER2(common_tlut_green_shell)] + SEGMENT_OFFSET(common_tlut_green_shell));
+    s16 *green_shell_texture = (s16 *) common_tlut_green_shell;
     s16 color_pixel, red_color, green_color, blue_color, alpha_color;
     s32 i;
     for (i = 0; i < 256; i++) {
@@ -469,10 +468,8 @@ void render_cows(Camera *camera, Mat4 arg1, UNUSED struct Actor *actor) {
     struct ActorSpawnData *var_s5;
     Vec3f sp88;
     u32 soundThing = SOUND_ARG_LOAD(0x19, 0x01, 0x90, 0x4D);
-    s32 segment = SEGMENT_NUMBER2(d_course_moo_moo_farm_cow_spawn);
-    s32 offset = SEGMENT_OFFSET(d_course_moo_moo_farm_cow_spawn);
 
-    var_t1 = (struct ActorSpawnData*)VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    var_t1 = d_course_moo_moo_farm_cow_spawn;
     D_8015F704 = 6.4e7f;
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
@@ -537,9 +534,7 @@ void render_cows(Camera *camera, Mat4 arg1, UNUSED struct Actor *actor) {
 
 void evaluate_collision_player_palm_trees(Player *player) {
     Vec3f pos;
-    s32 segment = SEGMENT_NUMBER2(d_course_dks_jungle_parkway_tree_spawn);
-    s32 offset = SEGMENT_OFFSET(d_course_dks_jungle_parkway_tree_spawn);
-    struct UnkActorSpawnData *data = (struct UnkActorSpawnData *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct UnkActorSpawnData *data = d_course_dks_jungle_parkway_tree_spawn;
 
     while (data->pos[0] != END_OF_SPAWN_DATA) {
         pos[0] = data->pos[0] * gCourseDirection;
@@ -572,9 +567,7 @@ void evaluate_collision_players_palm_trees(void) {
 }
 
 void func_80298D10(void) {
-    s32 segment = SEGMENT_NUMBER2(d_course_dks_jungle_parkway_tree_spawn);
-    s32 offset = SEGMENT_OFFSET(d_course_dks_jungle_parkway_tree_spawn);
-    struct UnkActorSpawnData *temp_v1 = (struct UnkActorSpawnData *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct UnkActorSpawnData *temp_v1 = d_course_dks_jungle_parkway_tree_spawn;
 
     while (temp_v1->pos[0] != END_OF_SPAWN_DATA) {
         temp_v1->pos[1] = temp_v1->unk8;
@@ -584,9 +577,7 @@ void func_80298D10(void) {
 }
 
 void render_palm_trees(Camera *camera, Mat4 arg1, UNUSED struct Actor *actor) {
-    s32 segment = SEGMENT_NUMBER2(d_course_dks_jungle_parkway_tree_spawn);
-    s32 offset = SEGMENT_OFFSET(d_course_dks_jungle_parkway_tree_spawn);
-    struct UnkActorSpawnData *var_s1 = (struct UnkActorSpawnData *)VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct UnkActorSpawnData *var_s1 = d_course_dks_jungle_parkway_tree_spawn;
     UNUSED s32 pad;
     Vec3f spD4;
     f32 var_f22;
@@ -803,9 +794,7 @@ UNUSED void func_8029AE14() {
 #include "actors/falling_rock/render.inc.c"
 
 void spawn_piranha_plants(struct ActorSpawnData *spawnData) {
-    s32 segment = SEGMENT_NUMBER2(spawnData);
-    s32 offset = SEGMENT_OFFSET(spawnData);
-    struct ActorSpawnData *temp_s0 = (struct ActorSpawnData *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct ActorSpawnData *temp_s0 = spawnData;
     struct PiranhaPlant *temp_v1;
     UNUSED s32 pad;
     Vec3f startingPos;
@@ -835,9 +824,7 @@ void spawn_piranha_plants(struct ActorSpawnData *spawnData) {
 }
 
 void spawn_palm_trees(struct ActorSpawnData *spawnData) {
-    s32 segment = SEGMENT_NUMBER2(spawnData);
-    s32 offset = SEGMENT_OFFSET(spawnData);
-    struct ActorSpawnData *temp_s0 = (struct ActorSpawnData *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct ActorSpawnData *temp_s0 = spawnData;
     struct PalmTree *temp_v1;
     Vec3f startingPos;
     Vec3f startingVelocity;
@@ -873,10 +860,8 @@ void spawn_foliage(struct ActorSpawnData *arg0) {
     s16 actorType;
     struct Actor *temp_s0;
     struct ActorSpawnData *var_s3;
-    s32 segment = SEGMENT_NUMBER2(arg0);
-    s32 offset = SEGMENT_OFFSET(arg0);
 
-    var_s3 = (struct ActorSpawnData *)VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    var_s3 = arg0;
     vec3f_set(velocity, 0.0f, 0.0f, 0.0f);
     rotation[0] = 0x4000;
     rotation[1] = 0;
@@ -946,14 +931,12 @@ void spawn_foliage(struct ActorSpawnData *arg0) {
 }
 
 void spawn_all_item_boxes(struct ActorSpawnData *spawnData) {
-    s32 segment = SEGMENT_NUMBER2(spawnData);
-    s32 offset = SEGMENT_OFFSET(spawnData);
     s16 temp_s1;
     f32 temp_f0;
     Vec3f startingPos;
     Vec3f startingVelocity;
     Vec3s startingRot;
-    struct ActorSpawnData *temp_s0 = (struct ActorSpawnData *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    struct ActorSpawnData *temp_s0 = spawnData;
     //struct ItemBox *itemBox;
 
     if ((gModeSelection == TIME_TRIALS) || (gPlaceItemBoxes == 0)) { return; }
@@ -1157,7 +1140,7 @@ void spawn_course_actors(void) {
 /**
  * @brief Loads actor textures, course specific actor textures.
  * Calls to init_course_vehicles and place_course_actors
- * 
+ *
  */
 void init_actors_and_load_textures(void) {
     set_segment_base_addr(3, (void *) gNextFreeMemoryAddress);
@@ -1448,10 +1431,8 @@ struct test {
 UNUSED void prototype_actor_spawn_data(Player *player, uintptr_t arg1) {
     Vec3f sp64;
     struct test *var_s0;
-    s32 segment = SEGMENT_NUMBER2(arg1);
-    s32 offset = SEGMENT_OFFSET(arg1);
 
-    var_s0 = (struct test *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    var_s0 = (struct test *) arg1;
     while (var_s0->thing[0] != END_OF_SPAWN_DATA) {
         sp64[0] = var_s0->thing[0] * gCourseDirection;
         sp64[1] = var_s0->thing[1];
@@ -1555,9 +1536,9 @@ bool collision_mario_sign(Player *player, struct Actor *marioRacewaySign) {
                 func_800C9060(player - gPlayerOne, SOUND_ARG_LOAD(0x19, 0x00, 0x70, 0x1A));
             }
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool collision_piranha_plant(Player *player, struct PiranhaPlant *plant) {
@@ -1571,9 +1552,9 @@ bool collision_piranha_plant(Player *player, struct PiranhaPlant *plant) {
                 func_800C9060(player - gPlayerOne, SOUND_ARG_LOAD(0x19, 0x00, 0xA0, 0x52));
             }
         }
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
 }
 
 bool collision_yoshi_egg(Player *player, struct YoshiValleyEgg *egg) {
@@ -1588,34 +1569,34 @@ bool collision_yoshi_egg(Player *player, struct YoshiValleyEgg *egg) {
 
     x_dist = egg->pos[0] - player->pos[0];
     if ((x_dist < minDist) && (x_dist < -maxDist)) {
-        return FALSE;
+        return false;
     }
     if (x_dist > maxDist) {
-        return FALSE;
+        return false;
     }
 
     z_dist = egg->pos[2] - player->pos[2];
     if ((z_dist < minDist) && (z_dist < -maxDist)) {
-        return FALSE;
+        return false;
     }
     if (z_dist > maxDist) {
-        return FALSE;
+        return false;
     }
 
     xz_dist = sqrtf((x_dist * x_dist) + (z_dist * z_dist));
     if (xz_dist > maxDist) {
-        return FALSE;
+        return false;
     }
     func_802977B0(player);
 
     y_dist = player->pos[1] - egg->pos[1];
     if (y_dist < minDist) {
-        return FALSE;
+        return false;
     }
 
     totalBox = player->boundingBoxSize + egg->boundingBoxSize;
     if (totalBox < xz_dist) {
-        return FALSE;
+        return false;
     }
 
     if ((player->type & PLAYER_HUMAN) != 0) {
@@ -1634,7 +1615,7 @@ bool collision_yoshi_egg(Player *player, struct YoshiValleyEgg *egg) {
         apply_hit_sound_effect(player, player - gPlayerOne);
     }
 
-    return TRUE;
+    return true;
 }
 
 bool collision_tree(Player *player, struct Actor *actor) {
@@ -1654,33 +1635,33 @@ bool collision_tree(Player *player, struct Actor *actor) {
     var_f16 = actor->unk_08;
     x_dist = actor->pos[0] - player->pos[0];
     if ((x_dist < 0.0f) && (x_dist < -var_f16)) {
-        return FALSE;
+        return false;
     }
     if (var_f16 < x_dist) {
-        return FALSE;
+        return false;
     }
     z_dist = actor->pos[2] - player->pos[2];
     if ((z_dist < 0.0f) && (z_dist < -var_f16)) {
-        return FALSE;
+        return false;
     }
     if (var_f16 < z_dist) {
-        return FALSE;
+        return false;
     }
     y_dist = player->pos[1] - actor->pos[1];
     if (y_dist < 0.0f) {
-        return FALSE;
+        return false;
     }
     if ((f32) actor->state < y_dist) {
-        return FALSE;
+        return false;
     }
     xz_dist = sqrtf((x_dist * x_dist) + (z_dist * z_dist));
     if (var_f16 < xz_dist) {
-        return FALSE;
+        return false;
     }
     func_802977B0(player);
     var_f16 = player->boundingBoxSize + actor->boundingBoxSize;
     if (var_f16 < xz_dist) {
-        return FALSE;
+        return false;
     }
     sp48 = player->velocity[0];
     sp44 = player->velocity[2];
@@ -1689,7 +1670,7 @@ bool collision_tree(Player *player, struct Actor *actor) {
             actor->flags |= 0x400;
             func_800C98B8(player->pos, player->velocity, SOUND_ARG_LOAD(0x19, 0x01, 0x80, 0x10));
             func_800C90F4(player - gPlayerOne, (player->characterId * 0x10) + SOUND_ARG_LOAD(0x29, 0x00, 0x80, 0x0D));
-            return TRUE;
+            return true;
         }
         if (!(player->type & PLAYER_INVISIBLE_OR_BOMB)) {
             func_800C9060(player - gPlayerOne, SOUND_ARG_LOAD(0x19, 0x00, 0x70, 0x18));
@@ -1720,7 +1701,7 @@ bool collision_tree(Player *player, struct Actor *actor) {
             player->pos[2] = actorPos[2] - (z_dist * var_f16 * 1.2f);
             player->velocity[0] = 0;
             player->velocity[2] = 0;
-            return TRUE;
+            return true;
         }
         temp_f12 = ((x_dist * sp48) + (z_dist * sp44)) / temp_f0_4;
         temp_f12 = temp_f0_4 * temp_f12 * 1.5f;
@@ -1730,7 +1711,7 @@ bool collision_tree(Player *player, struct Actor *actor) {
         player->pos[0] += x_dist * temp_f2 * 0.5f;
         player->pos[2] += z_dist * temp_f2 * 0.5f;
     }
-    return TRUE;
+    return true;
 }
 
 bool query_collision_player_vs_actor_item(Player *arg0, struct Actor *arg1) {

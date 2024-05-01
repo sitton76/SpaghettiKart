@@ -1,5 +1,5 @@
-#include <ultra64.h>
-#include <PR/ultratypes.h>
+#include <libultraship.h>
+#include <libultra/types.h>
 #include <macros.h>
 #include <common_structs.h>
 #include <segments.h>
@@ -31,7 +31,7 @@ s32 memoryPadding[2];
  * @brief Returns the address of the next available memory location and updates the memory pointer
  * to reference the next location of available memory based provided size to allocate.
  * @param size of memory to allocate.
- * @return Address of free memory 
+ * @return Address of free memory
  */
 void *get_next_available_memory_addr(u32 size) {
     u32 *freeSpace = (u32 *)gNextFreeMemoryAddress;
@@ -84,7 +84,7 @@ void move_segment_table_to_dmem(void) {
 
 /**
  * @brief Sets the starting location for allocating memory and calculates pool size.
- * 
+ *
  * Default memory size, 701.984 Kilobytes.
 */
 void initialize_memory_pool(uintptr_t poolStart, uintptr_t poolEnd) {
@@ -245,7 +245,7 @@ UNUSED void *func_802A80B0(u8 *dest, u8 *srcStart, u8 *srcEnd) {
     void *addr;
     u32 size = srcStart - dest;
     addr = main_pool_alloc(size, (u32) srcEnd);
-    
+
     if (addr != 0) {
 
         osInvalDCache(addr, size);
@@ -349,7 +349,7 @@ UNUSED s32 func_802A8348(s32 arg0, s32 arg1, s32 arg2) {
     UNUSED void *pad;
     uintptr_t oldAddr;
     void *newAddr;
-    
+
     offset = ALIGN16(arg1 * arg2);
     oldAddr = gNextFreeMemoryAddress;
     newAddr = (void *) (oldAddr + offset);
@@ -357,7 +357,7 @@ UNUSED s32 func_802A8348(s32 arg0, s32 arg1, s32 arg2) {
     osInvalDCache(newAddr, offset);
     osPiStartDma(&gDmaIoMesg, 0, 0, (uintptr_t) &_other_texturesSegmentRomStart[SEGMENT_OFFSET(arg0)], newAddr, offset, &gDmaMesgQueue);
     osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, 1);
-    
+
     func_80040030((u8 *) newAddr, (u8 *) oldAddr);
     gNextFreeMemoryAddress += offset;
     return oldAddr;
@@ -370,7 +370,7 @@ UNUSED u8 *func_802A841C(u8* arg0, s32 arg1, s32 arg2) {
     temp_a0 = temp_v0 + arg2;
     arg1 = ALIGN16(arg1);
     arg2 = ALIGN16(arg2);
-    
+
     osInvalDCache(temp_a0, arg1);
     osPiStartDma(&gDmaIoMesg, 0, 0, (uintptr_t) &_other_texturesSegmentRomStart[SEGMENT_OFFSET(arg0)],temp_a0, arg1, &gDmaMesgQueue);
     osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, 1);
@@ -458,10 +458,8 @@ void func_802A86A8(CourseVtx *data, u32 arg1) {
 
 void decompress_vtx(CourseVtx *arg0, u32 vertexCount) {
     s32 size = ALIGN16(vertexCount * 0x18);
-    u32 segment = SEGMENT_NUMBER2(arg0);
-    u32 offset = SEGMENT_OFFSET(arg0);
     void *freeSpace;
-    u8 *vtxCompressed = VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    u8 *vtxCompressed = arg0;
     UNUSED s32 pad;
 
     freeSpace = (void *) gNextFreeMemoryAddress;
@@ -684,7 +682,7 @@ void unpack_tile_sync(Gfx *gfx, u8 *args, s8 opcode) {
 
     lo = (G_SETTILE << 24) | (fmt << 21) | (siz << 19) | (line << 9) | tmem;
     hi = ((cmt) << 18) | ((maskt) << 14) | ((cms) << 8) | ((masks) << 4);
-    
+
     gfx[sGfxSeekPosition].words.w0 = lo;
     gfx[sGfxSeekPosition].words.w1 = hi;
     sGfxSeekPosition++;
@@ -954,16 +952,14 @@ UNUSED void func_802A9AEC(void) {
  * The opcodes range from 0 to 87 which are used to run the relevant unpack function.
  * The file pointer increments when arguments are used. This way,
  * displaylist_unpack will always read an opcode and not an argument by accident.
- * 
+ *
  * @warning opcodes that do not contain a definition in the switch are ignored. If an undefined opcode
  * contained arguments the unpacker might try to unpack those arguments.
  * This issue is prevented so long as the packed file adheres to correct opcodes and unpack code
  * increments the file pointer the correct number of times.
  */
 void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, u32 arg2) {
-    uintptr_t segment = SEGMENT_NUMBER2(data);
-    uintptr_t offset = SEGMENT_OFFSET(data);
-    u8 *packed_dl = VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    u8 *packed_dl = data;
 
     Gfx *gfx;
     u32 addr;
@@ -977,14 +973,14 @@ void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, u32 a
     sGfxSeekPosition = 0;
     sPackedSeekPosition = 0;
 
-    while(TRUE) {
+    while(true) {
 
         // Seek to the next byte
         opcode = packed_dl[sPackedSeekPosition++];
 
         // Break when the eof has been reached denoted by opcode 0xFF
         if (opcode == 0xFF) break;
-        
+
         switch (opcode) {
             case 0x0:
                 unpack_lights(gfx, packed_dl, opcode);
@@ -1036,7 +1032,7 @@ void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, u32 a
                 break;
             case 0x10:
                 unpack_lights(gfx, packed_dl, opcode);
-                break; 
+                break;
             case 0x11:
                 unpack_lights(gfx, packed_dl, opcode);
                 break;
@@ -1263,10 +1259,8 @@ struct UnkStr_802AA7C8 {
 };
 
 void decompress_textures(u32 *arg0) {
-    u32 segment = SEGMENT_NUMBER2(arg0);
-    u32 offset = SEGMENT_OFFSET(arg0);
     struct UnkStr_802AA7C8 *phi_s0 =
-        (struct UnkStr_802AA7C8 *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+        (struct UnkStr_802AA7C8 *) arg0;
     struct UnkStr_802AA7C8 *temp_s0;
     u32 temp_t2;
     u8 *temp_a0;
@@ -1275,7 +1269,7 @@ void decompress_textures(u32 *arg0) {
 
     phi_v0 = 0;
     temp_s0 = phi_s0;
-    while (TRUE) {
+    while (true) {
         temp_a0 = phi_s0->unk0;
         if ((temp_a0) == 0) {
             break;
@@ -1287,7 +1281,7 @@ void decompress_textures(u32 *arg0) {
     gHeapEndPtr -= phi_v0;
     sp20 = gHeapEndPtr;
 
-    while (TRUE) {
+    while (true) {
         temp_a0 = phi_s0->unk0;
         if ((temp_a0) == 0) {
             break;

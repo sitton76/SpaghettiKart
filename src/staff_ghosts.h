@@ -1,7 +1,7 @@
 #ifndef STAFF_GHOSTS_H
 #define STAFF_GHOSTS_H
 
-#include "PR/os.h"
+#include <libultraship.h>
 #include "common_structs.h"
 
 void func_80005B18(void);

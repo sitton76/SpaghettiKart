@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <mk64.h>
 #include <macros.h>
 #include <math_util.h>
@@ -127,7 +127,7 @@ void *vec3f_copy_return(Vec3f dest, Vec3f src) {
     dest[1] = src[1];
     dest[2] = src[2];
     //! @warning function returns address of local variable
-    return &dest; 
+    return &dest;
 }
 
 void vec3s_copy(Vec3s dest, Vec3s src) {
@@ -422,8 +422,6 @@ void func_802B5D30(s16 arg0, s16 arg1, s32 arg2) {
 }
 
 void func_802B5D64(uintptr_t addr, s16 arg1, s16 arg2, s32 arg3) {
-    u32 segment = SEGMENT_NUMBER2(addr);
-    u32 offset = SEGMENT_OFFSET(addr);
     UNUSED s32 pad;
     f32 sp48;
     f32 sp44;
@@ -434,7 +432,7 @@ void func_802B5D64(uintptr_t addr, s16 arg1, s16 arg2, s32 arg3) {
     s8 sp2C[3];
     Lights1 *var_s0;
 
-    var_s0 = (Lights1 *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    var_s0 = (Lights1 *) addr;
     sp48 = sins(arg2);
     sp44 = coss(arg2);
     sp40 = sins(arg1);
@@ -1154,8 +1152,6 @@ f32 is_within_render_distance(Vec3f cameraPos, Vec3f objectPos, u16 orientationY
 // No idea if arg1 is actually a Mat4 or not, but since this function is unused
 // its impossible to know with certainty either way, very close of func_802B5D64
 UNUSED void func_802B8414(uintptr_t addr, Mat4 arg1, s16 arg2, s16 arg3, s32 arg4) {
-    u32 segment = SEGMENT_NUMBER2(addr);
-    u32 offset = SEGMENT_OFFSET(addr);
     UNUSED s32 pad;
     Vec3f sp40;
     s8 sp3C[3];
@@ -1163,7 +1159,7 @@ UNUSED void func_802B8414(uintptr_t addr, Mat4 arg1, s16 arg2, s16 arg3, s32 arg
     UNUSED s32 pad2[3];
     Lights1 *var_s0;
 
-    var_s0 = (Lights1 *) VIRTUAL_TO_PHYSICAL2(gSegmentTable[segment] + offset);
+    var_s0 = (Lights1 *) addr;
     sins(arg3);
     coss(arg3);
     sins(arg2);

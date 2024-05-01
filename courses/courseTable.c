@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include "courseTable.h"
 #include "all_course_model.h"
@@ -145,4 +145,3 @@ struct CourseTable gCourseTable[] = {{
         d_course_big_donut_packed, d_course_big_donut_packed_end,
         big_donut_textures, 0, 0x0000,
 }};
-

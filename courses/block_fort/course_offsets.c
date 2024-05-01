@@ -1,4 +1,4 @@
-#include <PR/ultratypes.h>
+#include <libultra/types.h>
 #include "course_offsets.h"
 
 extern u8 gTexture64286C[];

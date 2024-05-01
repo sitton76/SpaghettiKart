@@ -1,7 +1,7 @@
 #ifndef _COMMON_STRUCTS_H_
 #define _COMMON_STRUCTS_H_
 
-#include "ultra64.h"
+#include <libultraship.h>
 
 typedef f32 Vec3f[3];
 typedef f32 Vec4f[4];
@@ -400,7 +400,7 @@ typedef struct {
 } Player; // size = 0xDD8
 
 typedef struct
-{ 
+{
     // Something related to time trial ghost data?
     /* 0x00 */ s32 unk_00;
     /* 0x04 */ u8  ghostDataSaved;

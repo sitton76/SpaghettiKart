@@ -1,8 +1,8 @@
 #ifndef COURSE_H
 #define COURSE_H
 
-#include <ultra64.h>
-#include <PR/gbi.h>
+#include <libultraship.h>
+#include <libultra/gbi.h>
 #include <macros.h>
 
 /**

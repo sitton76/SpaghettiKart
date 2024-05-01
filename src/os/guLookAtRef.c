@@ -19,7 +19,7 @@
  **************************************************************************/
 
 /* Minor modifications */
-#include <ultra64.h>
+#include <libultraship.h>
 #define FTOFRAC8(x) ((int) MIN(((x) * (128.0)), 127.0) & 0xff)
 
 void guLookAtReflectF(float mf[4][4], LookAt *l, float xEye, float yEye, float zEye, float xAt,

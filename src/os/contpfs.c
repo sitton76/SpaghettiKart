@@ -57,7 +57,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid)
         pfs->activebank = j;
         ERRCK(__osPfsSelectBank(pfs))
         //! @todo fix magic number
-        ERRCK(__osContRamRead(pfs->queue, pfs->channel, 0, (u8*)&temp)); 
+        ERRCK(__osContRamRead(pfs->queue, pfs->channel, 0, (u8*)&temp));
         temp[0] = j | 0x80;
         for (i = 1; i < ARRLEN(temp); i++)
         {
@@ -65,7 +65,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid)
             temp[i] = ~temp[i];
         }
 
-        ERRCK(__osContRamWrite(pfs->queue, pfs->channel, 0, (u8*)temp, FALSE)); //oddr 0, don't force
+        ERRCK(__osContRamWrite(pfs->queue, pfs->channel, 0, (u8*)temp, false)); //oddr 0, don't force
         ERRCK(__osContRamRead(pfs->queue, pfs->channel, 0, (u8*)&comp));
 
         for (i = 0; i < ARRLEN(temp); i++)
@@ -82,7 +82,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid)
             ERRCK(__osContRamRead(pfs->queue, pfs->channel, 0, (u8*)temp));
             if (temp[0] != 128)
                 //! @todo remove magic constant
-                break; 
+                break;
         }
         j++;
     }
@@ -102,7 +102,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid)
     index[3] = 6;
     for (i = 0; i < ARRLEN(index); i++)
     {
-        ERRCK(__osContRamWrite(pfs->queue, pfs->channel, index[i], (u8*)newid, TRUE));
+        ERRCK(__osContRamWrite(pfs->queue, pfs->channel, index[i], (u8*)newid, true));
     }
     ERRCK(__osContRamRead(pfs->queue, pfs->channel, 1, (u8*)temp));
     for (i = 0; i < ARRLEN(temp); i++)
@@ -142,7 +142,7 @@ s32 __osCheckPackId(OSPfs *pfs, __OSPackId *temp)
     {
         if (j != i)
         {
-            ERRCK(__osContRamWrite(pfs->queue, pfs->channel, index[j], (u8*)temp, TRUE));
+            ERRCK(__osContRamWrite(pfs->queue, pfs->channel, index[j], (u8*)temp, true));
         }
     }
     return 0;
@@ -176,7 +176,7 @@ s32 __osGetId(OSPfs *pfs)
         }
     }
     //! @todo remove magic constant
-    if ((id->deviceid & 1) == 0) 
+    if ((id->deviceid & 1) == 0)
     {
         ERRCK(__osRepairPackId(pfs, id, &newid));
         id = &newid;
@@ -190,7 +190,7 @@ s32 __osGetId(OSPfs *pfs)
     pfs->version = id->version;
     pfs->banks = id->banks;
     //! @todo loads of magic constants..
-    pfs->inode_start_page = pfs->banks * 2 + 3; 
+    pfs->inode_start_page = pfs->banks * 2 + 3;
     pfs->dir_size = 16;
     pfs->inode_table = 8;
     pfs->minode_table = pfs->banks * PFS_ONE_PAGE + 8;
@@ -247,11 +247,11 @@ s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank)
     for (j = 0; j < 8; j++)
     {
         //! @todo don't like this =/ //maybe &inode->inode_table[j*PFS_ONE_PAGE].ipage or something
-        addr = ((u8 *)inode->inode_page + j * 32); 
+        addr = ((u8 *)inode->inode_page + j * 32);
         if (flag == PFS_WRITE)
         {
-            ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->inode_table + bank * 8 + j, addr, FALSE);
-            ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->minode_table + bank * 8 + j, addr, FALSE);
+            ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->inode_table + bank * 8 + j, addr, false);
+            ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->minode_table + bank * 8 + j, addr, false);
         }
         else
         {
@@ -275,7 +275,7 @@ s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank)
             for (j = 0; j < PFS_ONE_PAGE; j++)
             {
                 addr = ((u8 *)inode->inode_page + j * 32);
-                ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->inode_table + bank * PFS_ONE_PAGE + j, addr, FALSE);
+                ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->inode_table + bank * PFS_ONE_PAGE + j, addr, false);
             }
         }
         else
@@ -283,7 +283,7 @@ s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank)
             for (j = 0; j < PFS_ONE_PAGE; j++)
             {
                 addr = ((u8 *)inode->inode_page + j * 32);
-                ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->minode_table + bank * PFS_ONE_PAGE + j, addr, FALSE);
+                ret = __osContRamWrite(pfs->queue, pfs->channel, pfs->minode_table + bank * PFS_ONE_PAGE + j, addr, false);
             }
         }
     }
@@ -300,6 +300,6 @@ s32 __osPfsSelectBank(OSPfs *pfs)
     {
         temp[i] = pfs->activebank;
     }
-    ret = __osContRamWrite(pfs->queue, pfs->channel, 1024, (u8*)temp, FALSE);
+    ret = __osContRamWrite(pfs->queue, pfs->channel, 1024, (u8*)temp, false);
     return ret;
 }

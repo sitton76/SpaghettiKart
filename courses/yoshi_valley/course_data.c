@@ -1,7 +1,7 @@
 //! @todo Replace addresses with variables
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <actor_types.h>
 #include <waypoints.h>
 #include <course.h>
@@ -10574,7 +10574,7 @@ u8 d_course_yoshi_valley_yoshi_flag[] = {
 
 // 0x141A0
 Lights1 d_course_yoshi_valley_unknown_light4 = gdSPDefLights1(0x37, 0x27, 0x07, 0xDF, 0x9F, 0x1F, 0x42, 0x00, 0x9D);
-Lights1 d_course_yoshi_valley_unknown_light5 = gdSPDefLights1(0x14, 0x0A, 0x00, 0x50, 0x28, 0x00, 0x42, 0x00, 0x9D); 
+Lights1 d_course_yoshi_valley_unknown_light5 = gdSPDefLights1(0x14, 0x0A, 0x00, 0x50, 0x28, 0x00, 0x42, 0x00, 0x9D);
 
 // 0x141D0
 Vtx d_course_yoshi_valley_flag_pole_model1[] = {

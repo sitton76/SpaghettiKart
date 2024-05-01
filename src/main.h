@@ -1,6 +1,8 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+#include "mk64.h"
+#include "common_structs.h"
 
 // Message IDs
 #define MESG_SP_COMPLETE 100

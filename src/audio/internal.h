@@ -1,8 +1,8 @@
 #ifndef AUDIO_INTERNAL_H
 #define AUDIO_INTERNAL_H
 
-#include <ultra64.h>
-
+#include <libultraship.h>
+#include "common_structs.h"
 
 #define SEQUENCE_PLAYERS 4
 #define SEQUENCE_CHANNELS 48
@@ -226,7 +226,7 @@ struct SequencePlayer {
     /*0x11C, 0x124*/ OSIoMesg bankDmaIoMesg;
     /*0x130, 0x13C*/ u8 *bankDmaCurrMemAddr;
     /*0x138, 0x140*/ uintptr_t bankDmaCurrDevAddr;
-    /*0x13C, 0x144*/ ssize_t bankDmaRemaining;
+    /*0x13C, 0x144*/ size_t bankDmaRemaining;
 }; // size = 0x140, 0x148 on EU, 0x14C on SH
 
 struct AdsrSettings {

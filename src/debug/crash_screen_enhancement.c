@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <mk64.h>
 #include <stdarg.h>
@@ -126,9 +126,9 @@ void crash_screen_print(s32 x, s32 y, const char *fmt, ...) {
 
 void crash_screen_sleep(s32 ms) {
     u64 cycles = ms * 1000LL * osClockRate / 1000000ULL;
-    osSetTime(0);
-    while (osGetTime() < cycles) {
-    }
+    // osSetTime(0);
+    // while (osGetTime() < cycles) {
+    // }
 }
 
 void crash_screen_print_float_reg(s32 x, s32 y, s32 regNum, void *addr) {
@@ -215,6 +215,6 @@ void crash_screen_draw(OSThread* thread) {
     crash_screen_print_float_reg(120, 210, 26, &tc->fp26.f.f_even);
     crash_screen_print_float_reg(210, 210, 28, &tc->fp28.f.f_even);
     crash_screen_print_float_reg(30, 220, 30, &tc->fp30.f.f_even);
-    osViBlack(FALSE);
+    osViBlack(false);
     osViSwapBuffer(pFramebuffer);
 }

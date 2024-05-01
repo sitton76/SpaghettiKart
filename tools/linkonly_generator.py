@@ -324,7 +324,7 @@ with open(f"courses/{course_name}/course_offsets.c", "r") as offsets:
 
     h_string += "#ifndef COURSE_TEXTURES_H"
     h_string += "\n#define COURSE_TEXTURES_H"
-    h_string += "\n\n#include <PR/ultratypes.h>"
+    h_string += "\n\n#include <libultra/types.h>"
 
     c_string += f"#include \"courses/{course_name}/course_textures.linkonly.h\""
 
@@ -348,7 +348,7 @@ with open(f"courses/{course_name}/course_offsets.c", "r") as offsets:
         else:
             texture_include_dir = "textures/standalone"
             texture_filename = f"{texture_map[texture_name][0]}.{texture_map[texture_name][1]}.inc.c"
-        
+
         unique_texture_name = re.sub("gTexture", f"g{abbreviations[course_name]}Texture", texture_name)
 
         c_string += f"\n\n/* 0x050{current_offset:05X} */"

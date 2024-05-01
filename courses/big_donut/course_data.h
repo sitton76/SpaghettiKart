@@ -1,8 +1,8 @@
 #ifndef BIG_DONUT_COURSE_DATA_H
 #define BIG_DONUT_COURSE_DATA_H
 
-#include <ultra64.h>
-#include <PR/gbi.h>
+#include <libultraship.h>
+#include <libultra/gbi.h>
 #include <actor_types.h>
 
 extern Gfx d_course_big_donut_dl[];

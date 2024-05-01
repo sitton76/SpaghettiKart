@@ -3,7 +3,7 @@
 #include "PR/os_internal.h"
 #include "PR/rcp.h"
 #include "PR/os_pi.h"
-#include "PR/os.h"
+#include <libultraship.h>
 
 //https://github.com/LuigiBlood/64dd/wiki/Memory-Map
 
@@ -84,11 +84,11 @@
 #define LEO_BM_CTL_SECTOR_SHIFT 16
 
 //! @todo name
-#define LEO_CMD_TYPE_0 0 
+#define LEO_CMD_TYPE_0 0
 //! @todo name
-#define LEO_CMD_TYPE_1 1 
+#define LEO_CMD_TYPE_1 1
 //! @todo name
-#define LEO_CMD_TYPE_2 2 
+#define LEO_CMD_TYPE_2 2
 
 #define LEO_ERROR_GOOD 0
 #define LEO_ERROR_3 3

@@ -63,7 +63,7 @@
 #include <segments.h>
 #include <sounds.h>
 #include "buffers/trig_tables.h"
-#include <ultra64.h>
+#include <libultraship.h>
 #include <vehicles.h>
 #include <waypoints.h>
 

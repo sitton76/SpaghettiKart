@@ -1,7 +1,7 @@
 #ifndef CRASH_SCREEN_H
 #define CRASH_SCREEN_H
 
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 
 extern u16 *pFramebuffer;

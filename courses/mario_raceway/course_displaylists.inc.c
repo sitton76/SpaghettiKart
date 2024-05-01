@@ -1,6 +1,6 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <course.h>
 
 #include "course_displaylists.inc.h"

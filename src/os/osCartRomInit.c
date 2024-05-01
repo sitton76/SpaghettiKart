@@ -5,7 +5,7 @@
 #include "PR/R4300.h"
 #include "PR/rcp.h"
 #include "PR/os_pi.h"
-#include "PR/os.h"
+#include <libultraship.h>
 
 OSPiHandle CartRomHandle;
 

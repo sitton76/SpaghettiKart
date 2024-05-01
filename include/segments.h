@@ -1,7 +1,7 @@
 #ifndef SEGMENTS_H
 #define SEGMENTS_H
 
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 
 extern u8 _memoryPoolSegmentNoloadStart[];
@@ -52,7 +52,7 @@ extern u8 _startupLogoSegmentRomEnd[];
 
     #define SEG_ENDING                (uintptr_t) &_endingSegmentStart[0]
     #define SEG_ENDING_ROM_START      (uintptr_t) &_endingSegmentRomStart[0]
-    /** 
+    /**
      * Ending segment original size is 0xDF00 but much of that remains unused.
      * This auto fits the segment to its proper size.
      */
@@ -87,7 +87,7 @@ extern u8 _startupLogoSegmentRomEnd[];
 
     #define SEG_ENDING                (uintptr_t) 0x80280000
     #define SEG_ENDING_ROM_START      (u8 *)      &_endingSegmentRomStart[0]
-    
+
     #define SEG_ENDING_SIZE           (size_t)    0xDF00
     #define SEG_ENDING_ROM_SIZE       (size_t)    ALIGN16( (ptrdiff_t) (&_endingSegmentRomEnd[0] - &_endingSegmentRomStart[0]) )
 

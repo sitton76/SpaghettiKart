@@ -1,15 +1,15 @@
 #include <actors.h>
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include <main.h>
 #include "courses/dks_jungle_parkway/course_data.h"
 
 /**
  * @brief Renders the kiwano fruit actor.
  * Actor used in DK's Jungle Parkway.
- * 
- * @param camera 
- * @param arg1 
- * @param actor 
+ *
+ * @param camera
+ * @param arg1
+ * @param actor
  */
 void render_actor_kiwano_fruit(UNUSED Camera *camera, Mat4 arg1, struct Actor *actor) {
     uintptr_t addr;

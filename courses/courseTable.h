@@ -1,7 +1,7 @@
 #ifndef COURSE_TABLE_H
 #define COURSE_TABLE_H
 
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 
 // dlRomStart, vertexRomStart, & vertexStart, are u8* because mio0 compressed.

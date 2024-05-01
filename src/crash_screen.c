@@ -1,4 +1,4 @@
-#include <ultra64.h>
+#include <libultraship.h>
 #include <macros.h>
 #include <mk64.h>
 #include <stdarg.h>
@@ -99,11 +99,11 @@ GLOBAL_ASM("asm/non_matchings/crash_screen/crash_screen_draw_square.s")
  * Line 1: threadId - address of faulted instruction - error code
  * Line 2: Address in the return address register
  * Line 3: Machine code of faulted instruction
- * 
+ *
  * The R4300i manual discusses exceptions in more depth.
- * 
- * @param framebuffer 
- * @param faulted thread 
+ *
+ * @param framebuffer
+ * @param faulted thread
  **/
 
 //                     0xRGBA
@@ -203,16 +203,16 @@ void thread9_crash_screen(UNUSED void *arg0)
     osSetEventMesg(10, &D_80162D40, (OSMesg) 16);
     sButtonSequenceIndex = 0;
 
-    while (TRUE) {
+    while (true) {
         osRecvMesg(&D_80162D40, &mesg, 1);
         thread = get_faulted_thread();
-        
+
         if (thread) {
             // Run only on the first iteration.
             if (sCounter == 0) {
                 crash_screen_draw_square(pFramebuffer);
 #ifndef DEBUG
-                while(TRUE)
+                while(true)
                 {
                     read_controllers();
 
@@ -235,9 +235,9 @@ void thread9_crash_screen(UNUSED void *arg0)
 #else
                 crash_screen_draw_info(pFramebuffer, thread);
 #endif
-                
+
             }
-            if (sCounter < 5) {        
+            if (sCounter < 5) {
                 sCounter++;
             }
         }

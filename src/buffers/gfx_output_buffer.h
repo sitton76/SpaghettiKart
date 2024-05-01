@@ -1,7 +1,7 @@
 #ifndef GFX_OUTPUT_BUFFER_H
 #define GFX_OUTPUT_BUFFER_H
 
-#include <PR/ultratypes.h>
+#include <libultra/types.h>
 
 // 0x1f000 bytes, aligned to a 0x1000-byte boundary through sm64.ld. (This results
 // in a bunch of unused space: ~0x100 in JP, ~0x300 in US.)

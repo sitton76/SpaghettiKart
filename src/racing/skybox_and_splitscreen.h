@@ -1,7 +1,7 @@
 #ifndef SKYBOX_AND_SPLITSCREEN_H
 #define SKYBOX_AND_SPLITSCREEN_H
 
-#include <PR/gbi.h>
+#include <libultra/gbi.h>
 #include "code_800029B0.h"
 
 #define G_CLEAR_ALL_MODES 0xFFFFFFFF

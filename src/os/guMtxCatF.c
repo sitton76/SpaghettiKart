@@ -30,7 +30,7 @@
  *
  */
 
-#include <PR/gu.h>
+#include <libultraship.h>
 
 void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4])
 {
@@ -60,4 +60,3 @@ void guMtxXFMF(float mf[4][4], float x, float y, float z, float *ox, float *oy, 
         *oy = mf[0][1]*x + mf[1][1]*y + mf[2][1]*z + mf[3][1];
         *oz = mf[0][2]*x + mf[1][2]*y + mf[2][2]*z + mf[3][2];
 }
-
