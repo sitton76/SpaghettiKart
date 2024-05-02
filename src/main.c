@@ -271,7 +271,7 @@ void start_sptask(s32 taskType) {
  **/
 void create_gfx_task_structure(void) {
     gGfxSPTask->msgqueue = &gGfxVblankQueue;
-    gGfxSPTask->msg = (OSMesg) 2;
+    gGfxSPTask->msg = OS_MESG_32(2);
     gGfxSPTask->task.t.type = M_GFXTASK;
     gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
     // gGfxSPTask->task.t.ucode_boot = rspF3DBootStart;
@@ -304,7 +304,7 @@ void create_gfx_task_structure(void) {
 
 void init_controllers(void) {
     osCreateMesgQueue(&gSIEventMesgQueue, &gSIEventMesgBuf[0], ARRAY_COUNT(gSIEventMesgBuf));
-    osSetEventMesg(OS_EVENT_SI, &gSIEventMesgQueue, (OSMesg) 0x33333333);
+    osSetEventMesg(OS_EVENT_SI, &gSIEventMesgQueue, OS_MESG_32(0x33333333));
     osContInit(&gSIEventMesgQueue, &gControllerBits, gControllerStatuses);
     if ((gControllerBits & 1) == 0) {
         sIsController1Unplugged = true;
@@ -373,7 +373,7 @@ void func_80000BEC(void) {
 
 void dispatch_audio_sptask(struct SPTask *spTask) {
     osWritebackDCacheAll();
-    osSendMesg(&gSPTaskMesgQueue, spTask, OS_MESG_NOBLOCK);
+    osSendMesg(&gSPTaskMesgQueue, OS_MESG_PTR(spTask), OS_MESG_NOBLOCK);
 }
 
 void exec_display_list(struct SPTask *spTask) {
@@ -382,7 +382,7 @@ void exec_display_list(struct SPTask *spTask) {
     if (sCurrentDisplaySPTask == NULL) {
         sCurrentDisplaySPTask = spTask;
         sNextDisplaySPTask = NULL;
-        osSendMesg(&gIntrMesgQueue, (OSMesg) MESG_START_GFX_SPTASK, OS_MESG_NOBLOCK);
+        osSendMesg(&gIntrMesgQueue, OS_MESG_32(MESG_START_GFX_SPTASK), OS_MESG_NOBLOCK);
     }
     else{
         sNextDisplaySPTask = spTask;
@@ -945,7 +945,7 @@ void receive_new_tasks(void) {
 
 void set_vblank_handler(s32 index, struct VblankHandler *handler, OSMesgQueue *queue, OSMesg *msg) {
     handler->queue = queue;
-    handler->msg = msg;
+    handler->msg = *msg;
     switch (index) {
         case 1:
             gVblankHandler1 = handler;
@@ -1083,7 +1083,7 @@ void thread3_video(UNUSED void *arg0) {
 
     while (true) {
         osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
-        switch ((u32) msg) {
+        switch ((u32) msg.data32) {
             case MESG_VI_VBLANK:
                 handle_vblank();
                 break;
@@ -1177,7 +1177,7 @@ void thread5_game_loop(UNUSED void *arg) {
         clear_nmi_buffer();
     }
 
-    set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) OS_EVENT_SW2);
+    set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg *)(OS_EVENT_SW2));
     // These variables track stats such as player wins.
     // In the event of a console reset, it remembers them.
     gNmiUnknown1 = &pAppNmiBuffer[0];  // 2  u8's, tracks number of times player 1/2 won a VS race
@@ -1214,7 +1214,7 @@ void thread4_audio(UNUSED void *arg) {
     UNUSED u32 unused[3];
     audio_init();
     osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));
-    set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg) 512);
+    set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg *) 512);
 
     while (true) {
         OSMesg msg;
