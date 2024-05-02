@@ -3,6 +3,7 @@
 #endif
 #include <libultraship.h>
 #include <libultra/vi.h>
+#include <libultra/os.h>
 #include <macros.h>
 #include <decode.h>
 #include <mk64.h>
@@ -248,9 +249,9 @@ void setup_mesg_queues(void) {
     osCreateMesgQueue(&gDmaMesgQueue, gDmaMesgBuf, ARRAY_COUNT(gDmaMesgBuf));
     osCreateMesgQueue(&gSPTaskMesgQueue, gSPTaskMesgBuf, ARRAY_COUNT(gSPTaskMesgBuf));
     osCreateMesgQueue(&gIntrMesgQueue, gIntrMesgBuf, ARRAY_COUNT(gIntrMesgBuf));
-    osViSetEvent(&gIntrMesgQueue, MESG_VI_VBLANK, 1);
-    osSetEventMesg(OS_EVENT_SP, &gIntrMesgQueue, (OSMesg) MESG_SP_COMPLETE);
-    osSetEventMesg(OS_EVENT_DP, &gIntrMesgQueue, (OSMesg) MESG_DP_COMPLETE);
+    osViSetEvent(&gIntrMesgQueue, OS_MESG_32(MESG_VI_VBLANK), 1);
+    osSetEventMesg(OS_EVENT_SP, &gIntrMesgQueue, OS_MESG_32(MESG_SP_COMPLETE));
+    osSetEventMesg(OS_EVENT_DP, &gIntrMesgQueue, OS_MESG_32(MESG_DP_COMPLETE));
 }
 
 void start_sptask(s32 taskType) {

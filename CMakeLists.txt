@@ -91,13 +91,12 @@ include_directories(
 )
 
 # Collect source files to build the executable
-file(GLOB ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
+file(GLOB ALL_FILES_ROOT RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "src/*.c"
     "src/*.h"
 )
 
 file(GLOB_RECURSE ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "src/*"
     "src/buffers/*.c"
     "src/buffers/*.h"
     "src/data/*.c"
@@ -115,6 +114,8 @@ file(GLOB_RECURSE ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
     "src/port/*.cpp"
     "assets/code"
 )
+
+list(APPEND ALL_FILES ${ALL_FILES_ROOT})
 
 # Exclude specific files from the ALL_FILES list
 list(FILTER ALL_FILES EXCLUDE REGEX ".*.inc.c")
