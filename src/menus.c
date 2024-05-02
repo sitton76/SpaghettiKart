@@ -1544,7 +1544,7 @@ void player_select_menu_act(struct Controller *controller, u16 arg1) {
                 }
             }
             // L800B3684
-            if ((btnAndStick & CONT_A) && (D_8018EDE8[arg1] == 0)) {
+            if ((btnAndStick & A_BUTTON) && (D_8018EDE8[arg1] == 0)) {
                 D_8018EDE8[arg1] = true;
                 i = D_800F2BAC[gCharacterGridSelections[arg1] - 1];
                 func_800C90F4(arg1, 0x2900800e + (i << 4));
