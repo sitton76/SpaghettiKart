@@ -198,9 +198,11 @@ void thread9_crash_screen(UNUSED void *arg0)
 {
     static OSThread *thread;
     OSMesg mesg;
+    OSMesg newMesg;
+    newMesg.data16 = 16;
 
-    osSetEventMesg(12, &D_80162D40, (OSMesg) 16);
-    osSetEventMesg(10, &D_80162D40, (OSMesg) 16);
+    osSetEventMesg(12, &D_80162D40, newMesg);
+    osSetEventMesg(10, &D_80162D40, newMesg);
     sButtonSequenceIndex = 0;
 
     while (true) {
@@ -231,7 +233,7 @@ void thread9_crash_screen(UNUSED void *arg0)
                 }
 #endif
 #if DEBUG
-                crash_screen_draw(thread);
+                //crash_screen_draw(thread);
 #else
                 crash_screen_draw_info(pFramebuffer, thread);
 #endif

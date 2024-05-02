@@ -3,6 +3,7 @@
 #include <mk64.h>
 #include <debug.h>
 #include <common_structs.h>
+#include "../camera.h"
 #include "main.h"
 #include "memory.h"
 #include <assets/common_data.h>

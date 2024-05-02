@@ -1,6 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
+#include <libultraship.h>
 #include "common_structs.h"
 
 /**

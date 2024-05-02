@@ -5,6 +5,7 @@
 #include <common_structs.h>
 #include <defines.h>
 #include <course.h>
+#include "../camera.h"
 
 #include "render_courses.h"
 #include "code_800029B0.h"

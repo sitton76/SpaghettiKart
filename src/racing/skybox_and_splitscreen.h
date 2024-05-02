@@ -1,6 +1,7 @@
 #ifndef SKYBOX_AND_SPLITSCREEN_H
 #define SKYBOX_AND_SPLITSCREEN_H
 
+#include <libultraship.h>
 #include <libultra/gbi.h>
 #include "code_800029B0.h"
 

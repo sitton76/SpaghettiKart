@@ -2,6 +2,7 @@
 #define MATH_UTIL_H
 
 #include <libultraship.h>
+#include <common_structs.h>
 
 //#define sins(x) gSineTable[(u16) (x) >> 4]
 //#define coss(x) gCosineTable[(u16) (x) >> 4]

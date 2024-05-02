@@ -1,7 +1,8 @@
+#include <libultraship.h>
+#include <libultra/vi.h>
 #include "libultra_internal.h"
 #include "hardware.h"
-
-extern u32 osTvType;
+#include <stubs.h>
 
 OSViContext sViContexts[2] = { 0 };
 OSViContext *__osViCurr = &sViContexts[0];
@@ -20,10 +21,10 @@ void __osViInit(void) {
     __osViNext->retraceCount = 1;
     __osViCurr->retraceCount = 1;
 
-    if (osTvType == TV_TYPE_PAL) {
+    if (osTvType == OS_TV_PAL) {
         __osViNext->modep = &osViModePalLan1;
         osViClock = 0x02F5B2D2;
-    } else if (osTvType == TV_TYPE_MPAL) {
+    } else if (osTvType == OS_TV_MPAL) {
         __osViNext->modep = &osViModeMpalLan1;
         osViClock = 0x02E6025C;
     } else {
@@ -31,7 +32,7 @@ void __osViInit(void) {
         osViClock = 0x02E6D354;
     }
 
-    __osViNext->unk00 = 0x20;
+    __osViNext->state = 0x20;
     __osViNext->features = __osViNext->modep->comRegs.ctrl;
     while (HW_REG(VI_CURRENT_REG, u32) > 0xa) {
         ;

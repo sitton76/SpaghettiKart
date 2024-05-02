@@ -7,7 +7,7 @@
 
 #include "camera.h"
 #include "code_800029B0.h"
-#include "math_util.h"
+#include "racing/math_util.h"
 #include "racing/memory.h"
 #include "waypoints.h"
 #include "render_player.h"

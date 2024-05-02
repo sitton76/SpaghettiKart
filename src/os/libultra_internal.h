@@ -1,14 +1,7 @@
 #ifndef _LIBULTRA_INTERNAL_H_
 #define _LIBULTRA_INTERNAL_H_
 #include <libultraship.h>
-#include <PR/os_thread.h>
 #include "macros.h"
-
-typedef struct __OSEventState
-{
-    OSMesgQueue *messageQueue;
-    OSMesg message;
-} __OSEventState;
 
 typedef struct __osThreadTail
 {
@@ -53,15 +46,15 @@ extern OSThread *__osRunningThread;
 extern u32 D_80365E00[15];
 extern u32 D_80365E3C;
 
-typedef struct {
-    u32 initialized; // probably something like initialized?
-    OSThread *mgrThread;
-    OSMesgQueue *cmdQueue;
-    OSMesgQueue *eventQueue;
-    OSMesgQueue *accessQueue;
-    s32 (*dma_func)(s32, u32, void *, size_t);
-    s32 (*edma_func)(OSPiHandle*, s32, u32, void *, size_t);
-} OSMgrArgs;
+// typedef struct {
+//     u32 initialized; // probably something like initialized?
+//     OSThread *mgrThread;
+//     OSMesgQueue *cmdQueue;
+//     OSMesgQueue *eventQueue;
+//     OSMesgQueue *accessQueue;
+//     s32 (*dma_func)(s32, u32, void *, size_t);
+//     s32 (*edma_func)(OSPiHandle*, s32, u32, void *, size_t);
+// } OSMgrArgs;
 
 s32 __osDisableInt(void);
 void __osRestoreInt(s32);

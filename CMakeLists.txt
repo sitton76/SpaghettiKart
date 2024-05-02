@@ -84,6 +84,10 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_SOURCE_DIR}/src/racing
     ${CMAKE_CURRENT_SOURCE_DIR}/src/ending
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/data
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/buffers
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/audio
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/debug
 )
 
 # Collect source files to build the executable
@@ -93,8 +97,7 @@ file(GLOB ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 file(GLOB_RECURSE ALL_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    "src/actors/*.c"
-    "src/actors/*.h"
+    "src/*"
     "src/buffers/*.c"
     "src/buffers/*.h"
     "src/data/*.c"

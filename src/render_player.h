@@ -32,7 +32,7 @@ void func_80021F50(Mat4, Vec3f);
 void mtxf_scale2(Mat4, f32);
 void failed_fixed_point_matrix_conversion(Mtx*, Mat4);
 void convert_to_fixed_point_matrix(Mtx*, Mat4);
-s32  adjust_angle(s16*, s16, s16);
+bool  adjust_angle(s16*, s16, s16);
 void move_s32_towards(s32*, s32, f32);
 void move_f32_towards(f32*, f32, f32);
 void move_s16_towards(s16*, s16, f32);

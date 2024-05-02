@@ -18,28 +18,28 @@ void __osViSwapContext() {
     field = HW_REG(VI_V_CURRENT_LINE_REG, u32) & 1;
     s2 = osVirtualToPhysical(s1->buffer);
     origin = (s0->fldRegs[field].origin) + s2;
-    if (s1->unk00 & 2) {
-        s1->unk20 |= s0->comRegs.xScale & ~0xfff;
+    if (s1->state & 2) {
+        s1->x.scale |= s0->comRegs.xScale & ~0xfff;
     } else {
-        s1->unk20 = s0->comRegs.xScale;
+        s1->x.scale = s0->comRegs.xScale;
     }
-    if (s1->unk00 & 4) {
+    if (s1->state & 4) {
         sp34 = (u32)(s0->fldRegs[field].yScale & 0xfff);
-        s1->unk2c = s1->unk24 * sp34;
-        s1->unk2c |= s0->fldRegs[field].yScale & ~0xfff;
+        s1->y.scale = s1->y.factor * sp34;
+        s1->y.scale |= s0->fldRegs[field].yScale & ~0xfff;
     } else {
-        s1->unk2c = s0->fldRegs[field].yScale;
+        s1->y.scale = s0->fldRegs[field].yScale;
     }
     hStart = s0->comRegs.hStart;
-    if (s1->unk00 & 0x20) {
+    if (s1->state & 0x20) {
         hStart = 0;
     }
-    if (s1->unk00 & 0x40) {
-        s1->unk2c = 0;
+    if (s1->state & 0x40) {
+        s1->y.scale = 0;
         origin = osVirtualToPhysical(s1->buffer);
     }
-    if (s1->unk00 & 0x80) {
-        s1->unk2c = (s1->unk28 << 0x10) & 0x3ff0000;
+    if (s1->state & 0x80) {
+        s1->y.scale = (s1->y.offset << 0x10) & 0x3ff0000;
         origin = osVirtualToPhysical(s1->buffer);
     }
     HW_REG(VI_ORIGIN_REG, u32) = origin;
@@ -52,8 +52,8 @@ void __osViSwapContext() {
     HW_REG(VI_V_START_REG, u32) = s0->fldRegs[field].vStart;
     HW_REG(VI_V_BURST_REG, u32) = s0->fldRegs[field].vBurst;
     HW_REG(VI_INTR_REG, u32) = s0->fldRegs[field].vIntr;
-    HW_REG(VI_X_SCALE_REG, u32) = s1->unk20;
-    HW_REG(VI_Y_SCALE_REG, u32) = s1->unk2c;
+    HW_REG(VI_X_SCALE_REG, u32) = s1->x.scale;
+    HW_REG(VI_Y_SCALE_REG, u32) = s1->y.scale;
     HW_REG(VI_CONTROL_REG, u32) = s1->features;
     __osViNext = __osViCurr;
     __osViCurr = s1;
