@@ -1,8 +1,8 @@
 #ifndef MATH_UTIL_H
 #define MATH_UTIL_H
 
-#include <libultra/types.h>
-
+#include <libultraship.h>
+#include <common_structs.h>
 
 //#define sins(x) gSineTable[(u16) (x) >> 4]
 //#define coss(x) gCosineTable[(u16) (x) >> 4]

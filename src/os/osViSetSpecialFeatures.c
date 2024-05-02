@@ -30,6 +30,6 @@ void osViSetSpecialFeatures(u32 func) {
         __osViNext->features &= ~OS_VI_DITHER_FILTER;
         __osViNext->features |= __osViNext->modep->comRegs.ctrl & (OS_VI_UNK200 | OS_VI_UNK100);
     }
-    __osViNext->unk00 |= 8;
+    __osViNext->state |= 8;
     __osRestoreInt(int_disabled);
 }

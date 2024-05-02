@@ -4,7 +4,6 @@
 #include <math_util.h>
 #include <main.h>
 #include "buffers.h"
-#include <PR/rcp.h>
 #include "buffers/trig_tables.h"
 #include "math.h"
 #include "memory.h"

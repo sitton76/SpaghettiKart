@@ -1,7 +1,8 @@
 #ifndef MATH_UTIL_2_H
 #define MATH_UTIL_2_H
 
-#include "common_structs.h"
+#include <libultraship.h>
+#include <common_structs.h>
 #include "camera.h"
 
 /* Function Prototypes */
@@ -10,7 +11,7 @@
 void operator_or(s32*, s32);
 void operator_and_not(s32*,s32);
 void operator_xor(s32*, s32);
-s32 func_80040E84(s32*, s32);
+UNUSED bool func_80040E84(s32*, s32);
 s32 func_80040EA4(s32*, s32);
 s32 f32_step_up_towards_alternate(f32*, f32, f32*);
 s32 f32_step_down_towards_alternate(f32*, f32, f32*);
@@ -52,14 +53,14 @@ Vec3f *vec3f_set_xyz(Vec3f, f32, f32, f32);
 Vec3f *vec3f_normalize(Vec3f dest);
 Vec3f *vec3f_cross_product(Vec3f, Vec3f, Vec3f);
 s32 func_80041658(f32, f32);
-f32 func_800416D8(f32, f32, u16);
+f32 func_800416D8(f32 x, f32 z, u16 angle);
 f32 func_80041724(f32, f32, u16);
 s32 get_angle_between_xy(f32, f32, f32, f32);
 u16 func_800417B4(u16, u16);
 s32 func_800418AC(f32, f32, Vec3f);
 s32 func_800418E8(f32, f32, Vec3f);
 s32 func_80041924(Collision*, Vec3f);
-s32 is_particle_on_screen(Vec3f, Camera*, u16);
+bool is_particle_on_screen(Vec3f, Camera*, u16);
 void func_800419F8(void);
 void mtfx_translation_x_y(Mat4, s32, s32);
 void mtxf_u16_rotate_z(Mat4, u16);

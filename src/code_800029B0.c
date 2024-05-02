@@ -1,6 +1,7 @@
 #include <libultraship.h>
 #include <macros.h>
 #include <mk64.h>
+#include <stubs.h>
 
 #include "code_800029B0.h"
 #include "memory.h"

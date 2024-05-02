@@ -29,13 +29,13 @@ void controller_pak_menu_act(struct Controller *, u16);
 void splash_menu_act(struct Controller *, u16);
 void func_800B28C8(void);
 void main_menu_act(struct Controller *, u16);
-s32 is_character_spot_free(s32);
+bool is_character_spot_free(s32);
 void player_select_menu_act(struct Controller *, u16);
 void course_select_menu_act(struct Controller *, u16);
 void func_800B3F74(s32);
 void func_800B44AC(void);
 void func_800B44BC(void);
-s32  func_800B4520(void);
+bool  func_800B4520(void);
 
 /* data */
 extern s32 D_8018EDC0;

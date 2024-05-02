@@ -17,7 +17,7 @@ nop
 .endif
 
 .text
-gsymbol osTvType 0x80000300
+# gsymbol osTvType 0x80000300
 gsymbol osRomType 0x80000304
 gsymbol osRomBase 0x80000308
 gsymbol osResetType 0x8000030C

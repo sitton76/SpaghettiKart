@@ -1,6 +1,6 @@
 #include <libultraship.h>
+#include <libultra/message.h>
 #include <macros.h>
-#include <PR/ucode.h>
 
 #include "audio/synthesis.h"
 #include "audio/seqplayer.h"
@@ -62,7 +62,11 @@ struct SPTask *create_next_audio_frame_task(void) {
     if ((gAudioFrameCount % gAudioBufferParameters.presetUnk4) != 0) {
         return NULL;
     }
-    osSendMesg(D_800EA3A8, (OSMesg) gAudioFrameCount, 0);
+
+    OSMesg audioMesg; // <-- new
+    audioMesg.ptr = (void*)gAudioFrameCount; // <-- new
+    //osSendMesg(D_800EA3A8, (OSMesg) gAudioFrameCount, 0); <-- original
+    osSendMesg(D_800EA3A8, audioMesg, OS_MESG_NOBLOCK); // <-- new
 
     gAudioTaskIndex ^= 1;
     gCurrAiBufferIndex++;
@@ -93,13 +97,13 @@ struct SPTask *create_next_audio_frame_task(void) {
     gCurrAudioFrameDmaCount = 0;
     decrease_sample_dma_ttls();
     if (osRecvMesg(D_800EA3B0, &sp58, 0) != -1) {
-        gAudioResetPresetIdToLoad = (u8) (u32) sp58;
+        //gAudioResetPresetIdToLoad = (u8) (u32) sp58;
         gAudioResetStatus = 5;
     }
     if (gAudioResetStatus != 0) {
         if (audio_shut_down_and_reset_step() == 0) {
             if (gAudioResetStatus == 0) {
-                osSendMesg(D_800EA3B4, (OSMesg) (u32) gAudioResetPresetIdToLoad, OS_MESG_NOBLOCK);
+                osSendMesg(D_800EA3B4, sp58, OS_MESG_NOBLOCK);
             }
             return NULL;
         }
@@ -117,7 +121,7 @@ struct SPTask *create_next_audio_frame_task(void) {
         gAiBufferLengths[index] = gAudioBufferParameters.maxAiBufferLength;
     }
     if (osRecvMesg(D_800EA3AC, &sp54, 0) != -1) {
-        func_800CBCB0((u32) sp54);
+        func_800CBCB0((u32) sp54.data16);
     }
     gAudioCmd = synthesis_execute((Acmd *) gAudioCmd, &writtenCmds, currAiBuffer, gAiBufferLengths[index]);
     gAudioRandom = osGetCount() * (gAudioRandom + gAudioFrameCount);
@@ -127,17 +131,17 @@ struct SPTask *create_next_audio_frame_task(void) {
     gAudioTask->msgqueue = NULL;
     // wtf?
     writtenCmdsCopy += 0;
-    gAudioTask->msg = NULL;
+    gAudioTask->msg.ptr = NULL;
 
     task = &gAudioTask->task.t;
     task->type = M_AUDTASK;
     task->flags = 0;
-    task->ucode_boot = rspF3DBootStart;
-    task->ucode_boot_size = (u8*) rspF3DBootEnd - (u8*) rspF3DBootStart;
-    task->ucode = rspAspMainStart;
-    task->ucode_data = rspAspMainDataStart;
+    //task->ucode_boot = rspF3DBootStart;
+    //task->ucode_boot_size = (u8*) rspF3DBootEnd - (u8*) rspF3DBootStart;
+    //task->ucode = rspAspMainStart;
+    //task->ucode_data = rspAspMainDataStart;
     task->ucode_size = 0x00001000;
-    task->ucode_data_size = (rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64);
+    //task->ucode_data_size = (rspAspMainDataEnd - rspAspMainDataStart) * sizeof(u64);
     task->dram_stack = NULL;
     task->dram_stack_size = 0;
     task->output_buff = NULL;
@@ -267,7 +271,11 @@ void func_800CBC24(void){
     if (D_800EA4A4 < test) {
         D_800EA4A4 = test;
     }
-    thing = (OSMesg) ((D_800EA3A0[0] & 0xFF) | ((D_800EA3A4[0] & 0xFF) << 8));
+
+    OSMesg audioMesg;
+    audioMesg.ptr = ((D_800EA3A0[0] & 0xFF) | ((D_800EA3A4[0] & 0xFF) << 8));
+
+    thing = audioMesg;
     osSendMesg(D_800EA3AC, thing, 0);
     D_800EA3A4[0] = D_800EA3A0[0];
 }

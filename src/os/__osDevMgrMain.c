@@ -23,7 +23,7 @@ void __osDevMgrMain(void *args) {
     ret = 0;
     sp34 = (OSMgrArgs *) args;
     while (true) {
-        osRecvMesg(sp34->cmdQueue, (OSMesg) &mb, OS_MESG_BLOCK);
+        osRecvMesg(sp34->cmdQueue, (OSMesg *) &mb, OS_MESG_BLOCK);
         if (mb->piHandle != NULL && mb->piHandle->type == 2
             && (mb->piHandle->transferInfo.cmdType == 0
                 || mb->piHandle->transferInfo.cmdType == 1)) {
@@ -43,7 +43,7 @@ void __osDevMgrMain(void *args) {
             __osEPiRawWriteIo(mb->piHandle, 0x05000510, (sp24->bmCtlShadow | 0x80000000));
             while (true) {
                 osRecvMesg(sp34->eventQueue, &em, OS_MESG_BLOCK);
-                sp30 = osSendMesg(mb->hdr.retQueue, mb, OS_MESG_NOBLOCK);
+                sp30 = osSendMesg(mb->hdr.retQueue, (OSMesg)mb, OS_MESG_NOBLOCK);
                 if (sp2c != 1 || mb->piHandle->transferInfo.errStatus != 0) {
                     break;
                 }
@@ -57,20 +57,20 @@ void __osDevMgrMain(void *args) {
             switch (mb->hdr.type) {
                 case 11:
                     osRecvMesg(sp34->accessQueue, &dummy, OS_MESG_BLOCK);
-                    ret = sp34->dma_func(OS_READ, mb->devAddr, mb->dramAddr, mb->size);
+                    ret = sp34->piDmaCallback(OS_READ, mb->devAddr, mb->dramAddr, mb->size);
                     break;
                 case 12:
                     osRecvMesg(sp34->accessQueue, &dummy, OS_MESG_BLOCK);
-                    ret = sp34->dma_func(OS_WRITE, mb->devAddr, mb->dramAddr, mb->size);
+                    ret = sp34->piDmaCallback(OS_WRITE, mb->devAddr, mb->dramAddr, mb->size);
                     break;
                 case 15:
                     osRecvMesg(sp34->accessQueue, &dummy, OS_MESG_BLOCK);
-                    ret = sp34->edma_func(mb->piHandle, OS_READ, mb->devAddr, mb->dramAddr,
+                    ret = sp34->epiDmaCallback(mb->piHandle, OS_READ, mb->devAddr, mb->dramAddr,
                                            mb->size);
                     break;
                 case 16:
                     osRecvMesg(sp34->accessQueue, &dummy, OS_MESG_BLOCK);
-                    ret = sp34->edma_func(mb->piHandle, OS_WRITE, mb->devAddr, mb->dramAddr,
+                    ret = sp34->epiDmaCallback(mb->piHandle, OS_WRITE, mb->devAddr, mb->dramAddr,
                                            mb->size);
                     break;
                 case 10:

@@ -1,7 +1,8 @@
 #ifndef AUDIO_EXTERNAL_H
 #define AUDIO_EXTERNAL_H
 
-#include "common_structs.h"
+#include <libultraship.h>
+#include <common_structs.h>
 #include "camera.h"
 
 #define ADSR_STATE_DISABLED 0

@@ -7,7 +7,7 @@
 #include "code_800029B0.h"
 #include <common_structs.h>
 #include "memory.h"
-#include "camera.h"
+#include "../camera.h"
 #include <assets/common_data.h>
 #include "render_player.h"
 #include "code_80057C60.h"

@@ -1,9 +1,11 @@
 #include <libultraship.h>
+#include <libultra/gbi.h>
 #include <macros.h>
 #include <mk64.h>
 #include <common_structs.h>
 #include <defines.h>
 #include <course.h>
+#include "../camera.h"
 
 #include "render_courses.h"
 #include "code_800029B0.h"
@@ -73,7 +75,7 @@ void load_surface_map(uintptr_t addr, struct UnkStruct_800DC5EC *arg1) {
     Player *player = arg1->player;
     Camera *camera = arg1->camera;
     //! @todo Should be Gfx*
-    Gfx* gfx = (Gfx*) addr;
+    Gfx** gfx = (Gfx**) &addr;
     s16 var_a3;
     s16 temp_v1;
     s16 sp1E;
@@ -177,7 +179,7 @@ void load_surface_map(uintptr_t addr, struct UnkStruct_800DC5EC *arg1) {
     arg1->pathCounter = temp_v1;
     temp_v1 = ((temp_v1 - 1) * 4) + var_a3;
 
-    gSPDisplayList(gDisplayListHead++, gfx[temp_v1]);
+    gSPDisplayList(gDisplayListHead++, (Gfx *)gfx[temp_v1]);
 }
 
 void func_80291198(void) {

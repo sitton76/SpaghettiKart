@@ -1,5 +1,5 @@
+#include <libultraship.h>
 #include "libultra_internal.h"
-#include "PR/rcp.h"
 #include "controller.h"
 
 extern s32 __osPfsGetStatus(OSMesgQueue *, s32);

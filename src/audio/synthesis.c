@@ -378,7 +378,7 @@ Acmd *synthesis_process_note(s32 noteIndex, struct NoteSubEu *noteSubEu, struct 
     curLoadedBook = NULL;
     note = &gNotes[noteIndex];
     flags = 0;
-    if (noteSubEu->needsInit == TRUE) {
+    if (noteSubEu->needsInit == true) {
         flags = A_INIT;
         synthesisState->restart = 0;
         synthesisState->samplePosInt = 0;
@@ -434,13 +434,13 @@ Acmd *synthesis_process_note(s32 noteIndex, struct NoteSubEu *noteSubEu, struct 
                 s32 samplesRemaining;
                 s32 s1;
                 
-                noteFinished = FALSE;
-                restart = FALSE;
+                noteFinished = false;
+                restart = false;
 
                 s3 = synthesisState->samplePosInt & 0xF;
                 samplesRemaining = endPos - synthesisState->samplePosInt;
                 nSamplesToProcess = samplesLenAdjusted - nAdpcmSamplesProcessed;
-                if ((s3 == 0) && (synthesisState->restart == FALSE)) {
+                if ((s3 == 0) && (synthesisState->restart == false)) {
                     s3 = 16;
                 }
                 
@@ -485,11 +485,11 @@ Acmd *synthesis_process_note(s32 noteIndex, struct NoteSubEu *noteSubEu, struct 
                     var_t2 = 0;
                 }
 
-                if (synthesisState->restart != FALSE) {
+                if (synthesisState->restart != false) {
                     aSetLoop(cmd++, VIRTUAL_TO_PHYSICAL2(audioBookSample->loop->state));
 
                     flags = A_LOOP;
-                    synthesisState->restart = FALSE;
+                    synthesisState->restart = false;
                 }
                 nSamplesInThisIteration = (s1 + a1) - var_s6;
                 s5Aligned = ALIGN(s4 + 16, 4);
@@ -541,7 +541,7 @@ Acmd *synthesis_process_note(s32 noteIndex, struct NoteSubEu *noteSubEu, struct 
                     func_800B6FB4(updateIndex, noteIndex);
                 } else {
                     if (restart) {
-                        synthesisState->restart = TRUE;
+                        synthesisState->restart = true;
                         synthesisState->samplePosInt = loopInfo->start;
                     } else {
                         synthesisState->samplePosInt += nSamplesToProcess;
@@ -559,7 +559,7 @@ Acmd *synthesis_process_note(s32 noteIndex, struct NoteSubEu *noteSubEu, struct 
                             aDownsampleHalf(cmd++, ALIGN(samplesLenAdjusted / 2, 3), 0x1A0 + spFC, DMEM_ADDR_RESAMPLED);
                             resampledTempLen = samplesLenAdjusted;
                             noteSamplesDmemAddrBeforeResampling = DMEM_ADDR_RESAMPLED;
-                            if (noteSubEu->finished != FALSE) {
+                            if (noteSubEu->finished != false) {
                                 aClearBuffer(cmd++, noteSamplesDmemAddrBeforeResampling + resampledTempLen, samplesLenAdjusted + 0x10);
                             }
                             break;
@@ -570,15 +570,15 @@ Acmd *synthesis_process_note(s32 noteIndex, struct NoteSubEu *noteSubEu, struct 
                     }
                     break;   
             }
-            if (noteSubEu->finished != FALSE) {
+            if (noteSubEu->finished != false) {
                 break;
             }
         }
     }
     flags = 0;
-    if (noteSubEu->needsInit == TRUE) {
+    if (noteSubEu->needsInit == true) {
         flags = A_INIT;
-        noteSubEu->needsInit = FALSE;
+        noteSubEu->needsInit = false;
     }
 
     cmd = final_resample(cmd, synthesisState, inBuf * 2, resamplingRateFixedPoint, noteSamplesDmemAddrBeforeResampling, flags);

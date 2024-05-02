@@ -1,6 +1,8 @@
 #ifndef MK64_H
 #define MK64_H
 
+#include <libultraship.h>
+
 /**
  * @file mk64.h
  * Global header for mk64

@@ -2,11 +2,12 @@
 #define D_800DC510_AS_U16
 #endif
 #include <libultraship.h>
-#include <PR/os.h>
-#include <PR/ucode.h>
+#include <libultra/vi.h>
+#include <libultra/os.h>
 #include <macros.h>
 #include <decode.h>
 #include <mk64.h>
+#include <stubs.h>
 
 #include "profiler.h"
 #include "main.h"
@@ -206,7 +207,7 @@ void create_thread(OSThread *thread, OSId id, void (*entry)(void *), void *arg, 
 void isPrintfInit(void);
 void main_func(void) {
 #ifdef VERSION_EU
-    osTvType = TV_TYPE_PAL;
+    osTvType = OS_TV_PAL;
 #endif
     osInitialize();
 #ifdef DEBUG
@@ -215,7 +216,7 @@ void main_func(void) {
     create_thread(&gIdleThread, 1, &thread1_idle, NULL, gIdleThreadStack + ARRAY_COUNT(gIdleThreadStack), 100);
     osStartThread(&gIdleThread);
 }
-
+extern OSViMode osViModeTable[];
 /**
  * Initialize hardware, start main thread, then idle.
  */
@@ -224,7 +225,7 @@ void thread1_idle(void *arg) {
 #ifdef VERSION_EU
     osViSetMode(&osViModeTable[OS_VI_PAL_LAN1]);
 #else // VERSION_US
-    if (osTvType == TV_TYPE_NTSC) {
+    if (osTvType == OS_TV_NTSC) {
         osViSetMode(&osViModeTable[OS_VI_NTSC_LAN1]);
     } else {
         osViSetMode(&osViModeTable[OS_VI_MPAL_LAN1]);
@@ -248,9 +249,9 @@ void setup_mesg_queues(void) {
     osCreateMesgQueue(&gDmaMesgQueue, gDmaMesgBuf, ARRAY_COUNT(gDmaMesgBuf));
     osCreateMesgQueue(&gSPTaskMesgQueue, gSPTaskMesgBuf, ARRAY_COUNT(gSPTaskMesgBuf));
     osCreateMesgQueue(&gIntrMesgQueue, gIntrMesgBuf, ARRAY_COUNT(gIntrMesgBuf));
-    osViSetEvent(&gIntrMesgQueue, (OSMesg) MESG_VI_VBLANK, 1);
-    osSetEventMesg(OS_EVENT_SP, &gIntrMesgQueue, (OSMesg) MESG_SP_COMPLETE);
-    osSetEventMesg(OS_EVENT_DP, &gIntrMesgQueue, (OSMesg) MESG_DP_COMPLETE);
+    osViSetEvent(&gIntrMesgQueue, OS_MESG_32(MESG_VI_VBLANK), 1);
+    osSetEventMesg(OS_EVENT_SP, &gIntrMesgQueue, OS_MESG_32(MESG_SP_COMPLETE));
+    osSetEventMesg(OS_EVENT_DP, &gIntrMesgQueue, OS_MESG_32(MESG_DP_COMPLETE));
 }
 
 void start_sptask(s32 taskType) {
@@ -270,27 +271,27 @@ void start_sptask(s32 taskType) {
  **/
 void create_gfx_task_structure(void) {
     gGfxSPTask->msgqueue = &gGfxVblankQueue;
-    gGfxSPTask->msg = (OSMesg) 2;
+    gGfxSPTask->msg = OS_MESG_32(2);
     gGfxSPTask->task.t.type = M_GFXTASK;
     gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
-    gGfxSPTask->task.t.ucode_boot = rspF3DBootStart;
-    gGfxSPTask->task.t.ucode_boot_size = ((u8 *) rspF3DBootEnd - (u8 *) rspF3DBootStart);
+    // gGfxSPTask->task.t.ucode_boot = rspF3DBootStart;
+    // gGfxSPTask->task.t.ucode_boot_size = ((u8 *) rspF3DBootEnd - (u8 *) rspF3DBootStart);
     // The split-screen multiplayer racing state uses F3DLX which has a simple subpixel calculation.
     // Singleplayer race mode and all other game states use F3DEX.
     // http://n64devkit.square7.ch/n64man/ucode/gspF3DEX.htm
-    if (gGamestate != RACING || gPlayerCountSelection1 == 1) {
-        gGfxSPTask->task.t.ucode = gspF3DEXTextStart;
-        gGfxSPTask->task.t.ucode_data = gspF3DEXDataStart;
-    } else {
-        gGfxSPTask->task.t.ucode = gspF3DLXTextStart;
-        gGfxSPTask->task.t.ucode_data = gspF3DLXDataStart;
-    }
+    // if (gGamestate != RACING || gPlayerCountSelection1 == 1) {
+    //     gGfxSPTask->task.t.ucode = gspF3DEXTextStart;
+    //     gGfxSPTask->task.t.ucode_data = gspF3DEXDataStart;
+    // } else {
+    //     gGfxSPTask->task.t.ucode = gspF3DLXTextStart;
+    //     gGfxSPTask->task.t.ucode_data = gspF3DLXDataStart;
+    // }
     gGfxSPTask->task.t.flags = 0;
     gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
-    gGfxSPTask->task.t.ucode_size = SP_UCODE_SIZE;
-    gGfxSPTask->task.t.ucode_data_size = SP_UCODE_DATA_SIZE;
+    // gGfxSPTask->task.t.ucode_size = SP_UCODE_SIZE;
+    // gGfxSPTask->task.t.ucode_data_size = SP_UCODE_DATA_SIZE;
     gGfxSPTask->task.t.dram_stack = (u64 *) &gGfxSPTaskStack;
-    gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
+    // gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
     gGfxSPTask->task.t.output_buff = (u64 *) &gGfxSPTaskOutputBuffer;
     gGfxSPTask->task.t.output_buff_size = (u64 *) ((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
     gGfxSPTask->task.t.data_ptr = (u64 *) gGfxPool->gfxPool;
@@ -303,7 +304,7 @@ void create_gfx_task_structure(void) {
 
 void init_controllers(void) {
     osCreateMesgQueue(&gSIEventMesgQueue, &gSIEventMesgBuf[0], ARRAY_COUNT(gSIEventMesgBuf));
-    osSetEventMesg(OS_EVENT_SI, &gSIEventMesgQueue, (OSMesg) 0x33333333);
+    osSetEventMesg(OS_EVENT_SI, &gSIEventMesgQueue, OS_MESG_32(0x33333333));
     osContInit(&gSIEventMesgQueue, &gControllerBits, gControllerStatuses);
     if ((gControllerBits & 1) == 0) {
         sIsController1Unplugged = true;
@@ -372,7 +373,7 @@ void func_80000BEC(void) {
 
 void dispatch_audio_sptask(struct SPTask *spTask) {
     osWritebackDCacheAll();
-    osSendMesg(&gSPTaskMesgQueue, spTask, OS_MESG_NOBLOCK);
+    osSendMesg(&gSPTaskMesgQueue, OS_MESG_PTR(spTask), OS_MESG_NOBLOCK);
 }
 
 void exec_display_list(struct SPTask *spTask) {
@@ -381,7 +382,7 @@ void exec_display_list(struct SPTask *spTask) {
     if (sCurrentDisplaySPTask == NULL) {
         sCurrentDisplaySPTask = spTask;
         sNextDisplaySPTask = NULL;
-        osSendMesg(&gIntrMesgQueue, (OSMesg) MESG_START_GFX_SPTASK, OS_MESG_NOBLOCK);
+        osSendMesg(&gIntrMesgQueue, OS_MESG_32(MESG_START_GFX_SPTASK), OS_MESG_NOBLOCK);
     }
     else{
         sNextDisplaySPTask = spTask;
@@ -944,7 +945,7 @@ void receive_new_tasks(void) {
 
 void set_vblank_handler(s32 index, struct VblankHandler *handler, OSMesgQueue *queue, OSMesg *msg) {
     handler->queue = queue;
-    handler->msg = msg;
+    handler->msg = *msg;
     switch (index) {
         case 1:
             gVblankHandler1 = handler;
@@ -1082,7 +1083,7 @@ void thread3_video(UNUSED void *arg0) {
 
     while (true) {
         osRecvMesg(&gIntrMesgQueue, &msg, OS_MESG_BLOCK);
-        switch ((u32) msg) {
+        switch ((u32) msg.data32) {
             case MESG_VI_VBLANK:
                 handle_vblank();
                 break;
@@ -1176,7 +1177,7 @@ void thread5_game_loop(UNUSED void *arg) {
         clear_nmi_buffer();
     }
 
-    set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg) OS_EVENT_SW2);
+    set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg *)(OS_EVENT_SW2));
     // These variables track stats such as player wins.
     // In the event of a console reset, it remembers them.
     gNmiUnknown1 = &pAppNmiBuffer[0];  // 2  u8's, tracks number of times player 1/2 won a VS race
@@ -1213,7 +1214,7 @@ void thread4_audio(UNUSED void *arg) {
     UNUSED u32 unused[3];
     audio_init();
     osCreateMesgQueue(&sSoundMesgQueue, sSoundMesgBuf, ARRAY_COUNT(sSoundMesgBuf));
-    set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg) 512);
+    set_vblank_handler(1, &sSoundVblankHandler, &sSoundMesgQueue, (OSMesg *) 512);
 
     while (true) {
         OSMesg msg;
