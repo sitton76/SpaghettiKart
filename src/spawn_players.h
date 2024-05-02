@@ -38,7 +38,7 @@ extern s16 gCopyNearestWaypointByPlayerId[];
 extern s16 D_80165330[];
 extern s16 D_80165340;
 extern Player *D_801653C0[];
-extern s32 gPlayerIsThrottleActive[];
+extern bool gPlayerIsThrottleActive[];
 extern s32 D_80165400[];
 extern s32 gFrameSinceLastACombo[];
 extern s32 gCountASwitch[];
