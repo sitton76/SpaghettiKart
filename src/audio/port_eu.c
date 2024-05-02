@@ -1,6 +1,5 @@
 #include <libultraship.h>
 #include <macros.h>
-#include <PR/ucode.h>
 
 #include "audio/synthesis.h"
 #include "audio/seqplayer.h"

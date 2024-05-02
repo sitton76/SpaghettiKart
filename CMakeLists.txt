@@ -21,7 +21,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 include(FindFontconfig)
 
 if (WIN32)
-include(cmake/automate-vcpkg.cmake)
+include(libultraship/cmake/automate-vcpkg.cmake)
 # Forced to use MSVC
 set(MSVC ON)
 
