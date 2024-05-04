@@ -10868,7 +10868,7 @@ animation_type_2 *d_course_yoshi_valley_unk4[] = {
 };
 
 //! 0x06014798
-u32 d_course_yoshi_valley_unk5[] = {
+uintptr_t d_course_yoshi_valley_unk5[] = {
     0x00000001,
     0x00000002,
 
@@ -10886,7 +10886,7 @@ u32 d_course_yoshi_valley_unk5[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_yoshi_valley_dl_142C0,
+    (uintptr_t) d_course_yoshi_valley_dl_142C0,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -10908,7 +10908,7 @@ u32 d_course_yoshi_valley_unk5[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_yoshi_valley_dl_143C8,
+    (uintptr_t) d_course_yoshi_valley_dl_143C8,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -10919,7 +10919,7 @@ u32 d_course_yoshi_valley_unk5[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_yoshi_valley_dl_144A8,
+    (uintptr_t) d_course_yoshi_valley_dl_144A8,
     0x000001cc,
     0x00000000,
     0x00000000,
@@ -10930,7 +10930,7 @@ u32 d_course_yoshi_valley_unk5[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_yoshi_valley_dl_14500,
+    (uintptr_t) d_course_yoshi_valley_dl_14500,
     0x000001cc,
     0x00000000,
     0x00000000,
@@ -10941,7 +10941,7 @@ u32 d_course_yoshi_valley_unk5[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_yoshi_valley_dl_14558,
+    (uintptr_t) d_course_yoshi_valley_dl_14558,
     0x00000158,
     0x00000000,
     0x00000000,
@@ -10952,7 +10952,7 @@ u32 d_course_yoshi_valley_unk5[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_yoshi_valley_dl_145D0,
+    (uintptr_t) d_course_yoshi_valley_dl_145D0,
     0x00000120,
     0x00000000,
     0x00000000,
@@ -10986,7 +10986,7 @@ u32 d_course_yoshi_valley_unk5[] = {
 };
 
 // No idea what this stuff is
-u32 d_course_yoshi_valley_unk6[] = {
+uintptr_t d_course_yoshi_valley_unk6[] = {
     0x00000000,
     0x00000001,
 };

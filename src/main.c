@@ -265,15 +265,17 @@ void start_sptask(s32 taskType) {
     gActiveSPTask->state = SPTASK_STATE_RUNNING;
 }
 
+extern void Graphics_PushFrame(Gfx* data);
+
 /**
  * Initializes the Fast3D OSTask structure.
  * Loads F3DEX or F3DLX based on the number of players
  **/
 void create_gfx_task_structure(void) {
     gGfxSPTask->msgqueue = &gGfxVblankQueue;
-    gGfxSPTask->msg = OS_MESG_32(2);
-    gGfxSPTask->task.t.type = M_GFXTASK;
-    gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
+    // gGfxSPTask->msg = OS_MESG_32(2);
+    // gGfxSPTask->task.t.type = M_GFXTASK;
+    // gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
     // gGfxSPTask->task.t.ucode_boot = rspF3DBootStart;
     // gGfxSPTask->task.t.ucode_boot_size = ((u8 *) rspF3DBootEnd - (u8 *) rspF3DBootStart);
     // The split-screen multiplayer racing state uses F3DLX which has a simple subpixel calculation.
@@ -286,19 +288,21 @@ void create_gfx_task_structure(void) {
     //     gGfxSPTask->task.t.ucode = gspF3DLXTextStart;
     //     gGfxSPTask->task.t.ucode_data = gspF3DLXDataStart;
     // }
-    gGfxSPTask->task.t.flags = 0;
-    gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
+    // gGfxSPTask->task.t.flags = 0;
+    // gGfxSPTask->task.t.flags = OS_TASK_DP_WAIT;
     // gGfxSPTask->task.t.ucode_size = SP_UCODE_SIZE;
     // gGfxSPTask->task.t.ucode_data_size = SP_UCODE_DATA_SIZE;
-    gGfxSPTask->task.t.dram_stack = (u64 *) &gGfxSPTaskStack;
-    // gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
-    gGfxSPTask->task.t.output_buff = (u64 *) &gGfxSPTaskOutputBuffer;
-    gGfxSPTask->task.t.output_buff_size = (u64 *) ((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
-    gGfxSPTask->task.t.data_ptr = (u64 *) gGfxPool->gfxPool;
-    gGfxSPTask->task.t.data_size = (gDisplayListHead - gGfxPool->gfxPool) * sizeof(Gfx);
+    // gGfxSPTask->task.t.dram_stack = (u64 *) &gGfxSPTaskStack;
+    // // gGfxSPTask->task.t.dram_stack_size = SP_DRAM_STACK_SIZE8;
+    // gGfxSPTask->task.t.output_buff = (u64 *) &gGfxSPTaskOutputBuffer;
+    // gGfxSPTask->task.t.output_buff_size = (u64 *) ((u8 *) gGfxSPTaskOutputBuffer + sizeof(gGfxSPTaskOutputBuffer));
+    // gGfxSPTask->task.t.data_ptr = (u64 *) gGfxPool->gfxPool;
+    // gGfxSPTask->task.t.data_size = (gDisplayListHead - gGfxPool->gfxPool) * sizeof(Gfx);
     func_8008C214();
-    gGfxSPTask->task.t.yield_data_ptr = (u64 *) &gGfxSPTaskYieldBuffer;
-    gGfxSPTask->task.t.yield_data_size = OS_YIELD_DATA_SIZE;
+    // gGfxSPTask->task.t.yield_data_ptr = (u64 *) &gGfxSPTaskYieldBuffer;
+    // gGfxSPTask->task.t.yield_data_size = OS_YIELD_DATA_SIZE;
+
+    Graphics_PushFrame(gGfxPool->gfxPool);
 }
 
 
@@ -353,7 +357,7 @@ void read_controllers(void) {
     OSMesg msg;
 
     osContStartReadData(&gSIEventMesgQueue);
-    osRecvMesg(&gSIEventMesgQueue, &msg, OS_MESG_BLOCK);
+    // osRecvMesg(&gSIEventMesgQueue, &msg, OS_MESG_BLOCK);
     osContGetReadData(gControllerPads);
     update_controller(0);
     update_controller(1);
@@ -454,14 +458,14 @@ void config_gfx_pool(void) {
  */
 void display_and_vsync(void) {
     profiler_log_thread5_time(BEFORE_DISPLAY_LISTS);
-    osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    // osRecvMesg(&gGfxVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     exec_display_list(&gGfxPool->spTask);
     profiler_log_thread5_time(AFTER_DISPLAY_LISTS);
-    osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    // osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     osViSwapBuffer((void *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[sRenderedFramebuffer]));
     profiler_log_thread5_time(THREAD5_END);
-    osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
-    crash_screen_set_framebuffer(gPhysicalFramebuffers[sRenderedFramebuffer]);
+    // osRecvMesg(&gGameVblankQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+    // crash_screen_set_framebuffer(gPhysicalFramebuffers[sRenderedFramebuffer]);
 
     if (++sRenderedFramebuffer == 3) {
         sRenderedFramebuffer = 0;
@@ -504,6 +508,8 @@ void dma_copy(u8 *dest, u8 *romAddr, size_t size) {
     }
 }
 
+static u8 memoryPool[0xAB630];
+
 /**
  * Setup main segments and framebuffers.
  */
@@ -515,14 +521,15 @@ void setup_game_memory(void) {
 //     uintptr_t allocatedMemory;
 //     UNUSED s32 unknown_padding;
 
-//     init_segment_racing();
-//     gHeapEndPtr = SEG_RACING;
+    init_segment_racing();
+    // gHeapEndPtr = SEG_RACING;
 //     set_segment_base_addr(0, (void *) SEG_START);
 
 //     // Memory pool size of 0xAB630
-//     initialize_memory_pool(MEMORY_POOL_START, MEMORY_POOL_END);
+    bzero(memoryPool, sizeof(memoryPool));
+    initialize_memory_pool(memoryPool, memoryPool + sizeof(memoryPool));
 
-//     func_80000BEC();
+    func_80000BEC();
 
 //     // Initialize trig tables segment
 //     osInvalDCache((void *) TRIG_TABLES, TRIG_TABLES_SIZE);
@@ -1170,6 +1177,7 @@ void update_gamestate(void) {
 }
 
 void thread5_game_loop(void) {
+    setup_game_memory();
     osCreateMesgQueue(&gGfxVblankQueue, gGfxMesgBuf, 1);
     osCreateMesgQueue(&gGameVblankQueue, &gGameMesgBuf, 1);
     init_controllers();
@@ -1177,7 +1185,7 @@ void thread5_game_loop(void) {
         clear_nmi_buffer();
     }
 
-    set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg *)(OS_EVENT_SW2));
+    // set_vblank_handler(2, &gGameVblankHandler, &gGameVblankQueue, (OSMesg *)(OS_EVENT_SW2));
     // These variables track stats such as player wins.
     // In the event of a console reset, it remembers them.
     gNmiUnknown1 = &pAppNmiBuffer[0];  // 2  u8's, tracks number of times player 1/2 won a VS race
@@ -1189,22 +1197,22 @@ void thread5_game_loop(void) {
     rendering_init();
     read_controllers();
     func_800C5CB8();
+}
 
-    while(true) {
-        func_800CB2C4();
+void thread5_iteration(void){
+    // func_800CB2C4();
 
-        // Update the gamestate if it has changed (racing, menus, credits, etc.).
-        if (gGamestateNext != gGamestate) {
-            gGamestate = gGamestateNext;
-            update_gamestate();
-        }
-        profiler_log_thread5_time(THREAD5_START);
-        config_gfx_pool();
-        read_controllers();
-        game_state_handler();
-        end_master_display_list();
-        display_and_vsync();
+    // Update the gamestate if it has changed (racing, menus, credits, etc.).
+    if (gGamestateNext != gGamestate) {
+        gGamestate = gGamestateNext;
+        update_gamestate();
     }
+    profiler_log_thread5_time(THREAD5_START);
+    config_gfx_pool();
+    read_controllers();
+    game_state_handler();
+    end_master_display_list();
+    display_and_vsync();
 }
 
 /**

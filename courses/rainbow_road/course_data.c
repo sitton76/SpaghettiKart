@@ -3529,7 +3529,7 @@ animation_type_2 *d_rainbow_road_unk3[] = {
 };
 
 // 0x06016110
-u32 d_rainbow_road_unk4[] = {
+uintptr_t d_rainbow_road_unk4[] = {
     0x00000001,
     0x00000002,
 
@@ -3547,7 +3547,7 @@ u32 d_rainbow_road_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_rainbow_road_dl_15550,
+    (uintptr_t) d_course_rainbow_road_dl_15550,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -3555,7 +3555,7 @@ u32 d_rainbow_road_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_rainbow_road_dl_151A8,
+    (uintptr_t) d_course_rainbow_road_dl_151A8,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -3577,7 +3577,7 @@ u32 d_rainbow_road_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_rainbow_road_dl_15C68,
+    (uintptr_t) d_course_rainbow_road_dl_15C68,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -3585,7 +3585,7 @@ u32 d_rainbow_road_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_rainbow_road_dl_158C0,
+    (uintptr_t) d_course_rainbow_road_dl_158C0,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -3593,7 +3593,7 @@ u32 d_rainbow_road_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_rainbow_road_dl_15F18,
+    (uintptr_t) d_course_rainbow_road_dl_15F18,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -3609,7 +3609,7 @@ u32 d_rainbow_road_unk4[] = {
 };
 
 // No idea what this stuff is
-u32 d_rainbow_road_unk5[] = {
+uintptr_t d_rainbow_road_unk5[] = {
     0x00000000,
     0x00000000,
     0x00000002,

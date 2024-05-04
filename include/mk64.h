@@ -2,6 +2,7 @@
 #define MK64_H
 
 #include <libultraship.h>
+#include <string.h>
 
 /**
  * @file mk64.h

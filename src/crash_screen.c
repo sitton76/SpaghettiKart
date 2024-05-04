@@ -258,5 +258,5 @@ void create_debug_thread(void) {
 }
 
 void start_debug_thread(void) {
-    osStartThread(&D_80162790);
+    // osStartThread(&D_80162790);
 }

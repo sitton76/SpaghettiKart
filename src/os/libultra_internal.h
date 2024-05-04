@@ -81,7 +81,7 @@ s32 __osSpSetPc(void *);
 s32 __osSpDeviceBusy(void);
 s32 __osSiDeviceBusy(void);
 s32 __osSpRawStartDma(u32 dir, void *sp_ptr, void *dram_ptr, size_t size);
-void __osSetHWIntrRoutine(OSHWIntr interrupt, s32 (*handler)(void));
+void __osSetHWIntrRoutine(OSHWIntr interrupt, s32 (*callback)(void), void* sp);
 s32 __osLeoInterrupt();
 void __osViInit(void);
 OSViContext *__osViGetCurrentContext(void);

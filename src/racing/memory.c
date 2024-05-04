@@ -16,7 +16,7 @@
 s32 sGfxSeekPosition;
 s32 sPackedSeekPosition;
 
-u32 sPoolFreeSpace;
+uintptr_t sPoolFreeSpace;
 struct MainPoolBlock *sPoolListHeadL;
 struct MainPoolBlock *sPoolListHeadR;
 
@@ -34,11 +34,11 @@ s32 memoryPadding[2];
  * @param size of memory to allocate.
  * @return Address of free memory
  */
-void *get_next_available_memory_addr(u32 size) {
-    u32 *freeSpace = (u32 *)gNextFreeMemoryAddress;
+void *get_next_available_memory_addr(uintptr_t size) {
+    uintptr_t freeSpace = gNextFreeMemoryAddress;
     size = ALIGN16(size);
     gNextFreeMemoryAddress += size;
-    return freeSpace;
+    return (void*) freeSpace;
 }
 
 /**
@@ -96,17 +96,18 @@ void initialize_memory_pool(uintptr_t poolStart, uintptr_t poolEnd) {
 
     gFreeMemorySize = (poolEnd - poolStart) - 0x10;
     gNextFreeMemoryAddress = poolStart;
+    int bp = 0;
 }
 
 /**
  * @brief Allocates memory and adjusts gFreeMemorySize.
 */
-void *allocate_memory(u32 size) {
-    u32 *freeSpace;
+void *allocate_memory(uintptr_t size) {
+    uintptr_t freeSpace;
 
     size = ALIGN16(size);
     gFreeMemorySize -= size;
-    freeSpace = (u32 *) gNextFreeMemoryAddress;
+    freeSpace = (uintptr_t ) gNextFreeMemoryAddress;
     gNextFreeMemoryAddress += size;
 
     return (void *) freeSpace;
@@ -122,7 +123,7 @@ UNUSED void func_802A7D54(s32 arg0, s32 arg1) {
 */
 void *load_data(uintptr_t startAddr, uintptr_t endAddr) {
     void *allocated;
-    u32 size = endAddr - startAddr;
+    uintptr_t size = endAddr - startAddr;
 
     allocated = allocate_memory(size);
     if (allocated != 0) {
@@ -131,7 +132,7 @@ void *load_data(uintptr_t startAddr, uintptr_t endAddr) {
     return (void *) allocated;
 }
 
-UNUSED void main_pool_init(u32 start, u32 end) {
+UNUSED void main_pool_init(uintptr_t start, uintptr_t end) {
     start = ALIGN16(start);
     end = ALIGN16(end - 15);
 
@@ -150,7 +151,7 @@ UNUSED void main_pool_init(u32 start, u32 end) {
  * specified side of the pool (MEMORY_POOL_LEFT or MEMORY_POOL_RIGHT).
  * If there is not enough space, return NULL.
  */
-UNUSED void *main_pool_alloc(u32 size, u32 side) {
+UNUSED void *main_pool_alloc(uintptr_t size, uintptr_t side) {
     struct MainPoolBlock *newListHead;
     void *addr = NULL;
 
@@ -179,7 +180,7 @@ UNUSED void *main_pool_alloc(u32 size, u32 side) {
  * newer blocks are freed as well.
  * Return the amount of free space left in the pool.
  */
-UNUSED u32 main_pool_free(void *addr) {
+UNUSED uintptr_t main_pool_free(void *addr) {
     struct MainPoolBlock *block = (struct MainPoolBlock *) ((u8 *) addr - 8);
     struct MainPoolBlock *oldListHead = (struct MainPoolBlock *) ((u8 *) addr - 8);
 
@@ -201,7 +202,7 @@ UNUSED u32 main_pool_free(void *addr) {
     return sPoolFreeSpace;
 }
 // main_pool_realloc
-UNUSED void *main_pool_realloc(void *addr, u32 size) {
+UNUSED void *main_pool_realloc(void *addr, uintptr_t size) {
     void *newAddr = NULL;
     struct MainPoolBlock *block = (struct MainPoolBlock *) ((u8 *) addr - 8);
 
@@ -212,13 +213,13 @@ UNUSED void *main_pool_realloc(void *addr, u32 size) {
     return newAddr;
 }
 
-UNUSED s32 main_pool_available(void) {
+UNUSED uintptr_t main_pool_available(void) {
     return sPoolFreeSpace - 8;
 }
 
-UNUSED u32 main_pool_push_state(void) {
+UNUSED uintptr_t main_pool_push_state(void) {
     struct MainPoolState *prevState = gMainPoolState;
-    u32 freeSpace = sPoolFreeSpace;
+    uintptr_t freeSpace = sPoolFreeSpace;
     struct MainPoolBlock *lhead = sPoolListHeadL;
     struct MainPoolBlock *rhead = sPoolListHeadR;
 
@@ -234,7 +235,7 @@ UNUSED u32 main_pool_push_state(void) {
  * Restore pool state from a previous call to main_pool_push_state. Return the
  * amount of free space left in the pool.
  */
-UNUSED u32 main_pool_pop_state(void) {
+UNUSED uintptr_t main_pool_pop_state(void) {
     sPoolFreeSpace = gMainPoolState->freeSpace;
     sPoolListHeadL = gMainPoolState->listHeadL;
     sPoolListHeadR = gMainPoolState->listHeadR;
@@ -244,8 +245,8 @@ UNUSED u32 main_pool_pop_state(void) {
 // similar to sm64 dma_read
 UNUSED void *func_802A80B0(u8 *dest, u8 *srcStart, u8 *srcEnd) {
     void *addr;
-    u32 size = srcStart - dest;
-    addr = main_pool_alloc(size, (u32) srcEnd);
+    uintptr_t size = srcStart - dest;
+    addr = main_pool_alloc(size, (uintptr_t) srcEnd);
 
     if (addr != 0) {
 
@@ -269,12 +270,12 @@ UNUSED void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u8 *side) {
 
 // Similar to sm64 load_to_fixed_pool_addr?
 UNUSED void *func_802A8190(s32 arg0, u8 *arg1) {
-    //u32 srcSize = ALIGN16(srcEnd - srcStart);
-    //u32 destSize = ALIGN16((u8 *) sPoolListHeadR - destAddr);
+    //uintptr_t srcSize = ALIGN16(srcEnd - srcStart);
+    //uintptr_t destSize = ALIGN16((u8 *) sPoolListHeadR - destAddr);
     void *addr;
-    u32 temp_v0 = D_802B8CD4[arg0].unk4;
-    u32 temp_v1 = D_802B8CD4[arg0].unk8;
-    u32 temp_v2 = D_802B8CD4[arg0].unk2;
+    uintptr_t temp_v0 = D_802B8CD4[arg0].unk4;
+    uintptr_t temp_v1 = D_802B8CD4[arg0].unk8;
+    uintptr_t temp_v2 = D_802B8CD4[arg0].unk2;
     addr = func_802A80B0((u8 *) temp_v0, (u8 *) temp_v1, arg1);
 
         //dest = main_pool_alloc(destSize, MEMORY_POOL_RIGHT);
@@ -301,7 +302,7 @@ UNUSED void func_802A81EC(void) {
     } while (phi_s0 != 3);
 }
 
-UNUSED struct AllocOnlyPool *alloc_only_pool_init(u32 size, u32 side) {
+UNUSED struct AllocOnlyPool *alloc_only_pool_init(uintptr_t size, uintptr_t side) {
     void *addr;
     struct AllocOnlyPool *subPool = NULL;
 
@@ -317,13 +318,13 @@ UNUSED struct AllocOnlyPool *alloc_only_pool_init(u32 size, u32 side) {
     return subPool;
 }
 
-UNUSED u32 func_802A82AC(s32 arg0) {
-    u32 temp_v0;
-    u32 phi_v1;
+UNUSED uintptr_t func_802A82AC(s32 arg0) {
+    uintptr_t temp_v0;
+    uintptr_t phi_v1;
 
     temp_v0 = D_801502A0 - arg0;
     phi_v1 = 0;
-    if (temp_v0 >= (u32) gDisplayListHead) {
+    if (temp_v0 >= (uintptr_t) gDisplayListHead) {
         D_801502A0 = temp_v0;
         phi_v1 = temp_v0;
     }
@@ -335,7 +336,7 @@ UNUSED u32 func_802A82AC(s32 arg0) {
  */
 u8 *dma_compressed_vtx(u8 *start, u8 *end) {
     u8 *freeSpace;
-    u32 size;
+    uintptr_t size;
 
     size = ALIGN16(end - start);
     freeSpace = (u8 *) gNextFreeMemoryAddress;
@@ -345,8 +346,8 @@ u8 *dma_compressed_vtx(u8 *start, u8 *end) {
 }
 
 // unused mio0 decode func.
-UNUSED s32 func_802A8348(s32 arg0, s32 arg1, s32 arg2) {
-    u32 offset;
+UNUSED uintptr_t func_802A8348(s32 arg0, s32 arg1, s32 arg2) {
+    uintptr_t offset;
     UNUSED void *pad;
     uintptr_t oldAddr;
     void *newAddr;
@@ -355,9 +356,9 @@ UNUSED s32 func_802A8348(s32 arg0, s32 arg1, s32 arg2) {
     oldAddr = gNextFreeMemoryAddress;
     newAddr = (void *) (oldAddr + offset);
     pad = &newAddr;
-    osInvalDCache(newAddr, offset);
+    // osInvalDCache(newAddr, offset);
     //osPiStartDma(&gDmaIoMesg, 0, 0, (uintptr_t) &_other_texturesSegmentRomStart[SEGMENT_OFFSET(arg0)], newAddr, offset, &gDmaMesgQueue);
-    osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, 1);
+    // osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, 1);
 
     func_80040030((u8 *) newAddr, (u8 *) oldAddr);
     gNextFreeMemoryAddress += offset;
@@ -396,8 +397,8 @@ u8 *dma_textures(u8 texture[], size_t arg1, size_t arg2) {
     // return temp_v0;
 }
 
-u32 MIO0_0F(u8 *arg0, u32 arg1, u32 arg2) {
-    // u32 oldHeapEndPtr;
+uintptr_t MIO0_0F(u8 *arg0, uintptr_t arg1, uintptr_t arg2) {
+    // uintptr_t oldHeapEndPtr;
     // void *temp_v0;
 
     // arg1 = ALIGN16(arg1);
@@ -413,12 +414,12 @@ u32 MIO0_0F(u8 *arg0, u32 arg1, u32 arg2) {
     // return oldHeapEndPtr;
 }
 
-void func_802A86A8(CourseVtx *data, u32 arg1) {
+void func_802A86A8(CourseVtx *data, uintptr_t arg1) {
     CourseVtx *courseVtx = data;
     Vtx *vtx;
     s32 tmp = ALIGN16(arg1 * 0x10);
 #ifdef AVOID_UB
-    u32 i;
+    uintptr_t i;
 #else
     s32 i;
 #endif
@@ -429,7 +430,7 @@ void func_802A86A8(CourseVtx *data, u32 arg1) {
     gHeapEndPtr -= tmp;
     vtx = (Vtx *) gHeapEndPtr;
 
-    // s32 to u32 comparison required for matching.
+    // s32 to uintptr_t comparison required for matching.
     for (i = 0; i < arg1; i++) {
         if (gIsMirrorMode) {
             vtx->v.ob[0] = -courseVtx->ob[0];
@@ -457,7 +458,7 @@ void func_802A86A8(CourseVtx *data, u32 arg1) {
     }
 }
 
-void decompress_vtx(CourseVtx *arg0, u32 vertexCount) {
+void decompress_vtx(CourseVtx *arg0, uintptr_t vertexCount) {
     s32 size = ALIGN16(vertexCount * 0x18);
     void *freeSpace;
     u8 *vtxCompressed = arg0;
@@ -496,7 +497,7 @@ void unpack_lights(Gfx *arg0, UNUSED u8 *arg1, s8 arg2) {
 }
 
 void unpack_displaylist(Gfx *arg0, u8 *args, UNUSED s8 opcode) {
-    u32 temp_v0 = args[sPackedSeekPosition++];
+    uintptr_t temp_v0 = args[sPackedSeekPosition++];
     uintptr_t temp_t7 = ((args[sPackedSeekPosition++]) << 8 | temp_v0) * 8;
     arg0[sGfxSeekPosition].words.w0 = 0x06000000;
     // Segment seven addr
@@ -532,70 +533,70 @@ void unpack_cull_displaylist(Gfx *arg0, UNUSED u8 *arg1, UNUSED s8 arg2) {
     sGfxSeekPosition++;
 }
 
-void unpack_combine_mode1(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_combine_mode1(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetCombineMode(G_CC_MODULATERGBA, G_CC_MODULATERGBA)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_combine_mode2(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_combine_mode2(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetCombineMode(G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_combine_mode_shade(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_combine_mode_shade(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetCombineMode(G_CC_SHADE, G_CC_SHADE)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_combine_mode4(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_combine_mode4(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetCombineMode(G_CC_MODULATERGBDECALA, G_CC_MODULATERGBDECALA)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_combine_mode5(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_combine_mode5(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetCombineMode(G_CC_DECALRGBA, G_CC_DECALRGBA)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_render_mode_opaque(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_render_mode_opaque(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetRenderMode(G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_render_mode_tex_edge(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_render_mode_tex_edge(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetRenderMode(G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_render_mode_translucent(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_render_mode_translucent(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetRenderMode(G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_render_mode_opaque_decal(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_render_mode_opaque_decal(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetRenderMode(G_RM_AA_ZB_OPA_DECAL, G_RM_AA_ZB_OPA_DECAL)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
     sGfxSeekPosition++;
 }
 
-void unpack_render_mode_translucent_decal(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32 arg2) {
+void unpack_render_mode_translucent_decal(Gfx *arg0, UNUSED u8 *arg1, UNUSED uintptr_t arg2) {
     Gfx macro[] = {gsDPSetRenderMode(G_RM_AA_ZB_XLU_DECAL, G_RM_AA_ZB_XLU_DECAL)};
     arg0[sGfxSeekPosition].words.w0 = macro->words.w0;
     arg0[sGfxSeekPosition].words.w1 = macro->words.w1;
@@ -604,9 +605,9 @@ void unpack_render_mode_translucent_decal(Gfx *arg0, UNUSED u8 *arg1, UNUSED u32
 
 void unpack_tile_sync(Gfx *gfx, u8 *args, s8 opcode) {
     Gfx tileSync[] = { gsDPTileSync() };
-    u32 temp_a0;
-    u32 lo;
-    u32 hi;
+    uintptr_t temp_a0;
+    uintptr_t lo;
+    uintptr_t hi;
 
     s32 width;
     s32 height;
@@ -700,20 +701,20 @@ void unpack_tile_sync(Gfx *gfx, u8 *args, s8 opcode) {
 }
 
 void unpack_tile_load_sync(Gfx *gfx, u8 *args, s8 opcode) {
-    UNUSED u32 var;
+    UNUSED uintptr_t var;
     Gfx tileSync[] = { gsDPTileSync() };
     Gfx loadSync[] = { gsDPLoadSync() };
 
-    u32 arg;
-    u32 lo;
-    u32 hi;
-    u32 addr;
-    u32 width;
-    u32 height;
-    u32 fmt;
-    u32 siz;
-    u32 tmem;
-    u32 tile;
+    uintptr_t arg;
+    uintptr_t lo;
+    uintptr_t hi;
+    uintptr_t addr;
+    uintptr_t width;
+    uintptr_t height;
+    uintptr_t fmt;
+    uintptr_t siz;
+    uintptr_t tmem;
+    uintptr_t tile;
 
     switch (opcode) {
         case 32:
@@ -806,11 +807,11 @@ void unpack_texture_off(Gfx *arg0, UNUSED u8 *args, UNUSED s8 arg2) {
 }
 
 void unpack_vtx1(Gfx *gfx, u8 *args, UNUSED s8 arg2) {
-    u32 temp_t7;
-    u32 temp_t7_2;
+    uintptr_t temp_t7;
+    uintptr_t temp_t7_2;
 
-    u32 temp = args[sPackedSeekPosition++];
-    u32 temp2 = ((args[sPackedSeekPosition++] << 8) | temp) * 0x10;
+    uintptr_t temp = args[sPackedSeekPosition++];
+    uintptr_t temp2 = ((args[sPackedSeekPosition++] << 8) | temp) * 0x10;
 
     temp = args[sPackedSeekPosition++];
     temp_t7 = temp & 0x3F;
@@ -823,9 +824,9 @@ void unpack_vtx1(Gfx *gfx, u8 *args, UNUSED s8 arg2) {
 }
 
 void unpack_vtx2(Gfx *gfx, u8 *args, s8 arg2) {
-    u32 temp_t9;
-    u32 temp_v1;
-    u32 temp_v2;
+    uintptr_t temp_t9;
+    uintptr_t temp_v1;
+    uintptr_t temp_v2;
 
     temp_v1 = args[sPackedSeekPosition++];
     temp_v2 = ((args[sPackedSeekPosition++] << 8) | temp_v1) * 0x10;
@@ -838,10 +839,10 @@ void unpack_vtx2(Gfx *gfx, u8 *args, s8 arg2) {
 }
 
 void unpack_triangle(Gfx *gfx, u8 *args, UNUSED s8 arg2) {
-    u32 temp_v0;
-    u32 phi_a0;
-    u32 phi_a2;
-    u32 phi_a3;
+    uintptr_t temp_v0;
+    uintptr_t phi_a0;
+    uintptr_t phi_a2;
+    uintptr_t phi_a3;
 
     temp_v0 = args[sPackedSeekPosition++];
 
@@ -864,13 +865,13 @@ void unpack_triangle(Gfx *gfx, u8 *args, UNUSED s8 arg2) {
 }
 
 void unpack_quadrangle(Gfx *gfx, u8 *args, UNUSED s8 arg2) {
-    u32 temp_v0;
-    u32 phi_t0;
-    u32 phi_a3;
-    u32 phi_a0;
-    u32 phi_t2;
-    u32 phi_t1;
-    u32 phi_a2;
+    uintptr_t temp_v0;
+    uintptr_t phi_t0;
+    uintptr_t phi_a3;
+    uintptr_t phi_a0;
+    uintptr_t phi_t2;
+    uintptr_t phi_t1;
+    uintptr_t phi_a2;
 
     temp_v0 = args[sPackedSeekPosition++];
 
@@ -910,11 +911,11 @@ void unpack_quadrangle(Gfx *gfx, u8 *args, UNUSED s8 arg2) {
 }
 
 void unpack_spline_3D(Gfx *gfx, u8 *arg1, UNUSED s8 arg2) {
-    u32 temp_v0;
-    u32 phi_a0;
-    u32 phi_t0;
-    u32 phi_a3;
-    u32 phi_a2;
+    uintptr_t temp_v0;
+    uintptr_t phi_a0;
+    uintptr_t phi_t0;
+    uintptr_t phi_a3;
+    uintptr_t phi_a2;
 
     temp_v0 = arg1[sPackedSeekPosition++];
 
@@ -959,11 +960,11 @@ UNUSED void func_802A9AEC(void) {
  * This issue is prevented so long as the packed file adheres to correct opcodes and unpack code
  * increments the file pointer the correct number of times.
  */
-void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, u32 arg2) {
+void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, uintptr_t arg2) {
     u8 *packed_dl = data;
 
     Gfx *gfx;
-    u32 addr;
+    uintptr_t addr;
 
     u8 opcode;
 
@@ -1254,19 +1255,19 @@ void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, u32 a
 
 struct UnkStr_802AA7C8 {
     u8 *unk0;
-    u32 unk4;
-    u32 unk8;
-    u32 unkC;
+    uintptr_t unk4;
+    uintptr_t unk8;
+    uintptr_t unkC;
 };
 
-void decompress_textures(u32 *arg0) {
+void decompress_textures(uintptr_t arg0) {
     struct UnkStr_802AA7C8 *phi_s0 =
         (struct UnkStr_802AA7C8 *) arg0;
     struct UnkStr_802AA7C8 *temp_s0;
-    u32 temp_t2;
+    uintptr_t temp_t2;
     u8 *temp_a0;
-    u32 phi_v0;
-    u32 sp20;
+    uintptr_t phi_v0;
+    uintptr_t sp20;
 
     phi_v0 = 0;
     temp_s0 = phi_s0;
@@ -1296,18 +1297,21 @@ void decompress_textures(u32 *arg0) {
 }
 
 void *decompress_segments(u8 *start, u8 *end) {
-    UNUSED u32 pad;
-    u32 sp28;
-    u32 size = ALIGN16(end - start);
+    int bp = 0;
+
+    return;
+    UNUSED uintptr_t pad;
+    uintptr_t sp28;
+    uintptr_t size = ALIGN16(end - start);
     u8 *heapEnd;
-    u32 *freeSpace;
+    uintptr_t freeSpace;
 
     heapEnd = (u8 *) gHeapEndPtr - size;
     // sp20 = temp_a0;
     dma_copy(heapEnd, start, size);
-    sp28 = *(u32 *) (heapEnd + 4);
+    sp28 = (uintptr_t) (heapEnd + 4);
     sp28 = ALIGN16(sp28);
-    freeSpace = (u32 *) gNextFreeMemoryAddress;
+    freeSpace = (uintptr_t ) gNextFreeMemoryAddress;
     mio0decode(heapEnd, (u8 *)freeSpace);
     gNextFreeMemoryAddress += sp28;
     return (void *)freeSpace;
@@ -1326,12 +1330,12 @@ u8 *load_course(s32 courseId) {
     // u8 *vertexRomStart; // mio0 compressed
     // u8 *vertexRomEnd;
     // UNUSED s32 pad2[2];
-    // u32 *textures;
+    // uintptr_t textures;
     // CourseVtx *vertexStart; // mio0 compressed
     // u8 *packedStart;
-    // u32 vertexCount;
+    // uintptr_t vertexCount;
     // u8 *finalDisplaylistOffset;
-    // u32 unknown1;
+    // uintptr_t unknown1;
     // s32 prevLoadedAddress_saved;
     // u8 *offsetRomStart;
     // u8 *offsetRomEnd;

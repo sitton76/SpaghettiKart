@@ -11,6 +11,8 @@
 #include "audio/port_eu.h"
 #include "buffers/gfx_output_buffer.h"
 
+#include <string.h>
+
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)
 
 struct SequencePlayer gSequencePlayers[SEQUENCE_PLAYERS];

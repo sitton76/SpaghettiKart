@@ -8099,7 +8099,7 @@ u8 d_course_koopa_troopa_beach_crab_frames[][4096] = {
 
 // 0x06014828
 // animations? lights?
-u32 d_course_koopa_troopa_beach_unk_data1[] = {
+uintptr_t d_course_koopa_troopa_beach_unk_data1[] = {
     0x00000000,
     0x00000001,
     0x00000000,
@@ -8107,7 +8107,7 @@ u32 d_course_koopa_troopa_beach_unk_data1[] = {
 };
 
 // 0x06014838
-s16 d_course_koopa_troopa_beach_unk_data2[] = {
+uintptr_t d_course_koopa_troopa_beach_unk_data2[] = {
     0x0000, 0x0000,
     0x0000, 0x0001,
     0x0002, 0x0003,
@@ -8539,7 +8539,7 @@ Gfx d_course_koopa_troopa_beach_dl_16990[] =
 };
 
 //! 0x60169b
-u32 d_course_koopa_troopa_beach_unk4[] = {
+uintptr_t d_course_koopa_troopa_beach_unk4[] = {
     0x00000001,
     0x00000002,
 
@@ -8557,7 +8557,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_16630,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_16630,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -8579,7 +8579,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_16850,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_16850,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -8590,7 +8590,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_168F0,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_168F0,
     0x00000024,
     0x00000000,
     0x00000000,
@@ -8601,7 +8601,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_16990,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_16990,
     0x00000019,
     0x00000000,
     0x00000000,
@@ -8629,7 +8629,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_16850,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_16850,
     0x00000000,
     0x00000000,
     0x00000000,
@@ -8640,7 +8640,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_168F0,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_168F0,
     0x00000024,
     0x00000000,
     0x00000000,
@@ -8651,7 +8651,7 @@ u32 d_course_koopa_troopa_beach_unk4[] = {
     0x00000000,
     0x00000007,
     0x00000000,
-    (u32) d_course_koopa_troopa_beach_dl_16990,
+    (uintptr_t) d_course_koopa_troopa_beach_dl_16990,
     0x00000019,
     0x00000000,
     0x00000000,
@@ -8684,7 +8684,7 @@ animation_type_2 *d_course_koopa_troopa_beach_unk_data5[] = {
 };
 
 // No idea what this stuff is
-u32 d_course_koopa_troopa_beach_unk_data6[] = {
+uintptr_t d_course_koopa_troopa_beach_unk_data6[] = {
     0x00000000,
     0x00000000,
     0x00000001,

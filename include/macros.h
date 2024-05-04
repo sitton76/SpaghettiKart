@@ -42,14 +42,14 @@
 
 // Align to 8-byte boundary for DMA requirements
 #ifdef __GNUC__
-#define ALIGNED8 __attribute__((aligned(8)))
+#define ALIGNED8
 #else
 #define ALIGNED8
 #endif
 
 // Align to 16-byte boundary for audio lib requirements
 #ifdef __GNUC__
-#define ALIGNED16 __attribute__((aligned(16)))
+#define ALIGNED16
 #else
 #define ALIGNED16
 #endif
@@ -72,13 +72,13 @@
     {((toFrac(x9))     << 16) | toFrac(x10),     ((toFrac(x11))     << 16) | toFrac(x12),     (toFrac(x13)     << 16) | toFrac(x14),     (toFrac(x15) << 16)     | toFrac(x16)}}
 
 // convert a virtual address to physical.
-#define VIRTUAL_TO_PHYSICAL(addr)   ((uintptr_t)(addr) & 0x1FFFFFFF)
+#define VIRTUAL_TO_PHYSICAL(addr) (addr)
 
 // convert a physical address to virtual.
-#define PHYSICAL_TO_VIRTUAL(addr)   ((uintptr_t)(addr) | 0x80000000)
+#define PHYSICAL_TO_VIRTUAL(addr) (addr)
 
 // another way of converting virtual to physical
-#define VIRTUAL_TO_PHYSICAL2(addr)  ((u8 *)(addr) - 0x80000000U)
+#define VIRTUAL_TO_PHYSICAL2(addr) (addr)
 
 // aligns an address to the next 16 bytes
 #define ALIGN16(val) (((val) + 0xF) & ~0xF)

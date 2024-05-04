@@ -19,9 +19,10 @@ extern "C" void Timer_Update();
 void push_frame() {
     // GameEngine::StartAudioFrame();
     GameEngine::Instance->StartFrame();
+    thread5_iteration();
+    // thread5_game_loop();
     // Graphics_ThreadUpdate();w
     // Timer_Update();
-    // thread5_iteration();
     // GameEngine::EndAudioFrame();
 }
 
@@ -34,8 +35,8 @@ extern "C"
 int main(int argc, char *argv[]) {
 #endif
     GameEngine::Create();
-    audio_init();
-    sound_init();
+    // audio_init();
+    // sound_init();
     thread5_game_loop();
     GameEngine::Instance->ProcessFrame(push_frame);
     GameEngine::Instance->Destroy();

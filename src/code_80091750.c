@@ -3312,12 +3312,12 @@ Gfx *func_80097AE4(Gfx *displayListHead, s8 fmt, s32 arg2, s32 arg3, u8 *arg4, s
         dsdx = 0x8000 / (32 - width);
         gDPLoadTextureTile(displayListHead++, arg4, fmt, G_IM_SIZ_16b, 64, 64, temp, i, temp + 32, i + 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(displayListHead++, (arg2 + width) << 2, arg3 << 2, (arg2 + 32) << 2, (arg3 + 32) << 2, 0, 0, 0, dsdx, 1024);
-        
+
         arg2 += 32;
-        
+
         gDPLoadTextureTile(displayListHead++, arg4, fmt, G_IM_SIZ_16b, 64, 64, temp + 32, i, temp + 64, i + 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(displayListHead++, arg2 << 2, arg3 << 2, ((arg2 - width) + 32) << 2, (arg3 + 32) << 2, 0, 0, 0, dsdx, 1024);
-        
+
         arg2 = arg2Copy;
         arg3 += 32;
     }
@@ -3335,7 +3335,7 @@ Gfx *func_80097E58(Gfx *displayListHead, s8 fmt, u32 arg2, u32 arg3, u32 arg4, u
     s32 temp2 = 32;
 
     if (width >= 32) { return displayListHead; }
-    
+
     arg6Copy = arg6;
 
     lrs = arg9 / 2;
@@ -3524,17 +3524,15 @@ void func_80099110(void) {
  * @return void*
  */
 void *segmented_to_virtual_dupe(const void *addr) {
-    size_t segment = (uintptr_t) addr >> 24;
-    size_t offset = (uintptr_t) addr & 0x00FFFFFF;
-
-    return (void *) ((gSegmentTable[segment] + offset) + 0x80000000);
+    return addr;
 }
 
 void *segmented_to_virtual_dupe_2(const void *addr) {
-    size_t segment = (uintptr_t) addr >> 24;
+    /*size_t segment = (uintptr_t) addr >> 24;
     size_t offset = (uintptr_t) addr & 0x00FFFFFF;
 
-    return (void *) ((gSegmentTable[segment] + offset) + 0x80000000);
+    return (void *) ((gSegmentTable[segment] + offset) + 0x80000000);*/
+    return addr;
 }
 
 #ifdef NON_MATCHING

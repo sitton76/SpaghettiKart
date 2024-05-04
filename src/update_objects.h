@@ -200,7 +200,7 @@ void func_8007A88C(s32);
 void func_8007A910(s32);
 void update_object_lakitu(s32);
 void func_8007AA44(s32);
-void func_8007ABFC(s32, s32);
+void func_8007ABFC(s32, bool);
 void consume_item(s32);
 u8   gen_random_item(s16, s16);
 u8   gen_random_item_human(s16, s16);

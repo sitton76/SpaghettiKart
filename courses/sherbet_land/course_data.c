@@ -4288,7 +4288,7 @@ Gfx d_course_sherbet_land_dl_8E00[] =
 };
 
 // 0x06008EB0
-u32 d_course_sherbet_land_unk_data1[] = {
+uintptr_t d_course_sherbet_land_unk_data1[] = {
     0x00000001,
     0x00000002,
 
@@ -5209,7 +5209,7 @@ animation_type_2 *d_course_sherbet_land_unk_data11[] = {
 };
 
 // No idea what this stuff is
-u32 d_course_sherbet_land_unk_data12[] = {
+uintptr_t d_course_sherbet_land_unk_data12[] = {
     0x00000000,
     0x00000000,
     0x00000001,

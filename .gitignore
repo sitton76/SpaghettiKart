@@ -103,3 +103,5 @@ mingw64/
 # torch
 torch.hash.yml
 build*
+cmake*
+.idea

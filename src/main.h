@@ -19,7 +19,7 @@
 #define MTX_HUD_POOL_SIZE_MAX MTX_HUD_POOL_SIZE - 50
 #endif
 
-#define MTX_OBJECT_POOL_SIZE 128
+#define MTX_OBJECT_POOL_SIZE 512
 
 //! @todo Verify with proper documentation
 // functions called by mtxShadow multiply by 8
@@ -40,7 +40,7 @@
 #define MTX_EFFECT_POOL_SIZE_MAX MTX_EFFECT_POOL_SIZE + 100
 #endif
 
-#define GFX_POOL_SIZE 7500
+#define GFX_POOL_SIZE 15000
 
 struct GfxPool {
     /* 0x00000 */ Mtx mtxScreen; // Matrix for skybox and startup logo
@@ -102,6 +102,7 @@ void func_8000262C(void);
 void func_80002658(void);
 void update_gamestate(void);
 void thread5_game_loop(void);
+void thread5_iteration(void);
 void thread4_audio(void*);
 
 

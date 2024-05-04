@@ -8,6 +8,7 @@
 #include "memory.h"
 #include "main.h"
 #include "math_util.h"
+#include <stdlib.h>
 
 /*** Data ***/
 Ambient D_800E8680 = {{
@@ -32,8 +33,8 @@ Vtx *D_8018EDBC;
 #define SQ(x) ((x) * (x))
 
 void func_800AF9B0(void) {
-    D_8018EDB8 = (void *)get_next_available_memory_addr(480 * sizeof(Vtx));
-    D_8018EDBC = (void *)get_next_available_memory_addr(480 * sizeof(Vtx));
+    D_8018EDB8 = (void *)calloc(480, sizeof(Vtx));
+    D_8018EDBC = (void *)calloc(480, sizeof(Vtx));
 }
 
 // could be a normal vertex, not a color...
@@ -186,7 +187,7 @@ void func_800B0004(void) {
         for (j = 0; j < 12; j++) {
             res1 = sins(D_8018EDB0 - (j * D_8018EDB2)) * 84.0f * j * 0.18f;
             res2 = sins(D_8018EDB0 - ((j + 1) * D_8018EDB2)) * 84.0f * (j + 1) * 0.18f;
-            func_800AF9E4(&(&vtxs[j * 4])[i * 48], j, i, 84, res1, res2, (j * 84), 84);
+            func_800AF9E4(&vtxs[j * 4 + i * 48], j, i, 84, res1, res2, (j * 84), 84);
         }
     }
     func_800AFF58(vtxs);

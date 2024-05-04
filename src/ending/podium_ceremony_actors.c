@@ -17,6 +17,7 @@
 #include "code_80005FD0.h"
 #include "code_80281C40.h"
 #include "math_util.h"
+#include <string.h>
 
 s32 fireworkConeColour[] = {
     0x00FF4080, // pink

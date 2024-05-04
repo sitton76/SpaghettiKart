@@ -20,6 +20,7 @@
 #include "main.h"
 #include "menus.h"
 #include "render_courses.h"
+#include <string.h>
 
 #define bcopy memcpy
 

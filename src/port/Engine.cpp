@@ -22,7 +22,7 @@ GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
     std::vector<std::string> OTRFiles;
-    if (const std::string cube_path = LUS::Context::GetPathRelativeToAppDirectory("sp.otr"); std::filesystem::exists(cube_path)) {
+    if (const std::string cube_path = LUS::Context::GetPathRelativeToAppDirectory("mkcube.otr"); std::filesystem::exists(cube_path)) {
         OTRFiles.push_back(cube_path);
     }
     if (const std::string sm64_otr_path = LUS::Context::GetPathRelativeToAppBundle("sm64.otr"); std::filesystem::exists(sm64_otr_path)) {
@@ -59,6 +59,7 @@ void GameEngine::Destroy(){
 }
 
 bool ShouldClearTextureCacheAtEndOfFrame = false;
+
 
 void GameEngine::StartFrame() const{
     using LUS::KbScancode;
