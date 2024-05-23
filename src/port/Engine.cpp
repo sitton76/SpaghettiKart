@@ -7,6 +7,11 @@
 #include "resource/importers/GenericArrayFactory.h"
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
+#include "resource/importers/KartAIFactory.h"
+#include "resource/importers/TrackSectionsFactory.h"
+#include "resource/importers/TrackWaypointFactory.h"
+#include "resource/importers/ActorSpawnDataFactory.h"
+#include <Fast3D/Fast3dWindow.h>
 
 #include <Fast3D/gfx_pc.h>
 #include <Fast3D/gfx_rendering_api.h>
@@ -17,6 +22,12 @@
 extern "C" {
 float gInterpolationStep = 0.0f;
 #include <macros.h>
+#include <DisplayListFactory.h>
+#include <TextureFactory.h>
+#include <MatrixFactory.h>
+#include <ArrayFactory.h>
+#include <BlobFactory.h>
+#include <VertexFactory.h>
 }
 
 GameEngine* GameEngine::Instance;
@@ -45,6 +56,18 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3fV0>(), RESOURCE_FORMAT_BINARY, "Vec3f", static_cast<uint32_t>(SF64::ResourceType::Vec3f), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3sV0>(), RESOURCE_FORMAT_BINARY, "Vec3s", static_cast<uint32_t>(SF64::ResourceType::Vec3s), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryGenericArrayV0>(), RESOURCE_FORMAT_BINARY, "GenericArray", static_cast<uint32_t>(SF64::ResourceType::GenericArray), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryTextureV0>(), RESOURCE_FORMAT_BINARY, "Texture", static_cast<uint32_t>(LUS::ResourceType::Texture), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryTextureV1>(), RESOURCE_FORMAT_BINARY, "Texture", static_cast<uint32_t>(LUS::ResourceType::Texture), 1);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryVertexV0>(), RESOURCE_FORMAT_BINARY, "Vertex", static_cast<uint32_t>(LUS::ResourceType::Vertex), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryDisplayListV0>(), RESOURCE_FORMAT_BINARY, "DisplayList", static_cast<uint32_t>(LUS::ResourceType::DisplayList), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryMatrixV0>(), RESOURCE_FORMAT_BINARY, "Matrix", static_cast<uint32_t>(LUS::ResourceType::Matrix), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryArrayV0>(), RESOURCE_FORMAT_BINARY, "Array", static_cast<uint32_t>(LUS::ResourceType::Array), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryBlobV0>(), RESOURCE_FORMAT_BINARY, "Blob", static_cast<uint32_t>(LUS::ResourceType::Blob), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryKartAIV0>(), RESOURCE_FORMAT_BINARY, "KartAI", static_cast<uint32_t>(MK64::ResourceType::KartAI), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackSectionsV0>(), RESOURCE_FORMAT_BINARY, "TrackSections", static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackWaypointsV0>(), RESOURCE_FORMAT_BINARY, "Waypoints", static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryActorSpawnDataV0>(), RESOURCE_FORMAT_BINARY, "SpawnData", static_cast<uint32_t>(MK64::ResourceType::SpawnData), 0);
+
 }
 
 void GameEngine::Create(){
@@ -79,9 +102,10 @@ void GameEngine::StartFrame() const{
     this->context->GetWindow()->StartFrame();
 }
 
-void GameEngine::ProcessFrame(void (*run_one_game_iter)()) const {
-    this->context->GetWindow()->MainLoop(run_one_game_iter);
-}
+// void GameEngine::ProcessFrame(void (*run_one_game_iter)()) const {
+//     //this->context->GetWindow()->MainLoop(run_one_game_iter);
+//     Instance->context->GetWindow()->MainLoop(run_one_game_iter);
+// }
 
 void GameEngine::RunCommands(Gfx* Commands) {
     gfx_run(Commands, {});
@@ -95,8 +119,11 @@ void GameEngine::RunCommands(Gfx* Commands) {
 
 void GameEngine::ProcessGfxCommands(Gfx* commands) {
     RunCommands(commands);
-    Instance->context->GetWindow()->SetTargetFps(30);
-    Instance->context->GetWindow()->SetMaximumFrameLatency(1);
+    auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
+      if (wnd != nullptr) {
+        wnd->SetTargetFps(30);
+        wnd->SetMaximumFrameLatency(1);
+    }
 }
 
 extern "C" uint32_t GameEngine_GetSampleRate() {
@@ -129,10 +156,8 @@ extern "C" uint32_t GameEngine_GetGameVersion() {
 static const char* sOtrSignature = "__OTR__";
 
 extern "C" uint8_t GameEngine_OTRSigCheck(const char* data) {
-    if(data == nullptr) {
-        return 0;
-    }
-    return strncmp(data, sOtrSignature, strlen(sOtrSignature)) == 0;
+    static const char* sOtrSignaturea = "__OTR__";
+    return strncmp(data, sOtrSignaturea, strlen(sOtrSignaturea)) == 0;
 }
 
 // struct TimedEntry {

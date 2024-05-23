@@ -3,6 +3,7 @@
 #include <defines.h>
 #include <stubs.h>
 #include "course_metadata.h"
+#include <align_asset_macro.h>
 
 #include "code_80005FD0.h"
 #include "math_util.h"

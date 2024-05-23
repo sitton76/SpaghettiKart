@@ -1,5 +1,6 @@
 #include <libultraship.h>
 #include <libultra/types.h>
+#include <align_asset_macro.h>
 #include <macros.h>
 #include <common_structs.h>
 #include <segments.h>
@@ -12,9 +13,15 @@
 #include "math_util.h"
 #include "courses/courseTable.h"
 #include "defines.h"
+#include <assets/mario_raceway_displaylists.h>
+#include <assets/mario_raceway_vertices.h>
+#include <assert.h>
 
 s32 sGfxSeekPosition;
 s32 sPackedSeekPosition;
+
+static u8 sMemoryPool[0xFFFFF]; // Stock memory pool size: 0xAB630
+uintptr_t sPoolEnd = sMemoryPool + sizeof(sMemoryPool);
 
 uintptr_t sPoolFreeSpace;
 struct MainPoolBlock *sPoolListHeadL;
@@ -28,6 +35,11 @@ struct UnkStruct_802B8CD4 D_802B8CD4[] = {
 s32 D_802B8CE4 = 0; // pad
 s32 memoryPadding[2];
 
+#define PRINT_MEMPOOL                                                                                  \
+    printf("\nPool Start: 0x%llX, Pool End: 0x%llX, size: 0x%llX\ngNextFreeMemoryAddress: 0x%llX\n\n", sMemoryPool,  \
+           sMemoryPool + sizeof(sMemoryPool), (sMemoryPool + sizeof(sMemoryPool)) - sMemoryPool, gNextFreeMemoryAddress)
+
+
 /**
  * @brief Returns the address of the next available memory location and updates the memory pointer
  * to reference the next location of available memory based provided size to allocate.
@@ -38,6 +50,13 @@ void *get_next_available_memory_addr(uintptr_t size) {
     uintptr_t freeSpace = (uintptr_t) gNextFreeMemoryAddress;
     size = ALIGN16(size);
     gNextFreeMemoryAddress += size;
+
+    if (gNextFreeMemoryAddress > sPoolEnd) {
+        printf("[memory.c] get_next_available_memory_addr(): Memory Pool Out of Bounds! Out of memory!\n");
+        PRINT_MEMPOOL;
+        assert(false);
+    }
+
     //printf("\nNEXT MEM ADDR 0x%llX\n\n", freeSpace[0]);
     return (void *) freeSpace;
 }
@@ -73,7 +92,22 @@ void *segmented_to_virtual(const void *addr) {
     size_t segment = (uintptr_t) addr >> 24;
     size_t offset = (uintptr_t) addr & 0x00FFFFFF;
 
-    return (void *) ((gSegmentTable[segment] + offset) | 0x80000000);
+    return (void *) ((gSegmentTable[segment] + offset));
+}
+
+void *segment_offset_to_virtual(uint32_t segment, uint32_t offset) {
+    return (void *) (gSegmentTable[segment] + ( (offset / 8) * sizeof(Gfx) ) );
+}
+
+void *segmented_gfx_to_virtual(const void *addr) {
+    size_t segment = (uintptr_t) addr >> 24;
+    size_t offset = (uintptr_t) addr & 0x00FFFFFF;
+
+    offset = (offset / 8) * sizeof(Gfx);
+
+    printf("seg_gfx_to_virt: 0x%llX\n",addr);
+
+    return (void *) ((gSegmentTable[segment] + offset));
 }
 
 void move_segment_table_to_dmem(void) {
@@ -89,15 +123,21 @@ void move_segment_table_to_dmem(void) {
  *
  * Default memory size, 701.984 Kilobytes.
 */
-void initialize_memory_pool(uintptr_t poolStart, uintptr_t poolEnd) {
+void initialize_memory_pool() {
+
+    uintptr_t poolStart = sMemoryPool;
+    //uintptr_t sPoolEnd = sMemoryPool + sizeof(sMemoryPool);
+
+    bzero(sMemoryPool, sizeof(sMemoryPool));
 
     poolStart = ALIGN16(poolStart);
     // Truncate to a 16-byte boundary.
-    poolEnd &= ~0xF;
+    sPoolEnd &= ~0xF;
 
-    gFreeMemorySize = (poolEnd - poolStart) - 0x10;
+    gFreeMemorySize = (sPoolEnd - poolStart) - 0x10;
     gNextFreeMemoryAddress = poolStart;
-    int bp = 0;
+
+    PRINT_MEMPOOL;
 }
 
 /**
@@ -108,8 +148,22 @@ void *allocate_memory(uintptr_t size) {
 
     size = ALIGN16(size);
     gFreeMemorySize -= size;
+
+    if (gFreeMemorySize < 0) {
+        printf("[memory.c] allocate_memory(): gFreeMemorySize below zero!\n");
+        printf("gFreeMemorySize: 0x%X", gFreeMemorySize);
+        PRINT_MEMPOOL;
+        assert(false);
+    }
+
     freeSpace = (uintptr_t ) gNextFreeMemoryAddress;
     gNextFreeMemoryAddress += size;
+
+    if (gNextFreeMemoryAddress > sPoolEnd) {
+        printf("[memory.c] allocate_memory(): Memory Pool Out of Bounds! Out of memory!\n");
+        PRINT_MEMPOOL;
+        assert(false);
+    }
 
     return (void *) freeSpace;
 }
@@ -415,21 +469,15 @@ uintptr_t MIO0_0F(u8 *arg0, uintptr_t arg1, uintptr_t arg2) {
     return oldHeapEndPtr;
 }
 
-void func_802A86A8(CourseVtx *data, uintptr_t arg1) {
-    CourseVtx *courseVtx = data;
-    Vtx *vtx;
+void func_802A86A8(CourseVtx *courseVtx, Vtx *vtx, size_t arg1) {
     s32 tmp = ALIGN16(arg1 * 0x10);
-#ifdef AVOID_UB
-    uintptr_t i;
-#else
-    s32 i;
-#endif
+    size_t i;
     s8 temp_a0;
     s8 temp_a3;
     s8 flags;
 
-    gHeapEndPtr -= tmp;
-    vtx = (Vtx *) gHeapEndPtr;
+    //gHeapEndPtr -= tmp;
+    //vtx = (Vtx *) gHeapEndPtr;
 
     // s32 to uintptr_t comparison required for matching.
     for (i = 0; i < arg1; i++) {
@@ -469,7 +517,7 @@ void decompress_vtx(CourseVtx *arg0, uintptr_t vertexCount) {
     gNextFreeMemoryAddress += size;
 
     mio0decode(vtxCompressed, (u8 *) freeSpace);
-    func_802A86A8((CourseVtx *) freeSpace, vertexCount);
+    //func_802A86A8((CourseVtx *) freeSpace, vertexCount);
     set_segment_base_addr(4, (void *) gHeapEndPtr);
 }
 
@@ -961,18 +1009,19 @@ UNUSED void func_802A9AEC(void) {
  * This issue is prevented so long as the packed file adheres to correct opcodes and unpack code
  * increments the file pointer the correct number of times.
  */
-void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, uintptr_t arg2) {
+
+void displaylist_unpack(Gfx *gfx, u8 *data, uintptr_t arg2) {
     u8 *packed_dl = data;
 
-    Gfx *gfx;
-    uintptr_t addr;
+    //uintptr_t addr;
 
     u8 opcode;
 
-    finalDisplaylistOffset = ALIGN16(finalDisplaylistOffset) + 8;
-    gHeapEndPtr -= finalDisplaylistOffset;
-    addr = gHeapEndPtr;
-    gfx = (Gfx *) gHeapEndPtr;
+    // finalDisplaylistOffset = ALIGN16(finalDisplaylistOffset) + 8;
+    // gHeapEndPtr -= finalDisplaylistOffset;
+    // addr = gHeapEndPtr;
+    // gfx = (Gfx *) gHeapEndPtr;
+
     sGfxSeekPosition = 0;
     sPackedSeekPosition = 0;
 
@@ -1251,7 +1300,7 @@ void displaylist_unpack(uintptr_t *data, uintptr_t finalDisplaylistOffset, uintp
                 break;
         }
     }
-    set_segment_base_addr(0x7, (void *) addr);
+    //set_segment_base_addr(0x7, (void *) addr);
 }
 
 struct UnkStr_802AA7C8 {
@@ -1323,6 +1372,29 @@ void *decompress_segments(u8 *start, u8 *end) {
  * @param courseId
 */
 void load_course(s32 courseId) {
+    printf("Loading Course Data\n");
+
+    // Extract packed DLs
+    u8 *packed = (u8 *) LOAD_ASSET(d_course_mario_raceway_packed_dls);
+    Gfx *gfx = (Gfx *) allocate_memory(sizeof(Gfx) * 3366); // Size of unpacked DLs
+    displaylist_unpack(gfx, packed, 0);
+
+    gSegmentTable[7] = &gfx[0];
+
+    // Convert course vtx to vtx
+    CourseVtx *cvtx = (CourseVtx *) LOAD_ASSET(d_course_mario_raceway_vertex);
+    Vtx *vtx = (Vtx *) allocate_memory(sizeof(Vtx) * 5757);
+    func_802A86A8(cvtx, vtx, 5757);
+    gSegmentTable[4] = &vtx[0];
+
+
+
+
+//    __gSPSegment(gDisplayListHead++, 7, &gfx);
+
+
+    //printf("Course Data Loaded!\n");
+
     // Future implementation for Extra mode and course stretching.
 
     // if (gIsMirrorMode) {

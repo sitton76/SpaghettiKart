@@ -7,6 +7,7 @@
 #include <macros.h>
 #include <libultra/gbi.h>
 #include <mk64.h>
+#include <align_asset_macro.h>
 
 #include "camera.h"
 #include "code_80057C60.h"
@@ -35,6 +36,7 @@
 #include "spawn_players.h"
 #include "sounds.h"
 #include "data/some_data.h"
+#include <assets/some_data.h>
 
 
 //! @warning this macro is undef'd at the end of this file
@@ -493,7 +495,7 @@ void func_80057FC4(u32 arg0) {
     if ((gHUDDisable != 0)) {
         return;
     }
-    gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+    gSPDisplayList(gDisplayListHead++, D_0D0076F8);
     set_matrix_hud_screen();
 
     if ((D_801657C8 != 0)){
@@ -527,7 +529,7 @@ void render_object(u32 arg0) {
         return;
     }
 
-    gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+    gSPDisplayList(gDisplayListHead++, D_0D0076F8);
 
     if (D_8018D22C != 0) {
         return;
@@ -636,7 +638,7 @@ void render_player_snow_effect(u32 arg0) {
         return;
     }
 
-    gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+    gSPDisplayList(gDisplayListHead++, D_0D0076F8);
 
     if (D_8018D22C != 0) {
         return;
@@ -818,13 +820,13 @@ void render_snowing_effect(s32 arg0) {
 }
 
 void func_80058BF4(void) {
-    gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+    gSPDisplayList(gDisplayListHead++, D_0D0076F8);
 }
 
 void func_80058C20(u32 arg0) {
 
     D_8018D21C = arg0;
-    gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+    gSPDisplayList(gDisplayListHead++, D_0D0076F8);
 
     if (D_8018D22C == 0) {
         switch (arg0) {
@@ -892,7 +894,7 @@ void func_80058C20(u32 arg0) {
 void render_hud(u32 arg0) {
 
     D_8018D21C = arg0;
-    gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+    gSPDisplayList(gDisplayListHead++, D_0D0076F8);
     if (D_8018D22C == 0) {
         switch (arg0) {
         case RENDER_SCREEN_MODE_1P_PLAYER_ONE:
@@ -1040,7 +1042,7 @@ void func_800591B4(void) {
 
     if ((gHUDDisable == 0) && (D_800DC5B8 != 0)) {
         func_80057C60();
-        gSPDisplayList(gDisplayListHead++, &D_0D0076F8);
+        gSPDisplayList(gDisplayListHead++, D_0D0076F8);
 
         if (gIsHUDVisible != 0) {
             if (D_801657D8 == 0) {
@@ -5228,7 +5230,7 @@ void func_80067964(Player *player, UNUSED s8 arg1, f32 arg2, UNUSED s8 arg3, s8 
         func_800652D4(sp9C, sp94, player->size * arg2);
         gSPDisplayList(gDisplayListHead++, D_0D008C90);
         gSPClearGeometryMode(gDisplayListHead++, G_CULL_BOTH);
-        gDPLoadTLUT_pal256(gDisplayListHead++, D_800E52D0);
+        gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         gDPLoadTextureBlock(gDisplayListHead++, D_8018D4AC, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPVertex(gDisplayListHead++, D_800E8840, 4, 0);
@@ -5308,7 +5310,7 @@ void func_80068310(Player *player, UNUSED s8 arg1, UNUSED f32 arg2, s8 arg3, s8 
         sp94[2] = 0;
         func_800652D4(sp9C, sp94, player->unk_258[20 + arg4].unk_00C * player->size);
         gSPDisplayList(gDisplayListHead++, D_0D008C90);
-        gDPLoadTLUT_pal256(gDisplayListHead++, D_800E52D0);
+        gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         gDPLoadTextureBlock(gDisplayListHead++, D_8018D4B4, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPVertex(gDisplayListHead++, D_800E8880, 4, 0);
@@ -5382,7 +5384,7 @@ void func_80068DA0(Player *player, UNUSED s8 arg1, UNUSED f32 arg2, s8 arg3, s8 
         sp94[2] = 0;
         func_800652D4(sp9C, sp94, player->unk_258[20 + arg4].unk_00C * player->size);
         gSPDisplayList(gDisplayListHead++, D_0D008C90);
-        gDPLoadTLUT_pal256(gDisplayListHead++, D_800E52D0);
+        gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         gDPLoadTextureBlock(gDisplayListHead++, D_8018D4A4, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSPVertex(gDisplayListHead++, D_800E8B80, 4, 0);
@@ -5788,7 +5790,7 @@ void render_battle_balloon(Player *player, s8 arg1, s16 arg2, s8 arg3) {
 
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, D_0D008DB8);
-    gDPLoadTLUT_pal256(gDisplayListHead++, D_800E52D0);
+    gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
     gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
 
     func_8004B614(primRed, primGreen, primBlue, envRed, envGreen, envBlue, 0x000000D8);
@@ -5902,7 +5904,7 @@ void render_balloon(Vec3f arg0, f32 arg1, s16 arg2, s16 arg3) {
     convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], sp108);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, D_0D008DB8);
-    gDPLoadTLUT_pal256(gDisplayListHead++, D_800E52D0);
+    gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
     gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
     func_8004B614(primRed, primGreen, primBlue, envRed, envGreen, envBlue, 0x000000D8);
     gDPSetRenderMode(gDisplayListHead++, AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL | GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA), AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL | GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
