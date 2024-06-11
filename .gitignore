@@ -28,6 +28,7 @@
 *.out
 *.app
 *.hex
+*.otr
 
 # Debug files
 *.dSYM/
@@ -55,7 +56,7 @@ xml/*
 
 # Torch
 include/assets/*
-tools/torch/*
+torch/*
 debug/*
 /debug/*
 

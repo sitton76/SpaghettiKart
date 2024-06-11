@@ -8,6 +8,7 @@
 #include "resource/importers/Vec3fFactory.h"
 #include "resource/importers/Vec3sFactory.h"
 #include "resource/importers/KartAIFactory.h"
+#include "resource/importers/CourseVtxFactory.h"
 #include "resource/importers/TrackSectionsFactory.h"
 #include "resource/importers/TrackWaypointFactory.h"
 #include "resource/importers/ActorSpawnDataFactory.h"
@@ -25,7 +26,6 @@ float gInterpolationStep = 0.0f;
 #include <DisplayListFactory.h>
 #include <TextureFactory.h>
 #include <MatrixFactory.h>
-#include <ArrayFactory.h>
 #include <BlobFactory.h>
 #include <VertexFactory.h>
 }
@@ -34,11 +34,11 @@ GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
     std::vector<std::string> OTRFiles;
-    if (const std::string cube_path = Ship::Context::GetPathRelativeToAppDirectory("mkcube.otr"); std::filesystem::exists(cube_path)) {
-        OTRFiles.push_back(cube_path);
+    if (const std::string spaghetti_path = Ship::Context::GetPathRelativeToAppDirectory("spaghetti.otr"); std::filesystem::exists(spaghetti_path)) {
+        OTRFiles.push_back(spaghetti_path);
     }
-    if (const std::string sm64_otr_path = Ship::Context::GetPathRelativeToAppBundle("sm64.otr"); std::filesystem::exists(sm64_otr_path)) {
-        OTRFiles.push_back(sm64_otr_path);
+    if (const std::string ship_otr_path = Ship::Context::GetPathRelativeToAppBundle("ship.otr"); std::filesystem::exists(ship_otr_path)) {
+        OTRFiles.push_back(ship_otr_path);
     }
     if (const std::string patches_path = Ship::Context::GetPathRelativeToAppDirectory("mods"); !patches_path.empty() && std::filesystem::exists(patches_path)) {
         if (std::filesystem::is_directory(patches_path)) {
@@ -52,6 +52,10 @@ GameEngine::GameEngine() {
 
     this->context = Ship::Context::CreateInstance("Spaghettify", "skart64", "spaghettify.cfg.json", OTRFiles, {}, 3);
 
+    auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
+
+    wnd->SetRendererUCode(ucode_f3dex);
+
     auto loader = context->GetResourceManager()->GetResourceLoader();
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3fV0>(), RESOURCE_FORMAT_BINARY, "Vec3f", static_cast<uint32_t>(SF64::ResourceType::Vec3f), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3sV0>(), RESOURCE_FORMAT_BINARY, "Vec3s", static_cast<uint32_t>(SF64::ResourceType::Vec3s), 0);
@@ -61,9 +65,9 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryVertexV0>(), RESOURCE_FORMAT_BINARY, "Vertex", static_cast<uint32_t>(LUS::ResourceType::Vertex), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryDisplayListV0>(), RESOURCE_FORMAT_BINARY, "DisplayList", static_cast<uint32_t>(LUS::ResourceType::DisplayList), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryMatrixV0>(), RESOURCE_FORMAT_BINARY, "Matrix", static_cast<uint32_t>(LUS::ResourceType::Matrix), 0);
-    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryArrayV0>(), RESOURCE_FORMAT_BINARY, "Array", static_cast<uint32_t>(LUS::ResourceType::Array), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryBlobV0>(), RESOURCE_FORMAT_BINARY, "Blob", static_cast<uint32_t>(LUS::ResourceType::Blob), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryKartAIV0>(), RESOURCE_FORMAT_BINARY, "KartAI", static_cast<uint32_t>(MK64::ResourceType::KartAI), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryCourseVtxV0>(), RESOURCE_FORMAT_BINARY, "CourseVtx", static_cast<uint32_t>(MK64::ResourceType::CourseVertex), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackSectionsV0>(), RESOURCE_FORMAT_BINARY, "TrackSections", static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackWaypointsV0>(), RESOURCE_FORMAT_BINARY, "Waypoints", static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryActorSpawnDataV0>(), RESOURCE_FORMAT_BINARY, "SpawnData", static_cast<uint32_t>(MK64::ResourceType::SpawnData), 0);

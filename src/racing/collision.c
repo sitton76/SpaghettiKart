@@ -9,6 +9,7 @@
 #include "collision.h"
 #include "math_util.h"
 #include "code_800029B0.h"
+#include <assert.h>
 
 // Used to delete the choco mountain guard rail
 void nullify_displaylist(uintptr_t addr) {
@@ -1547,6 +1548,11 @@ void func_802AE434(Vtx *vtx1, Vtx *vtx2, Vtx *vtx3, s8 surfaceType, u16 sectionI
     s16 y3;
     s16 z3;
 
+    // printf("mesh index: %d ", D_8015F588);
+    // printf("sectionId: 0x%X ", sectionId);
+    // printf("surfaceType: 0x%X ", surfaceType);
+    
+
     /* Unused variables placed around doubles for dramatic effect */
     UNUSED s32 pad2[7];
 
@@ -1676,6 +1682,11 @@ void func_802AE434(Vtx *vtx1, Vtx *vtx2, Vtx *vtx3, s8 surfaceType, u16 sectionI
         gCourseMaxZ = maxZ;
     }
 
+    // printf("X 0x%X\n ", normalX);
+    // printf("Y 0x%X\n ", normalY);
+    // printf("Z 0x%X\n ", normalZ);
+    // printf("dist 0x%X\n\n", distance);
+
     tile->height = normalX;
     tile->gravity = normalY;
     tile->rotation = normalZ;
@@ -1747,6 +1758,17 @@ void set_vtx_from_tri2(u32 triangle1, u32 triangle2, s8 surfaceType, u16 section
     u32 vert5 = ( ( triangle2 & 0x0000FF00 ) >>  8 ) / 2;
     u32 vert6 = (   triangle2 & 0x000000FF )         / 2;
 
+    // printf("tr1: 0x%X \n", triangle1);
+    // printf("tr2: 0x%X \n", triangle2);
+
+    // printf("\nv1 0x%X ", vert1);
+    // printf("v2 0x%X ", vert2);
+    // printf("v3 0x%X ", vert3);
+    // printf("v4 0x%X ", vert4);
+    // printf("v5 0x%X ", vert5);
+    // printf("v6 0x%X\n", vert6);
+
+
     Vtx *vtx1 = vtxBuffer[vert1];
     Vtx *vtx2 = vtxBuffer[vert2];
     Vtx *vtx3 = vtxBuffer[vert3];
@@ -1791,6 +1813,10 @@ void set_vtx_buffer(uintptr_t addr, u32 numVertices, u32 bufferIndex) {
     u32 i;
     Vtx *vtx = (Vtx *) addr;
     for (i = 0; i < numVertices; i++) {
+        //printf("VTX: 0x%llX",vtx);
+        if (vtx == 0) {
+           assert(false);
+        }
         vtxBuffer[bufferIndex] = vtx;
         vtx++;
         bufferIndex++;
@@ -1977,6 +2003,7 @@ void set_vertex_data_with_default_section_id(Gfx *gfx, s8 surfaceType) {
 }
 
 extern u32 D_8015F58C;
+u32 numTimes = 0;
 
 /**
  * Recursive search and set for vertex data
@@ -1986,6 +2013,7 @@ void find_and_set_vertex_data(Gfx *addr, s8 surfaceType, u16 sectionId) {
     uintptr_t lo;
     uintptr_t hi;
     s32 i;
+    numTimes++;
     //printf("Initial\n");
     //printf("ptr 0x%llX\n", &addr);
     //printf("w0 0x%llX\n", addr->words.w0);
@@ -2009,20 +2037,20 @@ void find_and_set_vertex_data(Gfx *addr, s8 surfaceType, u16 sectionId) {
         
         //  printf("ptr 0x%llX\n", &addr);
         //  printf("op 0x%llX\n", opcode);
-        //  printf("w0 0x%X\n", lo);
-        //  printf("w1 0x%X\n", hi);
+        //   printf("w0 0x%llX\n", lo);
+        //   printf("w1 0x%llX\n", hi);
 
         if (opcode == (G_DL << 24)) {
             // G_DL's hi contains an addr to another DL.
-            Gfx *dl = segmented_gfx_to_virtual(hi);
-            // printf("DL: 0x%llX\n", &dl);
-            //     printf("  w0 0x%X\n", dl->words.w0);
-            //     printf("  w1 0x%X\n", dl->words.w1);
+            //Gfx *dl = segmented_gfx_to_virtual(hi);
+            // printf("DL: 0x%llX ", hi);
+            //     printf("  w0 0x%llX", lo);
+            //     printf("  w1 0x%llX\n", hi);
 
-            find_and_set_vertex_data((Gfx *) (dl), surfaceType, sectionId);
+            find_and_set_vertex_data((Gfx *) (hi), surfaceType, sectionId);
 
         } else if (opcode == (G_VTX << 24)) {
-            set_vtx_buffer(segmented_gfx_to_virtual(hi), (lo >> 10) & 0x3F, ((lo >> 16) & 0xFF) >> 1);
+            set_vtx_buffer((hi), (lo >> 10) & 0x3F, ((lo >> 16) & 0xFF) >> 1);
 
         } else if (opcode == (G_TRI1 << 24)) {
             D_8015F58C += 1;
@@ -2030,6 +2058,7 @@ void find_and_set_vertex_data(Gfx *addr, s8 surfaceType, u16 sectionId) {
 
         } else if (opcode == (G_TRI2 << 24)) {
             D_8015F58C += 2;
+
             set_vtx_from_tri2(lo, hi, surfaceType, sectionId);
 
         } else if (opcode == (G_QUAD << 24)) {
