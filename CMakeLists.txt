@@ -61,6 +61,7 @@ endif()
 set(VERSION us)
 set(USE_NETWORKING OFF)
 set(SKIP_XCODE_VERSION_CHECK ON)
+set(GFX_DEBUG_DISASSEMBLER ON)
 
 # Add compile definitions for the target
 add_compile_definitions(
@@ -540,19 +541,23 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
 endif()
 
 include(ExternalProject)
-ExternalProject_Add(Torch
+ExternalProject_Add(torch
+    PREFIX torch
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/torch
     CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/torch
 )
 
-ExternalProject_Get_Property(Torch install_dir)
-set(TORCH_EXECUTABLE ${install_dir}/torch/build/x64/Debug/torch)
+ExternalProject_Get_Property(torch install_dir)
+set(TORCH_EXECUTABLE ${install_dir}/src/Torch-build/$<CONFIGURATION>/torch)
+message(STATUS "Torch executable path: ${TORCH_EXECUTABLE}")
 
 add_custom_target(
     ExtractAssets
-    DEPENDS Torch
+    DEPENDS torch
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${TORCH_EXECUTABLE} header -o baserom.us.z64
+    COMMAND ${TORCH_EXECUTABLE} otr baserom.us.z64
     COMMAND ${TORCH_EXECUTABLE} pack assets ship.otr
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/spaghetti.otr" "${CMAKE_BINARY_DIR}/spaghetti.otr"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/ship.otr" "${CMAKE_BINARY_DIR}/ship.otr"
-)
+    )
