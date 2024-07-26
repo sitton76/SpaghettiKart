@@ -7,6 +7,7 @@ extern "C" {
 #include "main.h"
 #include "audio/load.h"
 #include "audio/external.h"
+#include "networking/networking.h"
 }
 
 extern "C"

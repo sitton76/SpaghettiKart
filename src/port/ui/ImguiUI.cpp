@@ -1,6 +1,7 @@
 #include "ImguiUI.h"
 #include "UIWidgets.h"
 #include "ResolutionEditor.h"
+#include "GameInfoWindow.h"
 
 #include <spdlog/spdlog.h>
 #include <imgui.h>
@@ -22,6 +23,7 @@ std::shared_ptr<Ship::GuiWindow> mConsoleWindow;
 std::shared_ptr<Ship::GuiWindow> mStatsWindow;
 std::shared_ptr<Ship::GuiWindow> mInputEditorWindow;
 std::shared_ptr<Ship::GuiWindow> mGfxDebuggerWindow;
+std::shared_ptr<Ship::GuiWindow> mGameInfoWindow;
 std::shared_ptr<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow> mAdvancedResolutionSettingsWindow;
 
 void SetupGuiElements() {
@@ -34,6 +36,12 @@ void SetupGuiElements() {
 
     mGameMenuBar = std::make_shared<GameMenuBar>("gOpenMenuBar", CVarGetInteger("gOpenMenuBar", 0));
     gui->SetMenuBar(mGameMenuBar);
+
+    mGameInfoWindow = gui->GetGuiWindow("GameInfo");
+    if (mGameInfoWindow == nullptr) {
+        SPDLOG_ERROR("Could not find game info window");
+    }
+
     mStatsWindow = gui->GetGuiWindow("Stats");
     if (mStatsWindow == nullptr) {
         SPDLOG_ERROR("Could not find stats window");
@@ -55,12 +63,16 @@ void SetupGuiElements() {
         SPDLOG_ERROR("Could not find input GfxDebuggerWindow");
     }
 
+    mGameInfoWindow = std::make_shared<GameInfo::GameInfoWindow>("gGameInfoEnabled", "Game info");
+    gui->AddGuiWindow(mGameInfoWindow);
+
     mAdvancedResolutionSettingsWindow = std::make_shared<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow>("gAdvancedResolutionEditorEnabled", "Advanced Resolution Settings");
     gui->AddGuiWindow(mAdvancedResolutionSettingsWindow);
 }
 
 void Destroy() {
     mAdvancedResolutionSettingsWindow = nullptr;
+    mGameInfoWindow = nullptr;
     mConsoleWindow = nullptr;
     mStatsWindow = nullptr;
     mInputEditorWindow = nullptr;
@@ -475,6 +487,10 @@ void DrawDebugMenu() {
         });
 
         UIWidgets::Spacer(0);
+
+        UIWidgets::WindowButton("GameInfo", "gGameInfoEnabled", GameUI::mGameInfoWindow, {
+            .tooltip = "Shows the game info window, contains player and actor information"
+        });
 
         UIWidgets::WindowButton("Stats", "gStatsEnabled", GameUI::mStatsWindow, {
             .tooltip = "Shows the stats window, with your FPS and frametimes, and the OS you're playing on"

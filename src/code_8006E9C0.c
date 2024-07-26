@@ -105,7 +105,7 @@ void func_8006EB10(void) {
 }
 
 void clear_object_list() {
-    bzero(gObjectList, OBJECT_LIST_SIZE * sizeof(Objects));
+    bzero(gObjectList, OBJECT_LIST_SIZE * sizeof(Object));
     objectListSize = -1;
 }
 
@@ -141,7 +141,7 @@ void init_item_window(s32 objectIndex) {
 }
 
 void func_8006EEE8(s32 courseId) {
-    D_8018D240 = (s32)dma_textures(gCourseOutlineTextures[courseId], D_800E5520[courseId], D_800E5520[courseId]);
+    D_8018D240 = (uintptr_t)dma_textures(gCourseOutlineTextures[courseId], D_800E5520[courseId], D_800E5520[courseId]);
     // This is incredibly dumb. D_800E5548 ought to be something more like
     // `u16 D_800E5548[][2]` but that doesn't match for some insane reason
     D_8018D2B0 = D_800E5548[courseId * 2];
@@ -824,7 +824,7 @@ void init_course_object(void) {
                 objectId = indexObjectList2[i];
                 init_object(objectId, 0);
                 gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] = gHedgehogSpawns[i].pos[0] * xOrientation;
-                gObjectList[objectId].pos[1] = gObjectList[objectId].unk_044 = gHedgehogSpawns[i].pos[1] + 6.0;
+                gObjectList[objectId].pos[1] = gObjectList[objectId].surfaceHeight = gHedgehogSpawns[i].pos[1] + 6.0;
                 gObjectList[objectId].pos[2] = gObjectList[objectId].origin_pos[2] = gHedgehogSpawns[i].pos[2];
                 gObjectList[objectId].unk_0D5 = gHedgehogSpawns[i].unk_06;
                 gObjectList[objectId].unk_09C = gHedgehogPatrolPoints[i][0] * xOrientation;
@@ -1020,7 +1020,7 @@ void init_hud_one_player(void) {
     D_8018CFEC = playerHUD[PLAYER_ONE].speedometerX + 0x18;
     D_8018CFF4 = playerHUD[PLAYER_ONE].speedometerY + 6;
     D_8016579E = 0xDD00;
-    playerHUD[PLAYER_ONE].rankX = 0x0034;
+    playerHUD[PLAYER_ONE].rankX = 52;
     playerHUD[PLAYER_ONE].rankY = 0x00C8;
     playerHUD[PLAYER_ONE].slideRankX = 0;
     playerHUD[PLAYER_ONE].slideRankY = 0;

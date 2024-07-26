@@ -105,8 +105,8 @@ void func_800744A0(s32);
 void func_800744CC(void);
 void func_80074510(uintptr_t, void*, size_t);
 void func_800745C8(s32, s32);
-void func_8007466C(s32, s32);
-void func_80074704(s32, s32);
+void func_8007466C(s32, uintptr_t);
+void func_80074704(s32, uintptr_t);
 u8  *func_80074790(s32, u8*);
 void func_800747F0(s32, u8*);
 void func_80074894(s32, u8*);
@@ -370,9 +370,6 @@ void func_80086940(s32);
 void func_80086C14(s32);
 void func_80086C6C(s32);
 void func_80086D80(void);
-
-s32 osPiStartDma(OSIoMesg *mb, s32 priority, s32 direction, uintptr_t devAddr, void *vAddr, size_t nbytes, OSMesgQueue *mq);
-s32 osRecvMesg(OSMesgQueue*, OSMesg*, s32);
 
 extern f32 D_800E43B0[];
 extern Vtx D_800E43F0[];

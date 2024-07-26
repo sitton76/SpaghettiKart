@@ -380,7 +380,7 @@ extern s16 D_80165900;
 extern s8  D_80165908;
 
 extern s8 D_80165A90;
-// extern Objects gObjectList[]; -> objects.h
+// extern Object gObjectList[]; -> objects.h
 
 extern s32 objectListSize;
 extern Mtx D_80183D60;
@@ -542,7 +542,7 @@ extern u8  D_8018D228;
 extern s32 D_8018D22C;
 // extern s8 D_8018D230; -> objects.h
 
-extern s32 D_8018D240;
+extern uintptr_t D_8018D240;
 extern u8 *D_8018D248[];
 extern f32 D_8018D2A0;
 extern s32 D_8018D2A4;

@@ -41,6 +41,7 @@ struct AllocOnlyPool {
 
 extern f32 vtxStretchY;
 
+u8 *load_lakitu_textures_x64(const char** textureList, size_t length);
 void *get_next_available_memory_addr(uintptr_t);
 uintptr_t set_segment_base_addr(s32, void*);
 void *get_segment_base_addr(s32);
@@ -69,7 +70,7 @@ void  func_802A81EC(void);
 struct AllocOnlyPool *alloc_only_pool_init(uintptr_t, uintptr_t);
 uintptr_t func_802A82AC(s32);
 uintptr_t func_802A8348(s32, s32, s32);
-u8   *dma_textures(u8*, size_t, size_t);
+u8   *dma_textures(const char*, size_t, size_t);
 uintptr_t MIO0_0F(u8*, uintptr_t, uintptr_t);
 void  func_802A8844(void);
 void  unpack_lights(Gfx*, u8*, s8);

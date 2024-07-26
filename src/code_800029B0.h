@@ -67,10 +67,10 @@ extern s32 gIsMirrorMode; // D_800DC604
 extern s16 gCreditsCourseId;
 extern s16 gPlaceItemBoxes;
 
-extern mk64_surface_map_ram *gSurfaceMap;
-extern u16 *D_8015F584;
-extern u16 D_8015F588;
-extern u16 D_8015F58A;
+extern CollisionTriangle *gCollisionMesh;
+extern u16 *gCollisionIndices;
+extern u16 gCollisionMeshCount;
+extern u16 gNumCollisionTriangles;
 extern u32 D_8015F58C;
 
 extern Vec3f D_8015F590;

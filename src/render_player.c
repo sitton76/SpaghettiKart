@@ -281,8 +281,8 @@ void func_80020524(void) {
             //mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[i - 1]][D_80164AB0[i - 1]]][D_80164AC0[i - 1]][D_80164AB0[i - 1]].unk_00,
 //                       D_802BFB80.arraySize8[D_801651D0[D_80164AC0[i - 1]][D_80164AB0[i - 1]]][D_80164AC0[i - 1]][D_80164AB0[i - 1]].pixel_index_array);
 
-            // memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[i - 1]][D_80164AB0[i - 1]]][D_80164AC0[i - 1]][D_80164AB0[i - 1]].pixel_index_array,
-            //     D_802DFB80[D_801651D0[D_80164AC0[i - 1]][D_80164AB0[i - 1]]][D_80164AC0[i - 1]][D_80164AB0[i - 1]].unk_00, 0x1000);
+            memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[i - 1]][D_80164AB0[i - 1]]][D_80164AC0[i - 1]][D_80164AB0[i - 1]].pixel_index_array,
+                 D_802DFB80[D_801651D0[D_80164AC0[i - 1]][D_80164AB0[i - 1]]][D_80164AC0[i - 1]][D_80164AB0[i - 1]].unk_00, 0x1000);
 
             //osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
@@ -290,8 +290,8 @@ void func_80020524(void) {
     //mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].unk_00,
     //           D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].pixel_index_array);
 
-    // memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].pixel_index_array, 
-    //     D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].unk_00, 0x1000);
+     memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].pixel_index_array, 
+         D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].unk_00, 0x1000);
 
 }
 
@@ -314,8 +314,8 @@ void func_8002088C(void) {
         //mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]].unk_00,
          //          D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]].pixel_index_array);
         
-        // memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]].pixel_index_array,
-        //     D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]].unk_00, 0x1000);
+         memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]].pixel_index_array,
+             D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]].unk_00, 0x1000);
         
         //osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
@@ -323,8 +323,8 @@ void func_8002088C(void) {
 
     //mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].unk_00,
     //           D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].pixel_index_array);
-    // memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].pixel_index_array,
-    //     D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].unk_00, 0x1000);
+     memcpy(&D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].pixel_index_array,
+         D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]].unk_00, 0x1000);
 }
 
 void func_80020BF4(void) {
@@ -339,11 +339,19 @@ void func_80020BF4(void) {
         func_80027560(D_80164AD0[var_s0], D_80164AB0[var_s0] + 4, D_80164AC0[var_s0], D_80164AC0[var_s0] - 2, D_801651D0[D_80164AC0[var_s0]][D_80164AB0[var_s0]], var_s0);
         // mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].unk_00,
         //            D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].pixel_index_array);
+
+
+    memcpy((u8*) &D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].pixel_index_array,
+        D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].unk_00, 0x1000);
+
+
         // osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
     }
     //func_80027560(D_80164AD0[0], D_80164AB0[0] + 4, D_80164AC0[0], D_80164AC0[0] - 2, D_801651D0[D_80164AC0[0]][D_80164AB0[0]], 0);
-    // mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].unk_00,
-    //            D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].pixel_index_array);
+     //mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].unk_00,
+     //           D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].pixel_index_array);
+
+     memcpy((u8*) &D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].pixel_index_array, D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].unk_00, 0x1000);
 }
 
 void func_80020F1C(void) {
@@ -359,10 +367,16 @@ void func_80020F1C(void) {
         // mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].unk_00,
         //            D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].pixel_index_array);
         // osRecvMesg(&gDmaMesgQueue, &gMainReceivedMesg, OS_MESG_BLOCK);
+
+
+        memcpy((u8*) &D_802BFB80.arraySize8[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].pixel_index_array, D_802DFB80[D_801651D0[D_80164AC0[var_s0 - 1]][D_80164AB0[var_s0 - 1]]][D_80164AC0[var_s0 - 1] - 2][D_80164AB0[var_s0 - 1] + 4].unk_00,0x1000);
+
     }
     //func_80027560(D_80164AD0[0], D_80164AB0[0] + 4, D_80164AC0[0], D_80164AC0[0] - 2, D_801651D0[D_80164AC0[0]][D_80164AB0[0]], 0);
     // mio0decode((u8*) D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].unk_00,
     //            D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].pixel_index_array);
+
+    memcpy((u8*) &D_802BFB80.arraySize8[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].pixel_index_array, D_802DFB80[D_801651D0[D_80164AC0[gPlayersToRenderCount-1]][D_80164AB0[gPlayersToRenderCount-1]]][D_80164AC0[gPlayersToRenderCount-1] - 2][D_80164AB0[gPlayersToRenderCount-1] + 4].unk_00, 0x1000);
 }
 
 void try_render_player(Player *player, s8 playerId, s8 arg2) {
@@ -1106,7 +1120,7 @@ void render_light_environment_on_player(Player *player, s8 arg1) {
             if (((gNearestWaypointByPlayerId[arg1] >= 0x15) && (gNearestWaypointByPlayerId[arg1] < 0x2A))
             || ((gNearestWaypointByPlayerId[arg1] >= 0x14D) && (gNearestWaypointByPlayerId[arg1] < 0x15C))
             || ((gNearestWaypointByPlayerId[arg1] >= 0x1D1) && (gNearestWaypointByPlayerId[arg1] < 0x1E4))
-            || (player->unk_110.unk3C[2] >= 500.0f)) { // over lava
+            || (player->collision.surfaceDistance[2] >= 500.0f)) { // over lava
                 change_player_color_effect_rgb(player, arg1, COLOR_LAVA, 0.3f);
                 change_player_color_effect_cmy(player, arg1, 0x004040, 0.3f);
                 D_80164B80[arg1] = 0;
@@ -1243,9 +1257,9 @@ void func_800235AC(Player *player, s8 arg1) {
         }
     }
     if (is_player_under_light_luigi_raceway(player, arg1) != true) {
-        if (((player->boundingBoxCorners[3].unk_14 & 1) == 1)
-        || ((player->boundingBoxCorners[3].unk_14 & 2) == 2)
-        || ((player->boundingBoxCorners[0].unk_14 & 3) == 3)) {
+        if (((player->tyres[BACK_RIGHT].unk_14 & 1) == 1)
+        || ((player->tyres[BACK_RIGHT].unk_14 & 2) == 2)
+        || ((player->tyres[FRONT_LEFT].unk_14 & 3) == 3)) {
             change_player_color_effect_rgb(player, arg1, COLOR_BLACK, 0.3f);
             change_player_color_effect_cmy(player, arg1, 0x6F6F6F, 0.3f);
             return;
@@ -1298,12 +1312,12 @@ void render_player_shadow(Player *player, s8 arg1, s8 arg2) {
         || ((player->effects & 0x10000) == 0x10000)
         || ((player->effects & 8) == 8)) {
 
-        var_f2 = (f32) (1.0 - ((f64) player->unk_110.unk3C[2] * 0.02));
+        var_f2 = (f32) (1.0 - ((f64) player->collision.surfaceDistance[2] * 0.02));
         if (var_f2 < 0.0f) {var_f2 = 0.0f;}
         if (var_f2 > 1.0f) {var_f2 = 1.0f;}
-        spB4[0] = player->unk_110.orientationVector[0];
-        spB4[2] = player->unk_110.orientationVector[2];
-        spB4[1] = player->unk_110.orientationVector[1];
+        spB4[0] = player->collision.orientationVector[0];
+        spB4[2] = player->collision.orientationVector[2];
+        spB4[1] = player->collision.orientationVector[1];
 
         spCC[0] = player->pos[0] + ((spB0 * sins(spC0)) + (spAC * coss(spC0)));
         spCC[1] = player->unk_074 + 1.0f;
@@ -1698,7 +1712,7 @@ void render_player(Player *player, s8 playerId, s8 screenId) {
     }
     func_80023BF0(player, playerId, screenId, var_v1);
     temp_t1 = 8 << (screenId * 4);
-    if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->unk_110.unk3C[2] <= 50.0f) && (player->surfaceType != ICE)) {
+    if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->collision.surfaceDistance[2] <= 50.0f) && (player->surfaceType != ICE)) {
         if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
             if (playerId == screenId) {
                 render_player_shadow(player, playerId, screenId);
@@ -1713,7 +1727,7 @@ void render_player(Player *player, s8 playerId, s8 screenId) {
         ghost_render(player, playerId, screenId, var_v1);
     }
     osRecvMesg(&gDmaMesgQueue, (OSMesg *) &sp34, OS_MESG_BLOCK);
-    if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->surfaceType == ICE) && ((player->unk_0CA & 1) != 1) && (player->unk_110.unk3C[2] <= 30.0f)) {
+    if ((temp_t1 == (player->unk_002 & temp_t1)) && (player->surfaceType == ICE) && ((player->unk_0CA & 1) != 1) && (player->collision.surfaceDistance[2] <= 30.0f)) {
         player_ice_reflection_render(player, playerId, screenId, var_v1);
     }
     if (player->boostPower >= 2.0f) {

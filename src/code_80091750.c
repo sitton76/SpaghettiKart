@@ -2319,7 +2319,7 @@ void func_80093C98(s32 arg0) {
     guOrtho(&gGfxPool->mtxEffect[gMatrixEffectCount], 0.0f, 319.0f, 239.0f, 0.0f, -100.0f, 100.0f, 1.0f);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount++]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gDisplayListHead++, D_02007F18);
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 320, 240);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     func_800A8250();
     if (arg0 == 0) {
         func_800A54EC();
@@ -2365,7 +2365,7 @@ void func_80093F10(void) {
     guOrtho(&gGfxPool->mtxEffect[gMatrixEffectCount], 0.0f, 319.0f, 239.0f, 0.0f, -100.0f, 100.0f, 1.0f);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount++]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gDisplayListHead++, D_02007F18);
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 320, 240);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     func_80092290(4, D_8018E850, D_8018E858);
     func_80092290(5, (s32 *) &D_8018E850[1], (s32 *) &D_8018E858[1]);
     func_8009C918();
@@ -2381,7 +2381,7 @@ void func_80093F10(void) {
 
 void func_800940EC(s32 arg0) {
     gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(D_802B8880));
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 320, 240);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     guOrtho(&gGfxPool->mtxEffect[gMatrixEffectCount], 0.0f, 319.0f, 239.0f, 0.0f, -100.0f, 100.0f, 1.0f);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount++]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gDisplayListHead++, D_02007F18);
@@ -2476,7 +2476,7 @@ void func_80094A64(struct GfxPool *pool) {
     gMatrixHudCount = 0;
     gMatrixEffectCount = 0;
     gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(D_802B8880));
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 320, 240);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     guOrtho(&pool->mtxScreen, 0.0f, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1, 0.0f, -100.0f, 100.0f, 1.0f);
     gSPMatrix(gDisplayListHead++, &pool->mtxScreen, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPDisplayList(gDisplayListHead++, D_02007650);
@@ -3452,15 +3452,53 @@ Gfx *draw_box_fill(Gfx *displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32
     if ((lrx < 0) || (lry < 0)) {
         return displayListHead;
     }
-    if (lrx >= 0x140) {
-        lrx = 0x13F;
+    if (lrx >= SCREEN_WIDTH) {
+        lrx = SCREEN_WIDTH - 1;
     }
-    if (lry >= 0xF0) {
-        lry = 0xEF;
+    if (lry >= SCREEN_HEIGHT) {
+        lry = SCREEN_HEIGHT - 1;
     }
     gSPDisplayList(displayListHead++, D_02008030);
     gDPSetFillColor(displayListHead++, (GPACK_RGBA5551(red, green, (u32)blue, alpha) << 0x10 | GPACK_RGBA5551(red, green, (u32)blue, alpha)));
     gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
+    gSPDisplayList(displayListHead++, D_02008058);
+    return displayListHead;
+}
+
+// draw a box filled with a solid color
+Gfx *draw_box_fill_wide(Gfx *displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32 red, s32 green, s32 blue, s32 alpha) {
+    red &= 0xFF;
+    green &= 0xFF;
+    blue &= 0xFF;
+    alpha &= 0xFF;
+    if (lrx < ulx) {
+        swap_values(&ulx, &lrx);
+    }
+    if (lry < uly) {
+        swap_values(&uly, &lry);
+    }
+    if ((ulx >= 0x140) || (uly >= 0xF0)) {
+        return displayListHead;
+    }
+    if (ulx < 0) {
+        ulx = 0;
+    }
+    if (uly < 0) {
+        uly = 0;
+    }
+    if ((lrx < 0) || (lry < 0)) {
+        return displayListHead;
+    }
+    if (lrx >= SCREEN_WIDTH) {
+        lrx = SCREEN_WIDTH - 1;
+    }
+    if (lry >= SCREEN_HEIGHT) {
+        lry = SCREEN_HEIGHT - 1;
+    }
+    gSPDisplayList(displayListHead++, D_02008030);
+    gDPSetFillColor(displayListHead++, (GPACK_RGBA5551(red, green, (u32)blue, alpha) << 0x10 | GPACK_RGBA5551(red, green, (u32)blue, alpha)));
+    gDPFillWideRectangle(displayListHead++, OTRGetDimensionFromLeftEdge(ulx), uly, OTRGetDimensionFromRightEdge(lrx), lry);
+    //gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
     gSPDisplayList(displayListHead++, D_02008058);
     return displayListHead;
 }
@@ -3497,9 +3535,15 @@ Gfx *draw_box(Gfx *displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red,
     }
     gSPDisplayList(displayListHead++, D_02008008);
     gDPSetPrimColor(displayListHead++, 0, 0, red, green, blue, alpha);
+    //gDPFillWideRectangle(displayListHead++, OTRGetRectDimensionFromLeftEdge(0), uly, OTRGetRectDimensionFromRightEdge(SCREEN_WIDTH), lry);
     gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
     gDPPipeSync(displayListHead++);
     return displayListHead;
+}
+
+//! @todo Need to call this somewhere on func_800A2D1C
+Gfx *draw_box_fill_wide_wrap(Gfx *displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry) {
+    return draw_box_fill_wide(displayListHead, ulx, uly, lrx, lry, 0, 0, 0, 0xFF);
 }
 
 Gfx *func_80098FC8(Gfx *displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry) {
@@ -3558,6 +3602,7 @@ void func_80099184(MkTexture *arg0) {
     MkTexture *texture = arg0;
     UNUSED struct_8018E118_entry *thing;
     while (texture->textureData != NULL) {
+    u8 *textureData = (u8 *) LOAD_ASSET(texture->textureData);
         var_a1 = 0;
         for (var_v0 = 0; var_v0 < gNumD_8018E118Entries; var_v0++) {
             // wtf is going on here?
@@ -3579,14 +3624,17 @@ void func_80099184(MkTexture *arg0) {
                 //dma_copy_base_729a30(texture->textureData, var_a1_2, D_8018D9B4);
                 //mio0decode(D_8018D9B4, (u8*)&D_8018D9B0[gD_8018E118TotalSize]);
               // * 2 here is just a guess
-              memcpy(&D_8018D9B0[gD_8018E118TotalSize], texture->textureData, texture->height * texture->width * 2);
+              size_t size = ResourceGetTexSizeByName(texture->textureData);
+              memcpy(&D_8018D9B0[gD_8018E118TotalSize], textureData, size);
             } else {
                 //dma_copy_base_729a30(texture->textureData, texture->height * texture->width * 2, &D_8018D9B0[gD_8018E118TotalSize]);
                 // * 2 here is just a guess
-                memcpy(&D_8018D9B0[gD_8018E118TotalSize], texture->textureData, texture->height * texture->width * 2);
+                size_t size = ResourceGetTexSizeByName(texture->textureData);
+                memcpy(&D_8018D9B0[gD_8018E118TotalSize], textureData, size);
             }
 
             thing = &D_8018E118[gNumD_8018E118Entries];
+            printf("test: %s\n",texture->textureData);
             thing->textureData = texture->textureData;
             thing = &D_8018E118[gNumD_8018E118Entries];
             thing->offset = gD_8018E118TotalSize;
@@ -3595,7 +3643,7 @@ void func_80099184(MkTexture *arg0) {
             gNumD_8018E118Entries += 1;
             gD_8018E118TotalSize = ((gD_8018E118TotalSize / 8) * 8) + 8;
         }
-        //texture++;
+        texture++;
         break;
     }
 }
@@ -6496,7 +6544,7 @@ s32 func_800A095C(char *someString, s32 len, s32 column, s32 row) {
 // Same functionality, but doesn't match byte for byte :/
 void func_800A09E0(struct_8018D9E0_entry *arg0) {
     s32 table_row, x = 0x20, y;
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 319, 194);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH - 1, 194);
     for(table_row = 0; table_row < 9; table_row++) {
         if ((D_800E86D0[0] != 0) || ((table_row != 0) && (table_row != 8))) {
             y = (table_row * 0xA) + arg0->row;
@@ -6558,7 +6606,7 @@ void func_800A0B80(struct_8018D9E0_entry *arg0) {
             } while (var_s0 != 0);
         }
     }
-    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 319, 239);
+    gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1);
 }
 
 void func_800A0DFC(void) {
@@ -7145,8 +7193,8 @@ GLOBAL_ASM("asm/non_matchings/code_80091750/func_800A1FB0.s")
 void func_800A2D1C(struct_8018D9E0_entry *arg0) {
     switch (D_80164A28) {
     case 1:
-        gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0, 0x13F, 0x28);
-        gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0xC7, 0x13F, 0xEF);
+        gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0, SCREEN_WIDTH - 1, 40);
+        gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0xC7, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1);
         arg0->unk1C = 0x28;
         break;
     case 2:

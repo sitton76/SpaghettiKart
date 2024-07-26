@@ -72,10 +72,10 @@ s16 gCreditsCourseId = COURSE_LUIGI_RACEWAY;
 s16 gPlaceItemBoxes = 1;
 
 // Technically a pointer to an array, but declaring it so creates regalloc issues.
-mk64_surface_map_ram *gSurfaceMap;
-u16 *D_8015F584;
-u16 D_8015F588; // Number of entries in gSurfaceMap
-u16 D_8015F58A;
+CollisionTriangle *gCollisionMesh;
+u16 *gCollisionIndices;
+u16 gCollisionMeshCount;
+u16 gNumCollisionTriangles;
 u32 D_8015F58C;
 
 Vec3f D_8015F590;
@@ -311,7 +311,7 @@ void func_80003040(void) {
         case COURSE_MARIO_RACEWAY:
             struct ActorSpawnData *a_d_course_mario_raceway_tree_spawns = (struct ActorSpawnData *) LOAD_ASSET(d_course_mario_raceway_tree_spawns);
             dma_textures(gTextureTrees1, 0x35B, 0x800);
-            //spawn_foliage(a_d_course_mario_raceway_tree_spawns);
+            spawn_foliage(a_d_course_mario_raceway_tree_spawns);
             break;
         case COURSE_BOWSER_CASTLE:
             // d_course_bowsers_castle_packed_dl_1350

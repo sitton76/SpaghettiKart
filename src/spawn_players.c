@@ -1,6 +1,7 @@
 #include <defines.h>
 #include <mk64.h>
 #include <stubs.h>
+#include "networking/networking.h"
 
 #include "spawn_players.h"
 #include "code_800029B0.h"
@@ -111,7 +112,7 @@ void spawn_player(Player *player, s8 playerIndex, f32 startingRow, f32 startingC
     }
 
     player->pos[0] = startingRow;
-    ret = func_802AE1C0(startingRow, arg4 + 50.0f, startingColumn) + player->boundingBoxSize;
+    ret = spawn_actor_on_surface(startingRow, arg4 + 50.0f, startingColumn) + player->boundingBoxSize;
     player->pos[2] = startingColumn;
     player->pos[1] = ret;
     player->copy_rotation_x = startingRow;
@@ -292,66 +293,66 @@ void spawn_player(Player *player, s8 playerIndex, f32 startingRow, f32 startingC
     D_801654C0[playerIndex] = 0;
     D_80165340 = 0;
 
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].surfaceType  = 0;
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].surfaceType = 0;
-    player->boundingBoxCorners[BACK_LEFT_TYRE].surfaceType   = 0;
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].surfaceType  = 0;
+    player->tyres[FRONT_LEFT].surfaceType  = 0;
+    player->tyres[FRONT_RIGHT].surfaceType = 0;
+    player->tyres[BACK_LEFT].surfaceType   = 0;
+    player->tyres[BACK_RIGHT].surfaceType  = 0;
 
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].surfaceFlags  = 0;
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].surfaceFlags = 0;
-    player->boundingBoxCorners[BACK_LEFT_TYRE].surfaceFlags   = 0;
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].surfaceFlags  = 0;
+    player->tyres[FRONT_LEFT].surfaceFlags  = 0;
+    player->tyres[FRONT_RIGHT].surfaceFlags = 0;
+    player->tyres[BACK_LEFT].surfaceFlags   = 0;
+    player->tyres[BACK_RIGHT].surfaceFlags  = 0;
 
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].surfaceMapIndex  = 0;
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].surfaceMapIndex = 0;
-    player->boundingBoxCorners[BACK_LEFT_TYRE].surfaceMapIndex   = 0;
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].surfaceMapIndex  = 0;
+    player->tyres[FRONT_LEFT].collisionMeshIndex  = 0;
+    player->tyres[FRONT_RIGHT].collisionMeshIndex = 0;
+    player->tyres[BACK_LEFT].collisionMeshIndex   = 0;
+    player->tyres[BACK_RIGHT].collisionMeshIndex  = 0;
 
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].unk_14 = 0;
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].unk_14  = 0;
-    player->boundingBoxCorners[BACK_LEFT_TYRE].unk_14   = 0;
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].unk_14  = 0;
+    player->tyres[FRONT_RIGHT].unk_14 = 0;
+    player->tyres[FRONT_LEFT].unk_14  = 0;
+    player->tyres[BACK_LEFT].unk_14   = 0;
+    player->tyres[BACK_RIGHT].unk_14  = 0;
 
-    player->unk_110.unk30 = 0;
-    player->unk_110.unk32 = 0;
-    player->unk_110.unk34 = 0;
-    player->unk_110.unk36 = 0;
-    player->unk_110.unk38 = 0;
-    player->unk_110.unk3A = 0;
+    player->collision.unk30 = 0;
+    player->collision.unk32 = 0;
+    player->collision.unk34 = 0;
+    player->collision.meshIndexYX = 0;
+    player->collision.meshIndexZY = 0;
+    player->collision.meshIndexZX = 0;
 
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].cornerPos[0] = 0.0f;
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].cornerPos[1] = 0.0f;
-    player->boundingBoxCorners[FRONT_LEFT_TYRE].cornerPos[2] = 0.0f;
+    player->tyres[FRONT_LEFT].pos[0] = 0.0f;
+    player->tyres[FRONT_LEFT].pos[1] = 0.0f;
+    player->tyres[FRONT_LEFT].pos[2] = 0.0f;
 
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].cornerPos[0] = 0.0f;
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].cornerPos[1] = 0.0f;
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].cornerPos[2] = 0.0f;
+    player->tyres[FRONT_RIGHT].pos[0] = 0.0f;
+    player->tyres[FRONT_RIGHT].pos[1] = 0.0f;
+    player->tyres[FRONT_RIGHT].pos[2] = 0.0f;
 
-    player->boundingBoxCorners[BACK_LEFT_TYRE].cornerPos[0] = 0.0f;
-    player->boundingBoxCorners[BACK_LEFT_TYRE].cornerPos[1] = 0.0f;
-    player->boundingBoxCorners[BACK_LEFT_TYRE].cornerPos[2] = 0.0f;
+    player->tyres[BACK_LEFT].pos[0] = 0.0f;
+    player->tyres[BACK_LEFT].pos[1] = 0.0f;
+    player->tyres[BACK_LEFT].pos[2] = 0.0f;
 
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].cornerPos[0] = 0.0f;
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].cornerPos[1] = 0.0f;
-    player->boundingBoxCorners[BACK_RIGHT_TYRE].cornerPos[2] = 0.0f;
+    player->tyres[BACK_RIGHT].pos[0] = 0.0f;
+    player->tyres[BACK_RIGHT].pos[1] = 0.0f;
+    player->tyres[BACK_RIGHT].pos[2] = 0.0f;
 
-    player->boundingBoxCorners[ FRONT_LEFT_TYRE].cornerGroundY = 0.0f;
-    player->boundingBoxCorners[FRONT_RIGHT_TYRE].cornerGroundY = 0.0f;
-    player->boundingBoxCorners[  BACK_LEFT_TYRE].cornerGroundY = 0.0f;
-    player->boundingBoxCorners[ BACK_RIGHT_TYRE].cornerGroundY = 0.0f;
+    player->tyres[FRONT_LEFT].baseHeight = 0.0f;
+    player->tyres[FRONT_RIGHT].baseHeight = 0.0f;
+    player->tyres[BACK_LEFT].baseHeight = 0.0f;
+    player->tyres[BACK_RIGHT].baseHeight = 0.0f;
 
-    player->unk_110.unk3C[0] = 0.0f;
-    player->unk_110.unk3C[1] = 0.0f;
-    player->unk_110.unk3C[2] = 0.0f;
-    player->unk_110.unk48[0] = 0.0f;
-    player->unk_110.unk48[1] = 0.0f;
-    player->unk_110.unk48[2] = 0.0f;
-    player->unk_110.unk54[0] = 0.0f;
-    player->unk_110.unk54[1] = 0.0f;
-    player->unk_110.unk54[2] = 0.0f;
-    player->unk_110.orientationVector[0] = 0.0f;
-    player->unk_110.orientationVector[1] = 0.0f;
-    player->unk_110.orientationVector[2] = 0.0f;
+    player->collision.surfaceDistance[0] = 0.0f;
+    player->collision.surfaceDistance[1] = 0.0f;
+    player->collision.surfaceDistance[2] = 0.0f;
+    player->collision.unk48[0] = 0.0f;
+    player->collision.unk48[1] = 0.0f;
+    player->collision.unk48[2] = 0.0f;
+    player->collision.unk54[0] = 0.0f;
+    player->collision.unk54[1] = 0.0f;
+    player->collision.unk54[2] = 0.0f;
+    player->collision.orientationVector[0] = 0.0f;
+    player->collision.orientationVector[1] = 0.0f;
+    player->collision.orientationVector[2] = 0.0f;
 
     D_80165300[playerIndex] = 0;
     D_8018CE10[playerIndex].unk_04[0] = 0.0f;
@@ -524,15 +525,19 @@ void spawn_players_gp_one_player(f32 *arg0, f32 *arg1, f32 arg2) {
         spawn_player(gPlayerEight,   7, arg0[D_80165270[7]], arg1[D_80165270[7]], arg2, 32768.0f, chooseKartAIPlayers[6], PLAYER_EXISTS | PLAYER_KART_AI | PLAYER_START_SEQUENCE);
         D_80164A28 = 0;
     } else {
-        spawn_player(gPlayerOneCopy, 0, arg0[D_80165270[0]], arg1[D_80165270[0]] + 250.0f, arg2, 32768.0f, gCharacterSelections[0], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_HUMAN);
-        spawn_player(gPlayerTwo,     1, arg0[D_80165270[1]], arg1[D_80165270[1]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[0], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        spawn_player(gPlayerThree,   2, arg0[D_80165270[3]], arg1[D_80165270[2]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[1], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        spawn_player(gPlayerFour,    3, arg0[D_80165270[2]], arg1[D_80165270[3]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[2], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        spawn_player(gPlayerFive,    4, arg0[D_80165270[5]], arg1[D_80165270[4]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[3], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        spawn_player(gPlayerSix,     5, arg0[D_80165270[4]], arg1[D_80165270[5]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[4], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        spawn_player(gPlayerSeven,   6, arg0[D_80165270[7]], arg1[D_80165270[6]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[5], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        spawn_player(gPlayerEight,   7, arg0[D_80165270[6]], arg1[D_80165270[7]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[6], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
-        D_80164A28 = 1;
+        if (gNetwork.enabled) {
+            spawn_network_players(arg0, arg1, arg2);
+        } else {
+            spawn_player(gPlayerTwo,     1, arg0[0], arg1[0] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[0], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+            spawn_player(gPlayerOneCopy, 0, arg0[1], arg1[1] + 250.0f, arg2, 32768.0f, gCharacterSelections[0], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_HUMAN);
+            spawn_player(gPlayerThree,   2, arg0[D_80165270[3]], arg1[D_80165270[2]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[1], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+            spawn_player(gPlayerFour,    3, arg0[D_80165270[2]], arg1[D_80165270[3]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[2], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+            spawn_player(gPlayerFive,    4, arg0[D_80165270[5]], arg1[D_80165270[4]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[3], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+            spawn_player(gPlayerSix,     5, arg0[D_80165270[4]], arg1[D_80165270[5]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[4], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+            spawn_player(gPlayerSeven,   6, arg0[D_80165270[7]], arg1[D_80165270[6]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[5], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+            spawn_player(gPlayerEight,   7, arg0[D_80165270[6]], arg1[D_80165270[7]] + 250.0f, arg2, 32768.0f, chooseKartAIPlayers[6], PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_KART_AI);
+        }
+            D_80164A28 = 1;
     }
     func_80039AE4();
 }
@@ -1082,13 +1087,13 @@ void func_8003CD98(Player *player, Camera *camera, s8 playerId, s8 screenId) {
             load_kart_palette(player, playerId, screenId, 1);
             load_kart_texture(player, playerId, screenId, screenId, 0);
             //mio0decode((u8 *) &D_802DFB80[0][arg3][playerId], (u8 *) &D_802BFB80.arraySize8[0][arg3][playerId]);
-            //memcpy(&D_802BFB80.arraySize8[0][screenId][playerId], &D_802DFB80[0][screenId][playerId], 0x1000);
+            memcpy(&D_802BFB80.arraySize8[0][screenId][playerId], &D_802DFB80[0][screenId][playerId], 0x1000);
         } else {
             load_kart_palette(player, playerId, screenId, 0);
             load_kart_palette(player, playerId, screenId, 1);
             load_kart_texture(player, (s8) (playerId + 4), screenId, (s8) (screenId - 2), 0);
             //mio0decode((u8 *) &D_802DFB80[0][arg3 - 2][playerId + 4], (u8 *) &D_802BFB80.arraySize8[0][arg3 - 2][playerId + 4]);
-            //memcpy(&D_802BFB80.arraySize8[0][screenId - 2][playerId + 4], &D_802DFB80[0][screenId - 2][playerId + 4], 0x1000);
+            memcpy(&D_802BFB80.arraySize8[0][screenId - 2][playerId + 4], &D_802DFB80[0][screenId - 2][playerId + 4], 0x1000);
         }
 
         D_801650D0[screenId][playerId] = player->animFrameSelector[screenId];

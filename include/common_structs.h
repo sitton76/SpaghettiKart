@@ -139,11 +139,11 @@ typedef struct {
     /* 0x00 */ u16 unk30;
     /* 0x02 */ u16 unk32;
     /* 0x04 */ u16 unk34;
-    /* 0x06 */ u16 unk36;
-    /* 0x08 */ u16 unk38;
+    /* 0x06 */ u16 meshIndexYX;
+    /* 0x08 */ u16 meshIndexZY;
     // This may be an index to the tilemap?
-    /* 0x0A */ u16 unk3A;
-    /* 0x0C */ Vec3f unk3C;
+    /* 0x0A */ u16 meshIndexZX;
+    /* 0x0C */ Vec3f surfaceDistance; // Appears to be distance from actor to surface for zx, yx, and zy planes.
     /* 0x18 */ Vec3f unk48;
     /* 0x24 */ Vec3f unk54;
     /* 0x30 */ Vec3f orientationVector;
@@ -185,7 +185,6 @@ typedef struct {
     s16 ob[3];    /* x, y, z */
     s16 tc[2];    /* texture coord */
     s8  ca[4];    /* color & alpha */
-
 } CourseVtx;
 
 /*
@@ -203,53 +202,41 @@ typedef struct {
         //bit 4: 1 = out of bounds
         //bit 3: 1 = player tumbles upon contact (may fall right through)
     /* 0x02 */ u16 surfaceType;
-    /* 0x04 */ s16 vtx31;
-               s16 vtx32;
-               s16 vtx33; //X, Y, Z of poly's third vertex
-               s16 vtx21;
-               s16 vtx22;
-    /* 0x0A */ s16 vtx23; //X, Y, Z of poly's second vertex
-    /* 0x10 */ Vtx *vtxPoly1; //pointer to the 3 vertices of this poly
-               Vtx *vtxPoly2;
-               Vtx *vtxPoly3;
-        //unsure why this exists along with a copy of two of the vertices.
-        //both are involved in hit detection.
-    /* 0x1C */ f32 height;
-        //normally 0; read at 0x802AB1A4. this value is added to the height Lakitu
-        //drops you at. changing it seems to make the surface intangible.
-    /* 0x20 */ f32 gravity;
-        //normally 1. The height Lakitu drops you off at is divided by this value
-        //(before adding the value at 0x1C), although if set to zero, he just tries
-        //to drop you at about the height of the finish line banner. Changing it
-        //has various unusual effects, making the polygon intangible or
-        //significantly reducing the gravity above it, probably depending on its Y
-        //position.
-    /* 0x24 */ f32 rotation; //normally about -0.001. no idea what this actually is.
-    /* 0x28 */ f32 height2; //changes Y position of all vertices (but not graphics or
-        //Lakitu drop position). Normally set to (track_height * -1) + about 6.
-} mk64_surface_map_ram; // size = 0x2C
+
+        // For AABB bounding-box style collision. Box collision is cheaper than checking each vtx.
+    /* 0x04 */ s16 minX; // Minimum x coordinate
+               s16 minY; // Minimum y coordinate
+               s16 minZ; // Minimum z coordinate
+               s16 maxX; // Maximum x coordinate
+               s16 maxY; // Maximum y coordinate
+    /* 0x0A */ s16 maxZ; // Maximum z coordinate
+        // Three vertices to make a triangle
+    /* 0x10 */ Vtx *vtx1;
+               Vtx *vtx2;
+               Vtx *vtx3;
+        // Face normal. Should really be Vec3f normal
+    /* 0x1C */ f32 normalX;
+    /* 0x20 */ f32 normalY;
+    /* 0x24 */ f32 normalZ;
+    /* 0x28 */ f32 distance;
+} CollisionTriangle; // size = 0x2C
 
 typedef struct {
-    /* 0x00 */ Vec3f cornerPos;
-    // Type of surface the corner is above
-    /* 0x0C */ u8  surfaceType;
-    // Close to being a copy of the top byte of the surface_map "flag" member
+    /* 0x00 */ Vec3f pos;
+    /* 0x0C */ u8  surfaceType; // Surface type that the tyre is touching.
     /* 0x0D */ u8  surfaceFlags;
-    // Don't know if "tile" is right the right term
-    // gSurfaceMap is a pointer to an array of "tile" structs. This is an index to that array
-    /* 0x0E */ u16 surfaceMapIndex;
-    // cornerPos places the corner "in the air" as it were, this member indicates the Y position of the corner's "on the ground" sibling
-    // On flat ground this value should be cornerY - gKartBoundingBoxTable[characterId]
-    /* 0x10 */ f32 cornerGroundY;
+    /* 0x0E */ u16 collisionMeshIndex; // Index into gCollisionMesh
+    // Height of tyre attached to ground. When flying it floats with the kart.
+    /* 0x10 */ f32 baseHeight;
     // Something lighting related. 1 when in a shaded region, 2 when in a tree's shadow
     // 3 when getting crushed by a whomp, but curiously only the front left tyre will ever have this value
     /* 0x14 */ s32 unk_14;
-} KartBoundingBoxCorner; // size = 0x18
+} KartTyre; // size = 0x18
 
-#define FRONT_LEFT_TYRE  0
-#define FRONT_RIGHT_TYRE 1
-#define BACK_LEFT_TYRE   2
-#define BACK_RIGHT_TYRE  3
+#define FRONT_LEFT  0
+#define FRONT_RIGHT 1
+#define BACK_LEFT   2
+#define BACK_RIGHT  3
 
 struct UnkPlayerInner {
     /* 0xDB4 */ s16 unk0;
@@ -343,10 +330,10 @@ typedef struct {
     /* 0x0108 */ f32 unk_108;
     /* 0x010C */ s16 unk_10C;
     /* 0x010E */ char unk_10E[0x2];
-    /* 0x0110 */ Collision unk_110;
+    /* 0x0110 */ Collision collision;
     /* 0x0150 */ Mat3 unk_150;
     /* 0x0174 */ Mat3 orientationMatrix;
-    /* 0x0198 */ KartBoundingBoxCorner boundingBoxCorners[4];
+    /* 0x0198 */ KartTyre tyres[4];
     /* 0x01F8 */ f32 unk_1F8;
     /* 0x01FC */ f32 unk_1FC;
     /* 0x0200 */ u32 unk_200; // May be s32. but less casting required if u32
@@ -386,17 +373,10 @@ typedef struct {
     /* 0x0DAC */ f32 unk_DAC;
     /* 0x0DB0 */ f32 unk_DB0;
     /* 0x0DB4 */ struct UnkPlayerInner unk_DB4;
-    /* 0x0DB6 */ // s16 unk_DB6;
-    /* 0x0DB8 */ // f32 unk_DB8;
-    /* 0x0DBC */ //f32 unk_DBC;
-    /* 0x0DC0 */ // f32 unk_DC0;
-    /* 0x0DC4 */ // f32 unk_DC4;
-    /* 0x0DC8 */ // f32 unk_DC8;
-    /* 0x0DCC */ // s16 unk_DCC;
-    /* 0x0DCE */ // s16 unk_DCE;
-    /* 0x0DD0 */ // s16 unk_DD0;
-    /* 0x0DD2 */ // s16 unk_DD2;
-    /* 0x0DD4 */ // s16 unk_DD4;
+                 u32 nControlFlags; // Is racer human, ai, or networked controlled?
+                 s32 nCharacter; // Networked character choice
+                 s32 nStartingRank;
+                 u32 nHasAuthority;
 } Player; // size = 0xDD8
 
 typedef struct

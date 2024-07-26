@@ -9,6 +9,8 @@
 #include <mk64.h>
 #include <stubs.h>
 
+#include "networking/networking.h"
+
 #include "profiler.h"
 #include "main.h"
 #include "racing/memory.h"
@@ -109,7 +111,8 @@ OSMesg gSIEventMesgBuf[3];
 OSContStatus gControllerStatuses[4];
 OSContPad gControllerPads[4];
 u8 gControllerBits;
-struct UnkStruct_8015F584 D_8014F110[1024];
+// Contains a 32x32 grid of indices into gCollisionIndices containing indices into gCollisionMesh
+CollisionGrid gCollisionGrid[1024];
 u16 gNumActors;
 u16 gMatrixObjectCount;
 s32 gTickSpeed;
@@ -596,6 +599,12 @@ void race_logic_loop(void) {
         case SCREEN_MODE_1P:
             gTickSpeed = 2;
             staff_ghosts_loop();
+
+            // Wait for all racers to load
+            if (gNetwork.enabled) {
+                network_all_players_loaded();
+            }
+
             if (gIsGamePaused == 0) {
                 for (i = 0; i < gTickSpeed; i++) {
                     if (D_8015011E) {
