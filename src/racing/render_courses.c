@@ -6,6 +6,7 @@
 #include <defines.h>
 #include <course.h>
 #include "../camera.h"
+#include "framebuffer_effects.h"
 
 #include "render_courses.h"
 #include "code_800029B0.h"
@@ -23,6 +24,8 @@
 #include <assets/mario_raceway_displaylists.h>
 #include <assets/luigi_raceway_data.h>
 #include <assets/luigi_raceway_displaylists.h>
+#include <assets/royal_raceway_data.h>
+#include <assets/royal_raceway_displaylists.h>
 
 s16 D_802B87B0 = 995;
 s16 D_802B87B4 = 1000;
@@ -845,23 +848,23 @@ void render_royal_raceway(struct UnkStruct_800DC5EC *arg0) {
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // d_course_royal_raceway_packed_dl_B030
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x0700B030));
+        gSPDisplayList(gDisplayListHead++, ((uintptr_t)segmented_gfx_to_virtual(0x0700B030)));
     }
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     // d_course_royal_raceway_packed_dl_A648
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x0700A648));
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t)segmented_gfx_to_virtual(0x0700A648)));
 
-    render_course_segments((uintptr_t) royal_raceway_dls, arg0);
+    render_course_segments(royal_raceway_dls, arg0);
 
     // d_course_royal_raceway_packed_dl_11A8
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x070011A8));
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t)segmented_gfx_to_virtual(0x070011A8)));
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
     // d_course_royal_raceway_packed_dl_8A0
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x070008A0));
+    gSPDisplayList(gDisplayListHead++, ((uintptr_t)segmented_gfx_to_virtual(0x070008A0)));
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
 }
 
@@ -911,28 +914,34 @@ void render_luigi_raceway(struct UnkStruct_800DC5EC *arg0) {
         if (currentScreenSection >= 6) {
             currentScreenSection = 0;
         }
+
+        u16 *fb = (u16 *) gSegmentTable[5] + 0xF800;
+
+        //FB_WriteFramebufferSliceToCPU(gDisplayListHead, fb, true);
+        //FB_DrawFromFramebuffer(gDisplayListHead, 0, fb, true);
+        //FB_CopyToFramebuffer(gDisplayListHead, 0, fb, false, NULL);
         /**
          * The jumbo television screen is split into six sections each section is copied one at a time.
          * This is done to fit within the n64's texture size requirements; 64x32
          */
         switch (currentScreenSection) {
             case 0:
-                copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xF800));
+                //copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xF800));
                 break;
             case 1:
-                copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x10800));
+                //copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x10800));
                 break;
             case 2:
-                copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x11800));
+                //copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x11800));
                 break;
             case 3:
-                copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x12800));
+                //copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x12800));
                 break;
             case 4:
-                copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x13800));
+                //copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x13800));
                 break;
             case 5:
-                copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x14800));
+                //copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x14800));
                 break;
         }
     }
@@ -1525,7 +1534,8 @@ void func_80295D88(void) {
                                      255, 255);
             break;
         case COURSE_ROYAL_RACEWAY:
-            parse_course_displaylists((uintptr_t) d_course_royal_raceway_addr);
+            TrackSectionsI *section7 = (TrackSectionsI *) LOAD_ASSET(d_course_royal_raceway_addr);
+            parse_course_displaylists(section7);
             func_80295C6C();
             D_8015F8E4 = -60.0f;
             break;
@@ -1694,9 +1704,9 @@ void func_802966A0(void) {
                 D_802B87BC = 0xFF;
             }
             // d_course_royal_raceway_packed_dl_A6A8
-            find_and_set_tile_size((uintptr_t)0x0700A6A8, 0, D_802B87BC);
+            find_and_set_tile_size((uintptr_t)segmented_gfx_to_virtual(0x0700A6A8), 0, D_802B87BC);
             // d_course_royal_raceway_packed_dl_A648
-            find_and_set_tile_size((uintptr_t)0x0700A648, 0, D_802B87BC);
+            find_and_set_tile_size((uintptr_t)segmented_gfx_to_virtual(0x0700A648), 0, D_802B87BC);
             break;
         case COURSE_DK_JUNGLE:
             D_802B87BC += 2;

@@ -21,6 +21,9 @@
 #include <assets/luigi_raceway_displaylists.h>
 #include <assets/luigi_raceway_vertices.h>
 #include <assets/luigi_raceway_data.h>
+#include <assets/royal_raceway_displaylists.h>
+#include <assets/royal_raceway_vertices.h>
+#include <assets/royal_raceway_data.h>
 
 #include <assert.h>
 #include <course_offsets.h>
@@ -1489,12 +1492,12 @@ NewCourseTable gNewCourseTable[] = {
         .displaylists = NULL,
         .dlSize = 0
     }, {
-        .data = NULL,
-        .vtx = NULL,
-        .vtxSize = 0,
-        .textures = NULL,
-        .displaylists = NULL,
-        .dlSize = 0
+        .data = d_course_royal_raceway_dl_0,
+        .vtx = d_course_royal_raceway_vertex,
+        .vtxSize = 8306,
+        .textures = royal_raceway_textures,
+        .displaylists = d_course_royal_raceway_packed_dls,
+        .dlSize = 5670
     }, {
         .data = d_course_luigi_raceway_dl_0,
         .vtx = d_course_luigi_raceway_vertex,
@@ -1518,15 +1521,15 @@ u8 *load_lakitu_textures_x64(const char** textureList, size_t length) {
     gNextFreeMemoryAddress += size;
     size_t offset = 0;
     for (size_t i = 0; i < length; i++) {
-        u8 *tex = (u8 *) LOAD_ASSET(textureList[i]);
+        //u8 *tex = (u8 *) LOAD_ASSET(textureList[i]);
         size_t texSize = ResourceGetTexSizeByName(textureList[i]);
-        memcpy(&textures[offset], tex, texSize);
+        printf("\nTEX SIZE: %X\n\n", texSize);
+        memcpy(&textures[offset], textureList[i], texSize);
         offset += texSize;
     }
     return textures;
 }
 
-void load_luigi_raceway(void);
 void load_course(s32 courseId) {
     printf("Loading Course Data\n");
 
@@ -1536,8 +1539,6 @@ void load_course(s32 courseId) {
     course_texture *textures = gNewCourseTable[courseId].textures;
     char* displaylists = gNewCourseTable[courseId].displaylists;
     size_t dlSize = gNewCourseTable[courseId].dlSize;
-
-    testaaa = (Gfx *) LOAD_ASSET(data);
 
     // Convert course vtx to vtx
     CourseVtx *cvtx = (CourseVtx *) LOAD_ASSET(vtxData);
