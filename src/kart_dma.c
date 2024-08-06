@@ -1934,5 +1934,5 @@ void func_80027C74(UNUSED Player *player, u8 *texture, void *vAddr, u16 size) {
 
     //printf("test %s\n",texture);
     //size_t textureSize = ResourceGetTexSizeByName(texture);
-    memcpy(vAddr, texture, size);
+    // memcpy(vAddr, texture, size);
 }
