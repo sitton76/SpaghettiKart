@@ -1,6 +1,8 @@
 #ifndef ALL_COURSE_DATA_H
 #define ALL_COURSE_DATA_H
 
+#include "mk64.h"
+
 #include "courses/big_donut/course_data.h"
 #include "courses/block_fort/course_data.h"
 #include "courses/double_deck/course_data.h"
@@ -15,6 +17,5 @@
 #include "courses/bowsers_castle/course_data.h"
 #include "courses/sherbet_land/course_data.h"
 #include "courses/wario_stadium/course_data.h"
-void gSPDisplayList(Gfx* pkt, Gfx* dl);
 
 #endif // ALL_COURSE_DATA_H
