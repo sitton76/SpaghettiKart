@@ -3,7 +3,9 @@
 
 #include "course_offsets.h"
 
+extern Gfx *toads_turnpike_dls[];
 extern Gfx *banshee_boardwalk_dls[];
+extern Gfx *frappe_snowland_dls[];
 extern Gfx *bowsers_castle_dls[];
 extern Gfx *choco_mountain_dls[];
 extern const char *kalimari_desert_dls[];

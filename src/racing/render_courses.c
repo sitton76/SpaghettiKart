@@ -32,6 +32,12 @@
 #include <assets/moo_moo_farm_displaylists.h>
 #include <assets/choco_mountain_data.h>
 #include <assets/choco_mountain_displaylists.h>
+#include <assets/wario_stadium_data.h>
+#include <assets/wario_stadium_displaylists.h>
+#include <assets/bowsers_castle_data.h>
+#include <assets/bowsers_castle_displaylists.h>
+#include <assets/frappe_snowland_data.h>
+#include <assets/frappe_snowland_displaylists.h>
 
 s16 D_802B87B0 = 995;
 s16 D_802B87B4 = 1000;
@@ -278,7 +284,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
             gDPSetBlendMask(gDisplayListHead++, 0xFF);
             gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
             // d_course_banshee_boardwalk_packed_dl_878
-            gSPDisplayList(gDisplayListHead++, 0x07000878);
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000878));
             gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
             gDPPipeSync(gDisplayListHead++);
             break;
@@ -372,7 +378,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
             gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_SURF, G_RM_AA_ZB_XLU_SURF2);
             gDPSetPrimColor(gDisplayListHead++, 0, 0, 0xFF, 0xFF, 0x00, 0xFF);
             // d_course_wario_stadium_packed_dl_EC0
-            gSPDisplayList(gDisplayListHead++, 0x07000EC0);
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000EC0));
             gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 1, 1, G_OFF);
             gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
             gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
@@ -712,7 +718,7 @@ void render_bowsers_castle(struct UnkStruct_800DC5EC *arg0) {
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // d_course_bowsers_castle_packed_dl_6A80
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07006A80));
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07006A80));
     }
 
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
@@ -722,12 +728,12 @@ void render_bowsers_castle(struct UnkStruct_800DC5EC *arg0) {
     if (D_802B87BC > 255) {
         D_802B87BC = 0;
     }
-    render_course_segments((uintptr_t) bowsers_castle_dls, arg0);
+    render_course_segments(bowsers_castle_dls, arg0);
 
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     // d_course_bowsers_castle_packed_dl_248
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000248));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000248));
 }
 
 void render_banshee_boardwalk(struct UnkStruct_800DC5EC *arg0) {
@@ -740,7 +746,7 @@ void render_banshee_boardwalk(struct UnkStruct_800DC5EC *arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
     // d_course_banshee_boardwalk_packed_dl_7228
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07007228));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07007228));
 
     gSPFogPosition(gDisplayListHead++, D_802B87B0, D_802B87B4);
 
@@ -755,13 +761,13 @@ void render_banshee_boardwalk(struct UnkStruct_800DC5EC *arg0) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
     // d_course_banshee_boardwalk_packed_dl_5CD0
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07005CD0));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07005CD0));
     // d_course_banshee_boardwalk_packed_dl_4E60
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07004E60));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07004E60));
     // d_course_banshee_boardwalk_packed_dl_69B0
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x070069B0));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x070069B0));
 
-    render_course_segments((uintptr_t) banshee_boardwalk_dls, arg0);
+    render_course_segments(banshee_boardwalk_dls, arg0);
 
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
@@ -769,15 +775,15 @@ void render_banshee_boardwalk(struct UnkStruct_800DC5EC *arg0) {
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_SHADING_SMOOTH);
     // d_course_banshee_boardwalk_packed_dl_580
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000580));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000580));
     // d_course_banshee_boardwalk_packed_dl_60
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000060));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000060));
     // d_course_banshee_boardwalk_packed_dl_540
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000540));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000540));
 
     if (camera->pos[1] < -20.0f) {
         // d_course_banshee_boardwalk_packed_dl_6310
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07006310));
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07006310));
     }
     spA8[0] = camera->pos[0];
     spA8[1] = -82.0f;
@@ -809,12 +815,12 @@ void render_frappe_snowland(struct UnkStruct_800DC5EC *arg0) {
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // d_course_frappe_snowland_packed_dl_65E0
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x070065E0));
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x070065E0));
     }
 
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    render_course_segments((uintptr_t) d_course_frappe_snowland_dl_list, arg0);
+    render_course_segments(frappe_snowland_dls, arg0);
 }
 
 void render_koopa_troopa_beach(struct UnkStruct_800DC5EC *arg0) {
@@ -1037,16 +1043,16 @@ void render_toads_turnpike(struct UnkStruct_800DC5EC *arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_PASS2);
     gDPSetRenderMode(gDisplayListHead++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_OPA_SURF2);
 
-    render_course_segments((uintptr_t) d_course_toads_turnpike_dl_list, arg0);
+    render_course_segments(toads_turnpike_dls, arg0);
 
     gDPSetRenderMode(gDisplayListHead++, G_RM_FOG_SHADE_A, G_RM_AA_ZB_TEX_EDGE2);
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_PASS2);
     // d_course_toads_turnpike_packed_dl_0
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000000));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000000));
     // d_course_toads_turnpike_packed_dl_68
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000068));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000068));
     // d_course_toads_turnpike_packed_dl_D8
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x070000D8));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x070000D8));
     gSPClearGeometryMode(gDisplayListHead++, G_FOG);
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
 }
@@ -1116,21 +1122,21 @@ void render_wario_stadium(struct UnkStruct_800DC5EC *arg0) {
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // d_course_wario_stadium_packed_dl_A0C8
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x0700A0C8));
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x0700A0C8));
 
     }
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATERGBA, G_CC_MODULATERGBA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
-    render_course_segments((uintptr_t) wario_stadium_dls, arg0);
+    render_course_segments(wario_stadium_dls, arg0);
 
     // d_course_wario_stadium_packed_dl_A228
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x0700A228));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x0700A228));
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
     // d_course_wario_stadium_packed_dl_A88
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07000A88));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07000A88));
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
 
     D_800DC5DC = 88;
@@ -1148,22 +1154,22 @@ void render_wario_stadium(struct UnkStruct_800DC5EC *arg0) {
         }
         switch (currentScreenSection) {
         case 0:
-            copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x8800));
+            //copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x8800));
             break;
         case 1:
-            copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x9800));
+            //copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x9800));
             break;
         case 2:
-            copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xA800));
+            //copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xA800));
             break;
         case 3:
-            copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xB800));
+            //copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xB800));
             break;
         case 4:
-            copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xC800));
+            //copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xC800));
             break;
         case 5:
-            copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xD800));
+            //copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32, (u16 *) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]), (u16 *) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xD800));
             break;
         }
     }
@@ -1506,9 +1512,10 @@ void func_80295D88(void) {
             D_8015F8E4 = -80.0f;
             break;
         case COURSE_BOWSER_CASTLE:
-            parse_course_displaylists((uintptr_t) d_course_bowsers_castle_addr);
+            TrackSectionsI *section3 = (TrackSectionsI *) LOAD_ASSET(d_course_bowsers_castle_addr);
+            parse_course_displaylists(section3);
             func_80295C6C();
-            find_vtx_and_set_colours((uintptr_t) d_course_bowsers_castle_packed_dl_1350, 0x32, 0, 0, 0);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07001350), 0x32, 0, 0, 0);
             D_8015F8E4 = -50.0f;
             break;
         case COURSE_BANSHEE_BOARDWALK:
@@ -1516,10 +1523,10 @@ void func_80295D88(void) {
             D_801625EC = 0;
             D_801625F4 = 0;
             D_801625F0 = 0;
-            parse_course_displaylists((uintptr_t) d_course_banshee_boardwalk_track_sections);
+            TrackSectionsI *section4 = (TrackSectionsI *) LOAD_ASSET(d_course_banshee_boardwalk_track_sections);
+            parse_course_displaylists(section4);
             func_80295C6C();
-            find_vtx_and_set_colours((uintptr_t) d_course_banshee_boardwalk_packed_dl_878, 128, 0, 0,
-                                     0);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000878), 128, 0, 0, 0);
             D_8015F8E4 = -80.0f;
             break;
         case COURSE_YOSHI_VALLEY:
@@ -1529,7 +1536,8 @@ void func_80295D88(void) {
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
         case COURSE_FRAPPE_SNOWLAND:
-            parse_course_displaylists((uintptr_t) d_course_frappe_snowland_addr);
+            TrackSectionsI *section5 = (TrackSectionsI *) LOAD_ASSET(d_course_frappe_snowland_addr);
+            parse_course_displaylists(section5);
             func_80295C6C();
             D_8015F8E4 = -50.0f;
             break;
@@ -1569,7 +1577,8 @@ void func_80295D88(void) {
             D_801625F0 = 4;
             D_802B87B0 = 993;
             D_802B87B4 = 1000;
-            parse_course_displaylists((uintptr_t) d_course_toads_turnpike_addr);
+            TrackSectionsI *section10 = (TrackSectionsI *) LOAD_ASSET(d_course_toads_turnpike_addr);
+            parse_course_displaylists(section10);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
@@ -1605,25 +1614,26 @@ void func_80295D88(void) {
             }
             break;
         case COURSE_WARIO_STADIUM:
-            parse_course_displaylists((uintptr_t) d_course_wario_stadium_addr);
+            TrackSectionsI *sectionXIV = (TrackSectionsI *) LOAD_ASSET(d_course_wario_stadium_addr);
+            parse_course_displaylists(sectionXIV);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             // d_course_wario_stadium_packed_dl_C50
-            find_vtx_and_set_colours((uintptr_t)0x07000C50, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000C50), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_BD8
-            find_vtx_and_set_colours((uintptr_t)0x07000BD8, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000BD8), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_B60
-            find_vtx_and_set_colours((uintptr_t)0x07000B60, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000B60), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_AE8
-            find_vtx_and_set_colours((uintptr_t)0x07000AE8, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000AE8), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_CC8
-            find_vtx_and_set_colours((uintptr_t)0x07000CC8, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000CC8), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_D50
-            find_vtx_and_set_colours((uintptr_t)0x07000D50, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000D50), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_DD0
-            find_vtx_and_set_colours((uintptr_t)0x07000DD0, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000DD0), 100, 255, 255, 255);
             // d_course_wario_stadium_packed_dl_E48
-            find_vtx_and_set_colours((uintptr_t)0x07000E48, 100, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000E48), 100, 255, 255, 255);
             break;
         case COURSE_BLOCK_FORT:
             // d_course_block_fort_packed_dl_15C0
@@ -1691,9 +1701,9 @@ void func_802966A0(void) {
             }
             // waterfall animation
             // d_course_koopa_troopa_beach_packed_dl_9D58
-            find_and_set_tile_size((uintptr_t)0x07009D58, 0, D_802B87BC);
+            find_and_set_tile_size(segmented_gfx_to_virtual(0x07009D58), 0, D_802B87BC);
             // d_course_koopa_troopa_beach_packed_dl_9CD0
-            find_and_set_tile_size((uintptr_t)0x07009CD0, 0, D_802B87C4);
+            find_and_set_tile_size(segmented_gfx_to_virtual(0x07009CD0), 0, D_802B87C4);
             D_802B87CC = random_int(300) / 40;
             if (D_802B87C8 < 0) {
                 D_802B87C8 = random_int(300) / 40;
@@ -1702,7 +1712,7 @@ void func_802966A0(void) {
             }
             // Waterfall bubbling effect? (unused)
             // d_course_koopa_troopa_beach_packed_dl_2E8
-            find_and_set_tile_size((uintptr_t)0x070002E8, D_802B87C8, D_802B87CC);
+            find_and_set_tile_size(segmented_gfx_to_virtual(0x070002E8), D_802B87C8, D_802B87CC);
             break;
         case COURSE_BANSHEE_BOARDWALK:
             D_802B87BC++;
@@ -1710,7 +1720,7 @@ void func_802966A0(void) {
             if (D_802B87BC >= 0x100) {
                 D_802B87BC = 0;
             }
-            find_and_set_tile_size((uintptr_t)d_course_banshee_boardwalk_dl_B278, 0, D_802B87BC);
+            find_and_set_tile_size((uintptr_t) LOAD_ASSET(d_course_banshee_boardwalk_dl_B278), 0, D_802B87BC);
             break;
         case COURSE_ROYAL_RACEWAY:
             D_802B87BC -= 20;

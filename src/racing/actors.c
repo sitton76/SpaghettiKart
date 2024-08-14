@@ -29,6 +29,8 @@
 #include <assets/other_textures.h>
 #include <assets/mario_raceway_data.h>
 #include <assets/luigi_raceway_data.h>
+#include <assets/wario_stadium_data.h>
+#include <assets/frappe_snowland_data.h>
 
 // Appears to be textures
 // or tluts
