@@ -20,26 +20,7 @@
 #include "courses/all_course_data.h"
 #include "courses/all_course_packed.h"
 #include "courses/all_course_offsets.h"
-#include <assets/mario_raceway_data.h>
-#include <assets/mario_raceway_displaylists.h>
-#include <assets/luigi_raceway_data.h>
-#include <assets/luigi_raceway_displaylists.h>
-#include <assets/royal_raceway_data.h>
-#include <assets/royal_raceway_displaylists.h>
-#include <assets/kalimari_desert_data.h>
-#include <assets/kalimari_desert_displaylists.h>
-#include <assets/moo_moo_farm_data.h>
-#include <assets/moo_moo_farm_displaylists.h>
-#include <assets/choco_mountain_data.h>
-#include <assets/choco_mountain_displaylists.h>
-#include <assets/dks_jungle_parkway_data.h>
-#include <assets/dks_jungle_parkway_displaylists.h>
-#include <assets/wario_stadium_data.h>
-#include <assets/wario_stadium_displaylists.h>
-#include <assets/bowsers_castle_data.h>
-#include <assets/bowsers_castle_displaylists.h>
-#include <assets/frappe_snowland_data.h>
-#include <assets/frappe_snowland_displaylists.h>
+#include <assert.h>
 
 s16 D_802B87B0 = 995;
 s16 D_802B87B4 = 1000;
@@ -66,29 +47,10 @@ s32 func_80290C20(Camera *camera) {
     return 0;
 }
 
-// Stupid hack to allocate memory to convert a u32 ptr DLs to 64 bit. Should probably be done in torch instead.
-TrackSections trackSectionsBuffer[100];
+void parse_course_displaylists(const char *asset) {
+    TrackSections *section = (TrackSections *) LOAD_ASSET(asset);
 
-void parse_course_displaylists(TrackSectionsI *addr) {
-    TrackSections *section = &trackSectionsBuffer[0];
-
-    while (addr->addr != 0) {
-
-        section->addr = segmented_uintptr_t_to_virtual(addr->addr);
-        section->flags = addr->flags;
-        section->sectionId = addr->sectionId;
-        section->surfaceType = addr->surfaceType;
-
-        //printf("SECTION ADDR: 0x%X\n", section->addr);
-        section++;
-        addr++;
-    }
-    section = &trackSectionsBuffer[0];
-    //section->surfaceType = addr->surfaceType;
-    //section->flags = addr->flags;
-    //section->sectionId = addr->sectionId;
-
-    while(section->addr != 0) {
+    while (section->addr != 0) {
         if (section->flags & 0x8000) {
             D_8015F59C = 1;
         } else {
@@ -308,7 +270,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
                 case 37:
                     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
                     // d_course_koopa_troopa_beach_packed_dl_9E70
-                    gSPDisplayList(gDisplayListHead++, 0x07009E70);
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07009E70));
                     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
                     break;
             }
@@ -322,7 +284,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
             gDPSetBlendMask(gDisplayListHead++, 0xFF);
             gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
             gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
-            render_course_segments((uintptr_t)d_course_koopa_troopa_beach_dl_list2, arg0);
+            render_course_segments(koopa_troopa_beach_dls2, arg0);
             gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 1, 1, G_OFF);
             gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
             gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
@@ -340,7 +302,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
 
             mtxf_identity(matrix);
             render_set_position(matrix, 0);
-            render_course_segments((uintptr_t) sherbet_land_dls_2, arg0);
+            render_course_segments(sherbet_land_dls_2, arg0);
 
             gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
             if ((func_80290C20(arg0->camera) == 1) && (func_802AAB4C(player) < player->pos[1])) {
@@ -348,7 +310,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
                 gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
                 gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
                 // d_course_sherbet_land_packed_dl_2B48
-                gSPDisplayList(gDisplayListHead++, 0x07002B48);
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07002B48));
             }
             gDPPipeSync(gDisplayListHead++);
             break;
@@ -357,7 +319,7 @@ void func_8029122C(struct UnkStruct_800DC5EC *arg0, s32 playerId) {
             mtxf_identity(matrix);
             render_set_position(matrix, 0);
             gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
-            render_course_segments((uintptr_t) &d_course_rainbow_road_dl_list, arg0);
+            render_course_segments(rainbow_road_dls, arg0);
             gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
             gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
             gDPPipeSync(gDisplayListHead++);
@@ -803,7 +765,7 @@ void render_yoshi_valley(struct UnkStruct_800DC5EC *arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
-    render_course_segments((uintptr_t) d_course_yoshi_valley_dl_list, arg0);
+    render_course_segments(yoshi_valley_dls, arg0);
     gDPPipeSync(gDisplayListHead++);
 }
 
@@ -836,18 +798,18 @@ void render_koopa_troopa_beach(struct UnkStruct_800DC5EC *arg0) {
         gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
         gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
         // d_course_koopa_troopa_beach_packed_dl_9CC0
-        gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07009CC0));
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07009CC0));
     }
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
     // d_course_koopa_troopa_beach_packed_dl_9688
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x07009688));
-    render_course_segments((uintptr_t) d_course_koopa_troopa_beach_dl_list1, arg0);
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x07009688));
+    render_course_segments(koopa_troopa_beach_dls1, arg0);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     // d_course_koopa_troopa_beach_packed_dl_2C0
-    gSPDisplayList(gDisplayListHead++, ((uintptr_t)0x070002C0));
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual(0x070002C0));
     gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
     gDPPipeSync(gDisplayListHead++);
 }
@@ -1100,7 +1062,7 @@ void render_sherbet_land(struct UnkStruct_800DC5EC *arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-    render_course_segments((uintptr_t) sherbet_land_dls, arg0);
+    render_course_segments(sherbet_land_dls, arg0);
 }
 
 void render_rainbow_road(UNUSED struct UnkStruct_800DC5EC *arg0) {
@@ -1476,9 +1438,8 @@ void func_80295D88(void) {
                 // d_course_mario_raceway_packed_dl_2D68
                 generate_collision_mesh_with_defaults((Gfx *) segmented_gfx_to_virtual(0x07002D68));
             }
-            TrackSectionsI *section = (TrackSectionsI *) LOAD_ASSET(d_course_mario_raceway_addr);
 
-            parse_course_displaylists(section);
+            parse_course_displaylists(d_course_mario_raceway_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
@@ -1507,15 +1468,14 @@ void func_80295D88(void) {
                 // d_course_choco_mountain_packed_dl_3C8
                 nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(0x070003C8));
             }
-            TrackSectionsI *section2 = (TrackSectionsI *) LOAD_ASSET(d_course_choco_mountain_addr);
-            parse_course_displaylists(section2);
+
+            parse_course_displaylists(d_course_choco_mountain_addr);
             func_802B5CAC(0x238E, 0x31C7, D_8015F590);
             func_80295C6C();
             D_8015F8E4 = -80.0f;
             break;
         case COURSE_BOWSER_CASTLE:
-            TrackSectionsI *section3 = (TrackSectionsI *) LOAD_ASSET(d_course_bowsers_castle_addr);
-            parse_course_displaylists(section3);
+            parse_course_displaylists(d_course_bowsers_castle_addr);
             func_80295C6C();
             find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07001350), 0x32, 0, 0, 0);
             D_8015F8E4 = -50.0f;
@@ -1525,51 +1485,47 @@ void func_80295D88(void) {
             D_801625EC = 0;
             D_801625F4 = 0;
             D_801625F0 = 0;
-            TrackSectionsI *section4 = (TrackSectionsI *) LOAD_ASSET(d_course_banshee_boardwalk_track_sections);
-            parse_course_displaylists(section4);
+            parse_course_displaylists(d_course_banshee_boardwalk_track_sections);
             func_80295C6C();
             find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000878), 128, 0, 0, 0);
             D_8015F8E4 = -80.0f;
             break;
         case COURSE_YOSHI_VALLEY:
-            func_802B5D64((uintptr_t) &d_course_yoshi_valley_lights4, -0x38F0, 0x1C70, 1);
-            parse_course_displaylists((uintptr_t) d_course_yoshi_valley_addr);
+            Lights1 lights4 = gdSPDefLights1(100, 100, 100, 255, 254, 254, 0, 0, 120);
+            func_802B5D64(&lights4, -0x38F0, 0x1C70, 1);
+            parse_course_displaylists(d_course_yoshi_valley_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
         case COURSE_FRAPPE_SNOWLAND:
-            TrackSectionsI *section5 = (TrackSectionsI *) LOAD_ASSET(d_course_frappe_snowland_addr);
-            parse_course_displaylists(section5);
+            parse_course_displaylists(d_course_frappe_snowland_addr);
             func_80295C6C();
             D_8015F8E4 = -50.0f;
             break;
         case COURSE_KOOPA_BEACH:
-            parse_course_displaylists((uintptr_t) d_course_koopa_troopa_beach_addr);
+            parse_course_displaylists(d_course_koopa_troopa_beach_addr);
             func_80295C6C();
-            find_vtx_and_set_colours((uintptr_t) d_course_koopa_troopa_beach_packed_dl_ADE0, -0x6A, 255,
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x0700ADE0), -0x6A, 255,
                                      255, 255);
-            find_vtx_and_set_colours((uintptr_t) d_course_koopa_troopa_beach_packed_dl_A540, -0x6A, 255,
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x0700A540), -0x6A, 255,
                                      255, 255);
-            find_vtx_and_set_colours((uintptr_t) d_course_koopa_troopa_beach_packed_dl_9E70, -0x6A, 255,
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07009E70), -0x6A, 255,
                                      255, 255);
-            find_vtx_and_set_colours((uintptr_t) d_course_koopa_troopa_beach_packed_dl_358, -0x6A, 255,
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07000358), -0x6A, 255,
                                      255, 255);
             break;
         case COURSE_ROYAL_RACEWAY:
-            TrackSectionsI *section7 = (TrackSectionsI *) LOAD_ASSET(d_course_royal_raceway_addr);
-            parse_course_displaylists(section7);
+            parse_course_displaylists(d_course_royal_raceway_addr);
             func_80295C6C();
             D_8015F8E4 = -60.0f;
             break;
         case COURSE_LUIGI_RACEWAY:
-            TrackSectionsI *section8 = (TrackSectionsI *) LOAD_ASSET(d_course_luigi_raceway_addr);
-            parse_course_displaylists(section8);
+            parse_course_displaylists(d_course_luigi_raceway_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
         case COURSE_MOO_MOO_FARM:
-            TrackSectionsI *section9 = (TrackSectionsI *) LOAD_ASSET(d_course_moo_moo_farm_addr);
-            parse_course_displaylists(section9);
+            parse_course_displaylists(d_course_moo_moo_farm_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
@@ -1579,45 +1535,42 @@ void func_80295D88(void) {
             D_801625F0 = 4;
             D_802B87B0 = 993;
             D_802B87B4 = 1000;
-            TrackSectionsI *section10 = (TrackSectionsI *) LOAD_ASSET(d_course_toads_turnpike_addr);
-            parse_course_displaylists(section10);
+            parse_course_displaylists(d_course_toads_turnpike_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
         case COURSE_KALAMARI_DESERT:
-            TrackSectionsI *section11 = (TrackSectionsI *) LOAD_ASSET(d_course_kalimari_desert_addr);
-            parse_course_displaylists(section11);
+            parse_course_displaylists(d_course_kalimari_desert_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
         case COURSE_SHERBET_LAND:
-            parse_course_displaylists((uintptr_t) d_course_sherbet_land_addr);
+            parse_course_displaylists(d_course_sherbet_land_addr);
             func_80295C6C();
             D_8015F8E4 = -18.0f;
             // d_course_sherbet_land_packed_dl_1EB8
-            find_vtx_and_set_colours((uintptr_t)0x07001EB8, -0x4C, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07001EB8), -0x4C, 255, 255, 255);
             // d_course_sherbet_land_packed_dl_2308
-            find_vtx_and_set_colours((uintptr_t)0x07002308, -0x6A, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07002308), -0x6A, 255, 255, 255);
             break;
         case COURSE_RAINBOW_ROAD:
             D_800DC5C8 = 1;
-            parse_course_displaylists((uintptr_t) d_course_rainbow_road_addr);
+            parse_course_displaylists(d_course_rainbow_road_addr);
             func_80295C6C();
             D_8015F8E4 = 0.0f;
             // d_course_rainbow_road_packed_dl_2068
-            find_vtx_and_set_colours((uintptr_t)0x07002068, -0x6A, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07002068), -0x6A, 255, 255, 255);
             // d_course_rainbow_road_packed_dl_1E18
-            find_vtx_and_set_colours((uintptr_t)0x07001E18, -0x6A, 255, 255, 255);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07001E18), -0x6A, 255, 255, 255);
             // d_course_rainbow_road_packed_dl_1318
-            find_vtx_and_set_colours((uintptr_t)0x07001318, 255, 255, 255, 0);
+            find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07001318), 255, 255, 255, 0);
             if (gGamestate != CREDITS_SEQUENCE) {
                 // d_course_rainbow_road_packed_dl_1FB8
-                find_vtx_and_set_colours((uintptr_t)0x07001FB8, -0x6A, 255, 255, 255);
+                find_vtx_and_set_colours(segmented_gfx_to_virtual(0x07001FB8), -0x6A, 255, 255, 255);
             }
             break;
         case COURSE_WARIO_STADIUM:
-            TrackSectionsI *sectionXIV = (TrackSectionsI *) LOAD_ASSET(d_course_wario_stadium_addr);
-            parse_course_displaylists(sectionXIV);
+            parse_course_displaylists(d_course_wario_stadium_addr);
             func_80295C6C();
             D_8015F8E4 = gCourseMinY - 10.0f;
             // d_course_wario_stadium_packed_dl_C50
@@ -1659,8 +1612,7 @@ void func_80295D88(void) {
             D_8015F8E4 = gCourseMinY - 10.0f;
             break;
         case COURSE_DK_JUNGLE:
-            TrackSectionsI *section18 = (TrackSectionsI *) LOAD_ASSET(d_course_dks_jungle_parkway_addr);
-            parse_course_displaylists(section18);
+            parse_course_displaylists(d_course_dks_jungle_parkway_addr);
             func_80295C6C();
             D_8015F8E4 =  -475.0f;
             // d_course_dks_jungle_parkway_packed_dl_3FA8

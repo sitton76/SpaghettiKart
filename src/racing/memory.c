@@ -16,6 +16,7 @@
 #include "courses/all_course_data.h"
 #include "courses/all_course_packed.h"
 #include "courses/all_course_model.h"
+#include "courses/all_course_offsets.h"
 #include "defines.h"
 
 
@@ -1471,12 +1472,12 @@ NewCourseTable gNewCourseTable[] = {
         .displaylists = d_course_banshee_boardwalk_packed_dls,
         .dlSize = 3689
     }, { // maze
-        .data = NULL,
-        .vtx = NULL,
-        .vtxSize = 0,
-        .textures = NULL,
-        .displaylists = NULL,
-        .dlSize = 0
+        .data = d_course_yoshi_valley_dl_0,
+        .vtx = d_course_yoshi_valley_vertex,
+        .vtxSize = 3720,
+        .textures = yoshi_valley_textures,
+        .displaylists = d_course_yoshi_valley_packed_dls,
+        .dlSize = 4140
     }, { // snow
         .data = d_course_frappe_snowland_dl_0,
         .vtx = d_course_frappe_snowland_vertex,
@@ -1485,12 +1486,12 @@ NewCourseTable gNewCourseTable[] = {
         .displaylists = d_course_frappe_snowland_packed_dls,
         .dlSize = 3274
     }, { // koopa_troopa_beach
-        .data = NULL,
-        .vtx = NULL,
-        .vtxSize = 0,
-        .textures = NULL,
-        .displaylists = NULL,
-        .dlSize = 0
+        .data = d_course_koopa_troopa_beach_dl_0,
+        .vtx = d_course_koopa_troopa_beach_vertex,
+        .vtxSize = 9376,
+        .textures = koopa_troopa_beach_textures,
+        .displaylists = d_course_koopa_troopa_beach_packed_dls,
+        .dlSize = 5720
     }, { // royal_raceway
         .data = d_course_royal_raceway_dl_0,
         .vtx = d_course_royal_raceway_vertex,
@@ -1527,19 +1528,19 @@ NewCourseTable gNewCourseTable[] = {
         .displaylists = d_course_kalimari_desert_packed_dls,
         .dlSize = 5328
     }, { // sherbet
-        .data = NULL,
-        .vtx = NULL,
-        .vtxSize = 0,
-        .textures = NULL,
-        .displaylists = NULL,
-        .dlSize = 0
+        .data = d_course_sherbet_land_dl_0,
+        .vtx = d_course_sherbet_land_vertex,
+        .vtxSize = 2678,
+        .textures = sherbet_land_textures,
+        .displaylists = d_course_sherbet_land_packed_dls,
+        .dlSize = 1803
     }, { // rainbow
-        .data = NULL,
-        .vtx = NULL,
-        .vtxSize = 6067,
-        .textures = NULL,
-        .displaylists = NULL,
-        .dlSize = 0
+        .data = d_course_rainbow_road_dl_0,
+        .vtx = d_course_rainbow_road_vertex,
+        .vtxSize = 3111,
+        .textures = rainbow_road_textures,
+        .displaylists = d_course_rainbow_road_packed_dls,
+        .dlSize = 1057
     }, { // wario
         .data = d_course_wario_stadium_dl_0,
         .vtx = d_course_wario_stadium_vertex,
