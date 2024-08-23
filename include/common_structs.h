@@ -203,7 +203,7 @@ typedef struct {
         //bit 3: 1 = player tumbles upon contact (may fall right through)
     /* 0x02 */ u16 surfaceType;
 
-        // For AABB bounding-box style collision. Box collision is cheaper than checking each vtx.
+        // For AABB bounding-box style collision. Box style collision is cheaper than checking each vtx.
     /* 0x04 */ s16 minX; // Minimum x coordinate
                s16 minY; // Minimum y coordinate
                s16 minZ; // Minimum z coordinate
