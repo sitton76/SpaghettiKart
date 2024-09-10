@@ -470,11 +470,6 @@ void DrawEnhancementsMenu() {
 
 
         if (UIWidgets::BeginMenu("Gameplay")) {
-            UIWidgets::CVarCheckbox("No Level of Detail (LOD)", "gDisableLOD",
-                                    { .tooltip = "Disable Level of Detail (LOD) to avoid models using "
-                                                 "lower poly versions at a distance" });
-
-
             UIWidgets::WindowButton("Freecam", "gFreecam", GameUI::mFreecamWindow, {
                 .tooltip = "Allows you to fly around the course"
             });
@@ -482,8 +477,6 @@ void DrawEnhancementsMenu() {
                 "No Level of Detail (LOD)", "gDisableLod",
                 { .tooltip = "Disable Level of Detail (LOD) to avoid models using lower poly versions at a distance" });
 
-            UIWidgets::CVarCheckbox("Ignore Rendering Limits", "gIgnoreRenderDistance",
-                                    { .tooltip = "Renders game objects regardless of camera distance" });
             UIWidgets::CVarCheckbox("Select any star from menu", "gCompletedGame",
                                     { .tooltip = "Unlocks extra mode and sets all gold cups." });
 
@@ -507,8 +500,6 @@ void DrawCheatsMenu() {
         UIWidgets::CVarSliderFloat(
             "Min Height", "gMinHeight", -50.0f, 50.0f, 0.0f,
             { .tooltip = "When Disable Wall Collision are enable what is the minimal height you can get." });
-        ImGui::EndMenu();
-
         ImGui::EndMenu();
     }
 }
