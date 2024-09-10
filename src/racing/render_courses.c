@@ -22,6 +22,8 @@
 #include "courses/all_course_offsets.h"
 #include <assert.h>
 
+#include "enhancements/collision_viewer.h"
+
 s16 D_802B87B0 = 995;
 s16 D_802B87B4 = 1000;
 UNUSED s32 D_802B87B8 = 0;
@@ -1368,10 +1370,15 @@ void func_8029569C(void) {
 }
 
 void render_course(struct UnkStruct_800DC5EC *arg0) {
-
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
 
-    if ((CVarGetInteger("gFreecam", 0) == 1) ) {
+    // Freecam priority renders collision.
+    if (CVarGetInteger("gRenderCollisionMesh", 0) == true) {
+        render_collision();
+        return;
+    }
+
+    if ((CVarGetInteger("gFreecam", 0) == true) ) {
         // Render credits courses
         func_8029569C();
         return;
