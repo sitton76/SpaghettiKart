@@ -2,6 +2,7 @@
 #include "UIWidgets.h"
 #include "ResolutionEditor.h"
 #include "GameInfoWindow.h"
+#include "MultiplayerWindow.h"
 #include "FreecamWindow.h"
 
 #include <spdlog/spdlog.h>
@@ -23,6 +24,7 @@ std::shared_ptr<Ship::GuiWindow> mStatsWindow;
 std::shared_ptr<Ship::GuiWindow> mInputEditorWindow;
 std::shared_ptr<Ship::GuiWindow> mGfxDebuggerWindow;
 std::shared_ptr<Ship::GuiWindow> mGameInfoWindow;
+std::shared_ptr<Ship::GuiWindow> mMultiplayerWindow;
 std::shared_ptr<Ship::GuiWindow> mFreecamWindow;
 std::shared_ptr<AdvancedResolutionSettings::AdvancedResolutionSettingsWindow> mAdvancedResolutionSettingsWindow;
 
@@ -36,6 +38,11 @@ void SetupGuiElements() {
 
     mGameMenuBar = std::make_shared<GameMenuBar>("gOpenMenuBar", CVarGetInteger("gOpenMenuBar", 0));
     gui->SetMenuBar(mGameMenuBar);
+
+    mMultiplayerWindow = gui->GetGuiWindow("Multiplayer");
+    if (mMultiplayerWindow == nullptr) {
+        SPDLOG_ERROR("Could not find multiplayer window");
+    }
 
     mGameInfoWindow = gui->GetGuiWindow("GameInfo");
     if (mGameInfoWindow == nullptr) {
@@ -62,6 +69,9 @@ void SetupGuiElements() {
     if (mGfxDebuggerWindow == nullptr) {
         SPDLOG_ERROR("Could not find input GfxDebuggerWindow");
     }
+
+    mMultiplayerWindow = std::make_shared<Multiplayer::MultiplayerWindow>("gMultiplayerWindowEnabled", "Multiplayer");
+    gui->AddGuiWindow(mMultiplayerWindow);
 
     mFreecamWindow = gui->GetGuiWindow("FreecamWindow");
     if (mFreecamWindow == nullptr) {
@@ -454,6 +464,10 @@ void DrawGameMenu() {
 
 void DrawEnhancementsMenu() {
     if (UIWidgets::BeginMenu("Enhancements")) {
+
+        UIWidgets::WindowButton("Multiplayer", "gMultiplayerWindowEnabled", GameUI::mMultiplayerWindow,
+                                { .tooltip = "Shows the multiplayer window" });
+
 
         if (UIWidgets::BeginMenu("Gameplay")) {
             UIWidgets::CVarCheckbox("No Level of Detail (LOD)", "gDisableLOD",
