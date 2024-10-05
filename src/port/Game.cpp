@@ -32,6 +32,7 @@ extern "C" {
 #include "audio/load.h"
 #include "audio/external.h"
 #include "networking/networking.h"
+#include "engine/wasm.h"
 }
 
 extern "C" void Graphics_PushFrame(Gfx* data) {
@@ -460,6 +461,7 @@ extern "C"
     int
     main(int argc, char* argv[]) {
 #endif
+    load_wasm();
     GameEngine::Create();
     // audio_init();
     // sound_init();
