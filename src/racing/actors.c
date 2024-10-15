@@ -817,8 +817,8 @@ UNUSED void func_8029AE14() {
 
 #include "actors/falling_rock/render.inc.c"
 
-void spawn_piranha_plants(const char* spawnData) {
-    struct ActorSpawnData* temp_s0 = (struct ActorSpawnData*) LOAD_ASSET(spawnData);
+void spawn_piranha_plants(struct ActorSpawnData* spawnData) {
+    struct ActorSpawnData* temp_s0 = spawnData;
     struct PiranhaPlant* temp_v1;
     UNUSED s32 pad;
     Vec3f startingPos;
@@ -848,7 +848,7 @@ void spawn_piranha_plants(const char* spawnData) {
 }
 
 void spawn_palm_trees(const char* spawnData) {
-    struct ActorSpawnData* temp_s0 = (struct ActorSpawnData*) LOAD_ASSET(spawnData);
+    struct ActorSpawnData* temp_s0 = spawnData;
     struct PalmTree* temp_v1;
     Vec3f startingPos;
     Vec3f startingVelocity;
@@ -876,7 +876,7 @@ void spawn_palm_trees(const char* spawnData) {
 
 // Trees, cacti, shrubs, etc.
 //! @todo actorType needs to be passed into this function for flexibility
-void spawn_foliage(const char* actor) {
+void spawn_foliage(struct ActorSpawnData* actor) {
     UNUSED s32 pad[4];
     Vec3f position;
     Vec3f velocity;
@@ -884,9 +884,7 @@ void spawn_foliage(const char* actor) {
     UNUSED s16 pad2;
     s16 actorType = 0;
     struct Actor* temp_s0;
-    struct ActorSpawnData* var_s3;
-
-    var_s3 = (struct ActorSpawnData*) LOAD_ASSET(actor);
+    struct ActorSpawnData* var_s3 = actor;
     vec3f_set(velocity, 0.0f, 0.0f, 0.0f);
     rotation[0] = 0x4000;
     rotation[1] = 0;
@@ -947,18 +945,13 @@ void spawn_foliage(const char* actor) {
     }
 }
 
-void spawn_all_item_boxes(const char* spawnData) {
+void spawn_all_item_boxes(struct ActorSpawnData* spawnData) {
     s16 temp_s1;
     f32 temp_f0;
     Vec3f startingPos;
     Vec3f startingVelocity;
     Vec3s startingRot;
-    struct ActorSpawnData* temp_s0;
-    if (GetCourse() == GetTestCourse()) {
-        temp_s0 = (struct ActorSpawnData*) spawnData;
-    } else {
-        temp_s0 = (struct ActorSpawnData*) LOAD_ASSET(spawnData);
-    }
+    struct ActorSpawnData* temp_s0 = spawnData;
     // struct ItemBox *itemBox;
 
     if ((gModeSelection == TIME_TRIALS) || (gPlaceItemBoxes == 0)) {
@@ -1209,7 +1202,10 @@ void init_actors_and_load_textures(void) {
     init_red_shell_texture();
     destroy_all_actors();
     spawn_course_actors();
-    spawn_course_vehicles();
+
+    CourseManager_VehiclesSpawn();
+
+    // spawn_course_vehicles();
 }
 
 void play_sound_before_despawn(struct Actor* actor) {

@@ -9,6 +9,8 @@
 #include "BombKart.h"
 #include "assets/toads_turnpike_data.h"
 
+#include "engine/vehicles/Utils.h"
+
 extern "C" {
     #include "main.h"
     #include "camera.h"
@@ -40,6 +42,9 @@ ToadsTurnpike::ToadsTurnpike() {
     this->gfx = d_course_toads_turnpike_packed_dls;
     this->gfxSize = 3427;
     this->textures = toads_turnpike_textures;
+    Props.MinimapTexture = gTextureCourseOutlineToadsTurnpike;
+    Props.D_800E5548[0] = 128;
+    Props.D_800E5548[1] = 64;
 
     Props.Name = "toad's turnpike";
     Props.DebugName = "highway";
@@ -53,7 +58,7 @@ ToadsTurnpike::ToadsTurnpike() {
     Props.NearPersp = 9.0f;
     Props.FarPersp = 4500.0f;
 
-    Props.PathSizes = {0x3E8, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+    Props.PathSizes = {1000, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
 
     Props.D_0D009418[0] = 4.1666665f;
     Props.D_0D009418[1] = 5.5833334f;
@@ -75,12 +80,12 @@ ToadsTurnpike::ToadsTurnpike() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_toads_turnpike_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_toads_turnpike_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_toads_turnpike_track_waypoints;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_toads_turnpike_track_waypoints);
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -104,14 +109,7 @@ void ToadsTurnpike::LoadTextures() {
 }
 
 void ToadsTurnpike::SpawnActors() {
-    D_801625EC = 43;
-    D_801625F4 = 13;
-    D_801625F0 = 4;
-    D_802B87B0 = 993;
-    D_802B87B4 = 1000;
-    parse_course_displaylists(d_course_toads_turnpike_addr);
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_toads_turnpike_item_box_spawns));
 }
 
 void ToadsTurnpike::Init() {}
@@ -162,17 +160,13 @@ void ToadsTurnpike::WhatDoesThisDoAI(Player* player, int8_t playerId) {
 }
 
 void ToadsTurnpike::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -218,55 +212,51 @@ void ToadsTurnpike::RenderCredits() {
 void ToadsTurnpike::Collision() {}
 
 void ToadsTurnpike::SpawnVehicles() {
-    s16 trainCarYRot;
-    UNUSED Vec3f pad;
-    TrainCarStuff* tempLocomotive;
-    TrainCarStuff* tempTender;
-    TrainCarStuff* tempPassengerCar;
-    Vec3s trainCarRot;
-    VehicleStuff* tempBoxTruck;
-    VehicleStuff* tempSchoolBus;
-    VehicleStuff* tempTankerTruck;
-    VehicleStuff* tempCar;
-    PaddleBoatStuff* tempPaddleWheelBoat;
-    Vec3s paddleWheelBoatRot;
-    s32 loopIndex;
-    s32 loopIndex2;
-    f32 origXPos;
-    f32 origZPos;
+    f32 a = ((gCCSelection * 90.0) / 216.0f) + 4.583333333333333;
+    f32 b = ((gCCSelection * 90.0) / 216.0f) + 2.9166666666666665;
+    uint32_t waypoint;
 
-    for (loopIndex = 0; loopIndex < NUM_RACE_BOX_TRUCKS; loopIndex++) {
-        tempBoxTruck = &gBoxTruckList[loopIndex];
-        spawn_vehicle_on_road(tempBoxTruck);
-        tempBoxTruck->actorIndex = add_actor_to_empty_slot(tempBoxTruck->position, tempBoxTruck->rotation,
-                                                            tempBoxTruck->velocity, ACTOR_BOX_TRUCK);
-    }
-    for (loopIndex = 0; loopIndex < NUM_RACE_SCHOOL_BUSES; loopIndex++) {
-        tempSchoolBus = &gSchoolBusList[loopIndex];
-        spawn_vehicle_on_road(tempSchoolBus);
-        tempSchoolBus->actorIndex = add_actor_to_empty_slot(tempSchoolBus->position, tempSchoolBus->rotation,
-                                                            tempSchoolBus->velocity, ACTOR_SCHOOL_BUS);
-    }
-    for (loopIndex = 0; loopIndex < NUM_RACE_TANKER_TRUCKS; loopIndex++) {
-        tempTankerTruck = &gTankerTruckList[loopIndex];
-        spawn_vehicle_on_road(tempTankerTruck);
-        tempTankerTruck->actorIndex =
-            add_actor_to_empty_slot(tempTankerTruck->position, tempTankerTruck->rotation,
-                                    tempTankerTruck->velocity, ACTOR_TANKER_TRUCK);
-    }
-    for (loopIndex = 0; loopIndex < NUM_RACE_CARS; loopIndex++) {
-        tempCar = &gCarList[loopIndex];
-        spawn_vehicle_on_road(tempCar);
-        tempCar->actorIndex =
-            add_actor_to_empty_slot(tempCar->position, tempCar->rotation, tempCar->velocity, ACTOR_CAR);
-    }
-}
+    if (gModeSelection == TIME_TRIALS) {
+        for (size_t i = 0; i < NUM_TIME_TRIAL_BOX_TRUCKS; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_BOX_TRUCKS, gWaypointCountByPathIndex[0], 0);
+            gWorldInstance.AddTruck(a, b, &D_80164550[0][0], waypoint);
+        }
 
-void ToadsTurnpike::UpdateVehicles() {
-    update_vehicle_box_trucks();
-    update_vehicle_school_bus();
-    update_vehicle_tanker_trucks();
-    update_vehicle_cars();
+        for (size_t i = 0; i < NUM_TIME_TRIAL_SCHOOL_BUSES; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_SCHOOL_BUSES, gWaypointCountByPathIndex[0], 75);
+            gWorldInstance.AddBus(a, b, &D_80164550[0][0], waypoint);
+        }
+
+        for (size_t i = 0; i < NUM_TIME_TRIAL_TANKER_TRUCKS; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_TANKER_TRUCKS, gWaypointCountByPathIndex[0], 50);
+            gWorldInstance.AddTankerTruck(a, b, &D_80164550[0][0], waypoint);
+        }
+
+        for (size_t i = 0; i < NUM_TIME_TRIAL_CARS; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_CARS, gWaypointCountByPathIndex[0], 25);
+            gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
+        }
+    } else { // All other modes
+        for (size_t i = 0; i < NUM_RACE_BOX_TRUCKS; i++) {
+            uint32_t waypoint = CalculateWaypointDistribution(i, NUM_RACE_BOX_TRUCKS, gWaypointCountByPathIndex[0], 0);
+            gWorldInstance.AddTruck(a, b,  &D_80164550[0][0], waypoint);
+        }
+
+        for (size_t i = 0; i < NUM_RACE_SCHOOL_BUSES; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_RACE_SCHOOL_BUSES, gWaypointCountByPathIndex[0], 75);
+            gWorldInstance.AddBus(a, b,&D_80164550[0][0], waypoint);
+        }
+
+        for (size_t i = 0; i < NUM_RACE_TANKER_TRUCKS; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_RACE_TANKER_TRUCKS, gWaypointCountByPathIndex[0], 50);
+            gWorldInstance.AddTankerTruck(a, b, &D_80164550[0][0], waypoint);
+        }
+
+        for (size_t i = 0; i < NUM_RACE_CARS; i++) {
+            waypoint = CalculateWaypointDistribution(i, NUM_RACE_CARS, gWaypointCountByPathIndex[0], 25);
+            gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
+        }
+    }
 }
 
 void ToadsTurnpike::GenerateCollision() {
@@ -275,7 +265,7 @@ void ToadsTurnpike::GenerateCollision() {
     D_801625F0 = 4;
     D_802B87B0 = 993;
     D_802B87B4 = 1000;
-    parse_course_displaylists(d_course_toads_turnpike_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_toads_turnpike_addr));
     func_80295C6C();
     D_8015F8E4 = gCourseMinY - 10.0f;
 }

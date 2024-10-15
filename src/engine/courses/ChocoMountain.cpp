@@ -28,6 +28,7 @@ extern "C" {
     #include "staff_ghosts.h"
     #include "actors.h"
     #include "collision.h"
+    #include "code_8003DC40.h"
     #include "memory.h"
     extern const char *choco_mountain_dls[];
 }
@@ -37,6 +38,9 @@ ChocoMountain::ChocoMountain() {
     this->gfx = d_course_choco_mountain_packed_dls;
     this->gfxSize = 2910;
     this->textures = choco_mountain_textures;
+    Props.MinimapTexture = gTextureCourseOutlineChocoMountain;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Id = "mk:choco_mountain";
     Props.Name = "choco mountain";
@@ -73,12 +77,12 @@ ChocoMountain::ChocoMountain() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_choco_mountain_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_choco_mountain_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_choco_mountain_track_waypoints;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_choco_mountain_track_waypoints);
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -102,8 +106,8 @@ void ChocoMountain::LoadTextures() {
 }
 
 void ChocoMountain::SpawnActors() {
-    spawn_all_item_boxes(d_course_choco_mountain_item_box_spawns);
-    spawn_falling_rocks(d_course_choco_mountain_falling_rock_spawns);
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_choco_mountain_item_box_spawns));
+    spawn_falling_rocks((struct ActorSpawnData*)LOAD_ASSET_RAW((const char*)d_course_choco_mountain_falling_rock_spawns));
 }
 
 void ChocoMountain::Init() {  }
@@ -164,17 +168,13 @@ void ChocoMountain::WhatDoesThisDoAI(Player* player, int8_t playerId) {
 }
 
 void ChocoMountain::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -240,6 +240,10 @@ void ChocoMountain::RenderCredits() {
 
 void ChocoMountain::Collision() {}
 
+void ChocoMountain::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
+    func_8003E37C(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+}
+
 void ChocoMountain::GenerateCollision() {
     D_800DC5BC = 1;
     D_801625EC = 255;
@@ -266,7 +270,7 @@ void ChocoMountain::GenerateCollision() {
         nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x070003C8)));
     }
 
-    parse_course_displaylists(d_course_choco_mountain_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_choco_mountain_addr));
     func_802B5CAC(0x238E, 0x31C7, D_8015F590);
     func_80295C6C();
     D_8015F8E4 = -80.0f;

@@ -27,6 +27,10 @@
 
 #include "engine/courses/PodiumCeremony.h"
 
+#include "engine/TrainCrossing.h"
+
+#include "Smoke.h"
+
 extern "C" {
 #include "main.h"
 #include "audio/load.h"
@@ -130,10 +134,15 @@ void CustomEngineInit() {
     /* Set default course; mario raceway */
     gWorldInstance.CurrentCourse = gMarioRaceway;
     gWorldInstance.CurrentCup = flower;
-    gWorldInstance.CurrentCup->CursorPosition = 3;
+    gWorldInstance.CurrentCup->CursorPosition = 2;
 }
 
 extern "C" {
+
+World* GetWorld(void) {
+    return &gWorldInstance;
+}
+
 u32 WorldNextCup(void) {
     return gWorldInstance.NextCup();
 }
@@ -191,15 +200,78 @@ void CourseManager_SpawnVehicles() {
     }
 }
 
-void CourseManager_UpdateVehicles() {
-    if (gWorldInstance.CurrentCourse) {
-        gWorldInstance.CurrentCourse->UpdateVehicles();
+    void CourseManager_VehiclesSpawn() {
+        for (auto& vehicle : gWorldInstance.Vehicles) {
+            if (vehicle) {
+                vehicle->Spawn();
+            }
+        }
+    }
+
+    void CourseManager_VehiclesTick() {
+        for (auto& vehicle : gWorldInstance.Vehicles) {
+            if (vehicle) {
+                vehicle->Tick();
+            }
+        }
+    }
+
+    void CourseManager_VehiclesCollision(s32 playerId, Player* player) {
+        for (auto& vehicle : gWorldInstance.Vehicles) {
+            if (vehicle) {
+                vehicle->Collision(playerId, player);
+            }
+        }
+    }
+
+    void CourseManager_RenderTrucks(s32 playerId) {
+        for (auto& vehicle : gWorldInstance.Vehicles) {
+            if (vehicle) {
+                vehicle->Draw(playerId);
+            }
+        }
     }
 }
 
-void CourseManager_LoadTextures() {
-    if (gWorldInstance.CurrentCourse) {
-        gWorldInstance.CurrentCourse->LoadTextures();
+    void CourseManager_ResetVehicles(void) {
+        gWorldInstance.ResetVehicles();
+    }
+
+    void CourseManager_CrossingTrigger() {
+        for (auto& crossing : gWorldInstance.Crossings) {
+            if (crossing) {
+                crossing->CrossingTrigger();
+            }
+        }
+    }
+
+    void CourseManager_AICrossingBehaviour(s32 playerId) {
+        for (auto& crossing : gWorldInstance.Crossings) {
+            if (crossing) {
+                crossing->AICrossingBehaviour(playerId);
+            }
+        }
+    }
+
+    s32 CourseManager_GetCrossingOnTriggered(uintptr_t* crossing) {
+        TrainCrossing* ptr = (TrainCrossing*) crossing;
+        if (ptr) {
+            return ptr->OnTriggered;
+        }
+    }
+
+    void CourseManager_TrainSmokeTick(void) {
+        TrainSmokeTick();
+    }
+
+    void CourseManager_TrainSmokeDraw(s32 cameraId) {
+        TrainSmokeDraw(cameraId);
+    }
+
+    void CourseManager_LoadTextures() {
+        if (gWorldInstance.CurrentCourse) {
+            gWorldInstance.CurrentCourse->LoadTextures();
+        }
     }
 }
 
@@ -334,9 +406,10 @@ size_t GetCupCursorPosition() {
     return gWorldInstance.CurrentCup->CursorPosition;
 }
 
-void SetCupCursorPosition(size_t position) {
-    gWorldInstance.CurrentCup->CursorPosition = position;
-}
+    void SetCupCursorPosition(size_t position) {
+        gWorldInstance.CurrentCup->SetCourse(position);
+        //gWorldInstance.CurrentCup->CursorPosition = position;
+    }
 
 size_t GetCupSize() {
     return gWorldInstance.CurrentCup->GetSize();

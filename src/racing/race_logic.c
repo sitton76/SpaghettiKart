@@ -149,6 +149,7 @@ void func_8028E3A0(void) {
         } else {
             D_800DC544++;
             SetCupCursorPosition(GetCupCursorPosition() + 1);
+            SetCourseFromCup();
             gCourseIndexInCup++;
             gGotoMode = RACING;
         }
@@ -156,6 +157,7 @@ void func_8028E3A0(void) {
         D_800DC544++;
         gCourseIndexInCup++;
         SetCupCursorPosition(GetCupCursorPosition() + 1);
+        SetCourseFromCup();
         gGotoMode = RACING;
     }
 }

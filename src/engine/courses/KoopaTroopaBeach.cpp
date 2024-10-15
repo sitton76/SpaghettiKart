@@ -28,6 +28,7 @@ extern "C" {
     #include "staff_ghosts.h"
     #include "actors.h"
     #include "collision.h"
+    #include "code_8003DC40.h"
     #include "memory.h"
     extern const char *koopa_troopa_beach_dls[];
     extern s8 gPlayerCount;
@@ -38,6 +39,9 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     this->gfx = d_course_koopa_troopa_beach_packed_dls;
     this->gfxSize = 5720;
     this->textures = koopa_troopa_beach_textures;
+    Props.MinimapTexture = gTextureCourseOutlineKoopaTroopaBeach;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Id = "mk:koopa_beach";
     Props.Name = "koopa troopa beach";
@@ -74,13 +78,13 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_koopa_troopa_beach_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_koopa_troopa_beach_track_waypoints;
-    Props.PathTable2[1] = d_course_koopa_troopa_beach_track_waypoints_2;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_track_waypoints);
+    Props.PathTable2[1] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_track_waypoints_2);
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
@@ -104,8 +108,8 @@ void KoopaTroopaBeach::LoadTextures() {
 
 void KoopaTroopaBeach::SpawnActors() {
     init_actor_hot_air_balloon_item_box(328.0f * gCourseDirection, 70.0f, 2541.0f);
-    spawn_all_item_boxes(d_course_koopa_troopa_beach_item_box_spawns);
-    spawn_palm_trees(d_course_koopa_troopa_beach_tree_spawn);
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_item_box_spawns));
+    spawn_palm_trees((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_tree_spawn));
 }
 
 void KoopaTroopaBeach::Init() {}
@@ -179,17 +183,13 @@ void KoopaTroopaBeach::WhatDoesThisDo(Player* player, int8_t playerId) {}
 void KoopaTroopaBeach::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
 void KoopaTroopaBeach::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -235,8 +235,12 @@ void KoopaTroopaBeach::RenderCredits() {
 
 void KoopaTroopaBeach::Collision() {}
 
+void KoopaTroopaBeach::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
+    func_8003E37C(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+}
+
 void KoopaTroopaBeach::GenerateCollision() {
-    parse_course_displaylists(d_course_koopa_troopa_beach_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_addr));
     func_80295C6C();
     find_vtx_and_set_colours(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x0700ADE0)), -0x6A, 255, 255, 255);
     find_vtx_and_set_colours(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x0700A540)), -0x6A, 255, 255, 255);

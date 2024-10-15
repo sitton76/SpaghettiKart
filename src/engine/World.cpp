@@ -2,6 +2,16 @@
 #include "World.h"
 #include "Cup.h"
 #include "courses/Course.h"
+#include "vehicles/Vehicle.h"
+#include "vehicles/Train.h"
+#include "vehicles/Boat.h"
+#include "vehicles/Truck.h"
+#include "vehicles/Bus.h"
+#include "vehicles/TankerTruck.h"
+#include "vehicles/Car.h"
+#include "TrainCrossing.h"
+#include <memory>
+
 
 extern "C" {
    #include "camera.h"
@@ -36,6 +46,54 @@ Cup* World::GetCup() {
 
 void World::SetCourseFromCup() {
     CurrentCourse = CurrentCup->GetCourse();
+}
+
+// Required for spawning vehicles in divisions across path points
+static size_t trains;
+static size_t trucks;
+static size_t busses;
+static size_t tankerTrucks;
+static size_t cars;
+static size_t boats;
+void World::AddTrain(size_t numCarriages, f32 speed, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ATrain>(trains, numCarriages, speed, waypoint));
+    trains++;
+}
+
+void World::AddBoat(f32 speed, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ABoat>(boats, speed, waypoint));
+    boats++;
+}
+
+void World::AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ATruck>(trucks, speedA, speedB, path, waypoint));
+    trucks++;
+}
+
+void World::AddBus(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ABus>(busses, speedA, speedB, path, waypoint));
+    busses++;
+}
+
+void World::AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ATankerTruck>(tankerTrucks, speedA, speedB, path, waypoint));
+    tankerTrucks++;
+}
+
+void World::AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ACar>(cars, speedA, speedB, path, waypoint));
+    cars++;
+}
+
+void World::ResetVehicles(void) {
+    trains = trucks = busses = tankerTrucks = cars = boats = 0;
+    Vehicles.clear();
+}
+
+TrainCrossing* World::AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius) {
+    auto crossing = std::make_shared<TrainCrossing>(position, waypointMin, waypointMax, approachRadius, exitRadius);
+    Crossings.push_back(crossing);
+    return crossing.get();
 }
 
 //const char* World::GetCupName() {

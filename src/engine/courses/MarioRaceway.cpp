@@ -37,6 +37,9 @@ MarioRaceway::MarioRaceway() {
     this->gfx = d_course_mario_raceway_packed_dls;
     this->gfxSize = 3367;
     this->textures = mario_raceway_textures;
+    Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Id = "mk:mario_raceway";
     Props.Name = "Mario Raceway";
@@ -74,12 +77,12 @@ MarioRaceway::MarioRaceway() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_mario_raceway_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_mario_raceway_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_mario_raceway_track_waypoints;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_mario_raceway_track_waypoints);
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -117,9 +120,9 @@ void MarioRaceway::SpawnActors() {
     Vec3f position;
     Vec3f velocity = { 0.0f, 0.0f, 0.0f };
     Vec3s rotation = { 0, 0, 0 };
-    spawn_foliage(d_course_mario_raceway_tree_spawns);
-    spawn_piranha_plants(d_course_mario_raceway_piranha_plant_spawns);
-    spawn_all_item_boxes(d_course_mario_raceway_item_box_spawns);
+    spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_mario_raceway_tree_spawns));
+    spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_mario_raceway_piranha_plant_spawns));
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_mario_raceway_item_box_spawns));
     vec3f_set(position, 150.0f, 40.0f, -1300.0f);
     position[0] *= gCourseDirection;
     add_actor_to_empty_slot(position, rotation, velocity, ACTOR_MARIO_SIGN);
@@ -192,17 +195,13 @@ void MarioRaceway::WhatDoesThisDoAI(Player* player, int8_t playerId) {
 }
 
 void MarioRaceway::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -346,7 +345,7 @@ void MarioRaceway::GenerateCollision() {
         generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07002D68)));
     }
 
-    parse_course_displaylists(d_course_mario_raceway_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_mario_raceway_addr));
     func_80295C6C();
     D_8015F8E4 = gCourseMinY - 10.0f;
 }

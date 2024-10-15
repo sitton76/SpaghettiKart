@@ -42,6 +42,9 @@
 #include <assets/frappe_snowland_data.h>
 #include "port/Game.h"
 
+#include "engine/Engine.h"
+#include "engine/courses/Course.h"
+
 Lights1 D_800E45C0[] = {
     gdSPDefLights1(100, 0, 0, 100, 0, 0, 0, -120, 0),
     gdSPDefLights1(100, 100, 0, 255, 255, 0, 0, -120, 0),
@@ -2472,8 +2475,8 @@ void func_8004EF9C(s32 arg0) {
     s16 temp_t0;
     s16 temp_v0;
 
-    temp_v0 = D_800E5548[arg0 * 2];
-    temp_t0 = D_800E5548[arg0 * 2 + 1];
+    temp_v0 = CourseManager_GetProps()->D_800E5548[0]; // D_800E5548[arg0 * 2];
+    temp_t0 = CourseManager_GetProps()->D_800E5548[1]; // D_800E5548[arg0 * 2 + 1];
     func_8004D37C(0x00000104, 0x0000003C, D_8018D248[arg0], 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF, temp_v0,
                   temp_t0, temp_v0, temp_t0);
 }
@@ -3854,7 +3857,7 @@ void render_object_trains_smoke_particles(s32 cameraId) {
 
 // Render smoke for any number of trains. Don't know enough about these variables yet.
 #ifdef AVOID_UB_WIP
-    for (j = 0; j < gNumTrains; j++) {
+    for (j = 0; j < NUM_TRAINS; j++) {
         if ((gTrainList[j].someFlags != 0) &&
             (is_particle_on_screen(&gTrainList[j].locomotive.position, camera, 0x4000U) != 0)) {
 

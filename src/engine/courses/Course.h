@@ -17,6 +17,7 @@ extern "C" {
     #include "bomb_kart.h"
     #include "path_spawn_metadata.h"
     #include "Engine.h"
+    #include "waypoints.h"
 
 CProperties *CourseManager_GetProps();
 
@@ -54,6 +55,8 @@ public:
         const char* DebugName;
         const char* CourseLength;
         const char* AIBehaviour;
+        const char* MinimapTexture;
+        s16 D_800E5548[2];
         float AIMaximumSeparation;
         float AIMinimumSeparation;
         float NearPersp;
@@ -65,8 +68,8 @@ public:
         Vec4f D_0D009568;
         Vec4f D_0D0096B8;
         Vec4f D_0D009808;
-        const char* PathTable[4];
-        const char* PathTable2[4];
+        TrackWaypoint* PathTable[4];
+        TrackWaypoint* PathTable2[4];
         CloudData *Clouds;
         CloudData *CloudList;
         int32_t MinimapFinishlineX;
@@ -81,15 +84,12 @@ public:
     size_t gfxSize = 0;
     const course_texture* textures = nullptr;
 
-    virtual ~Course() = default;  // Virtual destructor for proper cleanup in derived classes
+    virtual ~Course() = default;
 
-    // Constructor
-    explicit Course();  // UUID should be passed in constructor
+    explicit Course();
 
-    // Virtual functions to be overridden by derived classes
-    virtual void Load();
-    virtual void Load(Vtx* vtx, Gfx *gfx);
-    // This function may not be needed due to otr system.
+    virtual void Load(); // Decompress and load stock courses. Must be overridden for custom courses
+    virtual void Load(Vtx* vtx, Gfx *gfx); // Load custom course
     virtual void LoadTextures();
     virtual void SpawnActors();
     virtual void Init();
@@ -117,8 +117,6 @@ public:
     virtual void GenerateCollision();
     virtual void Water();
     virtual void Destroy();
-    virtual World* GetWorld();
-
 };
 
 #endif

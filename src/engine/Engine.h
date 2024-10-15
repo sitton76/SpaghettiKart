@@ -5,6 +5,7 @@
 #include "bomb_kart.h"
 #include "objects.h"
 #include "path_spawn_metadata.h"
+#include "waypoints.h"
 
 typedef struct {
     RGB8 TopRight;
@@ -23,6 +24,8 @@ typedef struct {
     const char* DebugName;
     const char* CourseLength;
     const char* AIBehaviour;
+    const char* MinimapTexture;
+    s16 D_800E5548[2];
     float AIMaximumSeparation;
     float AIMinimumSeparation;
     float NearPersp;
@@ -34,8 +37,8 @@ typedef struct {
     Vec4f D_0D009568;
     Vec4f D_0D0096B8;
     Vec4f D_0D009808;
-    const char* PathTable[4];
-    const char* PathTable2[4];
+    TrackWaypoint* PathTable[4];
+    TrackWaypoint* PathTable2[4];
     CloudData *Clouds;
     CloudData *CloudList;
     s32 MinimapFinishlineX;

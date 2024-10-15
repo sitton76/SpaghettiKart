@@ -9,6 +9,8 @@
 #include "BombKart.h"
 #include "assets/dks_jungle_parkway_data.h"
 
+#include "engine/vehicles/Utils.h"
+
 extern "C" {
     #include "main.h"
     #include "camera.h"
@@ -28,6 +30,7 @@ extern "C" {
     #include "staff_ghosts.h"
     #include "actors.h"
     #include "collision.h"
+    #include "code_8003DC40.h"
     #include "memory.h"
     #include "sounds.h"
     extern const char *d_course_dks_jungle_parkway_unknown_dl_list[];
@@ -39,6 +42,9 @@ DKJungle::DKJungle() {
     this->gfx = d_course_dks_jungle_parkway_packed_dls;
     this->gfxSize = 4997;
     this->textures = dks_jungle_parkway_textures;
+    Props.MinimapTexture = gTextureCourseOutlineDksJungleParkway;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Name = "d.k.'s jungle parkway";
     Props.DebugName = "jungle";
@@ -74,12 +80,12 @@ DKJungle::DKJungle() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_dks_jungle_parkway_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_dks_jungle_parkway_track_waypoints;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_track_waypoints);
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -106,7 +112,7 @@ void DKJungle::LoadTextures() {
 }
 
 void DKJungle::SpawnActors() {
-    spawn_all_item_boxes(d_course_dks_jungle_parkway_item_box_spawns);
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_item_box_spawns));
     init_kiwano_fruit();
     func_80298D10();
 }
@@ -190,17 +196,13 @@ void DKJungle::WhatDoesThisDoAI(Player* player, int8_t playerId) {
 }
 
 void DKJungle::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -241,48 +243,18 @@ void DKJungle::RenderCredits() {
 
 void DKJungle::Collision() {}
 
-void DKJungle::SpawnVehicles() {
-    s16 trainCarYRot;
-    UNUSED Vec3f pad;
-    TrainCarStuff* tempLocomotive;
-    TrainCarStuff* tempTender;
-    TrainCarStuff* tempPassengerCar;
-    Vec3s trainCarRot;
-    VehicleStuff* tempBoxTruck;
-    VehicleStuff* tempSchoolBus;
-    VehicleStuff* tempTankerTruck;
-    VehicleStuff* tempCar;
-    PaddleBoatStuff* tempPaddleWheelBoat;
-    Vec3s paddleWheelBoatRot;
-    s32 loopIndex;
-    s32 loopIndex2;
-    f32 origXPos;
-    f32 origZPos;
-
-    for (loopIndex = 0; loopIndex < NUM_ACTIVE_PADDLE_BOATS; loopIndex++) {
-        tempPaddleWheelBoat = &gPaddleBoats[loopIndex];
-        if (tempPaddleWheelBoat->isActive == 1) {
-            origXPos = tempPaddleWheelBoat->position[0];
-            origZPos = tempPaddleWheelBoat->position[2];
-            tempPaddleWheelBoat->rotY = update_vehicle_following_waypoint(
-                tempPaddleWheelBoat->position, (s16*) &tempPaddleWheelBoat->waypointIndex,
-                tempPaddleWheelBoat->speed);
-            tempPaddleWheelBoat->velocity[0] = tempPaddleWheelBoat->position[0] - origXPos;
-            tempPaddleWheelBoat->velocity[2] = tempPaddleWheelBoat->position[2] - origZPos;
-            vec3s_set(paddleWheelBoatRot, 0, tempPaddleWheelBoat->rotY, 0);
-            tempPaddleWheelBoat->actorIndex =
-                add_actor_to_empty_slot(tempPaddleWheelBoat->position, paddleWheelBoatRot,
-                                        tempPaddleWheelBoat->velocity, ACTOR_PADDLE_BOAT);
-        }
-    }
+void DKJungle::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
+    func_8003F138(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 
-void DKJungle::UpdateVehicles() {
-    update_vehicle_paddle_boats();
+void DKJungle::SpawnVehicles() {
+    generate_ferry_waypoints();
+
+    gWorldInstance.AddBoat(1.6666666f, 0);
 }
 
 void DKJungle::GenerateCollision() {
-    parse_course_displaylists(d_course_dks_jungle_parkway_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_addr));
     func_80295C6C();
     D_8015F8E4 = -475.0f;
     // d_course_dks_jungle_parkway_packed_dl_3FA8

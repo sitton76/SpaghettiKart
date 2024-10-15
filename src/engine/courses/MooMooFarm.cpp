@@ -40,6 +40,9 @@ MooMooFarm::MooMooFarm() {
     this->gfx = d_course_moo_moo_farm_packed_dls;
     this->gfxSize = 3304;
     this->textures = moo_moo_farm_textures;
+    Props.MinimapTexture = gTextureCourseOutlineMooMooFarm;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Name = "moo moo farm";
     Props.DebugName = "farm";
@@ -75,12 +78,12 @@ MooMooFarm::MooMooFarm() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_moo_moo_farm_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_moo_moo_farm_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_moo_moo_farm_track_waypoints;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_moo_moo_farm_track_waypoints);
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -117,9 +120,9 @@ void MooMooFarm::LoadTextures() {
 
 void MooMooFarm::SpawnActors() {
     if (gPlayerCountSelection1 != 4) {
-        spawn_foliage(d_course_moo_moo_farm_tree_spawn);
+        spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_moo_moo_farm_tree_spawn));
     }
-    spawn_all_item_boxes(d_course_moo_moo_farm_item_box_spawns);
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_moo_moo_farm_item_box_spawns));
 }
 
 void MooMooFarm::Init() {}
@@ -237,17 +240,13 @@ void MooMooFarm::WhatDoesThisDoAI(Player* player, int8_t playerId) {
 }
 
 void MooMooFarm::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -340,7 +339,7 @@ void MooMooFarm::RenderCredits() {
 void MooMooFarm::Collision() {}
 
 void MooMooFarm::GenerateCollision() {
-    parse_course_displaylists(d_course_moo_moo_farm_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_moo_moo_farm_addr));
     func_80295C6C();
     D_8015F8E4 = gCourseMinY - 10.0f;
 }

@@ -44,6 +44,7 @@ extern "C" {
 TestCourse::TestCourse() {
     this->gfxSize = 100;
     this->textures = NULL;
+    Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
 
     Props.Id = "mk:test_course";
     Props.Name = "Test Course";
@@ -59,7 +60,7 @@ TestCourse::TestCourse() {
     Props.NearPersp = 9.0f;
     Props.FarPersp = 4500.0f;
 
-    Props.PathSizes = {52, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+    Props.PathSizes = {51, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
 
     Props.D_0D009418[0] = 4.1666665f;
     Props.D_0D009418[1] = 5.5833334f;
@@ -81,12 +82,12 @@ TestCourse::TestCourse() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    //Props.PathTable[0] = test_course_path;
+    Props.PathTable[0] = test_course_path;
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    //Props.PathTable2[0] = test_course_path;
+    Props.PathTable2[0] = test_course_path;
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -126,6 +127,9 @@ void TestCourse::LoadTextures() {
 
 void TestCourse::SpawnActors() {
 struct ActorSpawnData itemboxes[] = {
+    {   200, 1500, 200 , 0},
+    {   350, 2500, 300 , 1},
+    {   400, 2000, 350 , 2},
     {    40, 0, -800, 0},
     {    -40, 0, -800, 0},
     {    0, 0, -800, 0},
@@ -138,13 +142,27 @@ struct ActorSpawnData itemboxes[] = {
 };
 
 struct ActorSpawnData rocks[] = {
-    {{   200, 3000, 200 }, {0}},
+    {{   200, 1500, 200 }, {0}},
     {{   350, 2500, 300 }, {1}},
     {{   400, 2000, 350 }, {2}},
     {{ -32768,   0,   0 }, {0}},
 };
-    spawn_all_item_boxes((const char*)itemboxes);
-    spawn_falling_rocks((const char*)rocks);
+    spawn_all_item_boxes(itemboxes);
+    spawn_falling_rocks(rocks);
+
+    struct RailroadCrossing* rrxing;
+    Vec3f position;
+    Vec3f velocity = { 0.0f, 0.0f, 0.0f };
+    Vec3s rotation = { 0, 0, 0 };
+    vec3f_set(position, 50.0f, 2.0f, 50.0f);
+
+    Vec3f crossingPos = {0, 2, 0};
+    uintptr_t* crossing1 = (uintptr_t*) gWorldInstance.AddCrossing(crossingPos, 0, 2, 900.0f, 650.0f);
+
+    position[0] *= gCourseDirection;
+    rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING)];
+    rrxing->crossingTrigger = crossing1;
 }
 
 void TestCourse::Init() {}
@@ -160,6 +178,77 @@ void TestCourse::MinimapSettings() {
     D_80165718 = 0;
     D_80165720 = 5;
     D_80165728 = -240;
+}
+
+Path2D test_course_path2D[] = {
+    {    0, 0},
+    {    0, -100},
+    {    0, -200},
+    {    0, -300},
+    {    0, -400},
+    {    0, -500},
+    {    0, -600},
+    {    0, -700},
+    {    0, -800},
+    {    0, -900},
+    {    0, -1000},
+    {    0, -1096},    // Main point 1
+    {  100, -1090},
+    {  200, -1085},
+    {  300, -1080},
+    {  400, -1075},
+    {  500, -1072},    // Curve begins to smooth here
+    {  600, -1068},
+    {  700, -1065},
+    {  800, -1063},
+    {  900, -1061},
+    {  984, -1060},    // Main point 2
+    {  990, -900},
+    {  995, -800},
+    {  997, -700},
+    {  998, -600},
+    {  999, -500},
+    {  999, -400},
+    {  999, -300},
+    {  999, -200},
+    {  999, -100},
+    {  999, 0},
+    {  999, 100},
+    {  999, 200},
+    {  999, 300},
+    {  999, 400},
+    {  999, 500},
+    {  999, 600},
+    {  999, 700},
+    {  999, 800},
+    {  999, 900},
+    {  999, 940},      // Main point 3
+    {  900, 945},
+    {  800, 945},
+    {  700, 947},
+    {  600, 948},
+    {  500, 949},
+    {  400, 949},
+    {  300, 949},
+    {  200, 950},
+    {  100, 950},
+    {    0, 950},      // Main point 4
+
+    // End of path
+    { -32768, -32768 } // Terminator
+};
+
+void TestCourse::SpawnVehicles() {
+    gVehicle2DWaypoint = test_course_path2D;
+    gVehicle2DWaypointLength = 53;
+    D_80162EB0 = spawn_actor_on_surface(test_course_path2D[0].x, 2000.0f, test_course_path2D[0].z);
+    
+    gWorldInstance.AddTrain(5, 5.0f, 0);
+    gWorldInstance.AddTrain(5, 5.0f, 8);
+}
+
+void TestCourse::UpdateVehicles() {
+    update_vehicle_trains();
 }
 
 void TestCourse::InitCourseObjects() {}
@@ -197,17 +286,13 @@ void TestCourse::WhatDoesThisDoAI(Player* player, int8_t playerId) {
 }
 
 void TestCourse::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -242,7 +327,7 @@ void TestCourse::Collision() {}
 void TestCourse::GenerateCollision() {
     generate_collision_mesh_with_defaults(mario_Plane_001_mesh);
 
-    parse_course_displaylists((const char*)test_course_addr);
+    parse_course_displaylists((TrackSectionsI*)test_course_addr);
     func_80295C6C();
     D_8015F8E4 = gCourseMinY - 10.0f;
 }

@@ -3,6 +3,11 @@
 #include <libultraship.h>
 #include "GameObject.h"
 #include "Cup.h"
+#include "vehicles/Vehicle.h"
+#include "vehicles/Train.h"
+#include "vehicles/Car.h"
+#include "TrainCrossing.h"
+#include <memory>
 
 extern "C" {
 #include "camera.h"
@@ -12,6 +17,10 @@ extern "C" {
 
 class Cup; // <-- Forward declaration
 class Course;
+class AVehicle;
+class ATrain;
+class ACar;
+class TrainCrossing;
 
 class World {
 
@@ -81,7 +90,7 @@ public:
     virtual void SetCourseFromCup();
     void SetCup();
 
-    World* GetWorld();
+    World* GetWorld(void);
 
 
     // These are only for browsing through the course list
@@ -100,6 +109,18 @@ public:
     std::vector<std::unique_ptr<GameObject>> GameObjects;
     // std::vector<std::unique_ptr<GameActor>> GameActors;
 
+    void AddBoat(f32 speed, uint32_t waypoint);
+    void AddTrain(size_t numCarriages, f32 speed, uint32_t waypoint);
+    void AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+    void AddBus(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+    void AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+    void AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+    std::vector<std::unique_ptr<AVehicle>> Vehicles;
+    void ResetVehicles(void);
+
+    TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
+    std::vector<std::shared_ptr<TrainCrossing>> Crossings;
+
     std::vector<Course*> Courses;
     size_t CourseIndex = 0; // For browsing courses.
 private:
@@ -107,4 +128,3 @@ private:
 };
 
 extern World gWorldInstance;
-

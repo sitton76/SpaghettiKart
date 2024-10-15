@@ -8,6 +8,9 @@
 #include "World.h"
 #include "BombKart.h"
 #include "kalimari_desert_data.h"
+#include "engine/vehicles/Utils.h"
+
+#include "engine/vehicles/Vehicle.h"
 
 extern "C" {
     #include "main.h"
@@ -37,6 +40,9 @@ KalimariDesert::KalimariDesert() {
     this->gfx = d_course_kalimari_desert_packed_dls;
     this->gfxSize = 5328;
     this->textures = kalimari_desert_textures;
+    Props.MinimapTexture = gTextureCourseOutlineKalimariDesert;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 96;
 
     Props.Name = "kalimari desert";
     Props.DebugName = "desert";
@@ -72,12 +78,12 @@ KalimariDesert::KalimariDesert() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = d_course_kalimari_desert_unknown_waypoints;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_kalimari_desert_unknown_waypoints);
     Props.PathTable[1] = NULL;
     Props.PathTable[2] = NULL;
     Props.PathTable[3] = NULL;
 
-    Props.PathTable2[0] = d_course_kalimari_desert_track_waypoints;
+    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_kalimari_desert_track_waypoints);
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -111,29 +117,35 @@ void KalimariDesert::SpawnActors() {
     Vec3f velocity = { 0.0f, 0.0f, 0.0f };
     Vec3s rotation = { 0, 0, 0 };
 
-    spawn_foliage(d_course_kalimari_desert_cactus_spawn);
-    spawn_all_item_boxes(d_course_kalimari_desert_item_box_spawns);
+    spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_kalimari_desert_cactus_spawn));
+    spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_kalimari_desert_item_box_spawns));
+
+    Vec3f crossingPos = {-2500, 2, 2355};
+    Vec3f crossingPos2 = {-1639, 2, 68};
+    uintptr_t* crossing1 = (uintptr_t*) gWorldInstance.AddCrossing(crossingPos, 306, 310, 900.0f, 650.0f);
+    uintptr_t* crossing2 = (uintptr_t*) gWorldInstance.AddCrossing(crossingPos2, 176, 182, 900.0f, 650.0f);
+
     vec3f_set(position, -1680.0f, 2.0f, 35.0f);
     position[0] *= gCourseDirection;
     rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
                                                                             ACTOR_RAILROAD_CROSSING)];
-    rrxing->crossingId = 1;
+    rrxing->crossingTrigger = crossing2;
     vec3f_set(position, -1600.0f, 2.0f, 35.0f);
     position[0] *= gCourseDirection;
     rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
                                                                             ACTOR_RAILROAD_CROSSING)];
-    rrxing->crossingId = 1;
+    rrxing->crossingTrigger = crossing2;
     vec3s_set(rotation, 0, -0x2000, 0);
     vec3f_set(position, -2459.0f, 2.0f, 2263.0f);
     position[0] *= gCourseDirection;
     rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
                                                                             ACTOR_RAILROAD_CROSSING)];
-    rrxing->crossingId = 0;
+    rrxing->crossingTrigger = crossing1;
     vec3f_set(position, -2467.0f, 2.0f, 2375.0f);
     position[0] *= gCourseDirection;
     rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
                                                                             ACTOR_RAILROAD_CROSSING)];
-    rrxing->crossingId = 0;
+    rrxing->crossingTrigger = crossing1;
 }
 
 void KalimariDesert::Init() {}
@@ -165,14 +177,6 @@ void KalimariDesert::InitCourseObjects() {
     }
 }
 
-void KalimariDesert::UpdateCourseObjects() {
-    update_train_smoke();
-}
-
-void KalimariDesert::RenderCourseObjects(s32 cameraId) {
-    render_object_trains_smoke_particles(cameraId);
-}
-
 void KalimariDesert::SomeSounds() {}
 
 void KalimariDesert::WhatDoesThisDo(Player* player, int8_t playerId) {}
@@ -180,17 +184,13 @@ void KalimariDesert::WhatDoesThisDo(Player* player, int8_t playerId) {}
 void KalimariDesert::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
 void KalimariDesert::SpawnBombKarts() {
-    World* world = GetWorld();
-
-    if (world) {
-        world->SpawnObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-        world->SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    }
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
+    gWorldInstance.SpawnObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
 }
 
 // Positions the finishline on the minimap
@@ -202,69 +202,17 @@ void KalimariDesert::MinimapFinishlinePosition() {
 void KalimariDesert::SetStaffGhost() {}
 
 void KalimariDesert::SpawnVehicles() {
-    s16 trainCarYRot;
-    UNUSED Vec3f pad;
-    TrainCarStuff* tempLocomotive;
-    TrainCarStuff* tempTender;
-    TrainCarStuff* tempPassengerCar;
-    Vec3s trainCarRot;
-    VehicleStuff* tempBoxTruck;
-    VehicleStuff* tempSchoolBus;
-    VehicleStuff* tempTankerTruck;
-    VehicleStuff* tempCar;
-    PaddleBoatStuff* tempPaddleWheelBoat;
-    Vec3s paddleWheelBoatRot;
-    s32 loopIndex;
-    s32 loopIndex2;
-    f32 origXPos;
-    f32 origZPos;
+    generate_train_waypoints();
 
-    for (loopIndex = 0; loopIndex < NUM_TRAINS; loopIndex++) {
-        tempLocomotive = &gTrainList[loopIndex].locomotive;
-        origXPos = tempLocomotive->position[0];
-        origZPos = tempLocomotive->position[2];
-        trainCarYRot = update_vehicle_following_waypoint(
-            tempLocomotive->position, (s16*) &tempLocomotive->waypointIndex, gTrainList[loopIndex].speed);
-        tempLocomotive->velocity[0] = tempLocomotive->position[0] - origXPos;
-        tempLocomotive->velocity[2] = tempLocomotive->position[2] - origZPos;
-        vec3s_set(trainCarRot, 0, trainCarYRot, 0);
-        tempLocomotive->actorIndex = add_actor_to_empty_slot(tempLocomotive->position, trainCarRot,
-                                                                tempLocomotive->velocity, ACTOR_TRAIN_ENGINE);
+    s32 numTrains = 2;
+    s32 centerWaypoint = 160;
 
-        tempTender = &gTrainList[loopIndex].tender;
-        if (tempTender->isActive == 1) {
-            origXPos = tempTender->position[0];
-            origZPos = tempTender->position[2];
-            trainCarYRot = update_vehicle_following_waypoint(
-                tempTender->position, (s16*) &tempTender->waypointIndex, gTrainList[loopIndex].speed);
-            tempTender->velocity[0] = tempTender->position[0] - origXPos;
-            tempTender->velocity[2] = tempTender->position[2] - origZPos;
-            vec3s_set(trainCarRot, 0, trainCarYRot, 0);
-            tempTender->actorIndex = add_actor_to_empty_slot(tempTender->position, trainCarRot,
-                                                                tempTender->velocity, ACTOR_TRAIN_TENDER);
-        }
-
-        for (loopIndex2 = 0; loopIndex2 < NUM_PASSENGER_CAR_ENTRIES; loopIndex2++) {
-            tempPassengerCar = &gTrainList[loopIndex].passengerCars[loopIndex2];
-            if (tempPassengerCar->isActive == 1) {
-                origXPos = tempPassengerCar->position[0];
-                origZPos = tempPassengerCar->position[2];
-                trainCarYRot = update_vehicle_following_waypoint(tempPassengerCar->position,
-                                                                    (s16*) &tempPassengerCar->waypointIndex,
-                                                                    gTrainList[loopIndex].speed);
-                tempPassengerCar->velocity[0] = tempPassengerCar->position[0] - origXPos;
-                tempPassengerCar->velocity[2] = tempPassengerCar->position[2] - origZPos;
-                vec3s_set(trainCarRot, 0, trainCarYRot, 0);
-                tempPassengerCar->actorIndex =
-                    add_actor_to_empty_slot(tempPassengerCar->position, trainCarRot, tempPassengerCar->velocity,
-                                            ACTOR_TRAIN_PASSENGER_CAR);
-            }
-        }
+    // Spawn two trains
+    for (size_t i = 0; i < numTrains; ++i) {
+        uint32_t waypoint = CalculateWaypointDistribution(i, numTrains, gVehicle2DWaypointLength, centerWaypoint);
+        
+        gWorldInstance.AddTrain(5, 5.0f, waypoint);
     }
-}
-
-void KalimariDesert::UpdateVehicles() {
-    update_vehicle_trains();
 }
 
 void KalimariDesert::BeginPlay() {  }
@@ -308,7 +256,7 @@ void KalimariDesert::RenderCredits() {
 void KalimariDesert::Collision() {}
 
 void KalimariDesert::GenerateCollision() {
-    parse_course_displaylists(d_course_kalimari_desert_addr);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_kalimari_desert_addr));
     func_80295C6C();
     D_8015F8E4 = gCourseMinY - 10.0f;
 }
