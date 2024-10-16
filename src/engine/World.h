@@ -67,13 +67,14 @@ class World {
 public:
     explicit World();
 
+    void AddCourse(Course* course);
+
     AActor* AddActor(std::unique_ptr<AActor> actor);
     void TickActors();
     void DrawActors(Camera* camera);
     void RemoveExpiredActors();
 
     Object* AddObject(std::unique_ptr<GameObject> object);
-
 
     CProperties* GetCourseProps();
     void TickObjects();
@@ -82,15 +83,13 @@ public:
     void DestroyObjects();
     Object *GetObjectByIndex(size_t);
 
-    Cup* AddCup(const char* name, std::vector<Course*> courses);
-    Cup* GetCup();
+    void AddCup(Cup*);
+    void SetCup(Cup* cup);
     const char* GetCupName();
     u32 GetCupIndex();
-    void SetCupIndex(int16_t courseId);
     u32 NextCup();
     u32 PreviousCup();
     void SetCourseFromCup();
-    void SetCup();
 
     World* GetWorld(void);
 
@@ -105,7 +104,7 @@ public:
     Course* CurrentCourse;
     Cup* CurrentCup;
 
-    std::vector<std::shared_ptr<Cup>> Cups;
+    std::vector<Cup*> Cups;
     size_t CupIndex = 1;
 
     std::vector<std::unique_ptr<GameObject>> GameObjects;
