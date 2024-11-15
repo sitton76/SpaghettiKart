@@ -6,7 +6,7 @@
 #include "DoubleDeck.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/double_deck_data.h"
 
 extern "C" {
@@ -101,10 +101,34 @@ DoubleDeck::DoubleDeck() {
     Props.Skybox.FloorTopLeft = {255, 224, 240};
 }
 
+void DoubleDeck::Load() {
+    Course::Load();
+
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000738), 1);
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void DoubleDeck::LoadTextures() {
 }
 
-void DoubleDeck::SpawnActors() {}
+void DoubleDeck::SpawnActors() {
+    spawn_all_item_boxes((ActorSpawnData*)LOAD_ASSET_RAW(d_course_double_deck_item_box_spawns));
+}
+
+void DoubleDeck::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][20], 20, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][40], 40, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][60], 60, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][80], 80, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][120], 120, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][140], 140, 0, 1.0f);
+    }
+}
 
 // Likely sets minimap boundaries
 void DoubleDeck::MinimapSettings() {
@@ -121,17 +145,12 @@ void DoubleDeck::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void DoubleDeck::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void DoubleDeck::SpawnBombKarts() {}
-
 // Positions the finishline on the minimap
 void DoubleDeck::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void DoubleDeck::SetStaffGhost() {}
-
-void DoubleDeck::BeginPlay() {  }
 void DoubleDeck::Render(struct UnkStruct_800DC5EC* arg0) {
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
@@ -146,12 +165,6 @@ void DoubleDeck::Render(struct UnkStruct_800DC5EC* arg0) {
 void DoubleDeck::RenderCredits() {}
 
 void DoubleDeck::Collision() {}
-
-void DoubleDeck::GenerateCollision() {
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000738), 1);
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
-}
 
 void DoubleDeck::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = 0;

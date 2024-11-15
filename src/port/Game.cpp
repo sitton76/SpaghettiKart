@@ -39,7 +39,7 @@ extern "C" {
 #include "audio/load.h"
 #include "audio/external.h"
 #include "networking/networking.h"
-#include "engine/wasm.h"
+//#include "engine/wasm.h"
 }
 
 extern "C" void Graphics_PushFrame(Gfx* data) {
@@ -143,8 +143,9 @@ void CustomEngineInit() {
 
     /* Set default course; mario raceway */
     gWorldInstance.CurrentCourse = gMarioRaceway;
-    gWorldInstance.CurrentCup = gFlowerCup;
+    gWorldInstance.CurrentCup = gMushroomCup;
     gWorldInstance.CurrentCup->CursorPosition = 3;
+    gWorldInstance.CupIndex = 0;
 }
 
 extern "C" {
@@ -170,7 +171,6 @@ extern "C" {
     }
 
     u32 GetCupIndex(void) {
-        printf("Cup Index: %d\n", gWorldInstance.GetCupIndex());
         return gWorldInstance.GetCupIndex();
     }
 
@@ -200,8 +200,17 @@ extern "C" {
         gWorldInstance.NextCourse();
     }
 
+
     void PreviousCourse() {
         gWorldInstance.PreviousCourse();
+    }
+
+    void SetCourseById(s32 course) {
+        if (course < 0 || course >= gWorldInstance.Courses.size()) {
+            return;
+        }
+        gWorldInstance.CourseIndex = course;
+        gWorldInstance.CurrentCourse = gWorldInstance.Courses[gWorldInstance.CourseIndex];
     }
 
     void CourseManager_SpawnVehicles() {
@@ -234,7 +243,47 @@ extern "C" {
         }
     }
 
-    void CourseManager_RenderTrucks(s32 playerId) {
+    void CourseManager_SpawnBombKarts() {
+        for (auto& kart : gWorldInstance.BombKarts) {
+            if (kart) {
+                kart->Spawn();
+            }
+        }
+    }
+
+    void CourseManager_TickBombKarts() {
+        for (auto& kart : gWorldInstance.BombKarts) {
+            if (kart) {
+                kart->Tick();
+            }
+        }
+    }
+
+    void CourseManager_DrawBombKarts(s32 cameraId) {
+        for (auto& kart : gWorldInstance.BombKarts) {
+            if (kart) {
+                kart->Draw(cameraId);
+            }
+        }
+    }
+
+    void CourseManager_DrawBattleBombKarts(s32 cameraId) {
+        for (auto& kart : gWorldInstance.BombKarts) {
+            if (kart) {
+                kart->DrawBattle(cameraId);
+            }
+        }
+    }
+
+    void CourseManager_BombKartsWaypoint(s32 cameraId) {
+        for (auto& kart : gWorldInstance.BombKarts) {
+            if (kart) {
+                kart->Waypoint(cameraId);
+            }
+        }
+    }
+
+    void CourseManager_DrawVehicles(s32 playerId) {
         for (auto& vehicle : gWorldInstance.Vehicles) {
             if (vehicle) {
                 vehicle->Draw(playerId);
@@ -242,8 +291,8 @@ extern "C" {
         }
     }
 
-    void CourseManager_ResetVehicles(void) {
-        gWorldInstance.ResetVehicles();
+    void CourseManager_ClearVehicles(void) {
+        gWorldInstance.ClearVehicles();
     }
 
     void CourseManager_CrossingTrigger() {
@@ -301,9 +350,10 @@ extern "C" {
         }
     }
 
-    void CourseManager_DrawActors(Camera* camera) {
-        if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.DrawActors(camera);
+    void CourseManager_DrawActor(Camera* camera, struct Actor* actor) {
+        AActor* a = gWorldInstance.ConvertActorToAActor(actor);
+        if (a->IsMod()) {
+            a->Draw(camera);
         }
     }
 
@@ -328,12 +378,6 @@ extern "C" {
     void CourseManager_Waypoints(Player* player, int8_t playerId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->Waypoints(player, playerId);
-        }
-    }
-
-    void CourseManager_GenerateCollision() {
-        if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.CurrentCourse->GenerateCollision();
         }
     }
 
@@ -374,9 +418,9 @@ extern "C" {
         }
     }
 
-    void CourseManager_SetCourseVtxColours() {
+    void CourseManager_CreditsSpawnActors() {
         if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.CurrentCourse->SetCourseVtxColours();
+            gWorldInstance.CurrentCourse->CreditsSpawnActors();
         }
     }
 
@@ -410,15 +454,15 @@ extern "C" {
         }
     }
 
-    void CourseManager_SpawnBombKarts() {
+    void CourseManager_ScrollingTextures() {
         if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.CurrentCourse->SpawnBombKarts();
+            gWorldInstance.CurrentCourse->ScrollingTextures();
         }
     }
 
-    void CourseManager_Water() {
+    void CourseManager_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
         if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.CurrentCourse->Water();
+            gWorldInstance.CurrentCourse->DrawWater(screen, pathCounter, cameraRot, playerDirection);
         }
     }
 
@@ -445,6 +489,57 @@ extern "C" {
 
     void SetCourseByClass(void* course) {
         gWorldInstance.CurrentCourse = (Course*) course;
+    }
+
+    struct Actor* m_GetActor(size_t index) {
+        if (index < gWorldInstance.Actors.size()) {
+            AActor* actor = gWorldInstance.Actors[index];
+            return reinterpret_cast<struct Actor*>(reinterpret_cast<char*>(actor) + sizeof(void*));
+        } else {
+            //throw std::runtime_error("GetActor() index out of bounds");
+            return NULL;
+        }
+    }
+
+    size_t m_FindActorIndex(Actor* actor) {
+        // Move the ptr back to look at the vtable.
+        // This gets us the proper C++ class instead of just the variables used in C.
+        AActor* a = reinterpret_cast<AActor*>((char*)actor - sizeof(void*));
+        auto actors = gWorldInstance.Actors;
+
+        auto it = std::find(actors.begin(), actors.end(), static_cast<AActor*>(a));
+        if (it != actors.end()) {
+            return std::distance(actors.begin(), it);
+        }
+        printf("FindActorIndex() actor not found\n");
+        return 0;
+    }
+
+    void m_DeleteActor(size_t index) {
+        std::vector<AActor*> actors = gWorldInstance.Actors;
+        if (index < actors.size()) {
+            actors.erase(actors.begin() + index);
+        }
+    }
+    
+    void m_ClearActors(void) {
+        gWorldInstance.Actors.clear();
+    }
+
+    struct Actor* m_AddBaseActor(void) {
+        return (struct Actor*) gWorldInstance.AddBaseActor();
+    }
+
+    size_t m_GetActorSize() {
+        return gWorldInstance.Actors.size();
+    }
+
+    void m_ActorCollision(Player* player, Actor* actor) {
+        AActor* a = gWorldInstance.ConvertActorToAActor(actor);
+
+        if (a->IsMod()) {
+            a->Collision(player, a);
+        }
     }
 
     void* GetMarioRaceway(void) {
@@ -571,7 +666,7 @@ extern "C"
     int
     main(int argc, char* argv[]) {
 #endif
-    load_wasm();
+    //load_wasm();
     GameEngine::Create();
     // audio_init();
     // sound_init();

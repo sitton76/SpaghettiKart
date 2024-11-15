@@ -156,7 +156,7 @@ VehicleStuff gTankerTruckList[NUM_RACE_TANKER_TRUCKS];
 VehicleStuff gCarList[NUM_RACE_CARS];
 s32 D_80163DD8[4];
 BombKart gBombKarts[NUM_BOMB_KARTS_MAX];
-Collision D_80164038[NUM_BOMB_KARTS_MAX];
+Collision gBombKartCollision[NUM_BOMB_KARTS_MAX];
 struct unexpiredActors gUnexpiredActorsList[8];
 D_801642D8_entry D_801642D8[8];
 s16 D_80164358;
@@ -1539,22 +1539,8 @@ void update_vehicles(void) {
     generate_player_smoke();
     D_8016337C++;
 
-    if (GetCourse() == GetPodiumCeremony()) {
-        for (i = 0; i < 7; i++) {
-            func_8000DF8C(i);
-        }
-        return;
-    }
-
-    if (D_8016337C & 1) {
-        if (gModeSelection == VERSUS) {
-            for (i = 0; i < 7; i++) {
-                func_8000DF8C(i);
-            }
-        }
-
-        CourseManager_VehiclesTick();
-    }
+    CourseManager_TickBombKarts();
+    CourseManager_VehiclesTick();
 }
 
 void func_800098FC(s32 arg0, Player* player) {
@@ -1743,7 +1729,7 @@ void func_80009B60(s32 playerId) {
                 }
                 D_801631F8[playerId] = D_801631E0[playerId];
 
-                CourseManager_RenderTrucks(playerId);
+                CourseManager_DrawVehicles(playerId);
 
                 if ((GetCourse() == GetYoshiValley()) || (GetCourse() == GetPodiumCeremony())) {
                     D_801634F8[playerId].unk4 = 0.0f;
@@ -1926,7 +1912,6 @@ void func_80009B60(s32 playerId) {
                 }
 
                 var_v1 = CourseManager_GetProps()->AISteeringSensitivity;
-                // var_v1 = gKartAISteeringSensitivity[gCurrentCourseId];
 
                 switch (D_801631D8[playerId]) { /* switch 4; irregular */
                     case 2:                     /* switch 4 */
@@ -2922,7 +2907,7 @@ void set_bomb_kart_spawn_positions(void) {
     BombKartSpawn* bombKartSpawn;
 
     for (var_s3 = 0; var_s3 < NUM_BOMB_KARTS_VERSUS; var_s3++) {
-        bombKartSpawn = &gBombKartSpawns[gCurrentCourseId][var_s3];
+        //bombKartSpawn = &gBombKartSpawns[gCurrentCourseId][var_s3];
         if (GetCourse() == GetYoshiValley()) {
             startingXPos = bombKartSpawn->startingXPos;
             startingZPos = bombKartSpawn->startingZPos;
@@ -2962,7 +2947,7 @@ void set_bomb_kart_spawn_positions(void) {
         gBombKarts[var_s3].unk_4A = 0;
         gBombKarts[var_s3].unk_4C = 1;
         gBombKarts[var_s3].yPos = startingYPos;
-        check_bounding_collision(&D_80164038[var_s3], 2.0f, startingXPos, startingYPos, startingZPos);
+        check_bounding_collision(&gBombKartCollision[var_s3], 2.0f, startingXPos, startingYPos, startingZPos);
     }
 }
 
@@ -3157,7 +3142,7 @@ void func_8000DF8C(s32 bombKartId) {
                         var_f22 += temp_f14 / 5.0f;
                         var_f24 += temp_f16 / 5.0f;
                     }
-                    temp_a0_4 = &D_80164038[bombKartId];
+                    temp_a0_4 = &gBombKartCollision[bombKartId];
                     var_f20 = calculate_surface_height(var_f22, 2000.0f, var_f24, temp_a0_4->meshIndexZX) + 3.5f;
                     if (var_f20 < (-1000.0)) {
                         var_f20 = bombKart->bombPos[1];
@@ -3255,7 +3240,7 @@ s32 add_actor_in_unexpired_actor_list(s32 actorIndex, s16 arg1) {
 }
 
 s32 add_red_shell_in_unexpired_actor_list(s32 actorIndex) {
-    struct Actor* actor = &gActorList[actorIndex];
+    struct Actor* actor = m_GetActor(actorIndex);
     if (actor->type != ACTOR_RED_SHELL) {
         return -1;
     }
@@ -3263,7 +3248,7 @@ s32 add_red_shell_in_unexpired_actor_list(s32 actorIndex) {
 }
 
 s32 add_green_shell_in_unexpired_actor_list(s32 actorIndex) {
-    struct Actor* actor = &gActorList[actorIndex];
+    struct Actor* actor = m_GetActor(actorIndex);
     if (actor->type != ACTOR_GREEN_SHELL) {
         return -1;
     }
@@ -3271,7 +3256,7 @@ s32 add_green_shell_in_unexpired_actor_list(s32 actorIndex) {
 }
 
 s32 add_blue_shell_in_unexpired_actor_list(s32 arg0) {
-    struct Actor* actor = &gActorList[arg0];
+    struct Actor* actor = m_GetActor(arg0);
     if (actor->type != ACTOR_BLUE_SPINY_SHELL) {
         return -1;
     }
@@ -3311,7 +3296,7 @@ void generate_player_smoke(void) {
     for (someIndex = 0; someIndex < NUM_PLAYERS; someIndex++) {
         var_s0 = &gUnexpiredActorsList[someIndex];
         if (var_s0->unkC == 1) {
-            temp_s1 = &gActorList[var_s0->actorIndex];
+            temp_s1 = GET_ACTOR(var_s0->actorIndex);
             var_s0->unk14++;
             switch (var_s0->unk10) {
                 case 0:
@@ -3460,12 +3445,11 @@ void func_8000F2DC(void) {
 
     D_80164430 = *gWaypointCountByPathIndex;
 
-    CourseManager_ResetVehicles();
+    CourseManager_ClearVehicles();
 
     CourseManager_SpawnVehicles();
 
-    CourseManager_SpawnBombKarts();
-    set_bomb_kart_spawn_positions();
+    //set_bomb_kart_spawn_positions();
     func_8000EEDC();
 }
 
@@ -4506,7 +4490,7 @@ void init_vehicles_trains(size_t i, size_t numCarriages, f32 speed) {
 void sync_train_components(TrainCarStuff* trainCar, s16 orientationY) {
     struct TrainCar* trainCarActor;
 
-    trainCarActor = (struct TrainCar*) &gActorList[trainCar->actorIndex];
+    trainCarActor = (struct TrainCar*) GET_ACTOR(trainCar->actorIndex);
     trainCarActor->pos[0] = trainCar->position[0];
     trainCarActor->pos[1] = trainCar->position[1];
     trainCarActor->pos[2] = trainCar->position[2];
@@ -4823,7 +4807,7 @@ void update_vehicle_paddle_boats(void) {
             paddleBoat->velocity[0] = paddleBoat->position[0] - temp_f26;
             paddleBoat->velocity[1] = paddleBoat->position[1] - temp_f28;
             paddleBoat->velocity[2] = paddleBoat->position[2] - temp_f30;
-            paddleBoatActor = &gActorList[paddleBoat->actorIndex];
+            paddleBoatActor = GET_ACTOR(paddleBoat->actorIndex);
             paddleBoatActor->pos[0] = paddleBoat->position[0];
             paddleBoatActor->pos[1] = paddleBoat->position[1];
             paddleBoatActor->pos[2] = paddleBoat->position[2];
@@ -5003,7 +4987,7 @@ void update_vehicle_follow_waypoint(VehicleStuff* vehicle) {
     vehicle->velocity[0] = vehicle->position[0] - sp5C;
     vehicle->velocity[1] = vehicle->position[1] - sp58;
     vehicle->velocity[2] = vehicle->position[2] - sp54;
-    vehicleActor = &gActorList[vehicle->actorIndex];
+    vehicleActor = GET_ACTOR(vehicle->actorIndex);
     vehicleActor->pos[0] = vehicle->position[0];
     vehicleActor->pos[1] = vehicle->position[1];
     vehicleActor->pos[2] = vehicle->position[2];
@@ -7106,7 +7090,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 2:
-                banana = (struct BananaActor*) &gActorList[temp_s0->actorIndex];
+                banana = (struct BananaActor*) GET_ACTOR(temp_s0->actorIndex);
                 if ((!(banana->flags & 0x8000)) || (banana->type != 6) || (banana->state != 0) ||
                     (playerId != banana->playerId)) {
                     temp_s0->unk_00 = 0;
@@ -7118,7 +7102,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 3:
-                banana = (struct BananaActor*) &gActorList[temp_s0->actorIndex];
+                banana = (struct BananaActor*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(banana->flags & 0x8000)) || (banana->type != 6)) || (banana->state != 0)) ||
                     (playerId != banana->playerId)) {
                     if (playerId != banana->playerId) {}
@@ -7141,7 +7125,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
             case 34:
                 temp_s0->actorIndex = use_banana_item(player);
                 if ((temp_s0->actorIndex >= 0) && (temp_s0->actorIndex < 0x64)) {
-                    banana = (struct BananaActor*) &gActorList[temp_s0->actorIndex];
+                    banana = (struct BananaActor*) GET_ACTOR(temp_s0->actorIndex);
                     banana->state = 4;
                     player->soundEffects |= HOLD_BANANA_SOUND_EFFECT;
                     temp_s0->unk_00 = 0x0023;
@@ -7163,7 +7147,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 35:
-                banana = (struct BananaActor*) &gActorList[temp_s0->actorIndex];
+                banana = (struct BananaActor*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(banana->flags & 0x8000)) || (banana->type != 6)) || (banana->state != 4)) ||
                     (playerId != banana->playerId)) {
                     temp_s0->unk_00 = 0;
@@ -7181,7 +7165,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 36:
-                banana = (struct BananaActor*) &gActorList[temp_s0->actorIndex];
+                banana = (struct BananaActor*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(banana->flags & 0x8000)) || (banana->type != 6)) || (banana->state != 4)) ||
                     (playerId != banana->playerId)) {
                     if (playerId != banana->playerId) {}
@@ -7216,7 +7200,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 5:
-                actor = &gActorList[temp_s0->actorIndex];
+                actor = GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(actor->flags & 0x8000)) || (actor->type != 7)) || (actor->state != 0)) ||
                     (playerId != actor->rot[2])) {
                     temp_s0->unk_00 = 0;
@@ -7228,7 +7212,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 6:
-                actor = &gActorList[temp_s0->actorIndex];
+                actor = GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(actor->flags & 0x8000)) || (actor->type != 7)) || (actor->state != 0)) ||
                     (playerId != actor->rot[2])) {
                     temp_s0->unk_00 = 0;
@@ -7257,7 +7241,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 8:
-                shell = (struct ShellActor*) &gActorList[temp_s0->actorIndex];
+                shell = (struct ShellActor*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(shell->flags & 0x8000)) || (shell->type != 8)) || (shell->state != 0)) ||
                     (playerId != shell->playerId)) {
                     temp_s0->unk_00 = 0;
@@ -7269,7 +7253,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
 
             case 9:
                 func_8001ABEC((struct struct_801642D8*) temp_s0);
-                shell = (struct ShellActor*) &gActorList[temp_s0->actorIndex];
+                shell = (struct ShellActor*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(shell->flags & 0x8000)) || (shell->type != 8)) || (shell->state != 0)) ||
                     (playerId != shell->playerId)) {
                     temp_s0->unk_00 = 0;
@@ -7298,7 +7282,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 11:
-                bananaBunchParent = (struct BananaBunchParent*) &gActorList[temp_s0->actorIndex];
+                bananaBunchParent = (struct BananaBunchParent*) GET_ACTOR(temp_s0->actorIndex);
                 if (bananaBunchParent->state == 6) {
                     var_v0 = 0;
                     if (bananaBunchParent->bananaIndices[4] != (-1)) {
@@ -7330,7 +7314,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
             case 12:
                 if ((((s16) temp_s0->unk_04) % 10) == 0) {
                     if (temp_s0->unk_08 < 5) {
-                        bananaBunchParent = (struct BananaBunchParent*) &gActorList[temp_s0->actorIndex];
+                        bananaBunchParent = (struct BananaBunchParent*) GET_ACTOR(temp_s0->actorIndex);
                         var_v0 = 0;
                         switch (temp_s0->unk_08) {
                             case 0:
@@ -7388,7 +7372,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 14:
-                fakeItemBox = (struct FakeItemBox*) &gActorList[temp_s0->actorIndex];
+                fakeItemBox = (struct FakeItemBox*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(fakeItemBox->flags & 0x8000)) || (fakeItemBox->type != 0x000D)) ||
                      (fakeItemBox->state != 0)) ||
                     (playerId != ((s32) fakeItemBox->playerId))) {
@@ -7400,7 +7384,7 @@ void kart_ai_use_item_strategy(s32 playerId) {
                 break;
 
             case 15:
-                fakeItemBox = (struct FakeItemBox*) &gActorList[temp_s0->actorIndex];
+                fakeItemBox = (struct FakeItemBox*) GET_ACTOR(temp_s0->actorIndex);
                 if ((((!(fakeItemBox->flags & 0x8000)) || (fakeItemBox->type != 0x000D)) ||
                      (fakeItemBox->state != 0)) ||
                     (playerId != ((s32) fakeItemBox->playerId))) {
@@ -7585,7 +7569,7 @@ void func_8001C14C(void) {
     f32 temp_f0;
     f32 temp_f2;
     s32 var_s1;
-    Player* temp_s0;
+    Player* player;
 
     if (D_8016347C == 1) {
         D_80163480 += 1;
@@ -7603,42 +7587,42 @@ void func_8001C14C(void) {
             break;
         }
 
-        temp_s0 = &gPlayerOne[var_s1];
+        player = &gPlayerOne[var_s1];
         func_80009B60(var_s1);
-        if (!(temp_s0->type & 0x2000)) {
-            temp_f0 = D_80163418[var_s1] - temp_s0->pos[0];
-            temp_f2 = D_80163438[var_s1] - temp_s0->pos[2];
+        if (!(player->type & 0x2000)) {
+            temp_f0 = D_80163418[var_s1] - player->pos[0];
+            temp_f2 = D_80163438[var_s1] - player->pos[2];
             if ((f64) ((temp_f0 * temp_f0) + (temp_f2 * temp_f2)) < 1.0) {
                 if (var_s1 != 3) {
                     if (1) {}
                     // Why oh why is a ternary required here? Who does that?
-                    (D_8016347C == 0) ? (temp_s0->type |= 0x2000) : (temp_s0->type &= ~0x2000);
+                    (D_8016347C == 0) ? (player->type |= 0x2000) : (player->type &= ~0x2000);
                     if ((gPlayerOne->type & 0x2000) && (gPlayerTwo->type & 0x2000) && (gPlayerThree->type & 0x2000)) {
                         D_8016347C = 1;
                         D_80163480 = 0;
                     }
                 } else if (D_8016347E == 0) {
-                    if (!(temp_s0->effects & 0x01000000)) {
-                        temp_s0->type |= 0x2000;
+                    if (!(player->effects & 0x01000000)) {
+                        player->type |= 0x2000;
                     }
                     D_8016347E = 1;
                     D_80163484 = 0;
-                } else if (!(temp_s0->effects & 0x01000000)) {
-                    temp_s0->type |= 0x2000;
+                } else if (!(player->effects & 0x01000000)) {
+                    player->type |= 0x2000;
                 }
             }
         }
     }
 }
 
-void func_8001C3C4(s32 cameraId) {
+void render_bomb_karts_wrap(s32 cameraId) {
     if (GetCourse() == GetPodiumCeremony()) {
         if (gBombKarts[0].waypointIndex >= 16) {
-            func_80057114(PLAYER_FOUR);
+            render_bomb_karts(PLAYER_FOUR);
         }
     } else {
         if (gModeSelection == VERSUS) {
-            func_80057114(cameraId);
+            render_bomb_karts(cameraId);
         }
     }
 }

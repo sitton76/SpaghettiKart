@@ -6,7 +6,8 @@
 #include "BowsersCastle.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "bowsers_castle_data.h"
 
 extern "C" {
@@ -102,13 +103,38 @@ BowsersCastle::BowsersCastle() {
     Props.Skybox.FloorTopLeft = {0, 0, 0};
 }
 
+void BowsersCastle::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_bowsers_castle_addr));
+    func_80295C6C();
+    find_vtx_and_set_colours(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07001350)), 0x32, 0, 0, 0);
+    D_8015F8E4 = -50.0f;
+}
+
 void BowsersCastle::LoadTextures() {
     dma_textures(gTextureShrub, 0x000003FFU, 0x00000800U);
 }
 
 void BowsersCastle::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_bowsers_castle_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_bowsers_castle_item_box_spawns));
+}
+
+void BowsersCastle::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][150], 150, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][200], 200, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][260], 260, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][435], 435, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -212,26 +238,12 @@ void BowsersCastle::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void BowsersCastle::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void BowsersCastle::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void BowsersCastle::SetStaffGhost() {
-}
-
-void BowsersCastle::BeginPlay() {  }
 void BowsersCastle::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
@@ -269,13 +281,6 @@ void BowsersCastle::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, V
     func_8003E6EC(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 
-void BowsersCastle::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_bowsers_castle_addr));
-    func_80295C6C();
-    find_vtx_and_set_colours(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07001350)), 0x32, 0, 0, 0);
-    D_8015F8E4 = -50.0f;
-}
-
 void BowsersCastle::Waypoints(Player* player, int8_t playerId) {
     s16 waypoint = gNearestWaypointByPlayerId[playerId];
     if ((waypoint >= 0x235) && (waypoint < 0x247)) {
@@ -288,6 +293,31 @@ void BowsersCastle::Waypoints(Player* player, int8_t playerId) {
             player->nearestWaypointId = gWaypointCountByPathIndex[0] + player->nearestWaypointId;
         }
     }
+}
+
+void BowsersCastle::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
+    if (gActiveScreenMode != SCREEN_MODE_1P) {
+        return;
+    }
+    if (pathCounter < 6) {
+        return;
+    }
+    if (pathCounter > 9) {
+        return;
+    }
+    if (pathCounter == 9) {
+        if (cameraRot < 0xA000) {
+            return;
+        }
+        if (cameraRot > 0xE000) {
+            return;
+        }
+    }
+    gSPDisplayList(gDisplayListHead++, (Gfx*)d_course_bowsers_castle_dl_9228);
+}
+
+void BowsersCastle::CreditsSpawnActors() {
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001350), 0x32, 0, 0, 0);
 }
 
 void BowsersCastle::Destroy() { }

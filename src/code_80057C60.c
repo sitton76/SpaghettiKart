@@ -557,7 +557,8 @@ void render_object_p1(void) {
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
 
-    func_8001C3C4(PLAYER_ONE);
+    CourseManager_DrawBombKarts(PLAYER_ONE);
+    //render_bomb_karts_wrap(PLAYER_ONE);
     if (gGamestate == ENDING) {
         func_80055F48(PLAYER_ONE);
         func_80056160(PLAYER_ONE);
@@ -578,7 +579,8 @@ void render_object_p2(void) {
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    func_8001C3C4(PLAYER_TWO);
+    CourseManager_DrawBombKarts(PLAYER_TWO);
+    //render_bomb_karts_wrap(PLAYER_TWO);
     if (!gDemoMode) {
         render_lakitu(PLAYER_TWO);
     }
@@ -591,7 +593,8 @@ void render_object_p3(void) {
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    func_8001C3C4(PLAYER_THREE);
+    CourseManager_DrawBombKarts(PLAYER_THREE);
+    //render_bomb_karts_wrap(PLAYER_THREE);
     if (!gDemoMode) {
         render_lakitu(PLAYER_THREE);
     }
@@ -605,7 +608,8 @@ void render_object_p4(void) {
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-    func_8001C3C4(PLAYER_FOUR);
+    CourseManager_DrawBombKarts(PLAYER_FOUR);
+    //render_bomb_karts_wrap(PLAYER_FOUR);
     if ((!gDemoMode) && (gPlayerCountSelection1 == 4)) {
         render_lakitu(PLAYER_FOUR);
     }
@@ -753,7 +757,7 @@ void render_object_for_player(s32 cameraId) {
     //         break;
     //     case COURSE_TOADS_TURNPIKE:
     //         break;
-    //     case COURSE_KALAMARI_DESERT:
+    //     case COURSE_KALIMARI_DESERT:
     //         render_object_trains_smoke_particles(cameraId);
     //         break;
     //     case COURSE_SHERBET_LAND:
@@ -787,10 +791,11 @@ void render_object_for_player(s32 cameraId) {
     render_object_leaf_particle(cameraId);
 
     if (D_80165730 != 0) {
-        func_80053E6C(cameraId);
+        render_balloons_grand_prix(cameraId);
     }
     if (gModeSelection == BATTLE) {
-        render_object_bomb_kart(cameraId);
+        CourseManager_DrawBattleBombKarts(cameraId);
+        //render_battle_bomb_karts(cameraId);
     }
 }
 
@@ -1622,7 +1627,7 @@ void update_object(void) {
     //             update_moles();
     //         }
     //         break;
-    //     case COURSE_KALAMARI_DESERT:
+    //     case COURSE_KALIMARI_DESERT:
     //         update_train_smoke();
     //         break;
     //     case COURSE_SHERBET_LAND:
@@ -2715,29 +2720,31 @@ void func_8005D18C(void) {
     }
 }
 
-void func_8005D1F4(s32 arg0) {
-    s32 playerWaypoint;
-    s32 bombWaypoint;
-    s32 var_a2;
-    s32 waypointDiff;
+void func_8005D1F4(s32 cameraId) {
 
-    if (gModeSelection == 2) {
-        playerWaypoint = gNearestWaypointByPlayerId[arg0];
-        playerHUD[arg0].unk_74 = 0;
-        for (var_a2 = 0; var_a2 < NUM_BOMB_KARTS_VERSUS; var_a2++) {
-            if ((gBombKarts[var_a2].state == BOMB_STATE_EXPLODED) ||
-                (gBombKarts[var_a2].state == BOMB_STATE_INACTIVE)) {
-                continue;
-            }
-            bombWaypoint = gBombKarts[var_a2].waypointIndex;
-            waypointDiff = bombWaypoint - playerWaypoint;
-            if ((waypointDiff < -5) || (waypointDiff > 0x1E)) {
-                continue;
-            }
-            playerHUD[arg0].unk_74 = 1;
-            break;
-        }
-    }
+    CourseManager_BombKartsWaypoint(cameraId);
+    // s32 playerWaypoint;
+    // s32 bombWaypoint;
+    // s32 var_a2;
+    // s32 waypointDiff;
+
+    // if (gModeSelection == 2) {
+    //     playerWaypoint = gNearestWaypointByPlayerId[cameraId];
+    //     playerHUD[cameraId].unk_74 = 0;
+    //     for (var_a2 = 0; var_a2 < NUM_BOMB_KARTS_VERSUS; var_a2++) {
+    //         if ((gBombKarts[var_a2].state == BOMB_STATE_EXPLODED) ||
+    //             (gBombKarts[var_a2].state == BOMB_STATE_INACTIVE)) {
+    //             continue;
+    //         }
+    //         bombWaypoint = gBombKarts[var_a2].waypointIndex;
+    //         waypointDiff = bombWaypoint - playerWaypoint;
+    //         if ((waypointDiff < -5) || (waypointDiff > 0x1E)) {
+    //             continue;
+    //         }
+    //         playerHUD[cameraId].unk_74 = 1;
+    //         break;
+    //     }
+    // }
 }
 
 // Appears to load GP Mode race staging balloons and kart shadows.
@@ -4972,13 +4979,15 @@ void func_800651F4(Player* player, UNUSED s8 arg1, UNUSED s8 arg2, s8 arg3) {
 }
 
 void func_800652D4(Vec3f arg0, Vec3s arg1, f32 arg2) {
-    Mat4 sp20;
+    Mat4 mtx;
 
-    mtxf_translate_rotate(sp20, arg0, arg1);
-    mtxf_scale2(sp20, arg2);
-    convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], sp20);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    mtxf_translate_rotate(mtx, arg0, arg1);
+    mtxf_scale2(mtx, arg2);
+    // convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], mtx);
+    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]),
+    //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+
+    AddEffectMatrix(mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 }
 
 void func_8006538C(Player* player, s8 arg1, s16 arg2, s8 arg3) {
@@ -5600,10 +5609,16 @@ void func_80068AA4(Player* player, UNUSED s8 arg1, UNUSED f32 arg2, s8 arg3, s8 
     Vec3f sp64;
     Vec3s sp5C;
 
+        sp64[1] = player->pos[1];
+        sp64[2] = player->pos[2];
+        sp64[0] = player->pos[0];
+
     if ((player->unk_258[20 + arg4].unk_01C == 1) && (player->animFrameSelector[arg3] < 0xD)) {
+if (gTickVisuals) {
         sp64[1] = player->pos[1] - 3.0f;
         sp64[2] = player->pos[2] + ((-2.5 * player->unk_258[20 + arg4].unk_01E) * coss(player->unk_048[arg3]));
         sp64[0] = player->pos[0] + ((-2.5 * player->unk_258[20 + arg4].unk_01E) * sins(player->unk_048[arg3]));
+}
         sp5C[0] = 0;
         sp5C[1] = player->unk_048[arg3];
         sp5C[2] = 0;
@@ -5999,7 +6014,7 @@ void func_8006A7C0(Player* player, f32 arg1, f32 arg2, s8 arg3, s8 arg4) {
 }
 
 void render_battle_balloon(Player* player, s8 arg1, s16 arg2, s8 arg3) {
-    Mat4 sp140;
+    Mat4 mtx;
     Vec3f sp134;
     Vec3s sp12C;
     UNUSED s16 stackPadding;
@@ -6055,23 +6070,24 @@ void render_battle_balloon(Player* player, s8 arg1, s16 arg2, s8 arg3) {
     sp12C[1] = player->unk_048[arg3];
     sp12C[2] = D_8018D7D0[arg1][arg2] - (D_8018D860[arg1][arg2] * coss(temp_t1)) -
                ((D_8018D890[arg1][arg2] * 8) * sins(temp_t1));
-    mtxf_translate_rotate(sp140, sp134, sp12C);
-    mtxf_scale2(sp140, var_f20);
-    convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], sp140);
+    mtxf_translate_rotate(mtx, sp134, sp12C);
+    mtxf_scale2(mtx, var_f20);
+    // convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], sp140);
 
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]),
+    //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    AddEffectMatrix(mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, D_0D008DB8);
     gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
     gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
 
     func_8004B614(primRed, primGreen, primBlue, envRed, envGreen, envBlue, 0x000000D8);
-
     gDPSetRenderMode(gDisplayListHead++,
-                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                        GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                        GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+
     gDPLoadTextureBlock(gDisplayListHead++, D_8018D4BC, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPVertex(gDisplayListHead++, gBalloonVertexPlane1, 4, 0);
@@ -6147,7 +6163,7 @@ void func_8006BA94(Player* player, s8 playerIndex, s8 arg2) {
  * Used in podium ceremony.
  */
 void render_balloon(Vec3f arg0, f32 arg1, s16 arg2, s16 arg3) {
-    Mat4 sp108;
+    Mat4 mtx;
     Vec3f spFC;
     Vec3s spF4;
     UNUSED s16 stackPadding;
@@ -6178,20 +6194,22 @@ void render_balloon(Vec3f arg0, f32 arg1, s16 arg2, s16 arg3) {
     spF4[0] = 0;
     spF4[1] = camera1->rot[1];
     spF4[2] = arg2;
-    mtxf_translate_rotate(sp108, spFC, spF4);
-    mtxf_scale2(sp108, arg1);
-    convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], sp108);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    mtxf_translate_rotate(mtx, spFC, spF4);
+    mtxf_scale2(mtx, arg1);
+    // convert_to_fixed_point_matrix(&gGfxPool->mtxEffect[gMatrixEffectCount], sp108);
+    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount]),
+    //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    AddEffectMatrix(mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(gDisplayListHead++, D_0D008DB8);
     gDPLoadTLUT_pal256(gDisplayListHead++, gTLUTOnomatopoeia);
     gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
     func_8004B614(primRed, primGreen, primBlue, envRed, envGreen, envBlue, 0x000000D8);
     gDPSetRenderMode(gDisplayListHead++,
-                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                        GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                        GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+
     gDPLoadTextureBlock(gDisplayListHead++, D_8018D4BC, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
     gSPVertex(gDisplayListHead++, gBalloonVertexPlane1, 4, 0);

@@ -6,8 +6,9 @@
 #include "LuigiRaceway.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/luigi_raceway_data.h"
+#include "engine/actors/AFinishline.h"
 
 extern "C" {
     #include "main.h"
@@ -30,6 +31,8 @@ extern "C" {
     #include "collision.h"
     #include "code_8003DC40.h"
     #include "memory.h"
+    #include "courses/staff_ghost_data.h"
+    #include "framebuffer_effects.h"
     extern const char *luigi_raceway_dls[];
     extern s16 currentScreenSection;
 }
@@ -103,14 +106,37 @@ LuigiRaceway::LuigiRaceway() {
     Props.Skybox.FloorTopLeft = {216, 232, 248};
 }
 
+void LuigiRaceway::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_luigi_raceway_addr));
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void LuigiRaceway::LoadTextures() {
     dma_textures(gTextureTrees5Left, 0x000003E8U, 0x00000800U);
     dma_textures(gTextureTrees5Right, 0x000003E8U, 0x00000800U);
 }
 
 void LuigiRaceway::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_luigi_raceway_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_luigi_raceway_item_box_spawns));
+}
+
+void LuigiRaceway::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][200], 200, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][305], 305, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][440], 440, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][515], 515, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -187,16 +213,6 @@ void LuigiRaceway::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void LuigiRaceway::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void LuigiRaceway::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
@@ -215,8 +231,6 @@ void LuigiRaceway::SetStaffGhost() {
     D_80162DC4 = d_luigi_raceway_staff_ghost;
     D_80162DE4 = 1;
 }
-
-void LuigiRaceway::BeginPlay() {}
 
 void LuigiRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
     UNUSED s32 pad;
@@ -264,9 +278,8 @@ void LuigiRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
             currentScreenSection = 0;
         }
 
-        u16* fb = (u16*) gSegmentTable[5] + 0xF800;
-
-        // FB_WriteFramebufferSliceToCPU(gDisplayListHead, fb, true);
+        uintptr_t fb = (uintptr_t) gSegmentTable[5] + 0xF800;
+        FB_WriteFramebufferSliceToCPU(gDisplayListHead, (void*)fb, true);
         // FB_DrawFromFramebuffer(gDisplayListHead, 0, fb, true);
         // FB_CopyToFramebuffer(gDisplayListHead, 0, fb, false, NULL);
         /**
@@ -328,12 +341,6 @@ void LuigiRaceway::Collision() {}
 
 void LuigiRaceway::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
     func_8003E9EC(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-}
-
-void LuigiRaceway::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_luigi_raceway_addr));
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
 }
 
 void LuigiRaceway::Destroy() { }

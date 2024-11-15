@@ -6,7 +6,7 @@
 #include "BigDonut.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/big_donut_data.h"
 
 extern "C" {
@@ -98,10 +98,41 @@ BigDonut::BigDonut() {
     Props.Skybox.FloorTopLeft = {0, 0, 0};
 }
 
+void BigDonut::Load() {
+    Course::Load();
+
+    // d_course_big_donut_packed_dl_1018
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07001018), 6);
+    // d_course_big_donut_packed_dl_450
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000450), 6);
+    // d_course_big_donut_packed_dl_AC0
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000AC0), 6);
+    // d_course_big_donut_packed_dl_B58
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000B58), 6);
+    // d_course_big_donut_packed_dl_230
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000230), 6);
+    func_80295C6C();
+    D_8015F8E4 = 100.0f;
+}
+
 void BigDonut::LoadTextures() {
 }
 
 void BigDonut::SpawnActors() {}
+
+void BigDonut::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][20], 20, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][40], 40, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][60], 60, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][80], 80, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][120], 120, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][140], 140, 0, 1.0f);
+    }
+}
 
 // Likely sets minimap boundaries
 void BigDonut::MinimapSettings() {
@@ -118,17 +149,12 @@ void BigDonut::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void BigDonut::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void BigDonut::SpawnBombKarts() {}
-
 // Positions the finishline on the minimap
 void BigDonut::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void BigDonut::SetStaffGhost() {}
-
-void BigDonut::BeginPlay() {}
 void BigDonut::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -155,21 +181,6 @@ void BigDonut::Render(struct UnkStruct_800DC5EC* arg0) {
 void BigDonut::RenderCredits() {}
 
 void BigDonut::Collision() {}
-
-void BigDonut::GenerateCollision() {
-    // d_course_big_donut_packed_dl_1018
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07001018), 6);
-    // d_course_big_donut_packed_dl_450
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000450), 6);
-    // d_course_big_donut_packed_dl_AC0
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000AC0), 6);
-    // d_course_big_donut_packed_dl_B58
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000B58), 6);
-    // d_course_big_donut_packed_dl_230
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000230), 6);
-    func_80295C6C();
-    D_8015F8E4 = 100.0f;
-}
 
 void BigDonut::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = 0;

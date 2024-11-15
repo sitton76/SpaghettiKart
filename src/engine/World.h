@@ -6,6 +6,7 @@
 #include "vehicles/Vehicle.h"
 #include "vehicles/Train.h"
 #include "vehicles/Car.h"
+#include "vehicles/OBombKart.h"
 #include "TrainCrossing.h"
 #include <memory>
 #include "Actor.h"
@@ -64,15 +65,27 @@ class World {
         SkyboxColours Skybox;
     } Properties;
 
+    typedef struct {
+        std::vector<Mtx> Hud;
+        std::vector<Mtx> Objects;
+        std::vector<Mtx> Shadows;
+        std::vector<Mtx> Karts;
+        std::vector<Mtx> Effects;
+    } Matrix;
+
 public:
     explicit World();
 
     void AddCourse(Course* course);
 
-    AActor* AddActor(std::unique_ptr<AActor> actor);
+    AActor* AddActor(AActor* actor);
+    struct Actor* AddBaseActor();
+    AActor* GetActor(size_t index);
+
     void TickActors();
-    void DrawActors(Camera* camera);
     void RemoveExpiredActors();
+    AActor* ConvertActorToAActor(Actor* actor);
+    Actor* ConvertAActorToActor(AActor* actor);
 
     Object* AddObject(std::unique_ptr<GameObject> object);
 
@@ -99,6 +112,8 @@ public:
     void NextCourse(void);
     void PreviousCourse(void);
 
+    Matrix Mtx;
+
     // Holds all available courses
 
     Course* CurrentCourse;
@@ -108,8 +123,9 @@ public:
     size_t CupIndex = 1;
 
     std::vector<std::unique_ptr<GameObject>> GameObjects;
-    std::vector<std::unique_ptr<AActor>> Actors;
+    std::vector<AActor*> Actors;
 
+    /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);
     void AddTrain(size_t numCarriages, f32 speed, uint32_t waypoint);
     void AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
@@ -117,7 +133,11 @@ public:
     void AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
     void AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
     std::vector<std::unique_ptr<AVehicle>> Vehicles;
-    void ResetVehicles(void);
+    void ClearVehicles(void);
+
+    /** Objects **/
+    void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
+    std::vector<std::unique_ptr<OBombKart>> BombKarts;
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

@@ -6,7 +6,7 @@
 #include "BlockFort.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/block_fort_data.h"
 
 extern "C" {
@@ -101,10 +101,34 @@ BlockFort::BlockFort() {
     Props.Skybox.FloorTopLeft = {216, 232, 248};
 }
 
+void BlockFort::Load() {
+    Course::Load();
+
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x070015C0), 1);
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void BlockFort::LoadTextures() {
 }
 
-void BlockFort::SpawnActors() {}
+void BlockFort::SpawnActors() {
+    spawn_all_item_boxes((ActorSpawnData*)LOAD_ASSET_RAW(d_course_block_fort_item_box_spawns));
+}
+
+void BlockFort::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][20], 20, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][40], 40, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][60], 60, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][80], 80, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][120], 120, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][140], 140, 0, 1.0f);
+    }
+}
 
 // Likely sets minimap boundaries
 void BlockFort::MinimapSettings() {
@@ -121,17 +145,12 @@ void BlockFort::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void BlockFort::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void BlockFort::SpawnBombKarts() {}
-
 // Positions the finishline on the minimap
 void BlockFort::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void BlockFort::SetStaffGhost() {}
-
-void BlockFort::BeginPlay() {  }
 void BlockFort::Render(struct UnkStruct_800DC5EC* arg0) {
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
@@ -144,12 +163,6 @@ void BlockFort::Render(struct UnkStruct_800DC5EC* arg0) {
 void BlockFort::RenderCredits() {}
 
 void BlockFort::Collision() {}
-
-void BlockFort::GenerateCollision() {
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x070015C0), 1);
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
-}
 
 void BlockFort::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = 0;

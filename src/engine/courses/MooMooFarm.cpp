@@ -6,7 +6,8 @@
 #include "MooMooFarm.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/moo_moo_farm_data.h"
 
 extern "C" {
@@ -103,6 +104,14 @@ MooMooFarm::MooMooFarm() {
     Props.Skybox.FloorTopLeft = {255, 184, 99};
 }
 
+void MooMooFarm::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_moo_moo_farm_addr));
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void MooMooFarm::LoadTextures() {
     dma_textures(gTextureTrees4Left, 0x000003E8U, 0x00000800U);
     dma_textures(gTextureTrees4Right, 0x000003E8U, 0x00000800U);
@@ -119,10 +128,26 @@ void MooMooFarm::LoadTextures() {
 }
 
 void MooMooFarm::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     if (gPlayerCountSelection1 != 4) {
         spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_moo_moo_farm_tree_spawn));
     }
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_moo_moo_farm_item_box_spawns));
+}
+
+void MooMooFarm::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][140], 140, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][225], 225, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][316], 316, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][434], 434, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -237,25 +262,11 @@ void MooMooFarm::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void MooMooFarm::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void MooMooFarm::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
-
-void MooMooFarm::SetStaffGhost() {}
-
-void MooMooFarm::BeginPlay() {}
 
 void MooMooFarm::Render(struct UnkStruct_800DC5EC* arg0) {
     s16 temp_s0 = arg0->pathCounter;
@@ -336,10 +347,20 @@ void MooMooFarm::RenderCredits() {
 
 void MooMooFarm::Collision() {}
 
-void MooMooFarm::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_moo_moo_farm_addr));
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+void MooMooFarm::CreditsSpawnActors() {
+    dma_textures(gTextureTrees4Left, 0x3E8, 0x800);
+    dma_textures(gTextureTrees4Right, 0x3E8, 0x800);
+    dma_textures(gTextureCow01Left, 0x400, 0x800);
+    dma_textures(gTextureCow01Right, 0x400, 0x800);
+    dma_textures(gTextureCow02Left, 0x400, 0x800);
+    dma_textures(gTextureCow02Right, 0x400, 0x800);
+    dma_textures(gTextureCow03Left, 0x400, 0x800);
+    dma_textures(gTextureCow03Right, 0x400, 0x800);
+    dma_textures(gTextureCow04Left, 0x400, 0x800);
+    dma_textures(gTextureCow04Right, 0x400, 0x800);
+    dma_textures(gTextureCow05Left, 0x400, 0x800);
+    dma_textures(gTextureCow05Right, 0x400, 0x800);
+    spawn_foliage((struct ActorSpawnData*) LOAD_ASSET_RAW(d_course_moo_moo_farm_tree_spawn));
 }
 
 void MooMooFarm::Destroy() { }

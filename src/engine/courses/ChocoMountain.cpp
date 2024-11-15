@@ -6,8 +6,9 @@
 #include "ChocoMountain.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "choco_mountain_data.h"
+#include "engine/actors/AFinishline.h"
 
 extern "C" {
     #include "main.h"
@@ -102,12 +103,60 @@ ChocoMountain::ChocoMountain() {
     Props.Skybox.FloorTopLeft = {255, 255, 255};
 }
 
+void ChocoMountain::Load() {
+    Course::Load();
+    D_800DC5BC = 1;
+    D_801625EC = 255;
+    D_801625F4 = 255;
+    D_801625F0 = 255;
+    D_802B87B0 = 0x3E3;
+    D_802B87B4 = 0x3E8;
+    D_802B87D4 = 0x71C;
+    D_802B87D0 = 0xE38;
+
+    // Spawn guardrail only for CC_50 and time trials.
+    if ((gCCSelection != CC_50) && (gModeSelection != TIME_TRIALS)) {
+        // d_course_choco_mountain_packed_dl_0
+        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000000)));
+        // d_course_choco_mountain_packed_dl_98
+        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000098)));
+        // d_course_choco_mountain_packed_dl_178
+        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000178)));
+        // d_course_choco_mountain_packed_dl_280
+        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000280)));
+        // d_course_choco_mountain_packed_dl_340
+        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000340)));
+        // d_course_choco_mountain_packed_dl_3C8
+        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x070003C8)));
+    }
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_choco_mountain_addr));
+    func_802B5CAC(0x238E, 0x31C7, D_8015F590);
+    func_80295C6C();
+    D_8015F8E4 = -80.0f;
+}
+
 void ChocoMountain::LoadTextures() {
 }
 
 void ChocoMountain::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_choco_mountain_item_box_spawns));
     spawn_falling_rocks((struct ActorSpawnData*)LOAD_ASSET_RAW((const char*)d_course_choco_mountain_falling_rock_spawns));
+}
+
+void ChocoMountain::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][140], 140, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][165], 165, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][330], 330, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][550], 550, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][595], 595, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -165,26 +214,12 @@ void ChocoMountain::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void ChocoMountain::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void ChocoMountain::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void ChocoMountain::SetStaffGhost() {
-}
-
-void ChocoMountain::BeginPlay() {  }
 void ChocoMountain::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -240,38 +275,6 @@ void ChocoMountain::Collision() {}
 
 void ChocoMountain::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
     func_8003E37C(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-}
-
-void ChocoMountain::GenerateCollision() {
-    D_800DC5BC = 1;
-    D_801625EC = 255;
-    D_801625F4 = 255;
-    D_801625F0 = 255;
-    D_802B87B0 = 0x3E3;
-    D_802B87B4 = 0x3E8;
-    D_802B87D4 = 0x71C;
-    D_802B87D0 = 0xE38;
-
-    // Spawn guardrail only for CC_50 and time trials.
-    if ((gCCSelection != CC_50) && (gModeSelection != TIME_TRIALS)) {
-        // d_course_choco_mountain_packed_dl_0
-        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000000)));
-        // d_course_choco_mountain_packed_dl_98
-        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000098)));
-        // d_course_choco_mountain_packed_dl_178
-        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000178)));
-        // d_course_choco_mountain_packed_dl_280
-        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000280)));
-        // d_course_choco_mountain_packed_dl_340
-        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000340)));
-        // d_course_choco_mountain_packed_dl_3C8
-        nullify_displaylist((uintptr_t) segmented_gfx_to_virtual(reinterpret_cast<void*>(0x070003C8)));
-    }
-
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_choco_mountain_addr));
-    func_802B5CAC(0x238E, 0x31C7, D_8015F590);
-    func_80295C6C();
-    D_8015F8E4 = -80.0f;
 }
 
 void ChocoMountain::Destroy() { }

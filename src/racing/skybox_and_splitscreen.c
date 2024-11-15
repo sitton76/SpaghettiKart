@@ -523,7 +523,7 @@ void func_802A4D18(void) {
         //         D_8015014C = 4500.0f;
         //         D_80150150 = 9.0f;
         //         break;
-        //     case COURSE_KALAMARI_DESERT:
+        //     case COURSE_KALIMARI_DESERT:
         //         D_8015014C = 7000.0f;
         //         D_80150150 = 10.0f;
         //         break;
@@ -749,585 +749,153 @@ void func_802A5760(void) {
     }
 }
 
-void render_player_one_1p_screen(void) {
-    Camera* camera = &cameras[0];
+void render_screens(s32 mode, s32 cameraId, s32 playerId) {
     UNUSED s32 pad[4];
     u16 perspNorm;
     UNUSED s32 pad2[2];
-#ifdef VERSION_EU
-    f32 sp9C;
-#endif
     UNUSED s32 pad3;
     Mat4 matrix;
 
-#ifdef VERSION_EU
-    sp9C = gScreenAspect * 1.2f;
-#endif
-    func_802A53A4();
+    s32 screenId = 0;
+    s32 screenMode = SCREEN_MODE_1P;
+
+    switch(mode) {
+        case RENDER_SCREEN_MODE_1P_PLAYER_ONE:
+            func_802A53A4();
+            screenId = 0;
+            screenMode = SCREEN_MODE_1P;
+            break;
+        case RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE:
+            func_802A51D4();
+            screenId = 0;
+            screenMode = SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL;
+            break;
+        case RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO:
+            func_802A52BC();
+            screenId = 1;
+            screenMode = SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL;
+            break;
+        case RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE:
+            func_802A50EC();
+            screenId = 0;
+            screenMode = SCREEN_MODE_2P_SPLITSCREEN_VERTICAL;
+            break;
+        case RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO:
+            func_802A5004();
+            screenId = 1;
+            screenMode = SCREEN_MODE_2P_SPLITSCREEN_VERTICAL;
+            break;
+        case RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE:
+            func_802A54A8();
+            screenId = 0;
+            screenMode = SCREEN_MODE_3P_4P_SPLITSCREEN;
+            break;
+        case RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO:
+            func_802A5590();
+            screenId = 1;
+            screenMode = SCREEN_MODE_3P_4P_SPLITSCREEN;
+            break;
+        case RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE:
+            func_802A5678();
+            screenId = 2;
+            screenMode = SCREEN_MODE_3P_4P_SPLITSCREEN;
+            break;
+        case RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR:
+            func_802A5760();
+            screenId = 3;
+            screenMode = SCREEN_MODE_3P_4P_SPLITSCREEN;
+            if (gPlayerCountSelection1 == 3) {
+                func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+                if (D_800DC5B8 != 0) {
+                    render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
+                }
+                gNumScreens += 1;
+                return;
+            }
+            break;
+    }
+
+    struct UnkStruct_800DC5EC *screen = &D_8015F480[screenId];
+    Camera *camera = &cameras[cameraId];
+
+    if (screenMode == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) {
+        gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
+    }
+
     init_rdp();
-    func_802A3730(D_800DC5EC);
+    func_802A3730(screen);
     gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
 
-    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
+    guPerspective(&gGfxPool->mtxPersp[cameraId], &perspNorm, gCameraZoom[cameraId], gScreenAspect, CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
+
+    gSPPerspNormalize(gDisplayListHead++, perspNorm);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[cameraId]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+
+    guLookAt(&gGfxPool->mtxLookAt[cameraId], camera->pos[0], camera->pos[1], camera->pos[2],
+             camera->lookAt[0], camera->lookAt[1], camera->lookAt[2], camera->up[0],
+             camera->up[1], camera->up[2]);
     if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]), G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
         mtxf_identity(matrix);
         render_set_position(matrix, 0);
     } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     }
-    render_course(D_800DC5EC);
+    render_course(screen);
     if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]), G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
         mtxf_identity(matrix);
         render_set_position(matrix, 0);
     }
-    render_course_actors(D_800DC5EC);
-    render_object(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
-    render_players_on_screen_one();
-    func_8029122C(D_800DC5EC, PLAYER_ONE);
-    func_80021B0C();
-    render_item_boxes(D_800DC5EC);
-    render_player_snow_effect(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
+    render_course_actors(screen);
+    render_object(mode);
+    switch(screenId) {
+        case 0:
+            render_players_on_screen_one();
+            break;
+        case 1:
+            render_players_on_screen_two();
+            break;
+        case 2:
+            render_players_on_screen_three();
+            break;
+        case 3:
+            render_players_on_screen_four();
+            break;
+    }
+    func_8029122C(screen, playerId);
+
+    switch(playerId) {
+        case 0:
+            func_80021B0C();
+            break;
+        case 1:
+            func_80021C78();
+            break;
+        case 2:
+            func_80021D40();
+            break;
+        case 3:
+            func_80021DA8();
+            break;
+    };
+
+    render_item_boxes(screen);
+    render_player_snow_effect(mode);
     func_80058BF4();
     if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
+        func_80058C20(mode);
     }
-    func_80093A5C(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
+    func_80093A5C(mode);
     if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
-    }
-}
-
-void render_player_one_2p_screen_vertical(void) {
-    Camera* camera = &cameras[0];
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-#else
-    UNUSED f32 sp9C;
-#endif
-
-    func_802A50EC();
-#ifdef VERSION_EU
-    sp9C = gScreenAspect * 1.2f;
-#endif
-    init_rdp();
-    func_802A3730(D_800DC5EC);
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-
-    if (D_800DC5C8 == 0) {
-
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5EC);
-    if (D_800DC5C8 == 1) {
-
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5EC);
-    render_object(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
-    render_players_on_screen_one();
-    func_8029122C(D_800DC5EC, PLAYER_ONE);
-    func_80021B0C();
-    render_item_boxes(D_800DC5EC);
-    render_player_snow_effect(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_ONE);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_two_2p_screen_vertical(void) {
-    Camera* camera = &cameras[1];
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-#else
-    UNUSED f32 sp9C;
-#endif
-
-    func_802A5004();
-    init_rdp();
-    func_802A3730(D_800DC5F0);
-#ifdef VERSION_EU
-    sp9C = gScreenAspect * 1.2f;
-#endif
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[1]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[1], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-
-    if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5F0);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5F0);
-    render_object(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
-    render_players_on_screen_two();
-    func_8029122C(D_800DC5F0, PLAYER_TWO);
-    func_80021C78();
-    render_item_boxes(D_800DC5F0);
-    func_80058BF4();
-    render_player_snow_effect(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_2P_HORIZONTAL_PLAYER_TWO);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_one_2p_screen_horizontal(void) {
-    Camera* camera = &cameras[0];
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-#endif
-
-    func_802A51D4();
-    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
-    init_rdp();
-    func_802A3730(D_800DC5EC);
-#ifdef VERSION_EU
-    sp9C = gScreenAspect * 1.2f;
-#endif
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-
-    if (D_800DC5C8 == 0) {
-
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5EC);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5EC);
-    render_object(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
-    render_players_on_screen_one();
-    func_8029122C(D_800DC5EC, PLAYER_ONE);
-    func_80021B0C();
-    render_item_boxes(D_800DC5EC);
-    render_player_snow_effect(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_ONE);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_two_2p_screen_horizontal(void) {
-    Camera* camera = &cameras[1];
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-#endif
-
-    func_802A52BC();
-    gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
-    init_rdp();
-    func_802A3730(D_800DC5F0);
-#ifdef VERSION_EU
-    sp9C = gScreenAspect * 1.2f;
-#endif
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[1]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[1], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-
-    if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5F0);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5F0);
-    render_object(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
-    render_players_on_screen_two();
-    func_8029122C(D_800DC5F0, PLAYER_TWO);
-    func_80021C78();
-    render_item_boxes(D_800DC5F0);
-    render_player_snow_effect(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_2P_VERTICAL_PLAYER_TWO);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_one_3p_4p_screen(void) {
-    Camera* camera = camera1;
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-    sp9C = gScreenAspect * 1.2f;
-#endif
-
-    func_802A54A8();
-    init_rdp();
-    func_802A3730(D_800DC5EC);
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[0], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-
-    if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5EC);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5EC);
-    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
-    render_players_on_screen_one();
-    func_8029122C(D_800DC5EC, PLAYER_ONE);
-    func_80021B0C();
-    render_item_boxes(D_800DC5EC);
-    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_ONE);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_two_3p_4p_screen(void) {
-    Camera* camera = camera2;
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-    sp9C = gScreenAspect * 1.2f;
-#endif
-
-    func_802A5590();
-    init_rdp();
-    func_802A3730(D_800DC5F0);
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[1], &perspNorm, gCameraZoom[1], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[1]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-
-    guLookAt(&gGfxPool->mtxLookAt[1], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-    if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5F0);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5F0);
-    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
-    render_players_on_screen_two();
-    func_8029122C(D_800DC5F0, PLAYER_TWO);
-    func_80021C78();
-    render_item_boxes(D_800DC5F0);
-    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_TWO);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_three_3p_4p_screen(void) {
-    Camera* camera = camera3;
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-    sp9C = gScreenAspect * 1.2f;
-#endif
-
-    func_802A5678();
-    init_rdp();
-    func_802A3730(D_800DC5F4);
-
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[2], &perspNorm, gCameraZoom[2], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[2], &perspNorm, gCameraZoom[2], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[2]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[2], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-    if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-    }
-    render_course(D_800DC5F4);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5F4);
-    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
-    render_players_on_screen_three();
-    func_8029122C(D_800DC5F4, PLAYER_THREE);
-    func_80021D40();
-    render_item_boxes(D_800DC5F4);
-    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_THREE);
-    }
-    D_8015F788 += 1;
-}
-
-void render_player_four_3p_4p_screen(void) {
-    Camera* camera = camera4;
-    UNUSED s32 pad[2];
-    u16 perspNorm;
-    Mat4 matrix;
-#ifdef VERSION_EU
-    f32 sp9C;
-    sp9C = gScreenAspect * 1.2f;
-#endif
-
-    func_802A5760();
-    if (gPlayerCountSelection1 == 3) {
-        func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-        if (D_800DC5B8 != 0) {
-            render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-        }
-        D_8015F788 += 1;
-        return;
+        render_hud(mode);
     }
 
-    init_rdp();
-    func_802A3730(D_800DC5F8);
-
-    gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_SHADING_SMOOTH);
-#ifdef VERSION_EU
-    guPerspective(&gGfxPool->mtxPersp[3], &perspNorm, gCameraZoom[3], sp9C, CourseManager_GetProps()->NearPersp,
-                  CourseManager_GetProps()->FarPersp, 1.0f);
-#else
-    guPerspective(&gGfxPool->mtxPersp[3], &perspNorm, gCameraZoom[3], gScreenAspect,
-                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
-#endif
-    gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[3]),
-              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-    guLookAt(&gGfxPool->mtxLookAt[3], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
-             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
-    if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    // Do not increment in single player mode
+    if (mode != RENDER_SCREEN_MODE_1P_PLAYER_ONE) {
+        gNumScreens += 1;
     }
-    render_course(D_800DC5F8);
-    if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(matrix);
-        render_set_position(matrix, 0);
-    }
-    render_course_actors(D_800DC5F8);
-    render_object(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-    render_players_on_screen_four();
-    func_8029122C(D_800DC5F8, PLAYER_FOUR);
-    func_80021DA8();
-    render_item_boxes(D_800DC5F8);
-    render_player_snow_effect(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-    func_80058BF4();
-    if (D_800DC5B8 != 0) {
-        func_80058C20(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-    }
-    func_80093A5C(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-    if (D_800DC5B8 != 0) {
-        render_hud(RENDER_SCREEN_MODE_3P_4P_PLAYER_FOUR);
-    }
-    D_8015F788 += 1;
 }
 
 void func_802A74BC(void) {
@@ -1427,20 +995,20 @@ void func_802A7728(void) {
     } else if (temp_v0 > 2) {
         temp_v0 = 0;
     }
-    copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x8800));
-    copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x9800));
-    copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xA800));
-    copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xB800));
-    copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xC800));
-    copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xD800));
+    // copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x8800));
+    // copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x9800));
+    // copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xA800));
+    // copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xB800));
+    // copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xC800));
+    // copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xD800));
 }
 
 void func_802A7940(void) {
@@ -1458,21 +1026,21 @@ void func_802A7940(void) {
     } else if (temp_v0 > 2) {
         temp_v0 = 0;
     }
-    copy_framebuffer(D_800DC5DC, D_800DC5E0, 0x40, 0x20, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xF800));
-    copy_framebuffer(D_800DC5DC + 0x40, D_800DC5E0, 0x40, 0x20,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x10800));
-    copy_framebuffer(D_800DC5DC, D_800DC5E0 + 0x20, 0x40, 0x20,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x11800));
-    copy_framebuffer(D_800DC5DC + 0x40, D_800DC5E0 + 0x20, 0x40, 0x20,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x12800));
-    copy_framebuffer(D_800DC5DC, D_800DC5E0 + 0x40, 0x40, 0x20,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x13800));
-    copy_framebuffer(D_800DC5DC + 0x40, D_800DC5E0 + 0x40, 0x40, 0x20,
-                     (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
-                     (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x14800));
+    // copy_framebuffer(D_800DC5DC, D_800DC5E0, 0x40, 0x20, (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xF800));
+    // copy_framebuffer(D_800DC5DC + 0x40, D_800DC5E0, 0x40, 0x20,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x10800));
+    // copy_framebuffer(D_800DC5DC, D_800DC5E0 + 0x20, 0x40, 0x20,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x11800));
+    // copy_framebuffer(D_800DC5DC + 0x40, D_800DC5E0 + 0x20, 0x40, 0x20,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x12800));
+    // copy_framebuffer(D_800DC5DC, D_800DC5E0 + 0x40, 0x40, 0x20,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x13800));
+    // copy_framebuffer(D_800DC5DC + 0x40, D_800DC5E0 + 0x40, 0x40, 0x20,
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[temp_v0]),
+    //                  (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x14800));
 }

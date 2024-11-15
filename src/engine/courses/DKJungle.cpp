@@ -6,7 +6,8 @@
 #include "DKJungle.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/dks_jungle_parkway_data.h"
 
 #include "engine/vehicles/Utils.h"
@@ -105,6 +106,16 @@ DKJungle::DKJungle() {
     Props.Skybox.FloorTopLeft = {22, 145, 22};
 }
 
+void DKJungle::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_addr));
+    func_80295C6C();
+    D_8015F8E4 = -475.0f;
+    // d_course_dks_jungle_parkway_packed_dl_3FA8
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07003FA8), 120, 255, 255, 255);
+}
+
 void DKJungle::LoadTextures() {
     dma_textures(gTextureDksJungleParkwayKiwanoFruit1, 0x0000032FU, 0x00000400U);
     dma_textures(gTextureDksJungleParkwayKiwanoFruit2, 0x00000369U, 0x00000400U);
@@ -112,6 +123,8 @@ void DKJungle::LoadTextures() {
 }
 
 void DKJungle::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_item_box_spawns));
     init_kiwano_fruit();
     func_80298D10();
@@ -193,25 +206,12 @@ void DKJungle::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void DKJungle::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void DKJungle::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void DKJungle::SetStaffGhost() {}
-
-void DKJungle::BeginPlay() {  }
 void DKJungle::Render(struct UnkStruct_800DC5EC* arg0) {
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
     func_802B5D64(&D_800DC610[1], D_802B87D4, D_802B87D0, 1);
@@ -248,15 +248,21 @@ void DKJungle::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f 
 void DKJungle::SpawnVehicles() {
     generate_ferry_waypoints();
 
-    gWorldInstance.AddBoat(1.6666666f, 0);
-}
+    // The original game only ran vehicle logic every second frame.
+    // Thus the speed gets divided by two to set speed to match properly
+    gWorldInstance.AddBoat((0.6666666f)/4, 0);
 
-void DKJungle::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_addr));
-    func_80295C6C();
-    D_8015F8E4 = -475.0f;
-    // d_course_dks_jungle_parkway_packed_dl_3FA8
-    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07003FA8), 120, 255, 255, 255);
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][150], 150, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][190], 190, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][250], 250, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 void DKJungle::Waypoints(Player* player, int8_t playerId) {
@@ -269,6 +275,190 @@ void DKJungle::Waypoints(Player* player, int8_t playerId) {
             player->nearestWaypointId = gWaypointCountByPathIndex[0] + player->nearestWaypointId;
         }
     }
+}
+
+void DKJungle::ScrollingTextures() {
+    D_802B87BC += 2;
+    if (D_802B87BC > 255) {
+        D_802B87BC = 0;
+    }
+    // d_course_dks_jungle_parkway_packed_dl_3DD0
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x07003DD0), 0, D_802B87BC);
+    // d_course_dks_jungle_parkway_packed_dl_3E40
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x07003E40), 0, D_802B87BC);
+    // d_course_dks_jungle_parkway_packed_dl_3EB0
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x07003EB0), 0, D_802B87BC);
+    // d_course_dks_jungle_parkway_packed_dl_3F30
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x07003F30), 0, D_802B87BC);
+    // d_course_dks_jungle_parkway_packed_dl_36A8
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x070036A8), 0, D_802B87BC);
+    D_802B87C4 -= 20;
+    if (D_802B87C4 < 0) {
+        D_802B87C4 = 0xFF;
+    }
+    // d_course_dks_jungle_parkway_packed_dl_9880
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x07009880), 0, D_802B87C4);
+    evaluate_collision_players_palm_trees();
+}
+
+void DKJungle::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
+    Mat4 matrix;
+    gDPPipeSync(gDisplayListHead++);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gDPSetBlendMask(gDisplayListHead++, 0xFF);
+    gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
+    gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
+
+    mtxf_identity(matrix);
+    render_set_position(matrix, 0);
+
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_INTER, G_RM_NOOP2);
+
+    if (pathCounter < 17) {
+        gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+        // d_course_dks_jungle_parkway_packed_dl_3E40
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+        // d_course_dks_jungle_parkway_packed_dl_3EB0
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+        if ((pathCounter >= 6) && (pathCounter < 13)) {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+            // d_course_dks_jungle_parkway_packed_dl_3DD0
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003DD0));
+        }
+    } else if ((pathCounter == 21) || (pathCounter == 22)) {
+        if (playerDirection == 3) {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+            // d_course_dks_jungle_parkway_packed_dl_36A8
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x070036A8));
+        }
+        if ((playerDirection == 1) || (playerDirection == 0)) {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+            // d_course_dks_jungle_parkway_packed_dl_36A8
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x070036A8));
+        } else {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+            // d_course_dks_jungle_parkway_packed_dl_3F30
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003F30));
+            // d_course_dks_jungle_parkway_packed_dl_36A8
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x070036A8));
+        }
+    } else if (pathCounter == 24) {
+        if ((playerDirection == 0) || (playerDirection == 3)) {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+            // d_course_dks_jungle_parkway_packed_dl_36A8
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x070036A8));
+        }
+    } else if (pathCounter == 23) {
+        if (playerDirection == 3) {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+            // d_course_dks_jungle_parkway_packed_dl_36A8
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x070036A8));
+        } else if (playerDirection == 0) {
+            gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
+            // d_course_dks_jungle_parkway_packed_dl_36A8
+            gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x070036A8));
+        }
+    }
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+    switch (pathCounter) {
+        case 5:
+            if (playerDirection != 3) {
+                // d_course_dks_jungle_parkway_packed_dl_3DD0
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003DD0));
+            }
+            break;
+        case 17:
+            switch (playerDirection) {
+                case 0:
+                    // d_course_dks_jungle_parkway_packed_dl_3E40
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    break;
+                case 1:
+                    // d_course_dks_jungle_parkway_packed_dl_3DD0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003DD0));
+                    // d_course_dks_jungle_parkway_packed_dl_3E40
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    break;
+                case 2:
+                    // d_course_dks_jungle_parkway_packed_dl_
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    // d_course_dks_jungle_parkway_packed_dl_3F30
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003F30));
+                    break;
+                case 3:
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    // d_course_dks_jungle_parkway_packed_dl_3F30
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003F30));
+                    break;
+            }
+            break;
+        case 18:
+            switch (playerDirection) {
+                case 0:
+                    // d_course_dks_jungle_parkway_packed_dl_3E40
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    break;
+                case 1:
+                    // d_course_dks_jungle_parkway_packed_dl_3DD0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003DD0));
+                    // d_course_dks_jungle_parkway_packed_dl_3E40
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    break;
+                case 2:
+                    // d_course_dks_jungle_parkway_packed_dl_3E40
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                    // d_course_dks_jungle_parkway_packed_dl_3EB0
+                    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                    break;
+            }
+            break;
+        case 21:
+            if ((playerDirection == 0) || (playerDirection == 1)) {
+                // d_course_dks_jungle_parkway_packed_dl_3E40
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003E40));
+                // d_course_dks_jungle_parkway_packed_dl_3EB0
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+                // d_course_dks_jungle_parkway_packed_dl_3F30
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003F30));
+            } else {
+                // d_course_dks_jungle_parkway_packed_dl_3EB0
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003EB0));
+            }
+            break;
+        case 22:
+            if (playerDirection == 0) {
+                // d_course_dks_jungle_parkway_packed_dl_3F30
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003F30));
+            }
+            break;
+        case 23:
+            if (playerDirection != 1) {
+                // d_course_dks_jungle_parkway_packed_dl_3F30
+                gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07003F30));
+            }
+            break;
+    }
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 1, 1, G_OFF);
+    gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
+    gDPPipeSync(gDisplayListHead++);
+}
+
+void DKJungle::CreditsSpawnActors() {
+    // d_course_dks_jungle_parkway_packed_dl_3FA8
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07003FA8), 0x78, 0xFF, 0xFF, 0xFF);
 }
 
 void DKJungle::Destroy() { }

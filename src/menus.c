@@ -123,7 +123,7 @@ const s8 D_800F2BAC[] = {
 
 const s16 gCupCourseOrder[5][4] = {
     // mushroom cup
-    { COURSE_LUIGI_RACEWAY, COURSE_MOO_MOO_FARM, COURSE_KOOPA_BEACH, COURSE_KALAMARI_DESERT },
+    { COURSE_LUIGI_RACEWAY, COURSE_MOO_MOO_FARM, COURSE_KOOPA_BEACH, COURSE_KALIMARI_DESERT },
     // flower cup
     { COURSE_TOADS_TURNPIKE, COURSE_FRAPPE_SNOWLAND, COURSE_CHOCO_MOUNTAIN, COURSE_MARIO_RACEWAY },
     // star cup
@@ -1387,12 +1387,12 @@ void main_menu_act(struct Controller* controller, u16 arg1) {
                 if (btnAndStick & D_JPAD) {
                     sp24 = false;
                     if (has_unlocked_extra_mode()) {
-                        if (sp28 < gGameModePlayerColumnExtra[gPlayerCount - 1][D_800E86AC[gPlayerCount - 1] + 1]) {
+                        if (sp28 < gGameModePlayerColumnExtra[gPlayerCount + 4][D_800E86AC[gPlayerCount - 1] + 1]) {
                             sp24 = true;
                         }
                     } else {
                         // L800B30D4
-                        if (sp28 < gGameModePlayerColumnDefault[gPlayerCount - 1][D_800E86AC[gPlayerCount - 1] + 1]) {
+                        if (sp28 < gGameModePlayerColumnDefault[gPlayerCount][D_800E86AC[gPlayerCount - 1] + 1]) {
                             sp24 = true;
                         }
                     }

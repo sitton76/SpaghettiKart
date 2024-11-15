@@ -6,8 +6,9 @@
 #include "PodiumCeremony.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/royal_raceway_data.h"
+#include "assets/ceremony_data.h"
 
 extern "C" {
     #include "main.h"
@@ -29,6 +30,7 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "courses/staff_ghost_data.h"
     extern const char *royal_raceway_dls[];
 }
 
@@ -49,7 +51,7 @@ PodiumCeremony::PodiumCeremony() {
     Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
-    Props.PathSizes = {0x3E8, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
+    Props.PathSizes = {500, 500, 500, 500, 1, 0, 0, 0, 0, 0, 0};
 
     Props.D_0D009418[0] = 4.1666665f;
     Props.D_0D009418[1] = 5.5833334f;
@@ -71,12 +73,12 @@ PodiumCeremony::PodiumCeremony() {
     Props.D_0D009808[2] = 5.75f;
     Props.D_0D009808[3] = 6.3333334f;
 
-    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_royal_raceway_unknown_waypoints);
-    Props.PathTable[1] = NULL;
-    Props.PathTable[2] = NULL;
-    Props.PathTable[3] = NULL;
+    Props.PathTable[0] = (TrackWaypoint*)LOAD_ASSET_RAW(podium_ceremony_path);
+    Props.PathTable[1] = (TrackWaypoint*)LOAD_ASSET_RAW(podium_ceremony_path_2);
+    Props.PathTable[2] = (TrackWaypoint*)LOAD_ASSET_RAW(podium_ceremony_path_3);
+    Props.PathTable[3] = (TrackWaypoint*)LOAD_ASSET_RAW(podium_ceremony_path_4);
 
-    Props.PathTable2[0] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_royal_raceway_track_waypoints);
+    Props.PathTable2[0] = NULL;
     Props.PathTable2[1] = NULL;
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
@@ -96,6 +98,14 @@ PodiumCeremony::PodiumCeremony() {
     Props.Skybox.FloorTopLeft = {255, 224, 240};
 }
 
+void PodiumCeremony::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
+    func_80295C6C();
+    D_8015F8E4 = -60.0f;
+}
+
 void PodiumCeremony::LoadTextures() {
 }
 
@@ -103,6 +113,18 @@ void PodiumCeremony::SpawnActors() {
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_item_box_spawns));
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_piranha_plant_spawn));
+}
+
+void PodiumCeremony::SpawnVehicles() {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][3], 3, 5, 1.25f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][40], 40, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][60], 60, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][80], 80, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][100], 100, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][120], 120, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[3][140], 140, 0, 1.0f);
 }
 
 // Likely sets minimap boundaries
@@ -163,36 +185,12 @@ void PodiumCeremony::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void PodiumCeremony::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void PodiumCeremony::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void PodiumCeremony::SetStaffGhost() {
-    u32 temp_v0 = func_800B4E24(0) & 0xfffff;
-    if (temp_v0 <= 16000) {
-        D_80162DD6 = 0;
-        D_80162DF4 = 0;
-    } else {
-        D_80162DD6 = 1;
-        D_80162DF4 = 1;
-    }
-    D_80162DC4 = d_royal_raceway_staff_ghost;
-    D_80162DE4 = 6;
-}
-
-void PodiumCeremony::BeginPlay() {  }
 void PodiumCeremony::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
@@ -227,11 +225,5 @@ void PodiumCeremony::RenderCredits() {
 }
 
 void PodiumCeremony::Collision() {}
-
-void PodiumCeremony::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
-    func_80295C6C();
-    D_8015F8E4 = -60.0f;
-}
 
 void PodiumCeremony::Destroy() { }

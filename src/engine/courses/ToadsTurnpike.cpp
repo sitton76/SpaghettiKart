@@ -6,8 +6,9 @@
 #include "ToadsTurnpike.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/toads_turnpike_data.h"
+#include "engine/actors/AFinishline.h"
 
 #include "engine/vehicles/Utils.h"
 
@@ -105,10 +106,30 @@ ToadsTurnpike::ToadsTurnpike() {
     Props.Skybox.FloorTopLeft = {209, 65, 23};
 }
 
+void ToadsTurnpike::Load() {
+    Course::Load();
+
+    D_801625EC = 43;
+    D_801625F4 = 13;
+    D_801625F0 = 4;
+    D_802B87B0 = 993;
+    D_802B87B4 = 1000;
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_toads_turnpike_addr));
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void ToadsTurnpike::LoadTextures() {
 }
 
 void ToadsTurnpike::SpawnActors() {
+    Vec3f pos;
+    pos[0] = (gIsMirrorMode != 0) ? D_80164490->posX + 138.0f : D_80164490->posX - 138.0f;
+    pos[1] = (f32) (D_80164490->posY - 15);
+    pos[2] = D_80164490->posZ;
+
+    gWorldInstance.AddActor(new AFinishline(pos));
+
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_toads_turnpike_item_box_spawns));
 }
 
@@ -158,25 +179,11 @@ void ToadsTurnpike::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void ToadsTurnpike::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void ToadsTurnpike::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
-
-void ToadsTurnpike::SetStaffGhost() {}
-
-void ToadsTurnpike::BeginPlay() {}
 
 void ToadsTurnpike::Render(struct UnkStruct_800DC5EC* arg0) {
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
@@ -213,6 +220,8 @@ void ToadsTurnpike::Collision() {}
 void ToadsTurnpike::SpawnVehicles() {
     f32 a = ((gCCSelection * 90.0) / 216.0f) + 4.583333333333333;
     f32 b = ((gCCSelection * 90.0) / 216.0f) + 2.9166666666666665;
+    a /= 2; // Normally vehicle logic is only ran every 2 frames. This slows the vehicles down to match.
+    b /= 2;
     uint32_t waypoint;
 
     if (gModeSelection == TIME_TRIALS) {
@@ -256,17 +265,18 @@ void ToadsTurnpike::SpawnVehicles() {
             gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
         }
     }
-}
 
-void ToadsTurnpike::GenerateCollision() {
-    D_801625EC = 43;
-    D_801625F4 = 13;
-    D_801625F0 = 4;
-    D_802B87B0 = 993;
-    D_802B87B4 = 1000;
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_toads_turnpike_addr));
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][150], 150, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][200], 200, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][250], 250, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 void ToadsTurnpike::Destroy() { }

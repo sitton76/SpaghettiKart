@@ -6,7 +6,8 @@
 #include "YoshiValley.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/yoshi_valley_data.h"
 #include "assets/boo_frames.h"
 
@@ -101,6 +102,16 @@ YoshiValley::YoshiValley() {
     Props.Skybox.FloorTopLeft = {95, 40, 15};
 }
 
+void YoshiValley::Load() {
+    Course::Load();
+
+    Lights1 lights4 = gdSPDefLights1(100, 100, 100, 255, 254, 254, 0, 0, 120);
+    func_802B5D64(&lights4, -0x38F0, 0x1C70, 1);
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_yoshi_valley_addr));
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void YoshiValley::LoadTextures() {
     dma_textures(gTextureTrees2, 0x000003E8U, 0x00000800U);
 }
@@ -109,6 +120,8 @@ void YoshiValley::SpawnActors() {
     Vec3f position;
     Vec3f velocity = { 0.0f, 0.0f, 0.0f };
     Vec3s rotation = { 0, 0, 0 };
+
+    gWorldInstance.AddActor(new AFinishline());
 
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_yoshi_valley_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_yoshi_valley_item_box_spawns));
@@ -147,6 +160,30 @@ void YoshiValley::InitCourseObjects() {
     }
 }
 
+void YoshiValley::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+
+        // Note that the waypoint values might be unused for Yoshi's Valley. Entered them because
+        // the original data has values here.
+
+        // Note that the Y height is calculated automatically to place the kart on the surface
+        Vec3f pos = {-1533, 0, -682};
+        gWorldInstance.AddBombKart(pos, NULL, 0, 0, 0.8333333f);
+        Vec3f pos2 = {-1565, 0, -619};
+        gWorldInstance.AddBombKart(pos2, NULL, 10, 0, 0.8333333f);
+        Vec3f pos3 = {-1529, 0, -579};
+        gWorldInstance.AddBombKart(pos3, NULL, 20, 0, 0.8333333f);
+        Vec3f pos4 = {-1588, 0, -534};
+        gWorldInstance.AddBombKart(pos4, NULL, 30, 0, 0.8333333f);
+        Vec3f pos5 = {-1598, 0, -207};
+        gWorldInstance.AddBombKart(pos5, NULL, 40, 0, 0.8333333f);
+        Vec3f pos6 = {-1646, 0, -147};
+        gWorldInstance.AddBombKart(pos6, NULL, 50, 0, 0.8333333f);
+        Vec3f pos7 = {-2532, 0, -445};
+        gWorldInstance.AddBombKart(pos7, NULL, 60, 0, 0.8333333f);
+    }
+}
+
 void YoshiValley::UpdateCourseObjects() {
     func_80083080();
     if (gGamestate != CREDITS_SEQUENCE) {
@@ -168,26 +205,11 @@ void YoshiValley::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void YoshiValley::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void YoshiValley::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void YoshiValley::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
-
-void YoshiValley::SetStaffGhost() {
-}
-
-void YoshiValley::BeginPlay() {  }
 
 void YoshiValley::Render(struct UnkStruct_800DC5EC* arg0) {
     gDPPipeSync(gDisplayListHead++);
@@ -204,18 +226,20 @@ void YoshiValley::RenderCredits() {
 
 void YoshiValley::Collision() {}
 
-void YoshiValley::GenerateCollision() {
-    Lights1 lights4 = gdSPDefLights1(100, 100, 100, 255, 254, 254, 0, 0, 120);
-    func_802B5D64(&lights4, -0x38F0, 0x1C70, 1);
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_yoshi_valley_addr));
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
-}
-
 void YoshiValley::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = gCopyNearestWaypointByPlayerId[playerId];
 }
 
-void YoshiValley::Water() {}
+void YoshiValley::ScrollingTextures() {}
+
+void YoshiValley::CreditsSpawnActors() {
+    Vec3f position;
+    Vec3f velocity = { 0, 0, 0 };
+    Vec3s rotation = { 0, 0, 0 };
+
+    vec3f_set(position, -2300.0f, 0.0f, 634.0f);
+    position[0] *= gCourseDirection;
+    add_actor_to_empty_slot(position, rotation, velocity, ACTOR_YOSHI_EGG);
+}
 
 void YoshiValley::Destroy() {}

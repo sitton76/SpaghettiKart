@@ -2908,7 +2908,7 @@ void func_80078C70(s32 arg0) {
         // case COURSE_TOADS_TURNPIKE: /* switch 2 */
         //     update_stars(sp1C, camera, gToadsTurnpikeRainbowRoadStars);
         //     break;
-        // case COURSE_KALAMARI_DESERT: /* switch 2 */
+        // case COURSE_KALIMARI_DESERT: /* switch 2 */
         //     update_clouds(sp1C, camera, gKalimariDesertClouds);
         //     break;
         // case COURSE_SHERBET_LAND: /* switch 2 */
@@ -7199,7 +7199,7 @@ void init_ktb_crab(s32 objectIndex) {
     Object* object;
 
     init_texture_object(objectIndex, d_course_koopa_troopa_beach_crab_tlut,
-                        (u8*) d_course_koopa_troopa_beach_crab_frames, 0x40U, (u16) 0x00000040);
+                        (u8*) d_course_koopa_troopa_beach_crab_frames, 64, (u16) 64);
     object = &gObjectList[objectIndex];
     object->sizeScaling = 0.15f;
     object->textureListIndex = 0;

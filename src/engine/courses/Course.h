@@ -100,22 +100,22 @@ public:
     virtual void UpdateCourseObjects();
     virtual void RenderCourseObjects(s32 cameraId);
     virtual void SomeSounds();
-    virtual void SetCourseVtxColours();
+    virtual void CreditsSpawnActors();
     virtual void WhatDoesThisDo(Player*, int8_t);
     virtual void WhatDoesThisDoAI(Player*, int8_t);
     virtual void MinimapFinishlinePosition();
     virtual void SetStaffGhost();
-    virtual void SpawnBombKarts();
-    virtual void BeginPlay();
     virtual void Render(struct UnkStruct_800DC5EC*);
     virtual void RenderCredits();
     virtual void SpawnVehicles();
     virtual void UpdateVehicles();
     virtual void Waypoints(Player* player, int8_t playerId);
     virtual void Collision();
-    virtual void GenerateCollision();
-    virtual void Water();
+    virtual void ScrollingTextures();
+    virtual void DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection);
     virtual void Destroy();
+private:
+    void Init();
 };
 
 #endif

@@ -6,7 +6,7 @@
 #include "Skyscraper.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/skyscraper_data.h"
 
 extern "C" {
@@ -101,10 +101,38 @@ Skyscraper::Skyscraper() {
     Props.Skybox.FloorTopLeft = {0, 0, 0};
 }
 
+void Skyscraper::Load() {
+    Course::Load();
+
+    // d_course_skyscraper_packed_dl_1110
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07001110), 1);
+    // d_course_skyscraper_packed_dl_258
+    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000258), 1);
+    func_80295C6C();
+
+    D_8015F8E4 = -480.0f;
+}
+
 void Skyscraper::LoadTextures() {
 }
 
-void Skyscraper::SpawnActors() {}
+void Skyscraper::SpawnActors() {
+    spawn_all_item_boxes((ActorSpawnData*)LOAD_ASSET_RAW(d_course_skyscraper_item_box_spawns));
+}
+
+void Skyscraper::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][20], 20, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][40], 40, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][60], 60, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][80], 80, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][120], 120, 0, 1.0f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][140], 140, 0, 1.0f);
+    }
+}
 
 // Likely sets minimap boundaries
 void Skyscraper::MinimapSettings() {
@@ -121,17 +149,12 @@ void Skyscraper::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void Skyscraper::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void Skyscraper::SpawnBombKarts() {}
-
 // Positions the finishline on the minimap
 void Skyscraper::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void Skyscraper::SetStaffGhost() {}
-
-void Skyscraper::BeginPlay() {  }
 void Skyscraper::Render(struct UnkStruct_800DC5EC* arg0) {
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
@@ -158,16 +181,6 @@ void Skyscraper::Render(struct UnkStruct_800DC5EC* arg0) {
 void Skyscraper::RenderCredits() {}
 
 void Skyscraper::Collision() {}
-
-void Skyscraper::GenerateCollision() {
-    // d_course_skyscraper_packed_dl_1110
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07001110), 1);
-    // d_course_skyscraper_packed_dl_258
-    generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000258), 1);
-    func_80295C6C();
-
-    D_8015F8E4 = -480.0f;
-}
 
 void Skyscraper::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = 0;

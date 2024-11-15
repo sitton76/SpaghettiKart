@@ -6,7 +6,8 @@
 #include "RainbowRoad.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/rainbow_road_data.h"
 
 extern "C" {
@@ -100,11 +101,46 @@ RainbowRoad::RainbowRoad() {
     Props.Skybox.FloorTopLeft = {0, 0, 0};
 }
 
+void RainbowRoad::Load() {
+    Course::Load();
+
+    D_800DC5C8 = 1;
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_rainbow_road_addr));
+    func_80295C6C();
+    D_8015F8E4 = 0.0f;
+    // d_course_rainbow_road_packed_dl_2068
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002068), -0x6A, 255, 255, 255);
+    // d_course_rainbow_road_packed_dl_1E18
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001E18), -0x6A, 255, 255, 255);
+    // d_course_rainbow_road_packed_dl_1318
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001318), 255, 255, 255, 0);
+    if (gGamestate != CREDITS_SEQUENCE) {
+        // d_course_rainbow_road_packed_dl_1FB8
+        find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001FB8), -0x6A, 255, 255, 255);
+    }
+}
+
 void RainbowRoad::LoadTextures() {
 }
 
 void RainbowRoad::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_rainbow_road_item_box_spawns));
+}
+
+void RainbowRoad::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][150], 150, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][200], 200, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][250], 250, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 void RainbowRoad::InitClouds() {
@@ -157,25 +193,12 @@ void RainbowRoad::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void RainbowRoad::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void RainbowRoad::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void RainbowRoad::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void RainbowRoad::SetStaffGhost() {}
-
-void RainbowRoad::BeginPlay() {}
 void RainbowRoad::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
@@ -190,25 +213,30 @@ void RainbowRoad::RenderCredits() {
 
 void RainbowRoad::Collision() {}
 
-void RainbowRoad::GenerateCollision() {
-    D_800DC5C8 = 1;
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_rainbow_road_addr));
-    func_80295C6C();
-    D_8015F8E4 = 0.0f;
-    // d_course_rainbow_road_packed_dl_2068
-    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002068), -0x6A, 255, 255, 255);
-    // d_course_rainbow_road_packed_dl_1E18
-    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001E18), -0x6A, 255, 255, 255);
-    // d_course_rainbow_road_packed_dl_1318
-    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001318), 255, 255, 255, 0);
-    if (gGamestate != CREDITS_SEQUENCE) {
-        // d_course_rainbow_road_packed_dl_1FB8
-        find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001FB8), -0x6A, 255, 255, 255);
-    }
-}
-
 void RainbowRoad::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = gCopyNearestWaypointByPlayerId[playerId];
+}
+
+void RainbowRoad::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
+    Mat4 matrix;
+
+    gDPPipeSync(gDisplayListHead++);
+    mtxf_identity(matrix);
+    render_set_position(matrix, 0);
+    gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
+    render_course_segments(rainbow_road_dls, screen);
+    gSPSetGeometryMode(gDisplayListHead++, G_CULL_BACK);
+    gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
+    gDPPipeSync(gDisplayListHead++);
+}
+
+void RainbowRoad::CreditsSpawnActors() {
+    // d_course_rainbow_road_packed_dl_2068
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002068), -0x6A, 0xFF, 0xFF, 0xFF);
+    // d_course_rainbow_road_packed_dl_1E18
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001E18), -0x6A, 0xFF, 0xFF, 0xFF);
+    // d_course_rainbow_road_packed_dl_1318
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001318), -1, 0xFF, 0xFF, 0);
 }
 
 void RainbowRoad::Destroy() {}

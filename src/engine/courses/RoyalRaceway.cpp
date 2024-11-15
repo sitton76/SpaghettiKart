@@ -6,7 +6,8 @@
 #include "RoyalRaceway.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/royal_raceway_data.h"
 
 extern "C" {
@@ -29,6 +30,7 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "courses/staff_ghost_data.h"
     extern const char *royal_raceway_dls[];
 }
 
@@ -100,6 +102,14 @@ RoyalRaceway::RoyalRaceway() {
     Props.Skybox.FloorTopLeft = {255, 224, 240};
 }
 
+void RoyalRaceway::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
+    func_80295C6C();
+    D_8015F8E4 = -60.0f;
+}
+
 void RoyalRaceway::LoadTextures() {
     dma_textures(gTextureTrees3, 0x000003E8U, 0x00000800U);
     dma_textures(gTextureTrees7, 0x000003E8U, 0x00000800U);
@@ -115,9 +125,25 @@ void RoyalRaceway::LoadTextures() {
 }
 
 void RoyalRaceway::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_item_box_spawns));
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_piranha_plant_spawn));
+}
+
+void RoyalRaceway::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][296], 296, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][400], 400, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][746], 746, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -178,16 +204,6 @@ void RoyalRaceway::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void RoyalRaceway::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void RoyalRaceway::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
@@ -207,7 +223,6 @@ void RoyalRaceway::SetStaffGhost() {
     D_80162DE4 = 6;
 }
 
-void RoyalRaceway::BeginPlay() {  }
 void RoyalRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
@@ -243,12 +258,6 @@ void RoyalRaceway::RenderCredits() {
 
 void RoyalRaceway::Collision() {}
 
-void RoyalRaceway::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
-    func_80295C6C();
-    D_8015F8E4 = -60.0f;
-}
-
 void RoyalRaceway::Waypoints(Player* player, int8_t playerId) {
     s16 waypoint = gNearestWaypointByPlayerId[playerId];
     if ((waypoint >= 0x258) && (waypoint < 0x2A4)) {
@@ -259,6 +268,17 @@ void RoyalRaceway::Waypoints(Player* player, int8_t playerId) {
             player->nearestWaypointId = gWaypointCountByPathIndex[0] + player->nearestWaypointId;
         }
     }
+}
+
+void RoyalRaceway::ScrollingTextures() {
+    D_802B87BC -= 20;
+    if (D_802B87BC < 0) {
+        D_802B87BC = 0xFF;
+    }
+    // d_course_royal_raceway_packed_dl_A6A8
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x0700A6A8), 0, D_802B87BC);
+    // d_course_royal_raceway_packed_dl_A648
+    find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x0700A648), 0, D_802B87BC);
 }
 
 void RoyalRaceway::Destroy() { }

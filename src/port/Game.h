@@ -8,6 +8,7 @@
 extern "C" {
 #include "camera.h"
 #endif
+#include "actor_types.h"
 
 u32 WorldNextCup(void);
 
@@ -44,11 +45,11 @@ void CourseManager_SpawnActors();
 
 void CourseManager_InitClouds();
 
+void CourseManager_DrawActor(Camera* camera, struct Actor* actor);
+
 void CourseManager_UpdateClouds(s32 arg0, Camera* camera);
 
 void CourseManager_Waypoints(Player* player, int8_t playerId);
-
-void CourseManager_GenerateCollision();
 
 void CourseManager_SomeCollisionThing(Player* player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5,
                                       f32* arg6, f32* arg7);
@@ -63,7 +64,7 @@ void CourseManager_RenderCourseObjects(s32 cameraId);
 
 void CourseManager_SomeSounds();
 
-void CourseManager_SetCourseVtxColours();
+void CourseManager_CreditsSpawnActors();
 
 void CourseManager_WhatDoesThisDo(Player* player, int8_t playerId);
 
@@ -77,7 +78,9 @@ CProperties* CourseManager_GetProps();
 
 void CourseManager_SpawnBombKarts();
 
-void CourseManager_Water();
+void CourseManager_BombKartsWaypoint(s32 cameraId);
+
+void CourseManager_ScrollingTextures();
 
 size_t GetCupCursorPosition();
 
@@ -90,6 +93,11 @@ void SetCourseFromCup();
 void* GetCourse(void);
 
 void SetCourseByClass(void* course);
+
+struct Actor* m_GetActor(size_t index);
+void m_DeleteActor(size_t index);
+struct Actor* m_AddBaseActor(void);
+size_t m_GetActorSize();
 
 void* GetMarioRaceway(void);
 

@@ -6,7 +6,8 @@
 #include "FrappeSnowland.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/frappe_snowland_data.h"
 #include "assets/boo_frames.h"
 
@@ -103,14 +104,38 @@ FrappeSnowland::FrappeSnowland() {
     Props.Skybox.FloorTopLeft = {0, 99, 164};
 }
 
+void FrappeSnowland::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_frappe_snowland_addr));
+    func_80295C6C();
+    D_8015F8E4 = -50.0f;
+}
+
 void FrappeSnowland::LoadTextures() {
     dma_textures(gTextureFrappeSnowlandTreeLeft, 0x00000454U, 0x00000800U);
     dma_textures(gTextureFrappeSnowlandTreeRight, 0x00000432U, 0x00000800U);
 }
 
 void FrappeSnowland::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_frappe_snowland_tree_spawns));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_frappe_snowland_item_box_spawns));
+}
+
+void FrappeSnowland::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][150], 150, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][290], 290, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][350], 350, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 void FrappeSnowland::InitClouds() {
@@ -187,26 +212,11 @@ void FrappeSnowland::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void FrappeSnowland::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void FrappeSnowland::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void FrappeSnowland::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
-
-void FrappeSnowland::SetStaffGhost() {
-}
-
-void FrappeSnowland::BeginPlay() {  }
 
 void FrappeSnowland::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
@@ -231,12 +241,6 @@ void FrappeSnowland::RenderCredits() {
 
 void FrappeSnowland::Collision() {}
 
-void FrappeSnowland::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_frappe_snowland_addr));
-    func_80295C6C();
-    D_8015F8E4 = -50.0f;
-}
-
 void FrappeSnowland::Waypoints(Player* player, int8_t playerId) {
     s16 waypoint = gNearestWaypointByPlayerId[playerId];
 
@@ -250,6 +254,6 @@ void FrappeSnowland::Waypoints(Player* player, int8_t playerId) {
     }
 }
 
-void FrappeSnowland::Water() {}
+void FrappeSnowland::ScrollingTextures() {}
 
 void FrappeSnowland::Destroy() {}

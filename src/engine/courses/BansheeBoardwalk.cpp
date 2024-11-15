@@ -6,7 +6,8 @@
 #include "BansheeBoardwalk.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/banshee_boardwalk_data.h"
 #include "assets/boo_frames.h"
 
@@ -102,11 +103,40 @@ BansheeBoardwalk::BansheeBoardwalk() {
     Props.Skybox.FloorTopLeft = {0, 0, 0};
 }
 
+void BansheeBoardwalk::Load() {
+    Course::Load();
+
+    D_800DC5BC = 1;
+    D_801625EC = 0;
+    D_801625F4 = 0;
+    D_801625F0 = 0;
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_banshee_boardwalk_track_sections));
+    func_80295C6C();
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07000878), 128, 0, 0, 0);
+    D_8015F8E4 = -80.0f;
+}
+
 void BansheeBoardwalk::LoadTextures() {
 }
 
 void BansheeBoardwalk::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_banshee_boardwalk_item_box_spawns));
+}
+
+void BansheeBoardwalk::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][110], 110, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][190], 190, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][250], 250, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][475], 475, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][610], 610, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -188,26 +218,11 @@ void BansheeBoardwalk::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void BansheeBoardwalk::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void BansheeBoardwalk::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
-
-void BansheeBoardwalk::SetStaffGhost() {
-}
-
-void BansheeBoardwalk::BeginPlay() {  }
 
 void BansheeBoardwalk::Render(struct UnkStruct_800DC5EC* arg0) {
     Camera* camera = arg0->camera;
@@ -274,18 +289,7 @@ void BansheeBoardwalk::RenderCredits() {
 
 void BansheeBoardwalk::Collision() {}
 
-void BansheeBoardwalk::GenerateCollision() {
-    D_800DC5BC = 1;
-    D_801625EC = 0;
-    D_801625F4 = 0;
-    D_801625F0 = 0;
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_banshee_boardwalk_track_sections));
-    func_80295C6C();
-    find_vtx_and_set_colours(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07000878)), 128, 0, 0, 0);
-    D_8015F8E4 = -80.0f;
-}
-
-void BansheeBoardwalk::Water() {
+void BansheeBoardwalk::ScrollingTextures() {
     D_802B87BC++;
 
     if (D_802B87BC >= 0x100) {
@@ -304,6 +308,23 @@ void BansheeBoardwalk::Waypoints(Player* player, int8_t playerId) {
             player->nearestWaypointId = gWaypointCountByPathIndex[0] + player->nearestWaypointId;
         }
     }
+}
+
+void BansheeBoardwalk::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
+    gDPPipeSync(gDisplayListHead++);
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_XLU_INTER, G_RM_NOOP2);
+    gDPSetBlendMask(gDisplayListHead++, 0xFF);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+    // d_course_banshee_boardwalk_packed_dl_878
+    gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07000878));
+    gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
+    gDPPipeSync(gDisplayListHead++);
+}
+
+void BansheeBoardwalk::CreditsSpawnActors() {
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07000878), 0x32, 0, 0, 0);
 }
 
 void BansheeBoardwalk::Destroy() { }

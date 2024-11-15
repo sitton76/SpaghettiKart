@@ -6,7 +6,8 @@
 #include "SherbetLand.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "assets/sherbet_land_data.h"
 
 extern "C" {
@@ -30,6 +31,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     extern const char *sherbet_land_dls[];
+    extern const char *sherbet_land_dls_2[];
 }
 
 SherbetLand::SherbetLand() {
@@ -100,11 +102,39 @@ SherbetLand::SherbetLand() {
     Props.Skybox.FloorTopLeft = {216, 232, 248};
 }
 
+void SherbetLand::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_sherbet_land_addr));
+    func_80295C6C();
+    D_8015F8E4 = -18.0f;
+    // d_course_sherbet_land_packed_dl_1EB8
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001EB8), -0x4C, 255, 255, 255);
+    // d_course_sherbet_land_packed_dl_2308
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002308), -0x6A, 255, 255, 255);
+}
+
 void SherbetLand::LoadTextures() {
 }
 
 void SherbetLand::SpawnActors() {
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_sherbet_land_item_box_spawns));
+}
+
+void SherbetLand::SpawnVehicles() {
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][150], 150, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][200], 200, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][250], 250, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+    }
 }
 
 // Likely sets minimap boundaries
@@ -146,25 +176,12 @@ void SherbetLand::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void SherbetLand::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void SherbetLand::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void SherbetLand::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void SherbetLand::SetStaffGhost() {}
-
-void SherbetLand::BeginPlay() {  }
 void SherbetLand::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -180,14 +197,37 @@ void SherbetLand::RenderCredits() {
 
 void SherbetLand::Collision() {}
 
-void SherbetLand::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_sherbet_land_addr));
-    func_80295C6C();
-    D_8015F8E4 = -18.0f;
+void SherbetLand::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
+    Mat4 matrix;
+
+    gDPPipeSync(gDisplayListHead++);
+    gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
+    gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+    gDPSetBlendMask(gDisplayListHead++, 0xFF);
+    gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
+    gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);
+    gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
+
+    mtxf_identity(matrix);
+    render_set_position(matrix, 0);
+    render_course_segments(sherbet_land_dls_2, screen);
+
+    gDPSetAlphaCompare(gDisplayListHead++, G_AC_NONE);
+    if ((func_80290C20(screen->camera) == 1) && (func_802AAB4C(screen->player) < screen->player->pos[1])) {
+        gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER);
+        gDPSetCombineMode(gDisplayListHead++, G_CC_SHADE, G_CC_SHADE);
+        gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
+        // d_course_sherbet_land_packed_dl_2B48
+        gSPDisplayList(gDisplayListHead++, segmented_gfx_to_virtual((void*)0x07002B48));
+    }
+    gDPPipeSync(gDisplayListHead++);
+}
+
+void SherbetLand::CreditsSpawnActors() {
     // d_course_sherbet_land_packed_dl_1EB8
-    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001EB8), -0x4C, 255, 255, 255);
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07001EB8), -0x4C, 0xFF, 0xFF, 0xFF);
     // d_course_sherbet_land_packed_dl_2308
-    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002308), -0x6A, 255, 255, 255);
+    find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002308), -0x6A, 0xFF, 0xFF, 0xFF);
 }
 
 void SherbetLand::Destroy() { }

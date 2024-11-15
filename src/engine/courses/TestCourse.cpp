@@ -6,7 +6,14 @@
 #include "TestCourse.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
+#include "assets/mario_raceway_data.h"
+#include "assets/bowsers_castle_data.h"
+#include "assets/bowsers_castle_displaylists.h"
+#include "engine/actors/ATree.h"
+
+#include "engine/actors/ACloud.h"
 
 extern "C" {
     #include "main.h"
@@ -29,10 +36,10 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     typedef struct {
-    Gfx* addr;
-    u8 surfaceType;
-    u8 sectionId;
-    u16 flags;
+        Gfx* addr;
+        u8 surfaceType;
+        u8 sectionId;
+        u16 flags;
     } TrackSections;
     extern Gfx test_course_dls[];
     extern Vtx mario_Plane_001_mesh_vtx_1[];
@@ -108,8 +115,13 @@ TestCourse::TestCourse() {
 }
 
 void TestCourse::Load() {
-    gSegmentTable[4] = reinterpret_cast<uintptr_t>(&mario_Plane_001_mesh_vtx_1[0]);
-    //gSegmentTable[7] = reinterpret_cast<uintptr_t>(&gfx[0]);
+    Course::Load(mario_Plane_001_mesh_vtx_1, NULL);
+
+    generate_collision_mesh_with_defaults(mario_Plane_001_mesh);
+
+    parse_course_displaylists((TrackSectionsI*)test_course_addr);
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
 }
 
 void TestCourse::LoadTextures() {
@@ -126,29 +138,38 @@ void TestCourse::LoadTextures() {
 }
 
 void TestCourse::SpawnActors() {
-struct ActorSpawnData itemboxes[] = {
-    {   200, 1500, 200 , 0},
-    {   350, 2500, 300 , 1},
-    {   400, 2000, 350 , 2},
-    {    40, 0, -800, 0},
-    {    -40, 0, -800, 0},
-    {    0, 0, -800, 0},
-    {    999, 6, 482, 0},
-    {    1064, 8, 275, {0}},
-    {   1028, 5, -39 , {0}},
-    {    320, 0, 1020, {0}},
-    {   293, 0, 950, {0}},
-    {{ -32768, 0,    0 }, {0}},
-};
+    struct ActorSpawnData itemboxes[] = {
+        {   200, 1500, 200 , 0},
+        {   350, 2500, 300 , 1},
+        {   400, 2000, 350 , 2},
+        {    40, 0, -800, 0},
+        {    -40, 0, -800, 0},
+        {    0, 0, -800, 0},
+        {    999, 6, 482, 0},
+        {    1064, 8, 275, {0}},
+        {   1028, 5, -39 , {0}},
+        {    320, 0, 1020, {0}},
+        {   293, 0, 950, {0}},
+        {{ -32768, 0,    0 }, {0}},
+    };
 
-struct ActorSpawnData rocks[] = {
-    {{   200, 1500, 200 }, {0}},
-    {{   350, 2500, 300 }, {1}},
-    {{   400, 2000, 350 }, {2}},
-    {{ -32768,   0,   0 }, {0}},
-};
+    struct ActorSpawnData rocks[] = {
+        {{   200, 1500, 200 }, {0}},
+        {{   350, 2500, 300 }, {1}},
+        {{   400, 2000, 350 }, {2}},
+        {{ -32768,   0,   0 }, {0}},
+    };
+
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_all_item_boxes(itemboxes);
     spawn_falling_rocks(rocks);
+
+    Vec3f test = {-100, 0, -150};
+    Vec3s rot = {0, 0, 0};
+    Vec3f vel = {0, 0, 0};
+
+    add_actor_to_empty_slot(test, rot, vel, ACTOR_TREE_MARIO_RACEWAY);
 
     struct RailroadCrossing* rrxing;
     Vec3f position;
@@ -160,9 +181,12 @@ struct ActorSpawnData rocks[] = {
     uintptr_t* crossing1 = (uintptr_t*) gWorldInstance.AddCrossing(crossingPos, 0, 2, 900.0f, 650.0f);
 
     position[0] *= gCourseDirection;
-    rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
-                                                                            ACTOR_RAILROAD_CROSSING)];
+    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing1;
+
+    Vec3f pos = {-80, 7, -20};
+    gWorldInstance.AddActor(new ACloud(pos));
 }
 
 // Likely sets minimap boundaries
@@ -241,8 +265,14 @@ void TestCourse::SpawnVehicles() {
     gVehicle2DWaypointLength = 53;
     D_80162EB0 = spawn_actor_on_surface(test_course_path2D[0].x, 2000.0f, test_course_path2D[0].z);
     
-    gWorldInstance.AddTrain(5, 5.0f, 0);
-    gWorldInstance.AddTrain(5, 5.0f, 8);
+    gWorldInstance.AddTrain(5, 2.5f, 0);
+    gWorldInstance.AddTrain(5, 2.5f, 8);
+
+    Vec3f pos = {0, 0, 0};
+
+    gWorldInstance.AddBombKart(pos, &D_80164550[0][25], 25, 2, 0.8333333f);
+    gWorldInstance.AddBombKart(pos, &D_80164550[0][45], 45, 3, 0.8333333f);
+
 }
 
 void TestCourse::UpdateVehicles() {
@@ -283,25 +313,12 @@ void TestCourse::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-void TestCourse::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(40, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(100, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(265, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(285, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(420, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void TestCourse::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
-void TestCourse::SetStaffGhost() {}
-
-void TestCourse::BeginPlay() {  }
 void TestCourse::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -321,13 +338,5 @@ void TestCourse::RenderCredits() {
 }
 
 void TestCourse::Collision() {}
-
-void TestCourse::GenerateCollision() {
-    generate_collision_mesh_with_defaults(mario_Plane_001_mesh);
-
-    parse_course_displaylists((TrackSectionsI*)test_course_addr);
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
-}
 
 void TestCourse::Destroy() { }

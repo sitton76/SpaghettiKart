@@ -93,10 +93,12 @@ void render_limb_or_add_mtx(Armature* arg0, s16* arg1, AnimationLimbVector arg2,
     }
 
     mtxf_translate_rotate2(modelMatrix, pos, angle);
-    convert_to_fixed_point_matrix_animation(&gGfxPool->mtxHud[gMatrixHudCount], modelMatrix);
+    //convert_to_fixed_point_matrix_animation(&gGfxPool->mtxHud[gMatrixHudCount], modelMatrix);
     sMatrixStackSize += 1;
-    gSPMatrix(gDisplayListHead++, (&gGfxPool->mtxHud[gMatrixHudCount++]),
-              G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+    // gSPMatrix(gDisplayListHead++, (&gGfxPool->mtxHud[gMatrixHudCount++]),
+    //           G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
+
+    AddHudMatrix(modelMatrix, G_MTX_PUSH | G_MTX_MUL | G_MTX_MODELVIEW);
     if (virtualModel != NULL) {
         model = (virtualModel);
         gSPDisplayList(gDisplayListHead++, model);
@@ -110,8 +112,6 @@ void render_armature(Armature* animation, Animation* arg1, s16 timeCycle) {
     AnimationLimbVector* animation_cycle_list;
     s32 animation_type;
     s32 someIndex;
-
-    printf("model: %d %d %d\n", animation->pos[0], animation->pos[1], animation->pos[2]);
 
     angle_array = (arg1->angle_array);
     animation_cycle_list = (arg1->animation_cycle_spec_vector);

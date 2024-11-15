@@ -6,7 +6,8 @@
 #include "KalimariDesert.h"
 #include "GameObject.h"
 #include "World.h"
-#include "BombKart.h"
+#include "engine/actors/AFinishline.h"
+#include "engine/vehicles/OBombKart.h"
 #include "kalimari_desert_data.h"
 #include "engine/vehicles/Utils.h"
 
@@ -103,6 +104,14 @@ KalimariDesert::KalimariDesert() {
     Props.Skybox.FloorTopLeft = {255, 192, 0};
 }
 
+void KalimariDesert::Load() {
+    Course::Load();
+
+    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_kalimari_desert_addr));
+    func_80295C6C();
+    D_8015F8E4 = gCourseMinY - 10.0f;
+}
+
 void KalimariDesert::LoadTextures() {
     dma_textures(gTextureCactus1Left, 0x0000033EU, 0x00000800U);
     dma_textures(gTextureCactus1Right, 0x000002FBU, 0x00000800U);
@@ -117,6 +126,8 @@ void KalimariDesert::SpawnActors() {
     Vec3f velocity = { 0.0f, 0.0f, 0.0f };
     Vec3s rotation = { 0, 0, 0 };
 
+    gWorldInstance.AddActor(new AFinishline());
+
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_kalimari_desert_cactus_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_kalimari_desert_item_box_spawns));
 
@@ -127,24 +138,24 @@ void KalimariDesert::SpawnActors() {
 
     vec3f_set(position, -1680.0f, 2.0f, 35.0f);
     position[0] *= gCourseDirection;
-    rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
-                                                                            ACTOR_RAILROAD_CROSSING)];
+    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing2;
     vec3f_set(position, -1600.0f, 2.0f, 35.0f);
     position[0] *= gCourseDirection;
-    rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
-                                                                            ACTOR_RAILROAD_CROSSING)];
+    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing2;
     vec3s_set(rotation, 0, -0x2000, 0);
     vec3f_set(position, -2459.0f, 2.0f, 2263.0f);
     position[0] *= gCourseDirection;
-    rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
-                                                                            ACTOR_RAILROAD_CROSSING)];
+    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing1;
     vec3f_set(position, -2467.0f, 2.0f, 2375.0f);
     position[0] *= gCourseDirection;
-    rrxing = (struct RailroadCrossing*) &gActorList[add_actor_to_empty_slot(position, rotation, velocity,
-                                                                            ACTOR_RAILROAD_CROSSING)];
+    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing1;
 }
 
@@ -181,23 +192,11 @@ void KalimariDesert::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void KalimariDesert::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-void KalimariDesert::SpawnBombKarts() {
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(140, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(165, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(330, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(550, 1, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(595, 3, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-    gWorldInstance.AddObject(std::make_unique<OBombKart>(0, 0, 0.8333333, 0, 0, 0, 0));
-}
-
 // Positions the finishline on the minimap
 void KalimariDesert::MinimapFinishlinePosition() {
     //! todo: Place hard-coded values here.
     draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
-
-void KalimariDesert::SetStaffGhost() {}
 
 void KalimariDesert::SpawnVehicles() {
     generate_train_waypoints();
@@ -209,11 +208,22 @@ void KalimariDesert::SpawnVehicles() {
     for (size_t i = 0; i < numTrains; ++i) {
         uint32_t waypoint = CalculateWaypointDistribution(i, numTrains, gVehicle2DWaypointLength, centerWaypoint);
         
-        gWorldInstance.AddTrain(5, 5.0f, waypoint);
+        gWorldInstance.AddTrain(5, 2.5f, waypoint);
+    }
+
+    if (gModeSelection == VERSUS) {
+        Vec3f pos = {0, 0, 0};
+
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][138], 138, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][280], 280, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][404], 404, 1, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][510], 510, 3, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
+        gWorldInstance.AddBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f);
     }
 }
 
-void KalimariDesert::BeginPlay() {  }
 void KalimariDesert::Render(struct UnkStruct_800DC5EC* arg0) {
     func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
 
@@ -252,11 +262,5 @@ void KalimariDesert::RenderCredits() {
 }
 
 void KalimariDesert::Collision() {}
-
-void KalimariDesert::GenerateCollision() {
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_kalimari_desert_addr));
-    func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
-}
 
 void KalimariDesert::Destroy() { }
