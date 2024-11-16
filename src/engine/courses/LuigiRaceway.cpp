@@ -294,8 +294,8 @@ void LuigiRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
          * It isn't split into six sections anymore
          */
         copy_jumbotron_fb_port(D_800DC5DC, D_800DC5E0, currentScreenSection,
-                        (u16*) PHYSICAL_TO_VIRTUAL(gPortFramebuffers[prevFrame]),
-                        (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xF800));
+                        (u16*) gPortFramebuffers[prevFrame],
+                        (u16*) (gSegmentTable[5] + 0xF800));
     }
 }
 
