@@ -475,8 +475,8 @@ void DrawEnhancementsMenu() {
                 "No Level of Detail (LOD)", "gDisableLod",
                 { .tooltip = "Disable Level of Detail (LOD) to avoid models using lower poly versions at a distance" });
 
-            UIWidgets::CVarCheckbox("Select any star from menu", "gCompletedGame",
-                                    { .tooltip = "Unlocks extra mode and sets all gold cups." });
+            UIWidgets::CVarCheckbox("No multiplayer feature cuts", "gMultiplayerNoFeatureCuts",
+                                    { .tooltip = "Allows full train and jumbotron in multiplayer, etc." });
 
             UIWidgets::CVarCheckbox("Disable Culling", "gNoCulling", { .tooltip = "Disable original culling of mk64" });
             UIWidgets::CVarSliderFloat(

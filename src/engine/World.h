@@ -7,6 +7,7 @@
 #include "vehicles/Train.h"
 #include "vehicles/Car.h"
 #include "vehicles/OBombKart.h"
+#include "vehicles/Train.h"
 #include "TrainCrossing.h"
 #include <memory>
 #include "Actor.h"
@@ -127,7 +128,7 @@ public:
 
     /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);
-    void AddTrain(size_t numCarriages, f32 speed, uint32_t waypoint);
+    void AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint);
     void AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
     void AddBus(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
     void AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);

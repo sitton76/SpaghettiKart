@@ -12,8 +12,8 @@
 #include "assets/bowsers_castle_data.h"
 #include "assets/bowsers_castle_displaylists.h"
 #include "engine/actors/ATree.h"
-
 #include "engine/actors/ACloud.h"
+#include "engine/vehicles/Train.h"
 
 extern "C" {
     #include "main.h"
@@ -265,8 +265,8 @@ void TestCourse::SpawnVehicles() {
     gVehicle2DWaypointLength = 53;
     D_80162EB0 = spawn_actor_on_surface(test_course_path2D[0].x, 2000.0f, test_course_path2D[0].z);
     
-    gWorldInstance.AddTrain(5, 2.5f, 0);
-    gWorldInstance.AddTrain(5, 2.5f, 8);
+    gWorldInstance.AddTrain(ATrain::TenderStatus::HAS_TENDER, 5, 2.5f, 0);
+    gWorldInstance.AddTrain(ATrain::TenderStatus::HAS_TENDER, 5, 2.5f, 8);
 
     Vec3f pos = {0, 0, 0};
 

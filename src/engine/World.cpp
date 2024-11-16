@@ -46,8 +46,8 @@ static size_t busses;
 static size_t tankerTrucks;
 static size_t cars;
 static size_t boats;
-void World::AddTrain(size_t numCarriages, f32 speed, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ATrain>(trains, numCarriages, speed, waypoint));
+void World::AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ATrain>(trains, tender, numCarriages, speed, waypoint));
     trains++;
 }
 

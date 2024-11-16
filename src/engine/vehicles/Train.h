@@ -14,6 +14,11 @@ class AVehicle; // Forward declare
 class ATrain : public AVehicle {
     public:
 
+    enum TenderStatus {
+        NO_TENDER,
+        HAS_TENDER,
+    };
+
     TrainCarStuff Locomotive;
     TrainCarStuff Tender;
     std::vector<TrainCarStuff> PassengerCars;
@@ -30,7 +35,7 @@ class ATrain : public AVehicle {
     int16_t AnotherSmokeTimer = 0;
     int16_t SmokeTimer = 0;
 
-    explicit ATrain(size_t idx, size_t numCarriages, f32 speed, uint32_t waypoint);
+    explicit ATrain(size_t idx, ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint);
 
     virtual void Spawn() override;
     virtual void BeginPlay() override;
