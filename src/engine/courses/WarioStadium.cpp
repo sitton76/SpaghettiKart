@@ -32,6 +32,7 @@ extern "C" {
     #include "collision.h"
     #include "code_8003DC40.h"
     #include "memory.h"
+    #include "skybox_and_splitscreen.h"
     extern const char *wario_stadium_dls[];
     extern s16 currentScreenSection;
 }
@@ -248,50 +249,14 @@ void WarioStadium::Render(struct UnkStruct_800DC5EC* arg0) {
         if (currentScreenSection > 5) {
             currentScreenSection = 0;
         }
-        switch (currentScreenSection) {
-            case 0:
-#ifdef TARGET_N64
-                copy_framebuffer(D_800DC5DC, D_800DC5E0, 64, 32,
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x8800));
-#endif
-                break;
-            case 1:
-#ifdef TARGET_N64
-                copy_framebuffer(D_800DC5DC + 64, D_800DC5E0, 64, 32,
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x9800));
-#endif
-                break;
-            case 2:
-#ifdef TARGET_N64
-                copy_framebuffer(D_800DC5DC, D_800DC5E0 + 32, 64, 32,
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xA800));
-#endif
-                break;
-            case 3:
-#ifdef TARGET_N64
-                copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 32, 64, 32,
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xB800));
-#endif
-                break;
-            case 4:
-#ifdef TARGET_N64
-                copy_framebuffer(D_800DC5DC, D_800DC5E0 + 64, 64, 32,
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xC800));
-#endif
-                break;
-            case 5:
-#ifdef TARGET_N64
-                copy_framebuffer(D_800DC5DC + 64, D_800DC5E0 + 64, 64, 32,
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gPhysicalFramebuffers[prevFrame]),
-                                 (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0xD800));
-#endif
-                break;
-        }
+
+        /**
+         * The jumbo television screen used to be split into six sections to fit into the n64's texture size restrictions
+         * It isn't split into six sections anymore
+         */
+        copy_jumbotron_fb_port(D_800DC5DC, D_800DC5E0, currentScreenSection,
+                        (u16*) PHYSICAL_TO_VIRTUAL(gPortFramebuffers[prevFrame]),
+                        (u16*) PHYSICAL_TO_VIRTUAL(gSegmentTable[5] + 0x8800));
     }
 }
 
