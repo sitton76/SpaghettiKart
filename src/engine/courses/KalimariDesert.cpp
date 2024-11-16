@@ -12,7 +12,6 @@
 #include "engine/vehicles/Utils.h"
 
 #include "engine/vehicles/Vehicle.h"
-#include "engine/vehicles/Train.h"
 
 extern "C" {
     #include "main.h"
@@ -202,31 +201,27 @@ void KalimariDesert::MinimapFinishlinePosition() {
 void KalimariDesert::SpawnVehicles() {
     generate_train_waypoints();
 
-    s32 numTrains = 2;
-    s32 numCars = 5;
-    ATrain::TenderStatus tender = ATrain::TenderStatus::HAS_TENDER;
     s32 centerWaypoint = 160;
 
     // Spawn two trains
-    for (size_t i = 0; i < numTrains; ++i) {
-        uint32_t waypoint = CalculateWaypointDistribution(i, numTrains, gVehicle2DWaypointLength, centerWaypoint);
-        
+    for (size_t i = 0; i < _numTrains; ++i) {
+        uint32_t waypoint = CalculateWaypointDistribution(i, _numTrains, gVehicle2DWaypointLength, centerWaypoint);
 
         if (CVarGetInteger("gMultiplayerNoFeatureCuts", 0) == false) {
             // Multiplayer modes have no tender and no carriages
             if (gActiveScreenMode != SCREEN_MODE_1P) {
-                tender = ATrain::TenderStatus::NO_TENDER;
-                numCars = 0;
+                _tender = ATrain::TenderStatus::NO_TENDER;
+                _numCarriages = 0;
             }
 
             // 2 player versus mode has a tender and a carriage
             if ((gModeSelection == VERSUS) && (gPlayerCountSelection1 == 2)) {
-                tender = ATrain::TenderStatus::HAS_TENDER;
-                numCars = 1;
+                _tender = ATrain::TenderStatus::HAS_TENDER;
+                _numCarriages = 1;
             }
         }
 
-        gWorldInstance.AddTrain(tender, numCars, 2.5f, waypoint);
+        gWorldInstance.AddTrain(_tender, _numCarriages, 2.5f, waypoint);
     }
 
     if (gModeSelection == VERSUS) {

@@ -39,4 +39,9 @@ public:
     virtual void Collision() override;
     virtual void SpawnVehicles() override;
     virtual void Destroy() override;
+private:
+    size_t _numTrucks = 7;
+    size_t _numBuses = 7;
+    size_t _numTankerTrucks = 7;
+    size_t _numCars = 7;
 };

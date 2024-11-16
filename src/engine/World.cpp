@@ -46,6 +46,11 @@ static size_t busses;
 static size_t tankerTrucks;
 static size_t cars;
 static size_t boats;
+
+/**
+ * Note that you can only remove the tender if there are no carriages
+ * @arg waypoint initial waypoint to spawn at.
+ */
 void World::AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
     Vehicles.push_back(std::make_unique<ATrain>(trains, tender, numCarriages, speed, waypoint));
     trains++;

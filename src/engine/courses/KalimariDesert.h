@@ -2,6 +2,7 @@
 
 #include <libultraship.h>
 #include "Course.h"
+#include "engine/vehicles/Train.h"
 
 extern "C" {
     #include "assets/kalimari_desert_vertices.h"
@@ -38,4 +39,9 @@ public:
     virtual void SpawnVehicles() override;
     virtual void Collision() override;
     virtual void Destroy() override;
+
+private:
+    size_t _numTrains = 2;
+    size_t _numCarriages = 5;
+    ATrain::TenderStatus _tender = ATrain::TenderStatus::HAS_TENDER;
 };
