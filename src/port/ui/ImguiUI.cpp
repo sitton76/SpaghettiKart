@@ -15,7 +15,11 @@
 #include <Fast3D/gfx_pc.h>
 #include "port/Engine.h"
 
-extern "C" {}
+extern "C" {
+    extern s32 gGamestateNext;
+    extern s32 gMenuSelection;
+    #include "defines.h"
+}
 
 namespace GameUI {
 std::shared_ptr<GameMenuBar> mGameMenuBar;
@@ -446,7 +450,8 @@ void DrawGameMenu() {
                                 "Ctrl+R"
 #endif
                                 )) {
-            // gNextGameState = GSTATE_BOOT;
+            gGamestateNext = MAIN_MENU_FROM_QUIT;
+            gMenuSelection = START_MENU;
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
 
