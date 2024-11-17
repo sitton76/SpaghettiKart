@@ -31,11 +31,8 @@ ABoat::ABoat(size_t idx, f32 speed, u32 waypoint) {
     WaypointIndex = Index * 0xB4;
     ActorIndex = -1;
 
-    if (gPlayerCount >= 3) {
-        IsActive = 0;
-    } else {
-        IsActive = 1;
-    }
+    IsActive = 1;
+
     Velocity[0] = 0.0f;
     Velocity[1] = 0.0f;
     Velocity[2] = 0.0f;
