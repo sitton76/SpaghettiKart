@@ -107,17 +107,19 @@ MarioRaceway::MarioRaceway() {
 void MarioRaceway::Load() {
     Course::Load();
 
-    generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07001140)));
+    generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x07001140));
+    
+    // Generate pipe collision mesh
     if (gScreenModeSelection == SCREEN_MODE_1P) {
         // d_course_mario_raceway_packed_dl_8E8
-        generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x070008E8)));
+        generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x070008E8));
     } else {
         if (CVarGetInteger("gDisableLod", 0) == true) {
-            gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070008E8)));
-            return;
+            generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x070008E8));
+        } else {
+            // d_course_mario_raceway_packed_dl_2D68
+            generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x07002D68));
         }
-        // d_course_mario_raceway_packed_dl_2D68
-        generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07002D68)));
     }
 
     parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_mario_raceway_addr));
