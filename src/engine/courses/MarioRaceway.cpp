@@ -112,6 +112,10 @@ void MarioRaceway::Load() {
         // d_course_mario_raceway_packed_dl_8E8
         generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x070008E8)));
     } else {
+        if (CVarGetInteger("gDisableLod", 0) == true) {
+            gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070008E8)));
+            return;
+        }
         // d_course_mario_raceway_packed_dl_2D68
         generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07002D68)));
     }
