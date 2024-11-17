@@ -270,12 +270,12 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
         case 2:
         case 17:
             if ((temp_t0 == 2) || (temp_t0 == 1)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 3:
             if (temp_t0 != 0) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 4:
@@ -285,13 +285,13 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
                 if (temp_t0 == 1) {
                     func_80291198();
                 }
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 5:
         case 6:
             if ((temp_t0 == 2) || (temp_t0 == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             } else {
                 func_80291198();
             }
@@ -299,13 +299,13 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
         case 7:
             func_80291198();
             if ((temp_t0 == 2) || (temp_t0 == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 8:
         case 9:
             if (temp_t0 != 1) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             /* fallthrough */
         case 10:
@@ -315,15 +315,15 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
             break;
         case 11:
             if (temp_t0 == 0) {
-                func_802911C4();
+                render_mario_raceway_pipe();
                 func_80291198();
             } else if (temp_t0 == 3) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 12:
             if ((temp_t0 == 0) || (temp_t0 == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 13:
@@ -331,7 +331,7 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
             if (temp_t0 != 1) {
                 case 15:
                 case 16:
-                    func_802911C4();
+                    render_mario_raceway_pipe();
             }
             break;
     }

@@ -187,11 +187,17 @@ void func_80291198(void) {
     gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x07001140))); //
 }
 
-void func_802911C4(void) {
+void render_mario_raceway_pipe(void) {
+
+
     if (gScreenModeSelection == SCREEN_MODE_1P) {
         // d_course_mario_raceway_packed_dl_8E8
         gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070008E8)));
     } else {
+        if (CVarGetInteger("gDisableLod", 0) == true) {
+            gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070008E8)));
+            return;
+        }
         // d_course_mario_raceway_packed_dl_2D68
         gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x07002D68)));
     }
@@ -548,12 +554,12 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
         case 2:
         case 17:
             if ((playerDirection == 2) || (playerDirection == 1)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 3:
             if (playerDirection != 0) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 4:
@@ -563,13 +569,13 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
                 if (playerDirection == 1) {
                     func_80291198();
                 }
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 5:
         case 6:
             if ((playerDirection == 2) || (playerDirection == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             } else {
                 func_80291198();
             }
@@ -577,13 +583,13 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
         case 7:
             func_80291198();
             if ((playerDirection == 2) || (playerDirection == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 8:
         case 9:
             if (playerDirection != 1) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             /* fallthrough */
         case 10:
@@ -593,15 +599,15 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
             break;
         case 11:
             if (playerDirection == 0) {
-                func_802911C4();
+                render_mario_raceway_pipe();
                 func_80291198();
             } else if (playerDirection == 3) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 12:
             if ((playerDirection == 0) || (playerDirection == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 13:
@@ -609,7 +615,7 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
             if (playerDirection != 1) {
                 case 15:
                 case 16:
-                    func_802911C4();
+                    render_mario_raceway_pipe();
             }
             break;
     }
