@@ -459,8 +459,8 @@ void OBombKart::Collision(s32 playerId, Player* player) {
 
 Player* OBombKart::FindTarget() {
     for (size_t i = 0; i < NUM_PLAYERS; i++) {
-        if (is_within_distance_2d(Pos[0], Pos[2], gPlayers[i].pos[0], gPlayers[i].pos[2], 500)) {
-            if (gPlayers[i].type & PLAYER_HUMAN) {
+        if (gPlayers[i].type & PLAYER_HUMAN) {
+            if (is_within_distance_2d(Pos[0], Pos[2], gPlayers[i].pos[0], gPlayers[i].pos[2], 500)) {
                 return &gPlayers[i];
             }
         }
