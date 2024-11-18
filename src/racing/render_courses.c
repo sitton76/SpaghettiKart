@@ -188,8 +188,6 @@ void func_80291198(void) {
 }
 
 void render_mario_raceway_pipe(void) {
-
-
     if (gScreenModeSelection == SCREEN_MODE_1P) {
         // d_course_mario_raceway_packed_dl_8E8
         gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070008E8)));

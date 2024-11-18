@@ -27,6 +27,7 @@ private:
         CCW,
         CW,
         STATIONARY,
+        CHASE,
         EXPLODE,
         PODIUM_CEREMONY,
     };
@@ -61,4 +62,12 @@ public:
     void SomeRender(Vec3f arg1);
     void LoadMtx();
     void Waypoint(s32 screenId);
+private:
+    Player* FindTarget();
+    void Chase(Player*, Vec3f pos);
+
+    Vec3f _spawnPos;
+    Player* _target = NULL;
+
+
 };
