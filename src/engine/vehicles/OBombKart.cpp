@@ -458,16 +458,18 @@ void OBombKart::Collision(s32 playerId, Player* player) {
 }
 
 Player* OBombKart::FindTarget() {
-    for (size_t i = 0; i < gPlayerCount; i++) {
+    for (size_t i = 0; i < NUM_PLAYERS; i++) {
         if (is_within_distance_2d(Pos[0], Pos[2], gPlayers[i].pos[0], gPlayers[i].pos[2], 500)) {
-            return &gPlayers[i];
+            if (gPlayers[i].type & PLAYER_HUMAN) {
+                return &gPlayers[i];
+            }
         }
     }
     return NULL;
 }
 
 void OBombKart::Chase(Player* player, Vec3f pos) {
-    f32 speed = 2.7f; // Speed the kart uses in a chase
+    const f32 speed = 2.7f; // Speed the kart uses in a chase
 
     if (!player) return; // Ensure player is valid
 
@@ -479,7 +481,6 @@ void OBombKart::Chase(Player* player, Vec3f pos) {
 
     // Calculate the distance in the XZ plane
     f32 xz_dist = sqrtf((direction[0] * direction[0]) + (direction[2] * direction[2]));
-    printf("dist: %f\n", xz_dist);
 
     // Reset distance
     if (xz_dist > 700.0f) {
@@ -506,14 +507,10 @@ void OBombKart::Chase(Player* player, Vec3f pos) {
         direction[2] /= xz_dist;
 
         // Scale the movement by a fixed step size
-        const f32 stepSize = speed; // Adjust step size for desired speed
-        pos[0] += direction[0] * stepSize;
-        pos[2] += direction[2] * stepSize;
+        pos[0] += direction[0] * speed;
+        pos[2] += direction[2] * speed;
     }
 
-
-
-    // Store the new position for collision checks
     Vec3f newPosition;
     newPosition[0] = pos[0];
     newPosition[1] = pos[1];
@@ -521,15 +518,9 @@ void OBombKart::Chase(Player* player, Vec3f pos) {
 
     newPosition[1] = calculate_surface_height(pos[0], 2000.0f, pos[2], _Collision.meshIndexZX) + 3.5f;
 
-    // Perform collision detection and update position
-    // actor_terrain_collision(&_Collision, 4.0f, Pos[0], Pos[1], Pos[2],
-    //                         newPosition[0], newPosition[1], newPosition[2]);
-
-    // Update position based on collision results
     pos[0] = newPosition[0];
     pos[1] = newPosition[1];
     pos[2] = newPosition[2];
-
 
     check_bounding_collision(&_Collision, 10.0f, pos[0], pos[1], pos[2]);
 }
