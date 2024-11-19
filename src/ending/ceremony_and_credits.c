@@ -22,6 +22,8 @@
 #include "code_80057C60.h"
 #include "defines.h"
 
+#include "src/port/Engine.h"
+
 f32 D_802856B0 = 98.0f;
 f32 D_802856B4 = 12.0f;
 f32 gOrderedSizeSlidingBorders = 52.0f;
@@ -1558,25 +1560,29 @@ void play_cutscene(CinematicCamera* camera) {
  * Used at the beginning of award ceremony and throughout credits.
  */
 void ceremony_transition_sliding_borders(void) {
-    f32 temp_f0;
-    f32 temp_f14;
+    f32 uly;
+    f32 lry;
 
-    temp_f14 = D_802856B0 - gSizeSlidingBorders;
-    if (temp_f14 < 0.0f) {
-        temp_f14 = 0.0f;
+    lry = D_802856B0 - gSizeSlidingBorders;
+    if (lry < 0.0f) {
+        lry = 0.0f;
     }
-    temp_f0 = D_802856B0 + gSizeSlidingBorders;
+    uly = D_802856B0 + gSizeSlidingBorders;
     // clang-format off
     // Note that this MUST be on one line. All hail significant whitespace in C!
-    do {if (temp_f0 > 240.0f) { temp_f0 = 239.0f; } } while (0);
+    do {if (uly > 240.0f) { uly = 239.0f; } } while (0);
     // clang-format on
 
     gDPPipeSync(gDisplayListHead++);
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
     gDPSetFillColor(gDisplayListHead++, (GPACK_RGBA5551(0, 0, 0, 1) << 16 | GPACK_RGBA5551(0, 0, 0, 1)));
-    gDPFillRectangle(gDisplayListHead++, 0, 0, 319, (s32) temp_f14);
-    gDPFillRectangle(gDisplayListHead++, 0, (s32) temp_f0, 319, 239);
+
+    gDPFillWideRectangle(gDisplayListHead++, OTRGetRectDimensionFromLeftEdge(0), 0, OTRGetGameRenderWidth(), (s32)lry);
+    gDPFillWideRectangle(gDisplayListHead++, OTRGetRectDimensionFromLeftEdge(0), (s32)uly, OTRGetGameRenderWidth(), 239);
+    //gDPFillRectangle(gDisplayListHead++, 0, 0, 319, (s32) lry);
+    //gDPFillRectangle(gDisplayListHead++, 0, (s32) uly, 319, 239);
+
     gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
     adjust_f32_value_transition(&gSizeSlidingBorders, gOrderedSizeSlidingBorders, D_802856BC / D_802856B4);
 }
