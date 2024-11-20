@@ -331,7 +331,7 @@ extern s8 D_801657D8;
 extern s8 D_801657E1;
 extern s8 D_801657E2;
 extern s8 D_801657E3;
-extern s8 D_801657E4;
+extern s8 gHUDModes;
 extern s8 D_801657E5;
 extern bool D_801657E6;
 extern u8 D_801657E7;

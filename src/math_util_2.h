@@ -70,6 +70,8 @@ void func_80041D24(void);
 void func_80041D34(void);
 void set_matrix_hud_screen(void);
 void func_80042330(s32, s32, u16, f32);
+void func_80042330_portrait(s32, s32, u16, f32, s16);
+void func_80042330_wide(s32, s32, u16, f32);
 void mtxf_set_matrix_transformation(Mat4, Vec3f, Vec3su, f32);
 void mtxf_set_matrix_scale_transl(Mat4, Vec3f, Vec3f, f32);
 void mtxf_set_matrix_gObjectList(s32, Mat4);

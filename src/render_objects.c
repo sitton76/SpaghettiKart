@@ -41,6 +41,7 @@
 #include <assets/bowsers_castle_data.h>
 #include <assets/frappe_snowland_data.h>
 #include "port/Game.h"
+#include "port/Engine.h"
 
 #include "engine/Engine.h"
 #include "engine/courses/Course.h"
@@ -1293,7 +1294,7 @@ void func_8004A2F4(s32 arg0, s32 arg1, u16 arg2, f32 arg3, s32 red, s32 green, s
 
 void func_8004A384(s32 arg0, s32 arg1, u16 arg2, f32 arg3, s32 red, s32 green, s32 blue, s32 alpha, u8* texture,
                    Vtx* arg9, s32 argA, s32 argB, s32 argC, s32 argD) {
-    func_80042330(arg0, arg1, arg2, arg3);
+    func_80042330_wide(arg0, arg1, arg2, arg3);
     gSPDisplayList(gDisplayListHead++, D_0D007A60);
     func_8004B414(red, green, blue, alpha);
     func_80049970(texture, arg9, argA, argB, argC, argD);
@@ -1577,17 +1578,68 @@ void func_8004B7DC(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 
     if (arg6 == 0) {
         //! @todo Update to F3DEX. Uses OLD definition for gspTextureRectangle.
         gSPTextureRectangle(gDisplayListHead++, xl, yl, xh, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
-                            1 << 10);
+                           1 << 10);
         return;
     }
     gSPTextureRectangle(gDisplayListHead++, xl, yl, xh2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
-                        1 << 10);
+                       1 << 10);
+}
+
+void func_8004B7DC_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
+
+    s32 xh = (((x + width) - 1));
+    s32 yh = (((y + height) - 1) << 2);
+    s32 xl = ((x));
+    s32 yl = y * 4;
+
+    s32 xh2 = (((x + width)));
+    s32 yh2 = ((y + height) << 2);
+
+    // if center of image is to the left side of the screen then align left,
+    // otherwise align right
+
+    s32 coordX = 0;
+    s32 coordX2 = 0;
+
+    if (arg6 == 0) {
+        if ((xl - (width / 2)) < (SCREEN_WIDTH / 2)) {
+            coordX = (s32)OTRGetDimensionFromLeftEdge(xl) << 2;
+            coordX2 = (s32)(xh) << 2;
+        } else {
+            coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
+            coordX2 = (s32)OTRGetDimensionFromRightEdge(xh) << 2;
+        }
+        //! @todo Update to F3DEX. Uses OLD definition for gspTextureRectangle.
+        gSPWideTextureRectangle(gDisplayListHead++, coordX, yl, coordX2, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
+                              1 << 10);
+//OTRGetDimensionFromLeftEdge
+        //gSPTextureRectangle(gDisplayListHead++, xl, yl, xh, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
+        //                    1 << 10);
+    } else {
+
+        if ((xl - (width / 2)) < (SCREEN_WIDTH / 2)) {
+            coordX = (s32)OTRGetDimensionFromLeftEdge(xl) << 2;
+            coordX2 = (s32)(xh2) << 2;
+        } else {
+            coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
+            coordX2 = (s32)OTRGetDimensionFromRightEdge(xh2) << 2;
+        }
+
+        gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
+                                coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                            1 << 10);
+
+
+    }
+    //gSPTextureRectangle(gDisplayListHead++, xl, yl, xh2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+    //                    1 << 10);
 }
 
 void func_8004B950(s32 x, s32 y, s32 width, s32 height, s32 arg4) {
     func_8004B7DC(x, y, width, height, 0, 0, arg4);
 }
 
+// Positions item window, the Lap 1/2/3, TIME texture, and minimap on the screen.
 void func_8004B97C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     UNUSED s32 pad[2];
     s32 sp2C;
@@ -1609,6 +1661,30 @@ void func_8004B97C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             var_a1 = 0;
         }
         func_8004B7DC(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
+    }
+}
+
+void func_8004B97C_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    UNUSED s32 pad[2];
+    s32 sp2C;
+    s32 var_a1;
+    s32 var_v0;
+    s32 var_v1;
+
+    if ((-arg2 < arg0) && (-arg3 < arg1)) {
+        var_v0 = 0;
+        var_v1 = 0;
+        sp2C = arg0;
+        var_a1 = arg1;
+        if (arg0 < 0) {
+            var_v1 = -arg0;
+            sp2C = 0;
+        }
+        if (arg1 < 0) {
+            var_v0 = -arg1;
+            var_a1 = 0;
+        }
+        func_8004B7DC_wide(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
     }
 }
 
@@ -1636,6 +1712,7 @@ void func_8004BA08(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 
+// Places the timer on the screen
 void func_8004BA98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     UNUSED s32 pad[2];
     s32 sp34;
@@ -1662,7 +1739,37 @@ void func_8004BA98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
             sp30 = 0;
             phi_a3 = arg3 + arg1;
         }
-        func_8004B7DC(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+        func_8004B7DC_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+    }
+}
+
+void func_8004BA98_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
+    UNUSED s32 pad[2];
+    s32 sp34;
+    s32 sp30;
+    s32 sp2C;
+    s32 phi_a3;
+    s32 phi_v0;
+    s32 phi_v1;
+
+    if ((-arg2 < arg0) && (-arg3 < arg1)) {
+        sp34 = arg0;
+        sp30 = arg1;
+        phi_v0 = arg4;
+        sp2C = arg2;
+        phi_a3 = arg3;
+        phi_v1 = arg5;
+        if (arg0 < 0) {
+            phi_v0 = arg4 - arg0;
+            sp34 = 0;
+            sp2C = arg2 + arg0;
+        }
+        if (arg1 < 0) {
+            phi_v1 = arg5 - arg1;
+            sp30 = 0;
+            phi_a3 = arg3 + arg1;
+        }
+        func_8004B7DC_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
     }
 }
 
@@ -1749,7 +1856,7 @@ void func_8004C268(u32 arg0, u32 arg1, u8* texture, u32 width, u32 arg4, u32 hei
 
     for (i = 0; (u32) i < (arg4 / height); i++) {
         load_texture_block_rgba16_mirror(img2, width, height);
-        func_8004B97C(arg0, arg1, width, height, arg6);
+        func_8004B97C_wide(arg0, arg1, width, height, arg6);
 //! @todo fakematch?
 #ifdef AVOID_UB
         img2 += (width * height) * 2;
@@ -1771,7 +1878,7 @@ void draw_hud_2d_texture(s32 x, s32 y, u32 width, u32 height, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     load_texture_block_rgba16_mirror(texture, width, height);
-    func_8004B97C(x - (width >> 1), y - (height >> 1), width, height, 0);
+    func_8004B97C_wide(x - (width >> 1), y - (height >> 1), width, height, 0);
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
@@ -1780,7 +1887,7 @@ void func_8004C450(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007F38);
     func_8004B614(D_801656C0, D_801656D0, D_801656E0, 0x80, 0x80, 0x80, 0xFF);
     load_texture_block_rgba16_mirror(texture, arg2, arg3);
-    func_8004B97C(arg0 - (arg2 >> 1), arg1 - (arg3 >> 1), arg2, arg3, 1);
+    func_8004B97C_wide(arg0 - (arg2 >> 1), arg1 - (arg3 >> 1), arg2, arg3, 1);
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
@@ -1790,7 +1897,7 @@ UNUSED void func_8004C53C(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     load_texture_tile_rgba16_nomirror(texture, arg2, arg3);
-    func_8004B97C(arg0 - (arg2 >> 1), arg1 - (arg3 >> 1), arg2, arg3, 0);
+    func_8004B97C_wide(arg0 - (arg2 >> 1), arg1 - (arg3 >> 1), arg2, arg3, 0);
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
@@ -1799,7 +1906,7 @@ void func_8004C628(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     load_texture_block_rgba32_nomirror(texture, arg2, arg3);
-    func_8004B97C(arg0 - (arg2 >> 1), arg1 - (arg3 >> 1), arg2, arg3, 1);
+    func_8004B97C_wide(arg0 - (arg2 >> 1), arg1 - (arg3 >> 1), arg2, arg3, 1);
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
@@ -1938,7 +2045,7 @@ UNUSED void func_8004CD48(s32 arg0, s32 arg1, UNUSED u8* texture, s32 width, s32
 
     for (i = 0; i < arg4 / height; i++) {
         load_texture_block_ia16_nomirror(img, width, height);
-        func_8004B97C(arg0 - (width / 2), var_s0, width, height, 1);
+        func_8004B97C_wide(arg0 - (width / 2), var_s0, width, height, 1);
         img += width * height * 2;
         var_s0 += height;
     }
@@ -1951,7 +2058,7 @@ UNUSED void func_8004CE8C(s32 arg0, s32 arg1, u8* texture, s32 width, s32 arg4, 
 
     for (i = 0; i < arg4 / height; i++) {
         load_texture_block_ia8_nomirror(img, width, height);
-        func_8004B97C(arg0 - (width / 2), var_s0, width, height, 1);
+        func_8004B97C_wide(arg0 - (width / 2), var_s0, width, height, 1);
         img += width * height;
         var_s0 += height;
     }
@@ -1988,7 +2095,7 @@ UNUSED void func_8004D0D4(s32 arg0, s32 arg1, u8* texture, s32 width, s32 arg4, 
 
     for (i = 0; i < arg4 / height; i++) {
         func_80044924(img, width, height);
-        func_8004B97C(arg0 - (width / 2), var_s0, width, height, 1);
+        func_8004B97C_wide(arg0 - (width / 2), var_s0, width, height, 1);
         img += width * height;
         var_s0 += height;
     }
@@ -2007,7 +2114,7 @@ void func_8004D210(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4, s32 arg5
 
     for (i = 0; i < arg8 / height; i++) {
         func_80044924(img, width, height);
-        func_8004B97C(arg0 - (width / 2), var_s3, width, height, 1);
+        func_8004B97C_wide(arg0 - (width / 2), var_s3, width, height, 1);
         img += (width * height) / 2;
         var_s3 += height;
     }
@@ -2026,7 +2133,7 @@ void func_8004D37C(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4, s32 arg5
 
     for (i = 0; i < arg8 / height; i++) {
         func_80044F34(img, width, height);
-        func_8004B97C(arg0 - (width / 2), var_s3, width, height, 1);
+        func_8004B97C_wide(arg0 - (width / 2), var_s3, width, height, 1);
         img += (width * height) / 2;
         var_s3 += height;
     }
@@ -2095,7 +2202,7 @@ void func_8004D7B4(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4) {
         temp_s5 = (s32) ((sins(temp_s0) * temp_f20) + (f32) (arg0 - (arg3 / 2)));
         sins(temp_s0);
         load_texture_block_ia16_nomirror(img, arg3, 1);
-        func_8004B97C(temp_s5, var_s3, arg3, 1, 1);
+        func_8004B97C_wide(temp_s5, var_s3, arg3, 1, 1);
 
         var_s1 += temp_s7;
         var_s3 += 1;
@@ -2129,7 +2236,7 @@ void func_8004D93C(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4) {
         temp_s6 = (s32) ((sins(temp_s0) * temp_f20) + (f32) (arg0 - (var)));
         sins(temp_s0);
         load_texture_block_ia8_nomirror(img, arg3, 1);
-        func_8004B97C(temp_s6, var_s4, arg3, 1, 1);
+        func_8004B97C_wide(temp_s6, var_s4, arg3, 1, 1);
         var_s1 += temp_s7;
         img = &img[arg3];
         var_s4 += 1;
@@ -2161,7 +2268,7 @@ UNUSED void func_8004DAB8(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4) {
         temp_s6 = (s32) ((sins(temp_s0) * temp_f20) + (f32) (arg0 - (var)));
         sins(temp_s0);
         func_80044924(img, arg3, 1);
-        func_8004B97C(temp_s6, var_s4, arg3, 1, 1);
+        func_8004B97C_wide(temp_s6, var_s4, arg3, 1, 1);
         var_s1 += temp_s7;
         img += arg3;
         var_s4 += 1;
@@ -2232,6 +2339,7 @@ UNUSED void func_8004DF24(s32 arg0, s32 arg1, u8* arg2) {
     func_8004CF9C(arg0, arg1, arg2, 128, 32, 128, 32);
 }
 
+// Positions the item box on screen
 void func_8004DF5C(s32 arg0, s32 arg1, u8* texture, s32 width, s32 arg4, s32 height) {
     s32 var_s0 = var_s0 = arg1 - (arg4 / 2);
     u8* img = texture;
@@ -2269,7 +2377,7 @@ void func_8004E06C(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4) {
         temp_s6 = (u32) ((sins(temp_s0) * temp_f20) + (f32) (arg0 - var));
         sins(temp_s0);
         rsp_load_texture(img, arg3, 1);
-        func_8004B97C(temp_s6, var_s4, arg3, 1, 1);
+        func_8004B97C_wide(temp_s6, var_s4, arg3, 1, 1);
         var_s1 += temp_s7;
         img += arg3;
         var_s4 += 1;
@@ -2736,9 +2844,9 @@ void draw_lap_count(s16 lapX, s16 lapY, s8 lap) {
     load_texture_block_rgba16_mirror((u8*) common_texture_hud_123, 32, 8);
     // Display current lap. Ex. 1/3
 
-    func_8004BA98(lapX, lapY, 8, 8, lap * 8, 0, 0); // display the digit
-    func_8004BA98(lapX + 8, lapY, 8, 8, 24, 0, 0);  // display the /
-    func_8004BA98(lapX + 16, lapY, 8, 8, 16, 0, 0); // display the 3
+    func_8004BA98_wide(lapX, lapY, 8, 8, lap * 8, 0, 0); // display the digit
+    func_8004BA98_wide(lapX + 8, lapY, 8, 8, 24, 0, 0);  // display the /
+    func_8004BA98_wide(lapX + 16, lapY, 8, 8, 16, 0, 0); // display the 3
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
@@ -2751,7 +2859,7 @@ void func_8004FDB4(f32 arg0, f32 arg1, s16 arg2, s16 arg3, s16 characterId, s32 
         rsp_load_texture(common_texture_portrait_question_mark, 0x00000020, 0x00000020);
         gSPDisplayList(gDisplayListHead++, D_0D0069E0);
     } else {
-        func_80042330(arg0, arg1, 0U, 1.0f);
+        func_80042330_portrait(arg0, arg1, 0U, 1.0f, arg3);
         gSPDisplayList(gDisplayListHead++, D_0D007DB8);
         func_8004B35C(0x000000FF, 0x000000FF, 0x000000FF, arg5);
         gDPLoadTLUT_pal256(gDisplayListHead++, gPortraitTLUTs[characterId]);
@@ -2762,7 +2870,7 @@ void func_8004FDB4(f32 arg0, f32 arg1, s16 arg2, s16 arg3, s16 characterId, s32 
             gSPDisplayList(gDisplayListHead++, D_0D0069E0);
         }
         if (arg6 != 0) {
-            func_80042330(arg0, arg1, 0U, 1.0f);
+            func_80042330_portrait(arg0, arg1, 0U, 1.0f, arg3);
             gSPDisplayList(gDisplayListHead++, D_0D007A60);
             func_8004B35C(D_8018D3E4, D_8018D3E8, D_8018D3EC, 0x000000FF);
             func_80044924(common_texture_character_portrait_border, 0x20, 0x20);
@@ -2774,9 +2882,9 @@ void func_8004FDB4(f32 arg0, f32 arg1, s16 arg2, s16 arg3, s16 characterId, s32 
         gDPLoadTLUT_pal256(gDisplayListHead++, common_tlut_hud_type_C_rank_font);
         rsp_load_texture(common_texture_hud_type_C_rank_font[arg2], 0x00000010, 0x00000010);
         if (arg7 != 0) {
-            func_80042330((s32) (arg0 + 9.0f), (s32) (arg1 + 7.0f), 0U, 1.0f);
+            func_80042330_portrait((s32) (arg0 + 9.0f), (s32) (arg1 + 7.0f), 0U, 1.0f, arg3);
         } else {
-            func_80042330((s32) (arg0 - 9.0f), (s32) (arg1 + 7.0f), 0U, 1.0f);
+            func_80042330_portrait((s32) (arg0 - 9.0f), (s32) (arg1 + 7.0f), 0U, 1.0f, arg3);
         }
         gSPDisplayList(gDisplayListHead++, D_0D006980);
     }
@@ -3073,9 +3181,9 @@ void func_80050E34(s32 playerId, s32 arg1) {
         gDPLoadTLUT_pal256(gDisplayListHead++, common_tlut_hud_type_C_rank_tiny_font);
         rsp_load_texture(common_texture_hud_type_C_rank_tiny_font[arg1 + 1], 8, 8);
         if (spB8 != 0) {
-            func_80042330(spD0 + 0x26, (spC4 + spCC) + 4, 0U, 1.0f);
+            func_80042330_portrait(spD0 + 0x26, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
         } else {
-            func_80042330(spD0 + 0x1B, (spC4 + spCC) + 4, 0U, 1.0f);
+            func_80042330_portrait(spD0 + 0x1B, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
         }
         gSPDisplayList(gDisplayListHead++, D_0D006950);
         if ((player == gPlayerOne) && (gScreenModeSelection == SCREEN_MODE_1P)) {

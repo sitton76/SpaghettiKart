@@ -174,6 +174,7 @@ Gfx* func_80098558(Gfx*, u32, u32, u32, u32, u32, u32, s32, s32);
 Gfx* func_800987D0(Gfx*, u32, u32, u32, u32, s32, s32, u8*, u32, s32);
 Gfx* draw_box_fill(Gfx*, s32, s32, s32, s32, s32, s32, s32, s32);
 Gfx* draw_box(Gfx*, s32, s32, s32, s32, u32, u32, u32, u32);
+Gfx* draw_box_wide(Gfx*, s32, s32, s32, s32, u32, u32, u32, u32);
 Gfx* func_80098FC8(Gfx*, s32, s32, s32, s32);
 void dma_copy_base_729a30(u64*, size_t, void*);
 void dma_copy_base_7fa3c0(u64*, size_t, void*);
