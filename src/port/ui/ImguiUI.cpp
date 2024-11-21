@@ -476,12 +476,13 @@ void DrawEnhancementsMenu() {
         if (UIWidgets::BeginMenu("Gameplay")) {
             UIWidgets::WindowButton("Freecam", "gFreecam", GameUI::mFreecamWindow,
                                     { .tooltip = "Allows you to fly around the course" });
+            UIWidgets::CVarCheckbox("No multiplayer feature cuts", "gMultiplayerNoFeatureCuts",
+                                    { .tooltip = "Allows full train and jumbotron in multiplayer, etc." });
+            UIWidgets::CVarCheckbox("General Improvements", "gImprovements", { .tooltip = "General improvements to the game experience." });
             UIWidgets::CVarCheckbox(
                 "No Level of Detail (LOD)", "gDisableLod",
                 { .tooltip = "Disable Level of Detail (LOD) to avoid models using lower poly versions at a distance" });
 
-            UIWidgets::CVarCheckbox("No multiplayer feature cuts", "gMultiplayerNoFeatureCuts",
-                                    { .tooltip = "Allows full train and jumbotron in multiplayer, etc." });
 
             UIWidgets::CVarCheckbox("Disable Culling", "gNoCulling", { .tooltip = "Disable original culling of mk64" });
             UIWidgets::CVarSliderFloat(
