@@ -1,0 +1,16 @@
+:config:
+  vram:
+    addr: 0x800E8700
+    offset: 0xE9300
+  header:
+    code:
+      - '#include <libultraship.h>'
+      - '#include <assets/audiobanks.h>'
+    header:
+      - '#include <libultraship.h>'
+      - '#include <align_asset_macro.h>'
+instrument_sets:
+  symbol: gInstrumentSets
+  type: bob
+  offset: 0xBE90E0
+  size: 0x80

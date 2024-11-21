@@ -1,0 +1,16 @@
+:config:
+  vram:
+    addr: 0x800E8700
+    offset: 0xE9300
+  header:
+    code:
+      - '#include <libultraship.h>'
+      - '#include <assets/audiobanks.h>'
+    header:
+      - '#include <libultraship.h>'
+      - '#include <align_asset_macro.h>'
+audio_tables:
+  symbol: gAudioTables
+  type: bob
+  offset: 0x979AA0
+  size: 0x24C4C0
