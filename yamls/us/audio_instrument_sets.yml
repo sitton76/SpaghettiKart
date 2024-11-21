@@ -1,7 +1,7 @@
 :config:
   vram:
     addr: 0x800E8700
-    offset: 0xE9300
+    offset: 0xBE90E0
   header:
     code:
       - '#include <libultraship.h>'
@@ -12,5 +12,5 @@
 instrument_sets:
   symbol: gInstrumentSets
   type: bob
-  offset: 0xBE90E0
+  offset: 0x0
   size: 0x80

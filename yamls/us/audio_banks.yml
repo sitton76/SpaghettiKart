@@ -1,7 +1,7 @@
 :config:
   vram:
     addr: 0x800E8700
-    offset: 0xE9300
+    offset: 0x966260
   header:
     code:
       - '#include <libultraship.h>'
@@ -12,5 +12,5 @@
 audiobanks:
   symbol: gAudioBanks
   type: bob
-  offset: 0x966260 # or is it 0x13840?
+  offset: 0x0 # or is it 0x13840?
   size: 0x13840

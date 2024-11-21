@@ -1,7 +1,7 @@
 :config:
   vram:
     addr: 0x800E8700
-    offset: 0xE9300
+    offset: 0xBC5F60
   header:
     code:
       - '#include <libultraship.h>'
@@ -12,5 +12,5 @@
 audio_sequences:
   symbol: gAudioSequences
   type: bob
-  offset: 0xBC5F60
+  offset: 0x0
   size: 0x23180
