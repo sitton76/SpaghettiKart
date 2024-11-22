@@ -179,7 +179,7 @@ void setup_race(void) {
     struct Controller* controller;
     int i;
 
-    printf("Setup Race!\n");
+    LUSLOG_DEBUG("Setup Race!", 0);
 
     gPlayerCountSelection1 = gPlayerCount;
     if (gGamestate != RACING) {

@@ -3,6 +3,7 @@
 #include <code_800029B0.h>
 #include <defines.h>
 #include "collision.h"
+#include "port/Game.h"
 
 /**
  * @brief Updates the green shell actor.

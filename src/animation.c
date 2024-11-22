@@ -7,6 +7,7 @@
 #include <main.h>
 #include <libultra/gbi.h>
 #include "code_80057C60.h"
+#include "engine/Matrix.h"
 
 Vec3s sOriginalPosAnimation;
 s16 isNotTheFirst;

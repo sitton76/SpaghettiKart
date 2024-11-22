@@ -31,6 +31,7 @@
 #include <assets/wario_kart.h>
 #include <assets/donkeykong_kart.h>
 #include "port/Game.h"
+#include "engine/Matrix.h"
 
 s8 gRenderingFramebufferByPlayer[] = { 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02 };
 

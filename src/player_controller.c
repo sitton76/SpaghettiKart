@@ -22,6 +22,7 @@
 #include "sounds.h"
 #include "port/Game.h"
 #include "src/enhancements/moon_jump.h"
+#include "engine/Matrix.h"
 
 extern s32 D_8018D168;
 
