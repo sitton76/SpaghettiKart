@@ -82,6 +82,36 @@ void CourseManager_BombKartsWaypoint(s32 cameraId);
 
 void CourseManager_ScrollingTextures();
 
+s32 CourseManager_GetCrossingOnTriggered(uintptr_t* crossing);
+
+void CourseManager_VehiclesSpawn();
+
+void CourseManager_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection);
+
+void CourseManager_AICrossingBehaviour(s32 playerId);
+
+void CourseManager_ClearVehicles(void);
+
+void CourseManager_DrawVehicles(s32 playerId);
+
+void CourseManager_CrossingTrigger();
+
+void CourseManager_VehiclesCollision(s32 playerId, Player* player);
+
+void CourseManager_VehiclesTick();
+
+void CourseManager_TickBombKarts();
+
+void CourseManager_TickActors();
+
+void CourseManager_TrainSmokeTick(void);
+
+void CourseManager_DrawBattleBombKarts(s32 cameraId);
+
+void CourseManager_DrawBombKarts(s32 cameraId);
+
+void CourseManager_TrainSmokeDraw(s32 cameraId);
+
 size_t GetCupCursorPosition();
 
 void SetCupCursorPosition(size_t position);
@@ -92,12 +122,17 @@ void SetCourseFromCup();
 
 void* GetCourse(void);
 
+void SetCourseById(s32 course);
+
 void SetCourseByClass(void* course);
 
 struct Actor* m_GetActor(size_t index);
 void m_DeleteActor(size_t index);
 struct Actor* m_AddBaseActor(void);
 size_t m_GetActorSize();
+size_t m_FindActorIndex(struct Actor* actor);
+void m_ActorCollision(Player* player, struct Actor* actor);
+void m_ClearActors(void);
 
 void* GetMarioRaceway(void);
 
@@ -150,6 +185,8 @@ void* GetStarCup(void);
 void* GetSpecialCup(void);
 
 void* GetBattleCup(void);
+
+void* GetCup();
 
 #ifdef __cplusplus
 }

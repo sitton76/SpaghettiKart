@@ -14,6 +14,7 @@
 #include "camera.h"
 
 #include "port/Engine.h"
+#include "engine/Matrix.h"
 
 #pragma intrinsic(sqrtf)
 
