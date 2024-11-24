@@ -143,7 +143,7 @@ public:
     void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
 
     std::vector<std::unique_ptr<OThwomp>> Thwomps;
-    void AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha);
+    void AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize = 7);
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

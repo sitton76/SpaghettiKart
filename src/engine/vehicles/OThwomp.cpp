@@ -31,13 +31,14 @@ extern "C" {
 extern s8 gPlayerCount;
 }
 
-OThwomp::OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha) {
+OThwomp::OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize) {
     if (i >= 32) {
         printf("MAX THWOMPS REACHED (32), skipping\n");
         return;
     }
     _idx = i;
     _faceDirection = direction;
+    _boundingBoxSize = boundingBoxSize;
     State = (States)behaviour;
     s32 objectId = indexObjectList1[i];
     init_object(objectId, 0);
@@ -45,6 +46,7 @@ OThwomp::OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s
     gObjectList[objectId].origin_pos[2] = z;
     gObjectList[objectId].unk_0D5 = behaviour;
     gObjectList[objectId].primAlpha = primAlpha;
+    gObjectList[objectId].boundingBoxSize = boundingBoxSize + 5;
 
     if (scale == 0.0f) {
         scale = 1.0f;
@@ -96,7 +98,7 @@ void OThwomp::Tick() { // func_80081210
 
         objectIndex = indexObjectList1[_idx];
         if (!(player->effects & BOO_EFFECT)) {
-            func_80080B28(objectIndex, var_s4);
+            OThwomp::func_80080B28(objectIndex, var_s4);
         }
         if (is_obj_flag_status_active(objectIndex, 0x00020000) != 0) {
             func_80080A14(objectIndex, player);
@@ -191,6 +193,53 @@ s32 OThwomp::func_8007F75C(s32 playerId) {
     return var_s6;
 }
 
+void OThwomp::func_80080B28(s32 objectIndex, s32 playerId) {
+    f32 temp_f0;
+    Player* temp_s0;
+
+    temp_s0 = &gPlayerOne[playerId];
+    if (is_obj_flag_status_active(objectIndex, 0x00000200) != 0) {
+        if (!(temp_s0->soundEffects & 0x100)) {
+            temp_f0 = func_80088F54(objectIndex, temp_s0);
+            if ((temp_f0 <= 9.0) && !(temp_s0->effects & 0x04000000) &&
+                (has_collided_horizontally_with_player(objectIndex, temp_s0) != 0)) {
+                if ((temp_s0->type & 0x8000) && !(temp_s0->type & 0x100)) {
+                    if (!(temp_s0->effects & 0x200)) {
+                        func_80089474(objectIndex, playerId, 1.4f, 1.1f, SOUND_ARG_LOAD(0x19, 0x00, 0xA0, 0x4C));
+                    } else if (func_80072354(objectIndex, 0x00000040) != 0) {
+                        if (temp_s0->type & 0x1000) {
+                            func_800C98B8(temp_s0->pos, temp_s0->velocity, SOUND_ARG_LOAD(0x19, 0x01, 0xA2, 0x4A));
+                        } else {
+                            func_800C9060((u8) playerId, SOUND_ARG_LOAD(0x19, 0x01, 0xA2, 0x4A));
+                        }
+                        func_80080DE4(objectIndex);
+                        func_80075304(gObjectList[objectIndex].pos, 3, 3, D_8018D3C4);
+                        set_object_flag_status_false(objectIndex, 0x00000200);
+                        func_800722A4(objectIndex, 0x00000040);
+                        func_80086F60(objectIndex);
+                        func_800726CC(objectIndex, 0x000000C8);
+                    }
+                }
+            } else if ((temp_f0 <= 17.5) && (func_80072320(objectIndex, 1) != 0) &&
+                       (is_within_horizontal_distance_of_player(objectIndex, temp_s0, (temp_s0->unk_094 * 0.5) + _boundingBoxSize) !=
+                        0)) {
+                if ((temp_s0->type & 0x8000) && !(temp_s0->type & 0x100)) {
+                    if (is_obj_flag_status_active(objectIndex, 0x04000000) != 0) {
+                        func_80072180();
+                    }
+                    func_800722A4(objectIndex, 2);
+                    temp_s0->unk_040 = (s16) objectIndex;
+                    temp_s0->unk_046 |= 2;
+                    temp_s0->soundEffects |= 0x100;
+                    func_80088FF0(temp_s0);
+                }
+            }
+        } else {
+            func_80088FF0(temp_s0);
+        }
+    }
+}
+
 void OThwomp::Draw(s32 cameraId) {
     s32 objectIndex = 0;
     s32 i;
@@ -212,23 +261,9 @@ void OThwomp::Draw(s32 cameraId) {
     minusone = gObjectList[objectIndex].unk_0DF - 1;
     plusone = gObjectList[objectIndex].unk_0DF + 1;
 
-    //! @todo Fix this quick hack fix to allow thwomps to render in custom courses
+    if (gGamestate != CREDITS_SEQUENCE) {
         OThwomp::DrawModel(objectIndex);
-    if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
-                 (is_object_visible_on_camera(objectIndex, camera, 0x8000) != 0)) {
     }
-    // if (GetCourse() != GetBowsersCastle()) {
-    //     OThwomp::DrawModel(objectIndex);
-    // } else {
-    //     if (gGamestate != CREDITS_SEQUENCE) {
-    //         if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
-    //             (is_object_visible_on_camera(objectIndex, camera, 0x8000) != 0)) {
-    //             OThwomp::DrawModel(objectIndex);
-    //         }
-    //     } else { // CREDITS_SEQUENCE
-    //         OThwomp::DrawModel(objectIndex);
-    //     }
-    // }
 
     gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D0079C8);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
@@ -332,7 +367,6 @@ void OThwomp::func_8007EC30(s32 objectIndex) {
     init_texture_object(objectIndex, (uint8_t*) d_course_bowsers_castle_thwomp_tlut, (const char**) d_course_bowsers_castle_thwomp_faces,
                         0x10U, (u16) 0x00000040);
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    object->boundingBoxSize = 0x000C;
     object->unk_01C[1] = 30.0f;
     set_object_flag_status_true(objectIndex, 0x05000220);
     object->type = 0;
@@ -371,7 +405,6 @@ void OThwomp::func_8007EE5C(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    object->boundingBoxSize = 0x000C;
     set_object_flag_status_true(objectIndex, 0x04000220);
     object->type = 0;
     object->unk_0DF = 6;
@@ -425,7 +458,6 @@ void OThwomp::func_8007FA08(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    object->boundingBoxSize = 0x000C;
     set_object_flag_status_true(objectIndex, 0x04000220);
     object->type = 0;
     object->surfaceHeight = 0.0f;
@@ -480,7 +512,6 @@ void OThwomp::func_80080078(s32 objectIndex) { // func_80080078
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    object->boundingBoxSize = 0x000C;
     set_object_flag_status_true(objectIndex, 0x04000220);
     object->type = 2;
     object->unk_0DF = 8;
@@ -552,7 +583,6 @@ void OThwomp::func_800802C0(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
     object->textureListIndex = 0;
-    object->boundingBoxSize = 0x000C;
     //object->sizeScaling = 1.5f;
     set_object_flag_status_true(objectIndex, 0x05000220);
     object->type = 1;
@@ -609,7 +639,6 @@ void OThwomp::func_80080524(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    object->boundingBoxSize = 0x000C;
     object->textureListIndex = 0;
     set_object_flag_status_true(objectIndex, 0x04000220);
     object->type = 0;
