@@ -702,6 +702,7 @@ void render_object_for_player(s32 cameraId) {
 
     CourseManager_RenderCourseObjects(cameraId);
     CourseManager_TrainSmokeDraw(cameraId);
+    CourseManager_DrawThwomps(cameraId);
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -1289,7 +1290,8 @@ void func_80059AC8(void) {
                 func_80059A88(PLAYER_FOUR);
                 break;
         }
-        func_8005A71C();
+        CourseManager_TickThwomps(); // func_8005A71C();
+
     }
 }
 
@@ -1569,9 +1571,9 @@ void func_8005A3C0(void) {
 }
 
 void func_8005A71C(void) {
-    if (GetCourse() == GetBowsersCastle()) {
+    //if (GetCourse() == GetBowsersCastle()) {
         func_80081210();
-    }
+    //}
 }
 
 void update_object(void) {

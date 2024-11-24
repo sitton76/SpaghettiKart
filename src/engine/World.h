@@ -9,6 +9,7 @@
 #include "vehicles/OBombKart.h"
 #include "vehicles/Train.h"
 #include "TrainCrossing.h"
+#include "vehicles/OThwomp.h"
 #include <memory>
 #include "Actor.h"
 
@@ -24,6 +25,7 @@ class AVehicle;
 class ATrain;
 class ACar;
 class TrainCrossing;
+class OThwomp;
 
 class World {
 
@@ -123,8 +125,8 @@ public:
     std::vector<Cup*> Cups;
     size_t CupIndex = 1;
 
-    std::vector<std::unique_ptr<GameObject>> GameObjects;
     std::vector<AActor*> Actors;
+    std::vector<std::unique_ptr<GameObject>> GameObjects;
 
     /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);
@@ -137,8 +139,11 @@ public:
     void ClearVehicles(void);
 
     /** Objects **/
-    void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
     std::vector<std::unique_ptr<OBombKart>> BombKarts;
+    void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
+
+    std::vector<std::unique_ptr<OThwomp>> Thwomps;
+    void AddThwomp(f32 x, f32 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha);
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

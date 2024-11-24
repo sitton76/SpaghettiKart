@@ -2175,7 +2175,7 @@ void update_flame_particle(void) {
     }
 }
 
-void init_object_smoke_paticle(s32 objectIndex, Vec3f arg1, s16 arg2) {
+void init_object_smoke_particle(s32 objectIndex, Vec3f arg1, s16 arg2) {
     Object* object;
 
     init_object(objectIndex, (s32) arg2);
@@ -2196,7 +2196,7 @@ void init_smoke_particle(Vec3f arg0, UNUSED f32 arg1, s16 arg2) {
 
     objectIndex = add_unused_obj_index(gObjectParticle4, &gNextFreeObjectParticle4, gObjectParticle4_SIZE);
     if (objectIndex != NULL_OBJECT_ID) {
-        init_object_smoke_paticle(objectIndex, arg0, arg2);
+        init_object_smoke_particle(objectIndex, arg0, arg2);
     }
 }
 
@@ -2255,7 +2255,7 @@ void func_80076F2C(void) {
     }
 }
 
-void init_object_smoke_particle(s32 objectIndex, s32 flameIndex) {
+void init_object_smoke_particle2(s32 objectIndex, s32 flameIndex) {
     init_object(objectIndex, 3);
 
     gObjectList[objectIndex].unk_0D5 = 0xB;
@@ -2279,7 +2279,7 @@ void init_smoke_particles(s32 arg0) {
 
     objectIndex = add_unused_obj_index(gObjectParticle4, &gNextFreeObjectParticle4, gObjectParticle4_SIZE);
     if (objectIndex != NULL_OBJECT_ID) {
-        init_object_smoke_particle(objectIndex, arg0);
+        init_object_smoke_particle2(objectIndex, arg0);
     }
 }
 

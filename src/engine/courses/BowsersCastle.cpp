@@ -149,29 +149,47 @@ void BowsersCastle::InitCourseObjects() {
     size_t objectId;
     size_t i;
 
-    gNumActiveThwomps = NUM_THWOMPS_100CC_EXTRA;
-    gThowmpSpawnList = gThwompSpawns100CCExtra;
-    switch (gCCSelection) { /* switch 1; irregular */
-        case CC_100:        /* switch 1 */
-        case CC_EXTRA:      /* switch 1 */
+    switch (gCCSelection) {
+        case CC_100:
+        case CC_EXTRA:
+            gWorldInstance.AddThwomp(0x0320, 0xf92a, 0x8000, 1.0f, 1, 0);
+            gWorldInstance.AddThwomp(0x044c, 0xf92a, 0x8000, 1.0f, 1, 1);
+            gWorldInstance.AddThwomp(0x02bc, 0xf95c, 0x8000, 1.0f, 2, 0);
+            gWorldInstance.AddThwomp(0x04b0, 0xf8f8, 0x8000, 1.0f, 2, 1);
+            gWorldInstance.AddThwomp(0x04b0, 0xf5ba, 0x8000, 1.0f, 3, 0);
+            gWorldInstance.AddThwomp(0x04b0, 0xf592, 0x8000, 1.0f, 3, 1);
+            gWorldInstance.AddThwomp(0x091a, 0xf5bf, 0x8000, 1.0f, 4, 0);
+            gWorldInstance.AddThwomp(0x091a, 0xf597, 0x8000, 1.0f, 4, 1);
+            gWorldInstance.AddThwomp(0x0596, 0xf92f, 0x8000, 1.5f, 6, 0);
+            gWorldInstance.AddThwomp(0x082a, 0xf9f2, 0x8000, 1.0f, 5, 0);
+            gWorldInstance.AddThwomp(0x073a, 0xf9f2, 0x8000, 1.0f, 5, 1);
             break;
-        case CC_50: /* switch 1 */
-            gNumActiveThwomps = NUM_THWOMPS_50CC;
-            gThowmpSpawnList = gThomwpSpawns50CC;
+        case CC_50:
+            gWorldInstance.AddThwomp(0x3B6, 0xF92A, 0x8000, 1.0f, 1, 0);
+            gWorldInstance.AddThwomp(0x0352, 0xf95c, 0x8000, 1.0f, 2, 0);
+            gWorldInstance.AddThwomp(0x04b0, 0xf5ba, 0x8000, 1.0f, 3, 0);
+            gWorldInstance.AddThwomp(0x04b0, 0xf592, 0x8000, 1.0f, 3, 1);
+            gWorldInstance.AddThwomp(0x091a, 0xf5b0, 0x8000, 1.0f, 4, 0);
+            gWorldInstance.AddThwomp(0x0596, 0xf92f, 0x8000, 1.5f, 6, 0);
+            gWorldInstance.AddThwomp(0x082a, 0xf9f2, 0x8000, 1.0f, 5, 0);
+            gWorldInstance.AddThwomp(0x073a, 0xf9f2, 0x8000, 1.0f, 5, 1);
             break;
-        case CC_150: /* switch 1 */
-            gNumActiveThwomps = NUM_THWOMPS_150CC;
-            gThowmpSpawnList = gThomwpSpawns150CC;
+        case CC_150:
+            gWorldInstance.AddThwomp(0x0320, 0xf92a, 0x8000, 1.0f, 1, 0);
+            gWorldInstance.AddThwomp(0x044c, 0xf92a, 0x8000, 1.0f, 1, 1);
+            gWorldInstance.AddThwomp(0x02bc, 0xf95c, 0x8000, 1.0f, 2, 0);
+            gWorldInstance.AddThwomp(0x04b0, 0xf8f8, 0x8000, 1.0f, 2, 1);
+            gWorldInstance.AddThwomp(0x04b0, 0xf5ba, 0x8000, 1.0f, 3, 0);
+            gWorldInstance.AddThwomp(0x04b0, 0xf592, 0x8000, 1.0f, 3, 1);
+            gWorldInstance.AddThwomp(0x091a, 0xf5c9, 0x8000, 1.0f, 4, 0);
+            gWorldInstance.AddThwomp(0x091a, 0xf5ab, 0x8000, 1.0f, 4, 1);
+            gWorldInstance.AddThwomp(0x091a, 0xf58d, 0x8000, 1.0f, 4, 2);
+            gWorldInstance.AddThwomp(0x0596, 0xf92f, 0x8000, 1.5f, 6, 0);
+            gWorldInstance.AddThwomp(0x082a, 0xf9f2, 0x8000, 1.0f, 5, 0);
+            gWorldInstance.AddThwomp(0x073a, 0xf9f2, 0x8000, 1.0f, 5, 1);
             break;
     }
-    for (i = 0; i < gNumActiveThwomps; i++) {
-        objectId = indexObjectList1[i];
-        init_object(objectId, 0);
-        gObjectList[objectId].origin_pos[0] = gThowmpSpawnList[i].startX * xOrientation;
-        gObjectList[objectId].origin_pos[2] = gThowmpSpawnList[i].startZ;
-        gObjectList[objectId].unk_0D5 = gThowmpSpawnList[i].unk_4;
-        gObjectList[objectId].primAlpha = gThowmpSpawnList[i].unk_6;
-    }
+
     // Handle the big statue's fire breath
     objectId = indexObjectList2[0];
     init_object(objectId, 0);
@@ -201,7 +219,7 @@ void BowsersCastle::UpdateCourseObjects() {
 }
 
 void BowsersCastle::RenderCourseObjects(s32 cameraId) {
-    render_object_thwomps(cameraId);
+    //render_object_thwomps(cameraId);
     render_object_bowser_flame(cameraId);
 }
 
