@@ -12,6 +12,9 @@ extern "C" {
 #include "objects.h"
 }
 
+//! @todo Make shadow size bigger if thwomp is scaled up
+//! @todo make adjustable properties for squishSize and boundingBoxSize
+
 /**
  * Thwomp GameObject
  * 
