@@ -239,6 +239,10 @@ void Course::Collision() {}
 void Course::ScrollingTextures() {}
 void Course::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {}
 
-void Course::Destroy() { }
+void Course::Destroy() {}
+
+bool Course::IsMod() {
+    return false;
+}
 
 Course* currentCourse = nullptr;

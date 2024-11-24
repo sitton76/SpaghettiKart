@@ -340,3 +340,7 @@ void TestCourse::RenderCredits() {
 void TestCourse::Collision() {}
 
 void TestCourse::Destroy() { }
+
+bool TestCourse::IsMod() {
+    return true;
+}

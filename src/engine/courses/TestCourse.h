@@ -39,4 +39,5 @@ public:
     virtual void SpawnVehicles() override;
     virtual void UpdateVehicles() override;
     virtual void Destroy() override;
+    virtual bool IsMod() override;
 };

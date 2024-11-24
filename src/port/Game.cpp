@@ -41,6 +41,7 @@ extern "C" {
 #include "audio/load.h"
 #include "audio/external.h"
 #include "networking/networking.h"
+#include "render_courses.h"
 //#include "engine/wasm.h"
 }
 
@@ -340,6 +341,14 @@ extern "C" {
     }
 
     void CourseManager_RenderCourse(struct UnkStruct_800DC5EC* arg0) {
+        if (gWorldInstance.CurrentCourse->IsMod() == false) {
+            if ((CVarGetInteger("gFreecam", 0) == true)) {
+                // Render credits courses
+                func_8029569C();
+                return;
+            }
+        }
+
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->Render(arg0);
         }
