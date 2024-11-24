@@ -1624,7 +1624,6 @@ void func_8004B7DC_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5,
             coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
             coordX2 = (s32)OTRGetDimensionFromRightEdge(xh2) << 2;
         }
-
         gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
                                 coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
                             1 << 10);
@@ -3759,7 +3758,7 @@ void render_lakitu(s32 cameraId) {
     }
 }
 
-void func_800534A4(UNUSED s32 arg0) {
+void translate_thwomp_lights(UNUSED s32 arg0) {
     func_800419F8();
     // Lights1 *D_800E4638l = (Lights1 *) LOAD_ASSET(D_800E4638);
     D_800E4638.l[0].l.dir[0] = D_80165840[0];
@@ -3767,7 +3766,7 @@ void func_800534A4(UNUSED s32 arg0) {
     D_800E4638.l[0].l.dir[2] = D_80165840[2];
 }
 
-void func_800534E8(s32 objectIndex) {
+void thwomp_lights(s32 objectIndex) {
 
     // Lights1 *D_800E4638l = (Lights1 *) LOAD_ASSET(D_800E4638);
     // Lights1 *D_800E4650l = (Lights1 *) LOAD_ASSET(D_800E4650);
@@ -3807,7 +3806,7 @@ void render_object_thwomps_model(s32 objectIndex) {
         func_8004A7AC(objectIndex, 1.75f);
         rsp_set_matrix_transformation(gObjectList[objectIndex].pos, gObjectList[objectIndex].orientation,
                                       gObjectList[objectIndex].sizeScaling);
-        func_800534E8(objectIndex);
+        thwomp_lights(objectIndex);
         gSPDisplayList(gDisplayListHead++, D_0D007828);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         gDPLoadTLUT_pal256(gDisplayListHead++, d_course_bowsers_castle_thwomp_tlut);
@@ -3834,17 +3833,17 @@ void render_object_thwomps(s32 cameraId) {
         }
     }
 
-    func_800534A4(objectIndex);
+    translate_thwomp_lights(objectIndex);
     for (i = 0; i < gNumActiveThwomps; i++) {
         objectIndex = indexObjectList1[i];
         minusone = gObjectList[objectIndex].unk_0DF - 1;
         plusone = gObjectList[objectIndex].unk_0DF + 1;
-        if (gGamestate != 9) {
+        if (gGamestate != CREDITS_SEQUENCE) {
             if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
                 (is_object_visible_on_camera(objectIndex, camera, 0x8000U) != 0)) {
                 render_object_thwomps_model(objectIndex);
             }
-        } else {
+        } else { // CREDITS_SEQUENCE
             render_object_thwomps_model(objectIndex);
         }
     }

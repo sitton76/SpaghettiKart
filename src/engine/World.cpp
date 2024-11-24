@@ -97,9 +97,10 @@ void World::AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointInd
     BombKarts.push_back(std::make_unique<OBombKart>(pos, waypoint, waypointIndex, state, unk_3C));
 }
 
-void World::AddThwomp(f32 x, f32 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha) {
+void World::AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha) {
     Thwomps.push_back(std::make_unique<OThwomp>(thwomps, x, z, direction, scale, behaviour, primAlpha));
     thwomps++;
+    gNumActiveThwomps = thwomps;
 }
 
 u32 World::GetCupIndex() {

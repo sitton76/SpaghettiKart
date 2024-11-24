@@ -473,7 +473,14 @@ extern "C" {
         }
     }
 
+    extern Vec3su D_80165834;
     void CourseManager_TickThwomps() {
+        // TickLights
+        if (gWorldInstance.Thwomps.size()) {
+            D_80165834[0] += 0x100;
+            D_80165834[1] += 0x200;
+        }
+
         for (auto& thwomp : gWorldInstance.Thwomps) {
             if (thwomp) {
                 thwomp->Tick();

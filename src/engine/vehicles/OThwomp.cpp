@@ -31,7 +31,7 @@ extern "C" {
 extern s8 gPlayerCount;
 }
 
-OThwomp::OThwomp(s32 i, f32 x, f32 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha) {
+OThwomp::OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha) {
     if (i >= 32) {
         printf("MAX THWOMPS REACHED (32), skipping\n");
         return;
@@ -46,8 +46,8 @@ OThwomp::OThwomp(s32 i, f32 x, f32 z, s16 direction, f32 scale, s16 behaviour, s
     gObjectList[objectId].unk_0D5 = behaviour;
     gObjectList[objectId].primAlpha = primAlpha;
 
-    if (scale == 0) {
-        scale = 1;
+    if (scale == 0.0f) {
+        scale = 1.0f;
     }
 
     gObjectList[objectId].sizeScaling = scale;
@@ -59,8 +59,6 @@ void OThwomp::Tick() { // func_80081210
     s32 var_s2_3;
     s32 var_s4;
 
-    D_80165834[0] += 0x100;
-    D_80165834[1] += 0x200;
     objectIndex = indexObjectList1[_idx];
     func_800722CC(objectIndex, 0x00000010);
     func_8008A4CC(objectIndex);
@@ -193,8 +191,6 @@ s32 OThwomp::func_8007F75C(s32 playerId) {
     return var_s6;
 }
 
-Lights1 thwompLight = gdSPDefLights1(85, 85, 85, 255, 255, 255, -66, 82, -55);
-
 void OThwomp::Draw(s32 cameraId) {
     s32 objectIndex = 0;
     s32 i;
@@ -202,7 +198,6 @@ void OThwomp::Draw(s32 cameraId) {
     s16 minusone, plusone;
     Camera* camera;
     Object* object;
-    // Lights1 *thwompLightl = (Lights1 *) LOAD_ASSET(thwompLight);
 
     camera = &camera1[cameraId];
     if (cameraId == PLAYER_ONE) {
@@ -211,31 +206,35 @@ void OThwomp::Draw(s32 cameraId) {
         func_800722CC(objectIndex, 0x00000110);
     }
 
-    func_800534A4(objectIndex);
+    translate_thwomp_lights(objectIndex);
 
     objectIndex = indexObjectList1[_idx];
     minusone = gObjectList[objectIndex].unk_0DF - 1;
     plusone = gObjectList[objectIndex].unk_0DF + 1;
 
     //! @todo Fix this quick hack fix to allow thwomps to render in custom courses
-    OThwomp::DrawModel(objectIndex);
-    if (GetCourse() != GetBowsersCastle()) {
-    } else {
-        if (gGamestate != CREDITS_SEQUENCE) {
-            if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
-                (is_object_visible_on_camera(objectIndex, camera, 0x8000) != 0)) {
-                OThwomp::DrawModel(objectIndex);
-            }
-        } else { // CREDITS_SEQUENCE
-            OThwomp::DrawModel(objectIndex);
-        }
+        OThwomp::DrawModel(objectIndex);
+    if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
+                 (is_object_visible_on_camera(objectIndex, camera, 0x8000) != 0)) {
     }
+    // if (GetCourse() != GetBowsersCastle()) {
+    //     OThwomp::DrawModel(objectIndex);
+    // } else {
+    //     if (gGamestate != CREDITS_SEQUENCE) {
+    //         if ((D_8018CF68[cameraId] >= minusone) && (plusone >= D_8018CF68[cameraId]) &&
+    //             (is_object_visible_on_camera(objectIndex, camera, 0x8000) != 0)) {
+    //             OThwomp::DrawModel(objectIndex);
+    //         }
+    //     } else { // CREDITS_SEQUENCE
+    //         OThwomp::DrawModel(objectIndex);
+    //     }
+    // }
 
     gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D0079C8);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gSPNumLights(gDisplayListHead++, 1);
-    gSPLight(gDisplayListHead++, &thwompLight.l[0], LIGHT_1);
-    gSPLight(gDisplayListHead++, &thwompLight.a, LIGHT_2);
+    gSPLight(gDisplayListHead++, &D_800E4668.l[0], LIGHT_1);
+    gSPLight(gDisplayListHead++, &D_800E4668.a, LIGHT_2);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BOTH);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_LIGHTING | G_SHADING_SMOOTH);
     load_texture_block_rgba16_mirror((u8*)d_course_bowsers_castle_thwomp_side, 0x00000020, 0x00000020);
@@ -276,7 +275,7 @@ void OThwomp::DrawModel(s32 objectIndex) {
         func_8004A7AC(objectIndex, 1.75f);
         rsp_set_matrix_transformation(gObjectList[objectIndex].pos, gObjectList[objectIndex].orientation,
                                       gObjectList[objectIndex].sizeScaling);
-        func_800534E8(objectIndex);
+        thwomp_lights(objectIndex);
         gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D007828);
         gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
         gDPLoadTLUT_pal256(gDisplayListHead++, d_course_bowsers_castle_thwomp_tlut);
@@ -284,6 +283,8 @@ void OThwomp::DrawModel(s32 objectIndex) {
         gSPDisplayList(gDisplayListHead++, gObjectList[objectIndex].model);
     }
 }
+
+/** Behaviours **/
 
 void OThwomp::StationaryBehaviour(s32 objectIndex) { // func_8007ED6C
     UNUSED s32 stackPadding[4];

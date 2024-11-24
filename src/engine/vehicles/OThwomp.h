@@ -33,7 +33,7 @@ private:
 public:
     States State = States::DISABLED;
 
-    explicit OThwomp(s32 i, f32 x, f32 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha);
+    explicit OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha);
 
     void Tick();
     void Draw(s32 playerId);
