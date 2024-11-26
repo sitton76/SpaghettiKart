@@ -28,6 +28,7 @@
 #include "engine/Engine.h"
 #include "engine/courses/Course.h"
 #include "engine/Matrix.h"
+#include "port/Game.h"
 
 s32 D_802874A0;
 // s32 D_802874A4[5];

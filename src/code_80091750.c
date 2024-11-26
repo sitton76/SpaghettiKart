@@ -3314,15 +3314,54 @@ Gfx* draw_box(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red,
     }
     gSPDisplayList(displayListHead++, D_02008008);
     gDPSetPrimColor(displayListHead++, 0, 0, red, green, blue, alpha);
+    gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
+    gDPPipeSync(displayListHead++);
+    return displayListHead;
+}
+
+Gfx* draw_box_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
+    red &= 0xFF;
+    green &= 0xFF;
+    blue &= 0xFF;
+    alpha &= 0xFF;
+    if (lrx < ulx) {
+        swap_values(&ulx, &lrx);
+    }
+    if (lry < uly) {
+        swap_values(&uly, &lry);
+    }
+    if ((ulx >= 0x140) || (uly >= 0xF0)) {
+        return displayListHead;
+    }
+    if (ulx < 0) {
+        ulx = 0;
+    }
+    if (uly < 0) {
+        uly = 0;
+    }
+    if ((lrx < 0) || (lry < 0)) {
+        return displayListHead;
+    }
+    if (lrx >= 0x141) {
+        lrx = 0x140;
+    }
+    if (lry >= 0xF1) {
+        lry = 0xF0;
+    }
+    gSPDisplayList(displayListHead++, D_02008008);
+    gDPSetPrimColor(displayListHead++, 0, 0, red, green, blue, alpha);
     gDPFillWideRectangle(displayListHead++, OTRGetRectDimensionFromLeftEdge(ulx), uly,
        OTRGetRectDimensionFromRightEdge(lrx), lry);
-    //gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
     gDPPipeSync(displayListHead++);
     return displayListHead;
 }
 
 Gfx* func_80098FC8(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry) {
     return draw_box_fill(displayListHead, ulx, uly, lrx, lry, 0, 0, 0, 0xFF);
+}
+
+Gfx* func_80098FC8_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry) {
+    return draw_box_fill_wide(displayListHead, ulx, uly, lrx, lry, 0, 0, 0, 0xFF);
 }
 
 void dma_copy_base_729a30(u64* arg0, size_t nbytes, void* vaddr) {
@@ -4729,7 +4768,7 @@ void func_8009CBE4(s32 arg0, s32 arg1, s32 arg2) {
         h = unk->screenHeight;
     }
     color = &D_800E7AE8[arg2];
-    gDisplayListHead = draw_box(gDisplayListHead, x - (w / 2), y - (h / 2), (w / 2) + x, (h / 2) + y, color->red,
+    gDisplayListHead = draw_box_wide(gDisplayListHead, x - (w / 2), y - (h / 2), (w / 2) + x, (h / 2) + y, color->red,
                                 color->green, color->blue, 0xFF - (D_8018E7D0[arg0] * 0xFF / D_8018E7B8[arg0]));
 
     if ((arg1 == 0) && (D_8018E7D0[arg0] += 1, (D_8018E7D0[arg0] >= D_8018E7B8[arg0]))) {
@@ -5146,7 +5185,7 @@ void func_8009D77C(s32 arg0, s32 arg1, s32 arg2) {
     someMath0 += var_t3;
     someMath1 = temp_t8;
     someMath1 += var_t4;
-    gDisplayListHead = draw_box(gDisplayListHead, var_t3 - temp_v1, var_t4 - temp_t8, someMath0, someMath1,
+    gDisplayListHead = draw_box_wide(gDisplayListHead, var_t3 - temp_v1, var_t4 - temp_t8, someMath0, someMath1,
                                 temp_v0_2->red, temp_v0_2->green, temp_v0_2->blue, var_t2);
     if (arg1 == 0) {
         D_8018E7D0[arg0]++;
@@ -5198,7 +5237,7 @@ void func_8009D998(s32 arg0) {
     someMath1 = temp_v1;
     someMath1 += var_t1;
     gDisplayListHead =
-        draw_box(gDisplayListHead, var_t0 - temp_v0, var_t1 - temp_v1, someMath0, someMath1, 0, 0, 0, 0x000000FF);
+        draw_box_wide(gDisplayListHead, var_t0 - temp_v0, var_t1 - temp_v1, someMath0, someMath1, 0, 0, 0, 0x000000FF);
 }
 
 void func_8009DAA8(void) {
@@ -5213,7 +5252,7 @@ void func_8009DAA8(void) {
     if ((s32) var_t0 >= 0x100) {
         var_t0 = 0x000000FF;
     }
-    gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x00000140, 0x000000F0, 0, 0, 0, (s32) var_t0);
+    gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x00000140, 0x000000F0, 0, 0, 0, (s32) var_t0);
 }
 
 void func_8009DB8C(void) {
@@ -5264,7 +5303,7 @@ void func_8009DB8C(void) {
     if (var_v1 >= 0x100) {
         var_v1 = 0x000000FF;
     }
-    gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x00000140, 0x000000F0, 0, 0, 0, var_v1);
+    gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x00000140, 0x000000F0, 0, 0, 0, var_v1);
 }
 
 void func_8009DEF8(u32 arg0, u32 arg1) {
@@ -6676,13 +6715,13 @@ void func_800A1350(struct_8018D9E0_entry* arg0) {
             case 0:
             case 2:
             case 4:
-                gDisplayListHead = draw_box(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x40,
+                gDisplayListHead = draw_box_wide(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x40,
                                             arg0->row + 0x4C, 0, 0, 0, 0x00000064);
                 break;
             case 1:
             case 3:
                 thing = arg0->unk1C;
-                gDisplayListHead = draw_box(gDisplayListHead, arg0->column + thing, arg0->row,
+                gDisplayListHead = draw_box_wide(gDisplayListHead, arg0->column + thing, arg0->row,
                                             (arg0->column - thing) + 0x40, arg0->row + 0x4C, 0, 0, 0, 0x00000064);
                 break;
         }
@@ -6740,7 +6779,7 @@ void func_800A15EC(struct_8018D9E0_entry* arg0) {
     s16 courseId = gCupCourseOrder[(arg0->type - 0x7C) / 4][(arg0->type - 0x7C) % 4];
     gDisplayListHead =
         func_8009C204(gDisplayListHead, segmented_to_virtual_dupe(D_800E7D74[courseId]), arg0->column, arg0->row, 2);
-    gDisplayListHead = draw_box(gDisplayListHead, arg0->column, arg0->row + 0x27, arg0->column + 0x40, arg0->row + 0x30,
+    gDisplayListHead = draw_box_wide(gDisplayListHead, arg0->column, arg0->row + 0x27, arg0->column + 0x40, arg0->row + 0x30,
                                 0, 0, 0, 0xFF);
     gDisplayListHead = func_8009C204(gDisplayListHead, segmented_to_virtual_dupe(D_800E7DC4[courseId]), arg0->column,
                                      arg0->row + 0x27, 3);
@@ -6928,7 +6967,7 @@ void func_800A1FB0(struct_8018D9E0_entry* arg0) {
     char sp98[3];
     struct_8018EE10_entry* var_v1;
 
-    gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x00000140, 0x000000F0, 0, 0, 0, 0x00000064);
+    gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x00000140, 0x000000F0, 0, 0, 0, 0x00000064);
     switch (D_8018EDEC) { /* switch 1 */
         case 0x15:        /* switch 1 */
         case 0x16:        /* switch 1 */
@@ -7174,15 +7213,15 @@ GLOBAL_ASM("asm/non_matchings/code_80091750/func_800A1FB0.s")
 void func_800A2D1C(struct_8018D9E0_entry* arg0) {
     switch (D_80164A28) {
         case 1:
-            gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0, 0x13F, 0x28);
-            gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0xC7, 0x13F, 0xEF);
+            gDisplayListHead = func_80098FC8_wide(gDisplayListHead, 0, 0, 0x13F, 0x28);
+            gDisplayListHead = func_80098FC8_wide(gDisplayListHead, 0, 0xC7, 0x13F, 0xEF);
             arg0->unk1C = 0x28;
             break;
         case 2:
             arg0->unk1C -= 2;
             if (arg0->unk1C > 0) {
-                gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0, 0x13F, arg0->unk1C);
-                gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0xEF - arg0->unk1C, 0x13F, 0xEF);
+                gDisplayListHead = func_80098FC8_wide(gDisplayListHead, 0, 0, 0x13F, arg0->unk1C);
+                gDisplayListHead = func_80098FC8_wide(gDisplayListHead, 0, 0xEF - arg0->unk1C, 0x13F, 0xEF);
             } else {
                 arg0->type = 0;
             }
@@ -7193,8 +7232,8 @@ void func_800A2D1C(struct_8018D9E0_entry* arg0) {
             } else {
                 arg0->unk1C -= 2;
                 if (arg0->unk1C > 0) {
-                    gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0, 0x13F, arg0->unk1C);
-                    gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0xEF - arg0->unk1C, 0x13F, 0xEF);
+                    gDisplayListHead = func_80098FC8_wide(gDisplayListHead, 0, 0, 0x13F, arg0->unk1C);
+                    gDisplayListHead = func_80098FC8_wide(gDisplayListHead, 0, 0xEF - arg0->unk1C, 0x13F, 0xEF);
                 } else {
                     arg0->type = 0;
                 }
@@ -7765,7 +7804,7 @@ void render_pause_menu_time_trials(struct_8018D9E0_entry* arg0) {
     s32 var_s0;
     s32 zero = 0; // ?
 
-    gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, 0x0000008C);
+    gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, 0x0000008C);
     set_text_color(TEXT_YELLOW);
     draw_text(0x000000A0, 0x00000050, CourseManager_GetProps()->Name, 0, 1.0f,
               1.0f);
@@ -7814,7 +7853,7 @@ void render_pause_menu_versus(struct_8018D9E0_entry* arg0) {
     temp_t0 = temp_v0->screenStartY;
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
-    gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+    gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
                                 temp_t0 + temp_t4, 0, 0, 0, 0x0000008C);
     temp_s3 = &D_800E8540[(gScreenModeSelection * 4) + (gIsGamePaused - 1)];
     for (var_s0 = 0; var_s0 < 4; var_s0++) {
@@ -7845,7 +7884,7 @@ void render_pause_grand_prix(struct_8018D9E0_entry* arg0) {
     temp_t0 = temp_v0->screenStartY;
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
-    gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+    gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
                                 temp_t0 + temp_t4, 0, 0, 0, 140);
     temp_s3 = &D_800E85C0[(gScreenModeSelection * 4) + (gIsGamePaused - 1)];
     temp_s0 = ((get_string_width(gCupNames[GetCupIndex()]) * one) + 10.0f) / 2;
@@ -7878,7 +7917,7 @@ void render_pause_battle(struct_8018D9E0_entry* arg0) {
     temp_t0 = temp_v0->screenStartY;
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
-    gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+    gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
                                 temp_t0 + temp_t4, 0, 0, 0, 0x0000008C);
     temp_s3 = &D_800E8600[(gScreenModeSelection * 4) + (gIsGamePaused - 1)];
     for (var_a1 = 0; var_a1 < 4; var_a1++) {
@@ -7956,7 +7995,7 @@ void func_800A5738(struct_8018D9E0_entry* arg0) {
         if ((arg0->unk1C >= 0x1E) && ((gGlobalTimer / 16) % 2)) {
             why = get_string_width(gTextPauseButton[5]) * 0.8f;
             gDisplayListHead =
-                draw_box(gDisplayListHead, 0x000000C0, 0x00000021, (s32) (why) + 0xC6, 0x00000032, 0, 0, 0, 0x00000096);
+                draw_box_wide(gDisplayListHead, 0x000000C0, 0x00000021, (s32) (why) + 0xC6, 0x00000032, 0, 0, 0, 0x00000096);
             set_text_color(1);
             func_80093324(0x000000BF, 0x00000030, gTextPauseButton[5], 0, 0.8f, 0.8f);
         }
@@ -7968,7 +8007,7 @@ void func_800A5738(struct_8018D9E0_entry* arg0) {
             var_s1 = 0x0000008C;
             var_s2 = 0x000000FF;
         }
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, var_s1);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, var_s1);
         gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x00, 0x00, 0x00, var_s2);
         set_text_color(3);
         func_80093754(0x000000A0, 0x00000050, CourseManager_GetProps()->Name,
@@ -8122,14 +8161,14 @@ void func_800A6154(struct_8018D9E0_entry* arg0) {
     s32 var_s1;
 
     if (arg0->cursor == 0) {
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, arg0->unk1C);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, arg0->unk1C);
         set_text_color(3);
         gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x00, 0x00, 0x00, (arg0->unk1C * 0xFF) / 100);
         for (var_s1 = 0, var_s0 = 0x96; var_s0 < 0xBE; var_s1++, var_s0 += 0x14) {
             func_80093358(0x0000008C, var_s0, gTextPauseButton[(var_s1 * 3) + 1], 0, 1.0f, 1.0f);
         }
     } else {
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, 0x00000064);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, 0x00000064);
         for (var_s1 = 0, var_s0 = 0x96; var_s1 < 2; var_s1++, var_s0 += 0x14) {
             text_rainbow_effect(arg0->cursor - 0xB, var_s1, TEXT_YELLOW);
             func_80093324(0x0000008C, var_s0, gTextPauseButton[(var_s1 * 3) + 1], 0, 1.0f, 1.0f);
@@ -8154,12 +8193,12 @@ void func_800A638C(struct_8018D9E0_entry* arg0) {
     UNUSED s8** var_s2;
 
     if (arg0->cursor == 0) {
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, arg0->unk1C);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, arg0->unk1C);
         set_text_color(5);
         gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x00, 0x00, 0x00, (arg0->unk1C * 0xFF) / 100);
         func_80093754(0x000000A0, arg0->row + 0x1E, D_800E7778[gModeSelection / 3], 0, 1.0f, 1.0f);
     } else {
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, 0x00000064);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x0000013F, 0x000000EF, 0, 0, 0, 0x00000064);
         set_text_color(5);
         draw_text(0x000000A0, arg0->row + 0x1E, D_800E7778[gModeSelection / 3], 0, 1.0f, 1.0f);
     }
@@ -8411,10 +8450,10 @@ void func_800A70E8(struct_8018D9E0_entry* arg0) {
 void func_800A7258(struct_8018D9E0_entry* arg0) {
     if (arg0->cursor == 0) {
         // If shading layer is fading in
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x13F, 0xEF, 0, 0, 0, arg0->unk1C);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x13F, 0xEF, 0, 0, 0, arg0->unk1C);
     } else {
         // All other stages of the podium scene
-        gDisplayListHead = draw_box(gDisplayListHead, 0, 0, 0x13F, 0xEF, 0, 0, 0, 0x64);
+        gDisplayListHead = draw_box_wide(gDisplayListHead, 0, 0, 0x13F, 0xEF, 0, 0, 0, 0x64);
     }
 }
 
@@ -9180,7 +9219,7 @@ void func_800A8CA4(struct_8018D9E0_entry* arg0) {
                 // Wut?
                 if ((var_s0 != (temp_v0->unk1C % 4)) != 0) {
                     gDisplayListHead =
-                        draw_box(gDisplayListHead, D_800E7208[var_s0][0].column + temp_s2,
+                        draw_box_wide(gDisplayListHead, D_800E7208[var_s0][0].column + temp_s2,
                                  D_800E7208[var_s0][0].row + temp_s3, D_800E7208[var_s0][1].column + temp_s2,
                                  D_800E7208[var_s0][1].row + temp_s3, 0, 0, 0, 0x00000064);
                 }

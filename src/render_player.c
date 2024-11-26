@@ -31,6 +31,7 @@
 #include <assets/wario_kart.h>
 #include <assets/donkeykong_kart.h>
 #include "port/Game.h"
+#include "engine/Matrix.h"
 
 s8 gRenderingFramebufferByPlayer[] = { 0x00, 0x02, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02 };
 
@@ -739,7 +740,9 @@ void render_players_on_screen_two(void) {
     }
 
     // Call moved to sync kart and wheel tlut loading/rendering
-    load_kart_texture_and_render_kart_particle_on_screen_two();
+    if (gPlayersToRenderCount != 0) {
+        load_kart_texture_and_render_kart_particle_on_screen_two();
+    }
 
     try_rendering_player(gPlayerOne, PLAYER_ONE, PLAYER_TWO);
     try_rendering_player(gPlayerTwo, PLAYER_TWO, PLAYER_TWO);
@@ -785,7 +788,9 @@ void render_players_on_screen_three(void) {
     init_render_player(gPlayerThree, camera3, PLAYER_THREE, PLAYER_THREE);
     init_render_player(gPlayerFour, camera3, PLAYER_FOUR, PLAYER_THREE);
 
-    load_kart_texture_and_render_kart_particle_on_screen_three();
+    if (gPlayersToRenderCount != 0) {
+        load_kart_texture_and_render_kart_particle_on_screen_three();
+    }
 
     try_rendering_player(gPlayerOne, PLAYER_ONE, PLAYER_THREE);
     try_rendering_player(gPlayerTwo, PLAYER_TWO, PLAYER_THREE);
@@ -813,7 +818,9 @@ void render_players_on_screen_four(void) {
     init_render_player(gPlayerThree, camera4, PLAYER_THREE, PLAYER_FOUR);
     init_render_player(gPlayerFour, camera4, PLAYER_FOUR, PLAYER_FOUR);
 
-    load_kart_texture_and_render_kart_particle_on_screen_four();
+    if (gPlayersToRenderCount != 0) {
+        load_kart_texture_and_render_kart_particle_on_screen_four();
+    }
 
     try_rendering_player(gPlayerOne, PLAYER_ONE, PLAYER_FOUR);
     try_rendering_player(gPlayerTwo, PLAYER_TWO, PLAYER_FOUR);

@@ -38,6 +38,7 @@
 #include "data/some_data.h"
 #include <assets/some_data.h>
 #include "port/Game.h"
+#include "engine/Matrix.h"
 
 //! @warning this macro is undef'd at the end of this file
 #define MAKE_RGB(r, g, b) (((r) << 0x10) | ((g) << 0x08) | (b << 0x00))
@@ -151,7 +152,7 @@ UNUSED s8 D_801657E0;
 s8 D_801657E1;
 s8 D_801657E2;
 s8 D_801657E3;
-s8 D_801657E4;
+s8 gHUDModes;
 s8 D_801657E5;
 bool D_801657E6;
 u8 D_801657E7;
@@ -701,6 +702,7 @@ void render_object_for_player(s32 cameraId) {
 
     CourseManager_RenderCourseObjects(cameraId);
     CourseManager_TrainSmokeDraw(cameraId);
+    CourseManager_DrawThwomps(cameraId);
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -963,7 +965,7 @@ void func_80058F78(void) {
         set_matrix_hud_screen();
         if ((!gDemoMode) && (gIsHUDVisible != 0) && (D_801657D8 == 0)) {
             draw_item_window(PLAYER_ONE);
-            if (D_801657E4 != 2) {
+            if (gHUDModes != 2) {
                 render_hud_timer(PLAYER_ONE);
                 draw_simplified_lap_count(PLAYER_ONE);
                 func_8004EB38(0);
@@ -1059,7 +1061,7 @@ void func_800591B4(void) {
                     }
                 }
             }
-            if ((D_801657E4 != 2) && (gModeSelection == GRAND_PRIX) && (D_8018D2BC != 0)) {
+            if ((gHUDModes != 2) && (gModeSelection == GRAND_PRIX) && (D_8018D2BC != 0)) {
                 func_80050320();
             }
             func_800590D4();
@@ -1135,7 +1137,7 @@ void render_hud_lap_3p_4p(s32 playerId) {
             draw_lap_count(playerHUD[playerId].lapX - 12, playerHUD[playerId].lapY + 4,
                            playerHUD[playerId].alsoLapCount);
         }
-        if (D_801657E4 == 2) {
+        if (gHUDModes == 2) {
             if (playerHUD[playerId].unk_74 && D_80165608) {
                 func_80047910(playerHUD[playerId].unk_6C, playerHUD[playerId].unk_6E, 0, 1.0f,
                               (u8*) common_tlut_portrait_bomb_kart_and_question_mark, common_texture_portrait_bomb_kart,
@@ -1288,7 +1290,8 @@ void func_80059AC8(void) {
                 func_80059A88(PLAYER_FOUR);
                 break;
         }
-        func_8005A71C();
+        CourseManager_TickThwomps(); // func_8005A71C();
+
     }
 }
 
@@ -1499,14 +1502,14 @@ void func_8005A3C0(void) {
         switch (gPlayerCountSelection1) {
             case 1:
                 if (gControllerOne->buttonPressed & R_CBUTTONS) {
-                    if (++D_801657E4 >= 3) {
-                        D_801657E4 = 0;
+                    if (++gHUDModes >= 3) {
+                        gHUDModes = 0;
                     }
-                    if (D_801657E4 == 2) {
+                    if (gHUDModes == 2) {
                         D_801657E8 = false;
                         D_801657E6 = false;
                         D_801657F0 = true;
-                    } else if (D_801657E4 == 1) {
+                    } else if (gHUDModes == 1) {
                         D_801657E8 = false;
                         D_801657E6 = true;
                         D_801657F0 = false;
@@ -1544,14 +1547,14 @@ void func_8005A3C0(void) {
                     if (gModeSelection != BATTLE) {
                         D_801657F0 = (D_801657F0 + 1) & 1;
                     }
-                    D_801657E4 = (D_801657E4 + 1) & 1;
+                    gHUDModes = (gHUDModes + 1) & 1;
                     b = true;
                 }
                 break;
             case 4:
                 if ((gControllerOne->buttonPressed & R_CBUTTONS) || (gControllerTwo->buttonPressed & R_CBUTTONS) ||
                     (gControllerThree->buttonPressed & R_CBUTTONS) || (gControllerFour->buttonPressed & R_CBUTTONS)) {
-                    D_801657E4 = (D_801657E4 + 1) & 1;
+                    gHUDModes = (gHUDModes + 1) & 1;
                     D_801657F8 = (D_801657F8 + 1) & 1;
                     D_80165800[0] = (D_80165800[0] + 1) & 1;
                     if (gModeSelection != BATTLE) {
@@ -1568,9 +1571,9 @@ void func_8005A3C0(void) {
 }
 
 void func_8005A71C(void) {
-    if (GetCourse() == GetBowsersCastle()) {
+    //if (GetCourse() == GetBowsersCastle()) {
         func_80081210();
-    }
+    //}
 }
 
 void update_object(void) {
@@ -2610,7 +2613,7 @@ void func_8005CB60(s32 playerId, s32 lapCount) {
                     break;
                 case 3: /* switch 1 */
                     if ((D_8018D114 == 0) || (D_8018D114 == 1)) {
-                        D_801657E4 = 0;
+                        gHUDModes = 0;
                         D_801657E6 = 0;
                         D_801657F0 = 0;
                         D_801657E8 = 1;

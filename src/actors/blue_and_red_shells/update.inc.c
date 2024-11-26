@@ -4,6 +4,7 @@
 #include <main.h>
 #include <actors_extended.h>
 #include <code_800029B0.h>
+#include "port/Game.h"
 
 void func_802B3B44(struct ShellActor* shell) {
     u16 currentWaypoint;

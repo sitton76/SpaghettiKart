@@ -7,6 +7,7 @@
 #include "buffers/trig_tables.h"
 #include "math.h"
 #include "memory.h"
+#include "engine/Matrix.h"
 
 #pragma intrinsic(sqrtf, fabs)
 

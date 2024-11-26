@@ -7,6 +7,10 @@
 #include <assets/other_textures.h>
 #include "objects.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 extern Vtx D_800E49C0[];
 extern Vtx D_800E4AC0[];
 extern Vtx D_800E4BC0[];
@@ -86,5 +90,9 @@ extern StarData gToadsTurnpikeRainbowRoadStars[];
 extern StarData gWarioStadiumStars[];
 extern u8 D_800E6F30[][3];
 extern u8 D_800E6F48[][3];
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

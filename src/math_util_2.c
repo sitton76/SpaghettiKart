@@ -13,6 +13,9 @@
 #include "defines.h"
 #include "camera.h"
 
+#include "port/Engine.h"
+#include "engine/Matrix.h"
+
 #pragma intrinsic(sqrtf)
 
 UNUSED void operator_or(s32* arg0, s32 arg1) {
@@ -697,6 +700,53 @@ UNUSED void func_800421FC(s32 x, s32 y, f32 scale) {
 
 void func_80042330(s32 x, s32 y, u16 angle, f32 scale) {
     Mat4 matrix;
+    //printf("panel %d %d %d\n", x, (s32)OTRGetDimensionFromLeftEdge(x), (s32)OTRGetDimensionFromLeftEdge(0));
+
+    if (gHUDModes != 2) {
+        if (x < (SCREEN_WIDTH / 2)) {
+            x = (s32)OTRGetDimensionFromLeftEdge(x);
+        } else {
+            x = (s32)OTRGetDimensionFromRightEdge(x);
+        }
+    }
+
+    mtxf_translation_x_y_rotate_z_scale_x_y(matrix, x, y, angle, scale);
+    // convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], matrix);
+    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
+    //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+
+    AddHudMatrix(matrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+}
+
+void func_80042330_portrait(s32 x, s32 y, u16 angle, f32 scale, s16 lapCount) {
+    Mat4 matrix;
+    //printf("panel %d %d %d\n", x, (s32)OTRGetDimensionFromLeftEdge(x), (s32)OTRGetDimensionFromLeftEdge(0));
+
+    if ((gHUDModes != 2) && (D_801657E2 == 0) || (CVarGetInteger("gImprovements", 0) == true)) {
+        if (x < (SCREEN_WIDTH / 2)) {
+            x = (s32)OTRGetDimensionFromLeftEdge(x);
+        } else {
+            x = (s32)OTRGetDimensionFromRightEdge(x);
+        }
+    }
+
+    mtxf_translation_x_y_rotate_z_scale_x_y(matrix, x, y, angle, scale);
+    // convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], matrix);
+    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
+    //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+
+    AddHudMatrix(matrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+}
+
+void func_80042330_wide(s32 x, s32 y, u16 angle, f32 scale) {
+    Mat4 matrix;
+
+    if (x < (SCREEN_WIDTH / 2)) {
+        x = (s32)OTRGetDimensionFromLeftEdge(x);
+    } else {
+        x = (s32)OTRGetDimensionFromRightEdge(x);
+    }
+
     mtxf_translation_x_y_rotate_z_scale_x_y(matrix, x, y, angle, scale);
     // convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], matrix);
     // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),

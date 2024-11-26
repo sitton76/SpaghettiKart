@@ -15,7 +15,11 @@
 #include <Fast3D/gfx_pc.h>
 #include "port/Engine.h"
 
-extern "C" {}
+extern "C" {
+    extern s32 gGamestateNext;
+    extern s32 gMenuSelection;
+    #include "defines.h"
+}
 
 namespace GameUI {
 std::shared_ptr<GameMenuBar> mGameMenuBar;
@@ -446,7 +450,8 @@ void DrawGameMenu() {
                                 "Ctrl+R"
 #endif
                                 )) {
-            // gNextGameState = GSTATE_BOOT;
+            gGamestateNext = MAIN_MENU_FROM_QUIT;
+            gMenuSelection = START_MENU;
         }
 #if !defined(__SWITCH__) && !defined(__WIIU__)
 
@@ -471,12 +476,13 @@ void DrawEnhancementsMenu() {
         if (UIWidgets::BeginMenu("Gameplay")) {
             UIWidgets::WindowButton("Freecam", "gFreecam", GameUI::mFreecamWindow,
                                     { .tooltip = "Allows you to fly around the course" });
+            UIWidgets::CVarCheckbox("No multiplayer feature cuts", "gMultiplayerNoFeatureCuts",
+                                    { .tooltip = "Allows full train and jumbotron in multiplayer, etc." });
+            UIWidgets::CVarCheckbox("General Improvements", "gImprovements", { .tooltip = "General improvements to the game experience." });
             UIWidgets::CVarCheckbox(
                 "No Level of Detail (LOD)", "gDisableLod",
                 { .tooltip = "Disable Level of Detail (LOD) to avoid models using lower poly versions at a distance" });
 
-            UIWidgets::CVarCheckbox("Select any star from menu", "gCompletedGame",
-                                    { .tooltip = "Unlocks extra mode and sets all gold cups." });
 
             UIWidgets::CVarCheckbox("Disable Culling", "gNoCulling", { .tooltip = "Disable original culling of mk64" });
             UIWidgets::CVarSliderFloat(

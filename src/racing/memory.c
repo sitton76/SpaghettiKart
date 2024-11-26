@@ -19,7 +19,6 @@
 #include "courses/all_course_offsets.h"
 #include "defines.h"
 
-#include <assert.h>
 #include <course_offsets.h>
 
 #include "engine/courses/Course.h"
@@ -63,7 +62,6 @@ void* get_next_available_memory_addr(uintptr_t size) {
     if (gNextFreeMemoryAddress > sPoolEnd) {
         printf("[memory.c] get_next_available_memory_addr(): Memory Pool Out of Bounds! Out of memory!\n");
         PRINT_MEMPOOL;
-        assert(true);
     }
 
     return (void*) freeSpace;
@@ -199,7 +197,6 @@ void* allocate_memory(size_t size) {
         printf("[memory.c] allocate_memory(): gFreeMemorySize below zero!\n");
         printf("gFreeMemorySize: 0x%X", gFreeMemorySize);
         PRINT_MEMPOOL;
-        assert(false);
     }
 
     freeSpace = (uintptr_t) gNextFreeMemoryAddress;
@@ -208,7 +205,6 @@ void* allocate_memory(size_t size) {
     if (gNextFreeMemoryAddress > sPoolEnd) {
         printf("[memory.c] allocate_memory(): Memory Pool Out of Bounds! Out of memory!\n");
         PRINT_MEMPOOL;
-        assert(false);
     }
 
     return (void*) freeSpace;

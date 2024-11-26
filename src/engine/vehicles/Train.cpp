@@ -22,7 +22,7 @@ extern "C" {
   //  #include "common_structs.h"
 }
 
-ATrain::ATrain(size_t idx, size_t numCarriages, f32 speed, uint32_t waypoint) {
+ATrain::ATrain(size_t idx, ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
     u16 waypointOffset;
     TrainCarStuff* ptr1;
     Path2D* pos;
@@ -59,29 +59,18 @@ ATrain::ATrain(size_t idx, size_t numCarriages, f32 speed, uint32_t waypoint) {
     // Only use locomotive unless overwritten below.
     NumCars = LOCOMOTIVE_ONLY;
 
-    // Spawn all rolling stock in single player mode.
-    switch (gScreenModeSelection) {
-        case SCREEN_MODE_1P: // single player
-            Tender.isActive = 1;
-
-            // clang-format off
-            // Same line required for matching...
-            for (size_t i = 0; i < numCarriages; i++) { PassengerCars[i].isActive = 1; }
-            // clang-format on
-
-            NumCars = NUM_TENDERS + numCarriages;
-            break;
-
-        // Spawn locomotive, tender, and one passenger car in versus 2/3 player mode.
-        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL: // multiplayer fall-through
-        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
-            if (gModeSelection != GRAND_PRIX) {
-                Tender.isActive = 1;
-                PassengerCars[4].isActive = 1;
-                NumCars = NUM_TENDERS + NUM_2P_PASSENGER_CARS;
-            }
-            break;
+    // Fall back in-case someone tries to spawn a train with carriages but no tender; not allowed.
+    if (numCarriages > 0) {
+        tender = HAS_TENDER;
     }
+
+    Tender.isActive = static_cast<bool>(tender);
+
+    for (size_t i = 0; i < numCarriages; i++) {
+        PassengerCars[i].isActive = 1;
+    }
+
+    NumCars = NUM_TENDERS + numCarriages;
 
     AnotherSmokeTimer = 0;
 }

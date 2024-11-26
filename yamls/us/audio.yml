@@ -1,0 +1,30 @@
+:config:
+  force: true
+  header:
+    code:
+      - '#include <libultraship.h>'
+    header:
+      - '#include <libultraship.h>'
+audio_setup:
+  type: NAUDIO:V1:AUDIO_SETUP
+  audio_seq:
+    size: 0x23180
+    offset: 0xBC5F60
+  audio_bank:
+    size: 0x13840
+    offset: 0x966260
+  audio_table:
+    size: 0x24C4C0
+    offset: 0x979AA0
+
+audio_sample_bank_table:
+  { type: NAUDIO:V1:AUDIO_TABLE, format: SAMPLE, offset: 0x966260, symbol: gSampleBankTableInit }
+
+audio_seq_table:
+  { type: NAUDIO:V1:AUDIO_TABLE, format: SEQUENCE, offset: 0xBC5F60, symbol: gSeqTableInit }
+
+audio_soundfont_table:
+  { type: NAUDIO:V1:AUDIO_TABLE, format: SOUNDFONT, offset: 0x979AA4, symbol: gSoundFontTableInit }
+
+audio_seq_font_table:
+  { type: ARRAY, count: 283, array_type: u8, offset: 0xBE90E0, symbol: gSeqFontTableInit }

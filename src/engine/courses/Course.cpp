@@ -117,7 +117,10 @@ void Course::Load() {
     // Extract packed DLs
     u8* packed = reinterpret_cast<u8*>(LOAD_ASSET_RAW(this->gfx));
     Gfx* gfx = (Gfx*) allocate_memory(sizeof(Gfx) * this->gfxSize); // Size of unpacked DLs
-    assert(gfx != NULL);
+    if (gfx == NULL) {
+        printf("Failed to allocate course displaylist memory\n");
+    }
+
     gSegmentTable[7] = reinterpret_cast<uintptr_t>(&gfx[0]);
     displaylist_unpack(reinterpret_cast<uintptr_t *>(gfx), reinterpret_cast<uintptr_t>(packed), 0);
 
@@ -236,6 +239,10 @@ void Course::Collision() {}
 void Course::ScrollingTextures() {}
 void Course::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {}
 
-void Course::Destroy() { }
+void Course::Destroy() {}
+
+bool Course::IsMod() {
+    return false;
+}
 
 Course* currentCourse = nullptr;

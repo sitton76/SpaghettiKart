@@ -370,7 +370,7 @@ void func_8006F008(void) {
 }
 
 void func_8006F824(s32 arg0) {
-    D_80165808 = D_801657E4;
+    D_80165808 = gHUDModes;
     D_80165810 = D_801657E6;
     D_80165820 = D_801657F0;
     D_80165818 = D_801657E8;
@@ -385,14 +385,14 @@ void func_8006F824(s32 arg0) {
 void func_8006F8CC(void) {
     if (D_8018EDFC == 0) {
         D_8018EDFC = 1;
-        D_801657E4 = 0;
+        gHUDModes = 0;
         D_801657E6 = 0;
         D_801657F0 = 0;
         D_801657E8 = 1;
         D_80165800[0] = D_80165800[1] = 1;
         if (gPlayerCount == 4) {
             if (gModeSelection != 3) {
-                D_801657E4 = 1;
+                gHUDModes = 1;
                 D_801657F0 = 1;
                 D_801657F8 = 1;
                 D_80165800[0] = D_80165800[1] = 0;
@@ -405,7 +405,7 @@ void func_8006F8CC(void) {
             D_801657F8 = 1;
         } else if (gPlayerCount == 2) {
             if (gModeSelection != (s32) 3) {
-                D_801657E4 = 1;
+                gHUDModes = 1;
                 D_801657F0 = 1;
                 D_80165800[0] = D_80165800[1] = 0;
             }
@@ -414,7 +414,7 @@ void func_8006F8CC(void) {
         }
         func_8006F824(0);
     } else {
-        D_801657E4 = D_80165808;
+        gHUDModes = D_80165808;
         D_801657E6 = D_80165810;
         D_801657F0 = D_80165820;
         D_801657E8 = D_80165818;
@@ -1067,9 +1067,9 @@ void init_hud_one_player(void) {
     playerHUD[PLAYER_ONE].lapCompletionTimeXs[0] = 0x012C;
     playerHUD[PLAYER_ONE].lapCompletionTimeXs[1] = 0x012C;
     playerHUD[PLAYER_ONE].timerY = 0x0011;
-    playerHUD[PLAYER_ONE].lapX = -0x0028;
-    playerHUD[PLAYER_ONE].lapAfterImage1X = -0x0028;
-    playerHUD[PLAYER_ONE].lapAfterImage2X = -0x0028;
+    playerHUD[PLAYER_ONE].lapX = -40;
+    playerHUD[PLAYER_ONE].lapAfterImage1X = -40;
+    playerHUD[PLAYER_ONE].lapAfterImage2X = -40;
     playerHUD[PLAYER_ONE].lapY = 0x0019;
     playerHUD[PLAYER_ONE].itemBoxX = 0x00A0;
     playerHUD[PLAYER_ONE].itemBoxY = -0x0020;

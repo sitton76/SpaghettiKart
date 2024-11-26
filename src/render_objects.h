@@ -345,8 +345,8 @@ void render_object_snowmans_list_2(s32);
 void render_object_snowmans_list_1(s32);
 void render_object_snowmans(s32);
 void render_lakitu(s32);
-void func_800534A4(s32);
-void func_800534E8(s32);
+void translate_thwomp_lights(s32);
+void thwomp_lights(s32);
 void render_object_thwomps_model(s32);
 void render_object_thwomps(s32);
 void func_80053D74(s32, s32, s32);
@@ -430,6 +430,8 @@ void func_80057AA8(s32, s32, char*, u32);
 void func_80057B14(s32, s32, char*, u32);
 void func_80057B80(s32, s32, char*, u32);
 void func_80057BEC(s32, s32, char*, u32);
+
+extern Lights1 D_800E4668;
 
 extern f32 D_801637C4;
 extern s32 D_801637E8;

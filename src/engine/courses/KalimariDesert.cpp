@@ -201,14 +201,27 @@ void KalimariDesert::MinimapFinishlinePosition() {
 void KalimariDesert::SpawnVehicles() {
     generate_train_waypoints();
 
-    s32 numTrains = 2;
     s32 centerWaypoint = 160;
 
     // Spawn two trains
-    for (size_t i = 0; i < numTrains; ++i) {
-        uint32_t waypoint = CalculateWaypointDistribution(i, numTrains, gVehicle2DWaypointLength, centerWaypoint);
-        
-        gWorldInstance.AddTrain(5, 2.5f, waypoint);
+    for (size_t i = 0; i < _numTrains; ++i) {
+        uint32_t waypoint = CalculateWaypointDistribution(i, _numTrains, gVehicle2DWaypointLength, centerWaypoint);
+
+        if (CVarGetInteger("gMultiplayerNoFeatureCuts", 0) == false) {
+            // Multiplayer modes have no tender and no carriages
+            if (gActiveScreenMode != SCREEN_MODE_1P) {
+                _tender = ATrain::TenderStatus::NO_TENDER;
+                _numCarriages = 0;
+            }
+
+            // 2 player versus mode has a tender and a carriage
+            if ((gModeSelection == VERSUS) && (gPlayerCountSelection1 == 2)) {
+                _tender = ATrain::TenderStatus::HAS_TENDER;
+                _numCarriages = 1;
+            }
+        }
+
+        gWorldInstance.AddTrain(_tender, _numCarriages, 2.5f, waypoint);
     }
 
     if (gModeSelection == VERSUS) {

@@ -4,6 +4,10 @@
 #include "spline.h"
 #include <common_structs.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define OBJECT_LIST_SIZE 0x226
 #define SOME_OBJECT_INDEX_LIST_SIZE 32
 
@@ -450,5 +454,9 @@ extern s8 D_8018D230;
 
 //! Some sort of limiter on how many of some object type can spawn
 extern s32 D_8018D3C4;
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

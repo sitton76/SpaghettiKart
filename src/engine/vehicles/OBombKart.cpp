@@ -22,6 +22,7 @@ extern "C" {
 #include "defines.h"
 #include "code_80005FD0.h"
 #include "math_util_2.h"
+#include "collision.h"
 extern s8 gPlayerCount;
 }
 
@@ -50,6 +51,9 @@ OBombKart::OBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex,
     Pos[0] = _pos[0];
     Pos[1] = _pos[1];
     Pos[2] = _pos[2];
+    _spawnPos[0] = _pos[0];
+    _spawnPos[1] = _pos[1];
+    _spawnPos[2] = _pos[2];
     CenterY = _pos[1];
     WheelPos[0][0] = _pos[0];
     WheelPos[0][1] = _pos[1];
@@ -97,10 +101,8 @@ void OBombKart::Tick() {
     f32 temp_f2;
     f32 temp_f2_4;
     f32 sp94;
-    f32 var_f20;
     f32 sp88;
-    f32 var_f22;
-    f32 var_f24;
+    Vec3f newPos;
     States state;
     u16 bounceTimer;
     UNUSED u16 sp4C;
@@ -117,9 +119,9 @@ void OBombKart::Tick() {
     }
 
     if (((Unk_4A != 1) || (GetCourse() == GetPodiumCeremony()))) {
-        var_f22 = Pos[0];
-        var_f20 = Pos[1];
-        var_f24 = Pos[2];
+        newPos[0] = Pos[0];
+        newPos[1] = Pos[1];
+        newPos[2] = Pos[2];
         waypoint = WaypointIndex;
         unk_3C = Unk_3C;
         someRot = SomeRot;
@@ -129,9 +131,9 @@ void OBombKart::Tick() {
             if (GetCourse() == GetPodiumCeremony()) {
                 if (D_8016347E == 1) {
                     player = gPlayerFour;
-                    temp_f0 = var_f22 - player->pos[0];
-                    temp_f2 = var_f20 - player->pos[1];
-                    temp_f12 = var_f24 - player->pos[2];
+                    temp_f0 = newPos[0] - player->pos[0];
+                    temp_f2 = newPos[2] - player->pos[1];
+                    temp_f12 = newPos[2] - player->pos[2];
                     if ((((temp_f0 * temp_f0) + (temp_f2 * temp_f2)) + (temp_f12 * temp_f12)) < 25.0f) {
                         circleTimer = 0;
                         state = States::EXPLODE;
@@ -144,9 +146,9 @@ void OBombKart::Tick() {
                 for (size_t i = 0; i < gPlayerCount; i++) {
                     player = &gPlayers[i];
                     if (!(player->effects & 0x80000000)) {
-                        temp_f0 = var_f22 - player->pos[0];
-                        temp_f2 = var_f20 - player->pos[1];
-                        temp_f12 = var_f24 - player->pos[2];
+                        temp_f0 = newPos[0] - player->pos[0];
+                        temp_f2 = newPos[1] - player->pos[1];
+                        temp_f12 = newPos[2] - player->pos[2];
                         if ((((temp_f0 * temp_f0) + (temp_f2 * temp_f2)) + (temp_f12 * temp_f12)) < 25.0f) {
                             state = States::EXPLODE;
                             circleTimer = 0;
@@ -167,12 +169,12 @@ void OBombKart::Tick() {
                 sp118 = coss(temp_t6) * 25.0;
                 temp_f0_3 = sins(temp_t6) * 25.0;
                 temp_v0_2 = &D_80164550[0][waypoint];
-                var_f22 = temp_v0_2->posX + sp118;
-                var_f20 = CenterY + 3.5f;
-                var_f24 = temp_v0_2->posZ + temp_f0_3;
-                D_80162FB0[0] = var_f22;
-                D_80162FB0[1] = var_f20;
-                D_80162FB0[2] = var_f24;
+                newPos[0] = temp_v0_2->posX + sp118;
+                newPos[1] = CenterY + 3.5f;
+                newPos[2] = temp_v0_2->posZ + temp_f0_3;
+                D_80162FB0[0] = newPos[0];
+                D_80162FB0[1] = newPos[1];
+                D_80162FB0[2] = newPos[2];
                 temp_t7 = (((circleTimer + 1) % 360) * 0xFFFF) / 360;
                 sp118 = coss(temp_t7) * 25.0;
                 temp_f0_3 = sins(temp_t7) * 25.0;
@@ -187,12 +189,12 @@ void OBombKart::Tick() {
                 sp118 = coss(temp_t6) * 25.0;
                 temp_f0_3 = sins(temp_t6) * 25.0;
                 temp_v0_2 = &D_80164550[0][waypoint];
-                var_f22 = temp_v0_2->posX + sp118;
-                var_f20 = CenterY + 3.5f;
-                var_f24 = temp_v0_2->posZ + temp_f0_3;
-                D_80162FB0[0] = var_f22;
-                D_80162FB0[1] = var_f20;
-                D_80162FB0[2] = var_f24;
+                newPos[0] = temp_v0_2->posX + sp118;
+                newPos[1] = CenterY + 3.5f;
+                newPos[2] = temp_v0_2->posZ + temp_f0_3;
+                D_80162FB0[0] = newPos[0];
+                D_80162FB0[1] = newPos[1];
+                D_80162FB0[2] = newPos[2];
                 temp_t7 = (((circleTimer + 1) % 360) * 0xFFFF) / 360;
                 sp118 = coss(temp_t7) * 25.0;
                 temp_f0_3 = sins(temp_t7) * 25.0;
@@ -202,7 +204,7 @@ void OBombKart::Tick() {
                 someRot = (get_angle_between_two_vectors(D_80162FB0, D_80162FC0) * 0xFFFF) / 65520;
                 break;
             case States::STATIONARY:
-                var_f20 = CenterY + 3.5f;
+                newPos[1] = CenterY + 3.5f;
                 someRot = 0;
                 break;
 
@@ -210,7 +212,7 @@ void OBombKart::Tick() {
                 if ((D_8016347C == 0) || (gNearestWaypointByPlayerId[3] < 5)) {
                     break;
                 } else {
-                    waypoint = func_8000D2B4(var_f22, var_f20, var_f24, waypoint, 3);
+                    waypoint = func_8000D2B4(newPos[0], newPos[1], newPos[2], waypoint, 3);
                     if ((waypoint < 0) || (gWaypointCountByPathIndex[3] < waypoint)) {
                         waypoint = 0;
                     }
@@ -225,29 +227,36 @@ void OBombKart::Tick() {
                         D_80162FC0[2] = temp_v0_4->posZ;
                         someRot = (get_angle_between_two_vectors(D_80162FB0, D_80162FC0) * 0xFFFF) / 65520;
                     } else {
-                        D_80162FB0[0] = var_f22;
-                        D_80162FB0[1] = var_f20;
-                        D_80162FB0[2] = var_f24;
+                        D_80162FB0[0] = newPos[0];
+                        D_80162FB0[1] = newPos[1];
+                        D_80162FB0[2] = newPos[2];
                         D_80162FC0[0] = -2409.197f;
                         D_80162FC0[1] = 0.0f;
                         D_80162FC0[2] = -355.254f;
                         someRot = (get_angle_between_two_vectors(D_80162FB0, D_80162FC0) * 0xFFFF) / 65520;
                     }
-                    temp_f14 = ((D_80162FB0[0] + D_80162FC0[0]) * 0.5f) - var_f22;
-                    temp_f16 = ((D_80162FB0[2] + D_80162FC0[2]) * 0.5f) - var_f24;
+                    temp_f14 = ((D_80162FB0[0] + D_80162FC0[0]) * 0.5f) - newPos[0];
+                    temp_f16 = ((D_80162FB0[2] + D_80162FC0[2]) * 0.5f) - newPos[2];
                     temp_f0_4 = sqrtf((temp_f14 * temp_f14) + (temp_f16 * temp_f16));
                     if (temp_f0_4 > 0.01f) {
-                        var_f22 += (Unk_3C * temp_f14) / temp_f0_4;
-                        var_f24 += (Unk_3C * temp_f16) / temp_f0_4;
+                        newPos[0] += (Unk_3C * temp_f14) / temp_f0_4;
+                        newPos[2] += (Unk_3C * temp_f16) / temp_f0_4;
                     } else {
-                        var_f22 += temp_f14 / 5.0f;
-                        var_f24 += temp_f16 / 5.0f;
+                        newPos[0] += temp_f14 / 5.0f;
+                        newPos[2] += temp_f16 / 5.0f;
                     }
-                    var_f20 = calculate_surface_height(var_f22, 2000.0f, var_f24, _Collision.meshIndexZX) + 3.5f;
-                    if (var_f20 < (-1000.0)) {
-                        var_f20 = Pos[1];
+                    newPos[1] = calculate_surface_height(newPos[0], 2000.0f, newPos[2], _Collision.meshIndexZX) + 3.5f;
+                    if (newPos[1] < (-1000.0)) {
+                        newPos[1] = Pos[1];
                     }
-                    check_bounding_collision(&_Collision, 10.0f, var_f22, var_f20, var_f24);
+                    check_bounding_collision(&_Collision, 10.0f, newPos[0], newPos[1], newPos[2]);
+                }
+                break;
+            case States::CHASE:
+                if (!_target) {
+                    _target = OBombKart::FindTarget();
+                } else {
+                    OBombKart::Chase(_target, newPos);
                 }
                 break;
             case States::EXPLODE:
@@ -259,7 +268,7 @@ void OBombKart::Tick() {
                 D_80162FC0[0] = temp_v0_4->posX;
                 D_80162FC0[1] = temp_v0_4->posY;
                 D_80162FC0[2] = temp_v0_4->posZ;
-                var_f20 += 3.0f - (circleTimer * 0.3f);
+                newPos[1] += 3.0f - (circleTimer * 0.3f);
                 someRot = (get_angle_between_two_vectors(D_80162FB0, D_80162FC0) * 0xFFFF) / 65520;
                 break;
             default:
@@ -271,7 +280,7 @@ void OBombKart::Tick() {
             sp118 = coss(0xFFFF - someRot) * circleTimer;
             var_f18 = sins(0xFFFF - someRot) * circleTimer;
             circleTimer++;
-            temp_f2_4 = (var_f20 - 2.3f) + (sp108 / 3.0f);
+            temp_f2_4 = (newPos[1] - 2.3f) + (sp108 / 3.0f);
             spAC = temp_f2_4;
             spA0 = temp_f2_4;
             sp94 = temp_f2_4;
@@ -282,7 +291,7 @@ void OBombKart::Tick() {
         } else {
             sp118 = coss(0xFFFF - someRot) * 1.5f;
             var_f18 = sins(0xFFFF - someRot) * 1.5f;
-            temp_f16_2 = var_f20 - 2.3f;
+            temp_f16_2 = newPos[1] - 2.3f;
             temp_f12_3 = (bounceTimer % 3) * 0.15f;
             temp_f14_2 = temp_f16_2 - temp_f12_3;
             temp_f12_4 = temp_f16_2 + temp_f12_3;
@@ -290,25 +299,25 @@ void OBombKart::Tick() {
             sp94 = temp_f14_2;
             spA0 = temp_f12_4;
             sp88 = temp_f12_4;
-            var_f20 += sins((bounceTimer * 0x13FFEC) / 360);
+            newPos[1] += sins((bounceTimer * 0x13FFEC) / 360);
             bounceTimer = (bounceTimer + 1) % 18;
         }
 
-        WheelPos[0][0] = (sp118 - var_f18) + var_f22;
+        WheelPos[0][0] = (sp118 - var_f18) + newPos[0];
         WheelPos[0][1] = spAC;
-        WheelPos[0][2] = (var_f18 + sp118) + var_f24;
-        WheelPos[1][0] = (var_f18 + sp118) + var_f22;
+        WheelPos[0][2] = (var_f18 + sp118) + newPos[2];
+        WheelPos[1][0] = (var_f18 + sp118) + newPos[0];
         WheelPos[1][1] = spA0;
-        WheelPos[1][2] = (var_f18 - sp118) + var_f24;
-        WheelPos[2][0] = ((-sp118) - var_f18) + var_f22;
+        WheelPos[1][2] = (var_f18 - sp118) + newPos[2];
+        WheelPos[2][0] = ((-sp118) - var_f18) + newPos[0];
         WheelPos[2][1] = sp94;
-        WheelPos[2][2] = ((-var_f18) + sp118) + var_f24;
-        WheelPos[3][0] = ((-sp118) + var_f18) + var_f22;
+        WheelPos[2][2] = ((-var_f18) + sp118) + newPos[2];
+        WheelPos[3][0] = ((-sp118) + var_f18) + newPos[0];
         WheelPos[3][1] = sp88;
-        WheelPos[3][2] = ((-var_f18) - sp118) + var_f24;
-        Pos[0] = var_f22;
-        Pos[1] = var_f20;
-        Pos[2] = var_f24;
+        WheelPos[3][2] = ((-var_f18) - sp118) + newPos[2];
+        Pos[0] = newPos[0];
+        Pos[1] = newPos[1];
+        Pos[2] = newPos[2];
         WaypointIndex = waypoint;
         Unk_3C = unk_3C;
         SomeRot = someRot;
@@ -446,4 +455,72 @@ void OBombKart::Waypoint(s32 screenId) {
 
 void OBombKart::Collision(s32 playerId, Player* player) {
 
+}
+
+Player* OBombKart::FindTarget() {
+    for (size_t i = 0; i < NUM_PLAYERS; i++) {
+        if (gPlayers[i].type & PLAYER_HUMAN) {
+            if (is_within_distance_2d(Pos[0], Pos[2], gPlayers[i].pos[0], gPlayers[i].pos[2], 500)) {
+                return &gPlayers[i];
+            }
+        }
+    }
+    return NULL;
+}
+
+void OBombKart::Chase(Player* player, Vec3f pos) {
+    const f32 speed = 2.7f; // Speed the kart uses in a chase
+
+    if (!player) return; // Ensure player is valid
+
+    // Calculate the directional vector toward the player
+    Vec3f direction;
+    direction[0] = player->pos[0] - pos[0];
+    direction[1] = player->pos[1] - pos[1];
+    direction[2] = player->pos[2] - pos[2];
+
+    // Calculate the distance in the XZ plane
+    f32 xz_dist = sqrtf((direction[0] * direction[0]) + (direction[2] * direction[2]));
+
+    // Reset distance
+    if (xz_dist > 700.0f) {
+        _target = NULL;
+        pos[0] = _spawnPos[0];
+        pos[1] = _spawnPos[1];
+        pos[2] = _spawnPos[2];
+        return;
+    }
+
+    // Break off the chase if player has boo item
+    if (player->effects & BOO_EFFECT) {
+        _target = NULL;
+        pos[0] = _spawnPos[0];
+        pos[1] = _spawnPos[1];
+        pos[2] = _spawnPos[2];
+        return;
+    }
+
+    if (xz_dist > 0.0f) {
+        
+        // Normalize the direction vector in the XZ plane
+        direction[0] /= xz_dist;
+        direction[2] /= xz_dist;
+
+        // Scale the movement by a fixed step size
+        pos[0] += direction[0] * speed;
+        pos[2] += direction[2] * speed;
+    }
+
+    Vec3f newPosition;
+    newPosition[0] = pos[0];
+    newPosition[1] = pos[1];
+    newPosition[2] = pos[2];
+
+    newPosition[1] = calculate_surface_height(pos[0], 2000.0f, pos[2], _Collision.meshIndexZX) + 3.5f;
+
+    pos[0] = newPosition[0];
+    pos[1] = newPosition[1];
+    pos[2] = newPosition[2];
+
+    check_bounding_collision(&_Collision, 10.0f, pos[0], pos[1], pos[2]);
 }

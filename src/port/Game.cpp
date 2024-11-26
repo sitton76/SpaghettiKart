@@ -31,6 +31,7 @@
 #include "engine/courses/PodiumCeremony.h"
 
 #include "engine/TrainCrossing.h"
+#include "engine/vehicles/OBombKart.h"
 
 #include "Smoke.h"
 
@@ -39,6 +40,7 @@ extern "C" {
 #include "audio/load.h"
 #include "audio/external.h"
 #include "networking/networking.h"
+#include "render_courses.h"
 //#include "engine/wasm.h"
 }
 
@@ -293,6 +295,8 @@ extern "C" {
 
     void CourseManager_ClearVehicles(void) {
         gWorldInstance.ClearVehicles();
+        gWorldInstance.BombKarts.clear();
+        gWorldInstance.Thwomps.clear();
     }
 
     void CourseManager_CrossingTrigger() {
@@ -333,6 +337,14 @@ extern "C" {
     }
 
     void CourseManager_RenderCourse(struct UnkStruct_800DC5EC* arg0) {
+        if (gWorldInstance.CurrentCourse->IsMod() == false) {
+            if ((CVarGetInteger("gFreecam", 0) == true)) {
+                // Render credits courses
+                func_8029569C();
+                return;
+            }
+        }
+
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->Render(arg0);
         }
@@ -463,6 +475,29 @@ extern "C" {
     void CourseManager_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->DrawWater(screen, pathCounter, cameraRot, playerDirection);
+        }
+    }
+
+    extern Vec3su D_80165834;
+    void CourseManager_TickThwomps() {
+        // TickLights
+        if (gWorldInstance.Thwomps.size()) {
+            D_80165834[0] += 0x100;
+            D_80165834[1] += 0x200;
+        }
+
+        for (auto& thwomp : gWorldInstance.Thwomps) {
+            if (thwomp) {
+                thwomp->Tick();
+            }
+        }
+    }
+
+    void CourseManager_DrawThwomps(s32 cameraId) {
+        for (auto& thwomp : gWorldInstance.Thwomps) {
+            if (thwomp) {
+                thwomp->Draw(cameraId);
+            }
         }
     }
 

@@ -10,7 +10,6 @@
       binary: spaghetti.otr
       headers: include/assets
       code: assets/code
-  metadata: [yamls/courses]
   segments:
     - 0x000000
     - 0x000000

@@ -218,52 +218,38 @@ void ToadsTurnpike::RenderCredits() {
 void ToadsTurnpike::Collision() {}
 
 void ToadsTurnpike::SpawnVehicles() {
+    uint32_t waypoint;
     f32 a = ((gCCSelection * 90.0) / 216.0f) + 4.583333333333333;
     f32 b = ((gCCSelection * 90.0) / 216.0f) + 2.9166666666666665;
     a /= 2; // Normally vehicle logic is only ran every 2 frames. This slows the vehicles down to match.
     b /= 2;
-    uint32_t waypoint;
 
+    // Other game modes spawn seven of each vehicle
     if (gModeSelection == TIME_TRIALS) {
-        for (size_t i = 0; i < NUM_TIME_TRIAL_BOX_TRUCKS; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_BOX_TRUCKS, gWaypointCountByPathIndex[0], 0);
-            gWorldInstance.AddTruck(a, b, &D_80164550[0][0], waypoint);
-        }
+        _numTrucks = 8;
+        _numBuses = 8;
+        _numTankerTrucks = 8;
+        _numCars = 8;
+    }
+    
+    for (size_t i = 0; i < _numTrucks; i++) {
+        waypoint = CalculateWaypointDistribution(i, _numTrucks, gWaypointCountByPathIndex[0], 0);
+        gWorldInstance.AddTruck(a, b,  &D_80164550[0][0], waypoint);
+    }
 
-        for (size_t i = 0; i < NUM_TIME_TRIAL_SCHOOL_BUSES; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_SCHOOL_BUSES, gWaypointCountByPathIndex[0], 75);
-            gWorldInstance.AddBus(a, b, &D_80164550[0][0], waypoint);
-        }
+    for (size_t i = 0; i < _numBuses; i++) {
+        waypoint = CalculateWaypointDistribution(i, _numBuses, gWaypointCountByPathIndex[0], 75);
+        gWorldInstance.AddBus(a, b,&D_80164550[0][0], waypoint);
+    }
 
-        for (size_t i = 0; i < NUM_TIME_TRIAL_TANKER_TRUCKS; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_TANKER_TRUCKS, gWaypointCountByPathIndex[0], 50);
-            gWorldInstance.AddTankerTruck(a, b, &D_80164550[0][0], waypoint);
-        }
+    for (size_t i = 0; i < _numTankerTrucks; i++) {
+        waypoint = CalculateWaypointDistribution(i, _numTankerTrucks, gWaypointCountByPathIndex[0], 50);
+        gWorldInstance.AddTankerTruck(a, b, &D_80164550[0][0], waypoint);
+    }
 
-        for (size_t i = 0; i < NUM_TIME_TRIAL_CARS; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_TIME_TRIAL_CARS, gWaypointCountByPathIndex[0], 25);
-            gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
-        }
-    } else { // All other modes
-        for (size_t i = 0; i < NUM_RACE_BOX_TRUCKS; i++) {
-            uint32_t waypoint = CalculateWaypointDistribution(i, NUM_RACE_BOX_TRUCKS, gWaypointCountByPathIndex[0], 0);
-            gWorldInstance.AddTruck(a, b,  &D_80164550[0][0], waypoint);
-        }
-
-        for (size_t i = 0; i < NUM_RACE_SCHOOL_BUSES; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_RACE_SCHOOL_BUSES, gWaypointCountByPathIndex[0], 75);
-            gWorldInstance.AddBus(a, b,&D_80164550[0][0], waypoint);
-        }
-
-        for (size_t i = 0; i < NUM_RACE_TANKER_TRUCKS; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_RACE_TANKER_TRUCKS, gWaypointCountByPathIndex[0], 50);
-            gWorldInstance.AddTankerTruck(a, b, &D_80164550[0][0], waypoint);
-        }
-
-        for (size_t i = 0; i < NUM_RACE_CARS; i++) {
-            waypoint = CalculateWaypointDistribution(i, NUM_RACE_CARS, gWaypointCountByPathIndex[0], 25);
-            gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
-        }
+    for (size_t i = 0; i < _numCars; i++) {
+        waypoint = CalculateWaypointDistribution(i, _numCars, gWaypointCountByPathIndex[0], 25);
+        gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
     }
 
     if (gModeSelection == VERSUS) {

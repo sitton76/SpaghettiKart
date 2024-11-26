@@ -46,8 +46,14 @@ static size_t busses;
 static size_t tankerTrucks;
 static size_t cars;
 static size_t boats;
-void World::AddTrain(size_t numCarriages, f32 speed, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ATrain>(trains, numCarriages, speed, waypoint));
+static size_t thwomps;
+
+/**
+ * Note that you can only remove the tender if there are no carriages
+ * @arg waypoint initial waypoint to spawn at.
+ */
+void World::AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
+    Vehicles.push_back(std::make_unique<ATrain>(trains, tender, numCarriages, speed, waypoint));
     trains++;
 }
 
@@ -77,7 +83,7 @@ void World::AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoin
 }
 
 void World::ClearVehicles(void) {
-    trains = trucks = busses = tankerTrucks = cars = boats = 0;
+    trains = trucks = busses = tankerTrucks = cars = boats = thwomps = 0;
     Vehicles.clear();
 }
 
@@ -89,6 +95,13 @@ TrainCrossing* World::AddCrossing(Vec3f position, u32 waypointMin, u32 waypointM
 
 void World::AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C) {
     BombKarts.push_back(std::make_unique<OBombKart>(pos, waypoint, waypointIndex, state, unk_3C));
+}
+
+void World::AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize) {
+    Thwomps.push_back(
+        std::make_unique<OThwomp>(thwomps, x, z, direction, scale, behaviour, primAlpha, boundingBoxSize));
+    thwomps++;
+    gNumActiveThwomps = thwomps;
 }
 
 u32 World::GetCupIndex() {

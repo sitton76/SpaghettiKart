@@ -15,6 +15,7 @@
 #include "update_objects.h"
 #include "effects.h"
 #include "sounds.h"
+#include "port/Game.h"
 
 void copy_collision(Collision* src, Collision* dest) {
     dest->unk30 = src->unk30;

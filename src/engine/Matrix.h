@@ -19,6 +19,8 @@ Mtx* GetEffectMatrix(void);
 void ClearHudMatrixPool(void);
 void ClearEffectsMatrixPool(void);
 void ClearObjectsMatrixPool(void);
+void AddKartMatrix(Mat4 mtx, s32 flags);
+void AddShadowMatrix(Mat4 mtx, s32 flags);
 
 #ifdef __cplusplus
 }

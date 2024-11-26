@@ -107,13 +107,19 @@ MarioRaceway::MarioRaceway() {
 void MarioRaceway::Load() {
     Course::Load();
 
-    generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07001140)));
+    generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x07001140));
+    
+    // Generate pipe collision mesh
     if (gScreenModeSelection == SCREEN_MODE_1P) {
         // d_course_mario_raceway_packed_dl_8E8
-        generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x070008E8)));
+        generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x070008E8));
     } else {
-        // d_course_mario_raceway_packed_dl_2D68
-        generate_collision_mesh_with_defaults(segmented_gfx_to_virtual(reinterpret_cast<void*>(0x07002D68)));
+        if (CVarGetInteger("gDisableLod", 0) == true) {
+            generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x070008E8));
+        } else {
+            // d_course_mario_raceway_packed_dl_2D68
+            generate_collision_mesh_with_defaults(segmented_gfx_to_virtual((void*)0x07002D68));
+        }
     }
 
     parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_mario_raceway_addr));
@@ -270,12 +276,12 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
         case 2:
         case 17:
             if ((temp_t0 == 2) || (temp_t0 == 1)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 3:
             if (temp_t0 != 0) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 4:
@@ -285,13 +291,13 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
                 if (temp_t0 == 1) {
                     func_80291198();
                 }
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 5:
         case 6:
             if ((temp_t0 == 2) || (temp_t0 == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             } else {
                 func_80291198();
             }
@@ -299,13 +305,13 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
         case 7:
             func_80291198();
             if ((temp_t0 == 2) || (temp_t0 == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 8:
         case 9:
             if (temp_t0 != 1) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             /* fallthrough */
         case 10:
@@ -315,15 +321,15 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
             break;
         case 11:
             if (temp_t0 == 0) {
-                func_802911C4();
+                render_mario_raceway_pipe();
                 func_80291198();
             } else if (temp_t0 == 3) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 12:
             if ((temp_t0 == 0) || (temp_t0 == 3)) {
-                func_802911C4();
+                render_mario_raceway_pipe();
             }
             break;
         case 13:
@@ -331,7 +337,7 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
             if (temp_t0 != 1) {
                 case 15:
                 case 16:
-                    func_802911C4();
+                    render_mario_raceway_pipe();
             }
             break;
     }
