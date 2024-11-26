@@ -26,7 +26,6 @@
 #include "engine/courses/DoubleDeck.h"
 #include "engine/courses/DKJungle.h"
 #include "engine/courses/BigDonut.h"
-#include "engine/courses/Prison.h"
 #include "engine/courses/TestCourse.h"
 
 #include "engine/courses/PodiumCeremony.h"
@@ -75,7 +74,6 @@ DoubleDeck* gDoubleDeck;
 DKJungle* gDkJungle;
 BigDonut* gBigDonut;
 PodiumCeremony* gPodiumCeremony;
-PrisonCourse* gPrisonCourse;
 TestCourse* gTestCourse;
 
 Cup* gMushroomCup;
@@ -107,7 +105,6 @@ void CustomEngineInit() {
     gDkJungle = new DKJungle();
     gBigDonut = new BigDonut();
     gPodiumCeremony = new PodiumCeremony();
-    gPrisonCourse = new PrisonCourse();
     gTestCourse = new TestCourse();
 
     /* Add all courses to the global course list */
@@ -131,7 +128,6 @@ void CustomEngineInit() {
     gWorldInstance.AddCourse(gDoubleDeck);
     gWorldInstance.AddCourse(gDkJungle);
     gWorldInstance.AddCourse(gBigDonut);
-    gWorldInstance.AddCourse(gPrisonCourse);
     gWorldInstance.AddCourse(gTestCourse);
 
     gMushroomCup = new Cup("mk:mushroom_cup", "mushroom cup", std::vector<Course*>{ gLuigiRaceway, gMooMooFarm, gKoopaTroopaBeach, gKalimariDesert });
