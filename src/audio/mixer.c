@@ -16,9 +16,9 @@
 #define ROUND_DOWN_16(v) ((v) & ~0xf)
 
 //#define DMEM_BUF_SIZE (0x1000 - 0x0330 - 0x10 - 0x40)
-#define DMEM_BUF_SIZE 0xE80
-#define BUF_U8(a) (rspa.buf.as_u8 + ((a) - 0x1A0))
-#define BUF_S16(a) (rspa.buf.as_s16 + ((a) - 0x1A0) / sizeof(int16_t))
+#define DMEM_BUF_SIZE 0xC80
+#define BUF_U8(a) (rspa.buf.as_u8 + (a))
+#define BUF_S16(a) (rspa.buf.as_s16 + (a) / sizeof(int16_t))
 
 static struct {
     uint16_t in;
