@@ -46,6 +46,40 @@ s32 D_800EA4A4 = 0;
 
 char port_eu_unused_string7[] = "Undefined Port Command %d\n";
 
+void create_next_audio_buffer(s16* samples, u32 num_samples) {
+    static s32 gMaxAbiCmdCnt = 128;
+    s32 abiCmdCount;
+    OSMesg specId;
+    OSMesg msg;
+
+    gAudioFrameCount++;
+    gCurrAiBufferIndex %= 3;
+
+    gCurrAudioFrameDmaCount = 0;
+
+    if (osRecvMesg(D_800EA3B0, &specId, 0) != -1) {
+        gAudioResetPresetIdToLoad = specId.data8;
+        gAudioResetStatus = 5;
+    }
+
+    if (gAudioResetStatus != 0) {
+        if (audio_shut_down_and_reset_step() == 0) {
+            if (gAudioResetStatus == 0) {
+                osSendMesg(D_800EA3B4, OS_MESG_8(gAudioResetPresetIdToLoad), OS_MESG_NOBLOCK);
+            }
+            return;
+        }
+    }
+
+    if (osRecvMesg(D_800EA3AC, &msg, 0) != -1) {
+        func_800CBCB0(msg.data32);
+    }
+
+    gAudioCmd = gAudioCmdBuffers[gAudioTaskIndex];
+    gAudioCmd = synthesis_execute((Acmd*) gAudioCmd, &abiCmdCount, samples, num_samples);
+    gAudioRandom = osGetCount() * (gAudioRandom + gAudioFrameCount);
+}
+
 struct SPTask* create_next_audio_frame_task(void) {
     u32 samplesRemainingInAI;
     s32 writtenCmds;

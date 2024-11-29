@@ -14,3 +14,6 @@ header:
   tbl:
     offset: 0x979AA0
     size: 0x24C4C0
+
+audio_seq_font_table:
+  { type: ARRAY, count: 0x80, array_type: u8, offset: 0xBE90E0, symbol: gSeqFontTableInit }

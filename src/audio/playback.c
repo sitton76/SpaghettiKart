@@ -9,6 +9,7 @@
 #include "audio/effects.h"
 #include "audio/data.h"
 #include "audio/seqplayer.h"
+#include "port/Engine.h"
 
 void note_set_vel_pan_reverb(struct Note* note, f32 velocity, u8 pan, u8 reverbVol) {
     struct NoteSubEu* sub = &note->noteSubEu;
@@ -136,13 +137,15 @@ struct Instrument* get_instrument_inner(s32 bankId, s32 instId) {
         return NULL;
     }
 
-    if (instId >= gCtlEntries[bankId].numInstruments) {
+    struct CtlEntry* bank = GameEngine_LoadBank(bankId);
+
+    if (instId >= bank->numInstruments) {
         stubbed_printf("Audio: voiceman: progNo. overflow %d,%d\n", instId, gCtlEntries[bankId].numInstruments);
         gAudioErrorFlags = ((bankId << 8) + instId) + 0x3000000;
         return NULL;
     }
 
-    inst = gCtlEntries[bankId].instruments[instId];
+    inst = bank->instruments[instId];
     if (inst == NULL) {
         stubbed_printf("Audio: voiceman: progNo. undefined %d,%d\n", bankId, instId);
         gAudioErrorFlags = ((bankId << 8) + instId) + 0x1000000;
@@ -160,18 +163,15 @@ struct Drum* get_drum(s32 bankId, s32 drumId) {
         return NULL;
     }
 
-    if (drumId >= gCtlEntries[bankId].numDrums) {
+    struct CtlEntry* bank = GameEngine_LoadBank(bankId);
+
+    if (drumId >= bank->numDrums) {
         stubbed_printf("Audio: voiceman: Percussion Overflow %d,%d\n", drumId, gCtlEntries[bankId].numDrums);
         gAudioErrorFlags = ((bankId << 8) + drumId) + 0x4000000;
         return NULL;
     }
 
-    if ((uintptr_t) gCtlEntries[bankId].drums < 0x80000000U) {
-        stubbed_printf("Audio: voiceman: Percussion table pointer (bank %d) is irregular.\n");
-        return NULL;
-    }
-
-    drum = gCtlEntries[bankId].drums[drumId];
+    drum = bank->drums[drumId];
     if (drum == NULL) {
         stubbed_printf("Audio: voiceman: Percpointer NULL %d,%d\n", bankId, drumId);
         gAudioErrorFlags = ((bankId << 8) + drumId) + 0x5000000;

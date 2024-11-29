@@ -683,13 +683,13 @@ extern "C" {
 }
 
 void push_frame() {
-    // GameEngine::StartAudioFrame();
-    GameEngine::Instance->StartFrame();
-    thread5_iteration();
+     GameEngine::StartAudioFrame();
+     GameEngine::Instance->StartFrame();
+     thread5_iteration();
+     GameEngine::EndAudioFrame();
     // thread5_game_loop();
     // Graphics_ThreadUpdate();w
     // Timer_Update();
-    // GameEngine::EndAudioFrame();
 }
 
 #ifdef _WIN32
@@ -701,10 +701,10 @@ extern "C"
     int
     main(int argc, char* argv[]) {
 #endif
-    //load_wasm();
-    GameEngine::Create();
-    // audio_init();
-    // sound_init();
+     //load_wasm();
+     GameEngine::Create();
+     audio_init();
+     sound_init();
 
     CustomEngineInit();
     thread5_game_loop();

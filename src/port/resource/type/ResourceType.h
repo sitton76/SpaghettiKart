@@ -17,6 +17,10 @@ enum class ResourceType {
     Vec3f = 0x56433346,        // VC3F
     Vec3s = 0x56433353,        // VC3S
     GenericArray = 0x47415252, // GARR
+    // NAudio v0
+    Bank = 0x42414E4B,         // BANK
+    Sample = 0x41554643,       // AIFC
+    Sequence = 0x53455143,     // SEQC
 };
 } // namespace SF64
 
