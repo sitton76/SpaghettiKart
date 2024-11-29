@@ -17,8 +17,8 @@
 
 //#define DMEM_BUF_SIZE (0x1000 - 0x0330 - 0x10 - 0x40)
 #define DMEM_BUF_SIZE 0xE80
-#define BUF_U8(a) (rspa.buf.as_u8 + ((a) - 0x180))
-#define BUF_S16(a) (rspa.buf.as_s16 + ((a) - 0x180) / sizeof(int16_t))
+#define BUF_U8(a) (rspa.buf.as_u8 + ((a) - 0x1A0))
+#define BUF_S16(a) (rspa.buf.as_s16 + ((a) - 0x1A0) / sizeof(int16_t))
 
 static struct {
     uint16_t in;
@@ -127,14 +127,8 @@ void aSetBufferImpl(uint8_t flags, uint16_t in, uint16_t out, uint16_t nbytes) {
     rspa.nbytes = nbytes;
 }
 
-void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
-    if(rspa.nbytes == 0){
-        return;
-    }
-
-    // Im sure this should be 3 but hey
-    int count = ROUND_UP_16(rspa.nbytes) >> 4;
-
+void aInterleaveImpl(uint16_t left, uint16_t right) {
+    int count = ROUND_UP_16(rspa.nbytes) / sizeof(int16_t) / 8;
     int16_t *l = BUF_S16(left);
     int16_t *r = BUF_S16(right);
     int16_t *d = BUF_S16(rspa.out);
@@ -144,10 +138,18 @@ void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
         int16_t l1 = *l++;
         int16_t l2 = *l++;
         int16_t l3 = *l++;
+        int16_t l4 = *l++;
+        int16_t l5 = *l++;
+        int16_t l6 = *l++;
+        int16_t l7 = *l++;
         int16_t r0 = *r++;
         int16_t r1 = *r++;
         int16_t r2 = *r++;
         int16_t r3 = *r++;
+        int16_t r4 = *r++;
+        int16_t r5 = *r++;
+        int16_t r6 = *r++;
+        int16_t r7 = *r++;
         *d++ = l0;
         *d++ = r0;
         *d++ = l1;
@@ -156,6 +158,14 @@ void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
         *d++ = r2;
         *d++ = l3;
         *d++ = r3;
+        *d++ = l4;
+        *d++ = r4;
+        *d++ = l5;
+        *d++ = r5;
+        *d++ = l6;
+        *d++ = r6;
+        *d++ = l7;
+        *d++ = r7;
         --count;
     }
 }
@@ -284,17 +294,15 @@ void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right) {
 }
 
 void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
-				   bool neg_3, bool neg_2,
                    bool neg_left, bool neg_right,
-                   int32_t wet_dry_addr, uint32_t unk)
+                   uint16_t dry_left_addr, uint16_t dry_right_addr,
+                   uint16_t wet_left_addr, uint16_t wet_right_addr)
 {
     swap_reverb = false;
-    neg_3 = 0;
-    neg_2 = 0;
     int16_t *in = BUF_S16(in_addr);
-    int16_t *dry[2] = {BUF_S16(((wet_dry_addr >> 24) & 0xFF) << 4), BUF_S16(((wet_dry_addr >> 16) & 0xFF) << 4)};
-    int16_t *wet[2] = {BUF_S16(((wet_dry_addr >> 8) & 0xFF) << 4), BUF_S16(((wet_dry_addr) & 0xFF) << 4)};
-    int16_t negs[4] = {neg_left ? -1 : 0, neg_right ? -1 : 0, neg_3 ? -4 : 0, neg_2 ? -2 : 0};
+    int16_t *dry[2] = {BUF_S16(dry_left_addr), BUF_S16(dry_right_addr)};
+    int16_t *wet[2] = {BUF_S16(wet_left_addr), BUF_S16(wet_right_addr)};
+    int16_t negs[2] = {neg_left ? -1 : 0, neg_right ? -1 : 0};
     int swapped[2] = {swap_reverb ? 1 : 0, swap_reverb ? 0 : 1};
     int n = ROUND_UP_16(n_samples);
 
@@ -308,10 +316,8 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
             int16_t samples[2] = {*in, *in}; in++;
             for (int j = 0; j < 2; j++) {
                 samples[j] = (samples[j] * vols[j] >> 16) ^ negs[j];
-            }
-        	for (int j = 0; j < 2; j++) {
                 *dry[j] = clamp16(*dry[j] + samples[j]); dry[j]++;
-                *wet[j] = clamp16(*wet[j] + ((samples[swapped[j]] * vol_wet >> 16) ^ negs[2 + j])); wet[j]++;
+                *wet[j] = clamp16(*wet[j] + (samples[swapped[j]] * vol_wet >> 16)); wet[j]++;
             }
         }
         vols[0] += rates[0];
@@ -423,6 +429,18 @@ void aDuplicateImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr) {
         memcpy(out, tmp, 128);
         out += 128;
     } while (count-- > 0);
+}
+
+void aDMEMMove2Impl(uint8_t t, uint16_t in_addr, uint16_t out_addr, uint16_t count) {
+    uint8_t *in = BUF_U8(in_addr);
+    uint8_t *out = BUF_U8(out_addr);
+    int nbytes = ROUND_UP_32(count);
+
+    do {
+        memmove(out, in, nbytes);
+        in += nbytes;
+        out += nbytes;
+    } while (t-- > 0);
 }
 
 void aResampleZohImpl(uint16_t pitch, uint16_t start_fract) {

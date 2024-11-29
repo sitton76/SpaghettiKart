@@ -619,10 +619,8 @@ Acmd* load_wave_samples(Acmd* acmd, struct NoteSubEu* noteSubEu, struct NoteSynt
     if (a3 < nSamplesToLoad) {
         repeats = (nSamplesToLoad - a3 + 63) / 64;
         if (repeats != 0) {
-            aDuplicate(cmd++,
-                    /*dmemin*/ DMEM_ADDR_UNCOMPRESSED_NOTE,
-                    /*dmemout*/ DMEM_ADDR_UNCOMPRESSED_NOTE + 128,
-                    /*copies*/ repeats);
+            // UTODO: Stubbed
+            aDMEMMove2(acmd++, repeats, 0x1A0, 0x1A0 + 128, 128);
         }
     }
     return acmd;
