@@ -698,13 +698,12 @@ int SDL_main(int argc, char** argv) {
 #if defined(__cplusplus) && defined(PLATFORM_IOS)
 extern "C"
 #endif
-    int
-    main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
 #endif
      //load_wasm();
-     GameEngine::Create();
-     audio_init();
-     sound_init();
+    GameEngine::Create();
+    audio_init();
+    sound_init();
 
     CustomEngineInit();
     thread5_game_loop();

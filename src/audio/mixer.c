@@ -16,9 +16,9 @@
 #define ROUND_DOWN_16(v) ((v) & ~0xf)
 
 //#define DMEM_BUF_SIZE (0x1000 - 0x0330 - 0x10 - 0x40)
-#define DMEM_BUF_SIZE 0xC80
-#define BUF_U8(a) (rspa.buf.as_u8 + ((a)-0x0330))
-#define BUF_S16(a) (rspa.buf.as_s16 + ((a)-0x0330) / sizeof(int16_t))
+#define DMEM_BUF_SIZE 0xE80
+#define BUF_U8(a) (rspa.buf.as_u8 + ((a) - 0x180))
+#define BUF_S16(a) (rspa.buf.as_s16 + ((a) - 0x180) / sizeof(int16_t))
 
 static struct {
     uint16_t in;
@@ -132,7 +132,7 @@ void aInterleaveImpl(uint16_t dest, uint16_t left, uint16_t right, uint16_t c) {
         return;
     }
 
-    int count = ROUND_UP_16(rspa.nbytes) >> 3;
+    int count = ROUND_UP_16(rspa.nbytes) >> 4;
 
     int16_t *l = BUF_S16(left);
     int16_t *r = BUF_S16(right);
@@ -273,8 +273,8 @@ void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state) {
 void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right) {
     rspa.vol_wet = (uint16_t)(initial_vol_wet << 8);
     rspa.rate_wet = rate_wet;
-    rspa.rate[0] = rate_left;
-    rspa.rate[1] = 0; // MK_Patch
+    rspa.rate[0] = 0;
+    rspa.rate[1] = rate_right;
 }
 
 void aEnvSetup2Impl(uint16_t initial_vol_left, uint16_t initial_vol_right) {
@@ -287,10 +287,11 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
                    bool neg_left, bool neg_right,
                    int32_t wet_dry_addr, uint32_t unk)
 {
+    swap_reverb = false;
     int16_t *in = BUF_S16(in_addr);
     int16_t *dry[2] = {BUF_S16(((wet_dry_addr >> 24) & 0xFF) << 4), BUF_S16(((wet_dry_addr >> 16) & 0xFF) << 4)};
     int16_t *wet[2] = {BUF_S16(((wet_dry_addr >> 8) & 0xFF) << 4), BUF_S16(((wet_dry_addr) & 0xFF) << 4)};
-    int16_t negs[4] = {neg_left ? -1 : 0, neg_right ? -1 : 0, neg_3 ? -4 : 0, neg_2 ? -2 : 0};
+    int16_t negs[4] = {neg_left ? -1 : 0, neg_right ? -1 : 0, 0, 0};
     int swapped[2] = {swap_reverb ? 1 : 0, swap_reverb ? 0 : 1};
     int n = ROUND_UP_16(n_samples);
 
