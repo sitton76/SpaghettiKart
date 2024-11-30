@@ -73,6 +73,7 @@ Course::Course() {
     Props.CloudList = NULL;
     Props.MinimapFinishlineX = 0;
     Props.MinimapFinishlineY = 0;
+    Props.Sequence = MusicSeq::MUSIC_SEQ_UNKNOWN;
 }
 
 void Course::Load(Vtx* vtx, Gfx* gfx) {

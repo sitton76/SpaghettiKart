@@ -30,7 +30,7 @@ raceways_wario_stadium:
   banks:
     - sound/banks/bank_3
 
-moo_moo_fame_yoshi_valley: 
+moo_moo_farm_yoshi_valley: 
   type: NAUDIO:V0:SEQUENCE
   id: 4
   size: 0x1CA0
@@ -62,7 +62,7 @@ banshee_boardwalk:
   banks:
     - sound/banks/bank_7
 
-seq_08:
+frappe_snowland:
   type: NAUDIO:V0:SEQUENCE
   id: 8
   size: 0x23D0
@@ -70,7 +70,7 @@ seq_08:
   banks:
     - sound/banks/bank_8
 
-seq_09:
+bowsers_castle:
   type: NAUDIO:V0:SEQUENCE
   id: 9
   size: 0x1800
@@ -126,7 +126,7 @@ finish_5th_8th_place:
   banks:
     - sound/banks/bank_11
 
-seq_10:
+seq_16:
   type: NAUDIO:V0:SEQUENCE
   id: 16
   size: 0x1410
@@ -150,7 +150,7 @@ rainbow_road:
   banks:
     - sound/banks/bank_15
 
-maybe_boo_item:
+dk_jungle:
   type: NAUDIO:V0:SEQUENCE
   id: 19
   size: 0x06C0

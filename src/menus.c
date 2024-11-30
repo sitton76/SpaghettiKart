@@ -60,7 +60,7 @@ s8 D_8018EE0C;
 struct_8018EE10_entry D_8018EE10[2];
 
 /** Data **/
-s32 gMenuSelection = START_MENU;
+s32 gMenuSelection = LOGO_INTRO_MENU;
 s32 D_800E86A4 = 0;
 s8 gCharacterSelections[4] = { MARIO, LUIGI, YOSHI, TOAD };
 
@@ -1851,7 +1851,7 @@ void func_800B3F74(s32 menuSelection) {
             }
             D_8018EDF1 = D_800F2BE0[gPlayerCount - 1];
             func_800CA008(0, 0);
-            func_800C8EAC(1);
+            play_sequence(MUSIC_SEQ_TITLE_SCREEN);
             D_8018EDFC = 0;
             break;
         }
@@ -1868,13 +1868,13 @@ void func_800B3F74(s32 menuSelection) {
                 func_800CB2C4();
                 gGamestate = 0;
                 gGamestateNext = 0;
-                func_800C8EAC(2);
+                play_sequence(MUSIC_SEQ_MAIN_MENU);
             }
 
             switch (D_8018EDE0) {
                 case 0: {
                     gMainMenuSelectionDepth = PLAYER_NUM_SELECTION;
-                    func_800C8EAC(2);
+                    play_sequence(MUSIC_SEQ_MAIN_MENU);
                     gPlayerCount = 1;
                     if (gScreenModeSelection >= NUM_SCREEN_MODES || gScreenModeSelection < 0) {
                         gScreenModeSelection = SCREEN_MODE_1P;
@@ -1926,7 +1926,7 @@ void func_800B3F74(s32 menuSelection) {
                         func_800CB2C4();
                         gGamestate = 0;
                         gGamestateNext = 0;
-                        func_800C8EAC(2);
+                        play_sequence(MUSIC_SEQ_MAIN_MENU);
                         for (i = 0; i < ARRAY_COUNT(D_8018EDE8); i++) {
                             D_8018EDE8[i] = false;
                         }
@@ -1966,7 +1966,7 @@ void func_800B3F74(s32 menuSelection) {
                 func_800CB2C4();
                 gGamestate = 0;
                 gGamestateNext = 0;
-                func_800C8EAC(2);
+                play_sequence(MUSIC_SEQ_MAIN_MENU);
             }
             play_sound2(SOUND_MENU_SELECT_MAP);
             D_8018EE0A = 0;

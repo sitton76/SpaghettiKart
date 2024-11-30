@@ -101,6 +101,7 @@ BansheeBoardwalk::BansheeBoardwalk() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 0, 0};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_BANSHEE_BOARDWALK;
 }
 
 void BansheeBoardwalk::Load() {

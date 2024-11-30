@@ -21,6 +21,7 @@
 #include "effects.h"
 #include "math.h"
 #include "menus.h"
+#include "sounds.h"
 #include "port/Game.h"
 
 #pragma intrinsic(sqrtf)
@@ -423,31 +424,10 @@ void func_8028EC98(s32 arg0) {
 
     func_800029B0();
 
-    if (GetCourse() == GetMarioRaceway() || GetCourse() == GetRoyalRaceway() || GetCourse() == GetLuigiRaceway() ||
-        GetCourse() == GetWarioStadium()) {
-        func_800C8EAC(3);
-    } else if (GetCourse() == GetToadsTurnpike()) {
-        func_800C8EAC(21);
-    } else if (GetCourse() == GetYoshiValley() || GetCourse() == GetMooMooFarm()) {
-        func_800C8EAC(4);
-    } else if (GetCourse() == GetChocoMountain() || GetCourse() == GetBlockFort() || GetCourse() == GetDoubleDeck()) {
-        func_800C8EAC(5);
-    } else if (GetCourse() == GetKalimariDesert()) {
-        func_800C8EAC(10);
-    } else if (GetCourse() == GetKoopaTroopaBeach()) {
-        func_800C8EAC(6);
-    } else if (GetCourse() == GetBowsersCastle()) {
-        func_800C8EAC(9);
-    } else if (GetCourse() == GetBansheeBoardwalk()) {
-        func_800C8EAC(7);
-    } else if (GetCourse() == GetFrappeSnowland() || GetCourse() == GetSherbetLand()) {
-        func_800C8EAC(8);
-    } else if (GetCourse() == GetRainbowRoad()) {
-        func_800C8EAC(18);
-    } else if (GetCourse() == GetDkJungle()) {
-        func_800C8EAC(19);
-    } else if (GetCourse() == GetSkyscraper() || GetCourse() == GetBigDonut()) {
-        func_800C8EAC(25);
+    enum MusicSeq sequence = CourseManager_GetProps()->Sequence;
+
+    if(sequence != MUSIC_SEQ_UNKNOWN){
+        play_sequence(sequence);
     }
 }
 

@@ -99,6 +99,7 @@ BlockFort::BlockFort() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {216, 232, 248};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_CHOCO_MOUNTAIN;
 }
 
 void BlockFort::Load() {
