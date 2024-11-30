@@ -10,8 +10,8 @@
 #include <Fast3D/gfx_pc.h>
 #include "libultraship/src/Context.h"
 
-#define SAMPLES_HIGH 454
-#define SAMPLES_LOW 438
+#define SAMPLES_HIGH 448
+#define SAMPLES_LOW 432
 #define AUDIO_FRAMES_PER_UPDATE 2
 #define NUM_AUDIO_CHANNELS 2
 #define SAMPLES_PER_FRAME (SAMPLES_HIGH * NUM_AUDIO_CHANNELS * 2)
