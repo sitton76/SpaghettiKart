@@ -275,7 +275,7 @@ void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state) {
 void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right) {
     rspa.vol_wet = (uint16_t)(initial_vol_wet << 8);
     rspa.rate_wet = rate_wet;
-    rspa.rate[0] = 0; // TODO: This need validations
+    rspa.rate[0] = rate_left;
     rspa.rate[1] = rate_right;
 }
 
@@ -289,7 +289,6 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
                    uint16_t dry_left_addr, uint16_t dry_right_addr,
                    uint16_t wet_left_addr, uint16_t wet_right_addr)
 {
-    swap_reverb = false;
     int16_t *in = BUF_S16(in_addr);
     int16_t *dry[2] = {BUF_S16(dry_left_addr), BUF_S16(dry_right_addr)};
     int16_t *wet[2] = {BUF_S16(wet_left_addr), BUF_S16(wet_right_addr)};
