@@ -203,19 +203,10 @@ void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state) {
             int16_t prev1 = out[-1];
             int16_t prev2 = out[-2];
             int j, k;
-			if (flags & 4) {
-				for (j = 0; j < 2; j++) {
-					ins[j * 4] = (((*in >> 6) << 30) >> 30) << shift;
-					ins[j * 4 + 1] = ((((*in >> 4) & 0x3) << 30) >> 30) << shift;
-					ins[j * 4 + 2] = ((((*in >> 2) & 0x3) << 30) >> 30) << shift;
-					ins[j * 4 + 3] = (((*in++ & 0x3) << 30) >> 30) << shift;
-				}
-			} else {
-				for (j = 0; j < 4; j++) {
-					ins[j * 2] = (((*in >> 4) << 28) >> 28) << shift;
-					ins[j * 2 + 1] = (((*in++ & 0xf) << 28) >> 28) << shift;
-				}
-			}
+            for (j = 0; j < 4; j++) {
+                ins[j * 2] = (((*in >> 4) << 28) >> 28) << shift;
+                ins[j * 2 + 1] = (((*in++ & 0xf) << 28) >> 28) << shift;
+            }
             for (j = 0; j < 8; j++) {
                 int32_t acc = tbl[0][j] * prev2 + tbl[1][j] * prev1 + (ins[j] << 11);
                 for (k = 0; k < j; k++) {
@@ -231,7 +222,7 @@ void aADPCMdecImpl(uint8_t flags, ADPCM_STATE state) {
 }
 
 void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state) {
-    int16_t tmp[16];
+    int16_t tmp[32];
     int16_t *in_initial = BUF_S16(rspa.in);
     int16_t *in = in_initial;
     int16_t *out = BUF_S16(rspa.out);
