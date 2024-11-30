@@ -275,7 +275,7 @@ void aResampleImpl(uint8_t flags, uint16_t pitch, RESAMPLE_STATE state) {
 void aEnvSetup1Impl(uint8_t initial_vol_wet, uint16_t rate_wet, uint16_t rate_left, uint16_t rate_right) {
     rspa.vol_wet = (uint16_t)(initial_vol_wet << 8);
     rspa.rate_wet = rate_wet;
-    rspa.rate[0] = rate_left;
+    rspa.rate[0] = 0; // TODO: This need validations
     rspa.rate[1] = rate_right;
 }
 
