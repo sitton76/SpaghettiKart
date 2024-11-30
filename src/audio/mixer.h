@@ -49,7 +49,7 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
                    bool neg_left, bool neg_right,
                    uint16_t dry_left_addr, uint16_t dry_right_addr,
                    uint16_t wet_left_addr, uint16_t wet_right_addr);
-void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr);
+void aMixImpl(int16_t gain, uint16_t in_addr, uint16_t out_addr, uint16_t count);
 void aS8DecImpl(uint8_t flags, ADPCM_STATE state);
 void aAddMixerImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr);
 void aDuplicateImpl(uint16_t count, uint16_t in_addr, uint16_t out_addr);
@@ -80,7 +80,7 @@ void aUnkCmd19Impl(uint8_t f, uint16_t count, uint16_t out_addr, uint16_t in_add
 #define aEnvSetup2(pkt, initialVolLeft, initialVolRight) aEnvSetup2Impl(initialVolLeft, initialVolRight)
 #define aEnvMixer(pkt, inBuf, nSamples, swapReverb, negLeft, negRight, dryLeft, dryRight, wetLeft, wetRight) \
     aEnvMixerImpl(inBuf, nSamples, swapReverb, negLeft, negRight, dryLeft, dryRight, wetLeft, wetRight)
-#define aMix(pkt, c, g, i, o) aMixImpl(c, g, i, o)
+#define aMix(pkt, g, i, o, c) aMixImpl(g, i, o, c)
 #define aS8Dec(pkt, f, s) aS8DecImpl(f, s)
 #define aAddMixer(pkt, s, d, c) aAddMixerImpl(s, d, c)
 #define aDuplicate(pkt, s, d, c) aDuplicateImpl(s, d, c)

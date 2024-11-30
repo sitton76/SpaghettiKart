@@ -16,7 +16,7 @@
 #define ROUND_DOWN_16(v) ((v) & ~0xf)
 
 //#define DMEM_BUF_SIZE (0x1000 - 0x0330 - 0x10 - 0x40)
-#define DMEM_BUF_SIZE 0xC80
+#define DMEM_BUF_SIZE 0x17D0
 #define BUF_U8(a) (rspa.buf.as_u8 + (a))
 #define BUF_S16(a) (rspa.buf.as_s16 + (a) / sizeof(int16_t))
 
@@ -319,8 +319,8 @@ void aEnvMixerImpl(uint16_t in_addr, uint16_t n_samples, bool swap_reverb,
     } while (n > 0);
 }
 
-void aMixImpl(uint16_t count, int16_t gain, uint16_t in_addr, uint16_t out_addr) {
-    int nbytes = ROUND_UP_32(ROUND_DOWN_16(count << 4));
+void aMixImpl(int16_t gain, uint16_t in_addr, uint16_t out_addr, uint16_t count) {
+    int nbytes = ROUND_UP_32(ROUND_DOWN_16(count));
     int16_t *in = BUF_S16(in_addr);
     int16_t *out = BUF_S16(out_addr);
     int i;

@@ -293,7 +293,7 @@ Acmd* synthesis_do_one_audio_update(s16* aiBuf, s32 bufLen, Acmd* acmd, s32 upda
     aClearBuffer(acmd++, DMEM_ADDR_LEFT_CH, DEFAULT_LEN_2CH);
     i = 0;
     for (j = 0; j < gNumSynthesisReverbs; j++) {
-        gUseReverb = 0; //gSynthesisReverbs[j].useReverb;
+        gUseReverb = gSynthesisReverbs[j].useReverb;
         if (gUseReverb != 0) {
             acmd = synthesis_resample_and_mix_reverb(acmd, bufLen, j, updateIndex);
         }

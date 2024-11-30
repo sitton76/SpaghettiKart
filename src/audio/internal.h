@@ -122,13 +122,13 @@ struct AdpcmLoop {
     u32 end;
     u32 count;
     u32 pad;
-    s16 state[16]; // only exists if count != 0. 8-byte aligned
+    s16* state; // only exists if count != 0. 8-byte aligned
 };
 
 struct AdpcmBook {
     s32 order;
     s32 npredictors;
-    s16 book[1]; // size 8 * order * npredictors. 8-byte aligned
+    s16* book; // size 8 * order * npredictors. 8-byte aligned
 };
 
 struct AudioBankSample {
