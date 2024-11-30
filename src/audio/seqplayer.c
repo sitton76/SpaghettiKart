@@ -909,14 +909,14 @@ void sequence_channel_process_script(struct SequenceChannel* seqChannel) {
                         }
                         break;
 
-                    case 0xEB:
+                    case 0xEB: {
                         cmd = m64_read_u8(state);
-                        sp38 = ((u16*) gAlBankSets)[seqPlayer->seqId];
-                        loBits = *(sp38 + gAlBankSets);
-                        cmd = gAlBankSets[(((s32) sp38) + loBits) - cmd];
-                        if (get_bank_or_seq(1, 2, cmd) != NULL) {
+                        struct AudioSequenceData *sequence = GameEngine_LoadSequence(seqPlayer->seqId);
+                        cmd = sequence->banks[cmd];
+                        if(IS_BANK_LOAD_COMPLETE(cmd)) {
                             seqChannel->bankId = cmd;
                         }
+                    }
 
                     case 0xC1:
                         set_instrument(seqChannel, m64_read_u8(state));
@@ -1007,7 +1007,7 @@ void sequence_channel_process_script(struct SequenceChannel* seqChannel) {
                         seqChannel->reverbVol = m64_read_u8(state);
                         break;
 
-                    case 0xC6:
+                    case 0xC6: {
                         cmd = m64_read_u8(state);
                         struct AudioSequenceData *sequence = GameEngine_LoadSequence(seqPlayer->seqId);
                         cmd = sequence->banks[cmd];
@@ -1015,6 +1015,7 @@ void sequence_channel_process_script(struct SequenceChannel* seqChannel) {
                             seqChannel->bankId = cmd;
                         }
                         break;
+                    }
 
                     case 0xC7:
                         cmd = m64_read_u8(state);
