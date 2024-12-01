@@ -322,6 +322,8 @@ void func_800CB14C(void);
 void func_800CB2C4(void);
 void func_800CBC24(void);
 
+extern void audio_set_player_volume(u8 player, f32 volume);
+
 // This is some from other file, its definitely not part of audio's data/bss
 extern s8 D_801657E5;
 

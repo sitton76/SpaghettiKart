@@ -5,6 +5,7 @@
 #include "audio/data.h"
 #include "audio/heap.h"
 #include "audio/internal.h"
+#include "audio/external.h"
 #include "audio/playback.h"
 #include "audio/synthesis.h"
 #include "audio/seqplayer.h"
@@ -803,6 +804,11 @@ void audio_init(void) {
     sound_alloc_pool_init(&gUnkPool1.pool, soundAlloc(&gAudioInitPool, (u32) D_800EA5D8), (u32) D_800EA5D8);
     init_sequence_players();
     gAudioLoadLock = 0x76557364;
+
+    audio_set_player_volume(SEQ_PLAYER_LEVEL, CVarGetFloat("gMainMusicVolume", 1.0f));
+    audio_set_player_volume(SEQ_PLAYER_ENV, CVarGetFloat("gEnvironmentVolume", 1.0f));
+    audio_set_player_volume(SEQ_PLAYER_SFX, CVarGetFloat("gSFXMusicVolume", 1.0f));
+
 }
 #else
 #ifdef VERSION_EU

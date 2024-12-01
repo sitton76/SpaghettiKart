@@ -3547,6 +3547,11 @@ void func_800CB14C() {
     }
 }
 
+void audio_set_player_volume(u8 player, f32 volume) {
+    gSequencePlayers[player].gameVolume = volume;
+    gSequencePlayers[player].recalculateVolume = 1;
+}
+
 // run audio?
 void func_800CB2C4() {
     func_800C1F8C();
