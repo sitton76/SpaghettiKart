@@ -104,6 +104,7 @@ DKJungle::DKJungle() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {22, 145, 22};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_DK_JUNGLE;
 }
 
 void DKJungle::Load() {

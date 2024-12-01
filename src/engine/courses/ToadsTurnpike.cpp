@@ -104,6 +104,7 @@ ToadsTurnpike::ToadsTurnpike() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {209, 65, 23};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_TOADS_TURNPIKE;
 }
 
 void ToadsTurnpike::Load() {

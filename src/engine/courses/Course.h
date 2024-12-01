@@ -75,6 +75,7 @@ public:
         int32_t MinimapFinishlineX;
         int32_t MinimapFinishlineY;
         SkyboxColours Skybox;
+        MusicSeq Sequence;
     } Properties;
 
     Properties Props;

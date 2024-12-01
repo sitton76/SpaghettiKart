@@ -71,6 +71,10 @@ void note_set_vel_pan_reverb(struct Note* note, f32 velocity, u8 pan, u8 reverbV
         velocity = 1.0f;
     }
 
+    float master_vol = CVarGetFloat("gGameMasterVolume", 1.0f);
+    volLeft *= master_vol;
+    volRight *= master_vol;
+
     sub->targetVolLeft = ((s32) (velocity * volLeft * 4095.999f));
     sub->targetVolRight = ((s32) (velocity * volRight * 4095.999f));
 

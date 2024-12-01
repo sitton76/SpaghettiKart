@@ -100,6 +100,7 @@ RoyalRaceway::RoyalRaceway() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {255, 224, 240};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_RACEWAYS_WARIO_STADIUM;
 }
 
 void RoyalRaceway::Load() {
