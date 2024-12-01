@@ -1,3 +1,8 @@
+:config:
+  external_files:
+    - "yamls/us/sound/root.yml"
+    - "yamls/us/sound/samples.yml"
+
 bank_0:
   type: NAUDIO:V0:BANK
   id: 0
