@@ -1253,7 +1253,7 @@ void func_800C4398(void) {
     u8 soundIndex;
     u8 var_a3;
     struct Sound* var_a2;
-    u8 var_t2;
+    u8 var_t2 = 0;
     u32 var_t3;
 
     var_a2 = &sSoundRequests[sNumProcessedSoundRequests];
