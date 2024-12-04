@@ -703,6 +703,7 @@ void render_object_for_player(s32 cameraId) {
     CourseManager_RenderCourseObjects(cameraId);
     CourseManager_TrainSmokeDraw(cameraId);
     CourseManager_DrawThwomps(cameraId);
+    CourseManager_DrawPenguins(cameraId);
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -1580,6 +1581,7 @@ void update_object(void) {
 
     CourseManager_UpdateCourseObjects();
     CourseManager_TrainSmokeTick();
+    CourseManager_TickPenguins();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
