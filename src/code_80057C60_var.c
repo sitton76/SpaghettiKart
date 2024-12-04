@@ -17,7 +17,7 @@ f32 D_8018D00C;
 s16 D_8018D010;
 UNUSED s32 D_8018D014;
 s16 D_8018D018;
-f32 xOrientation;
+f32 xOrientation; // For mirror/extra mode
 s16 D_8018D020;
 f32 D_8018D028[8];
 s16 D_8018D048;

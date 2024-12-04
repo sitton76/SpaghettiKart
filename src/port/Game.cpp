@@ -295,8 +295,10 @@ extern "C" {
 
     void CourseManager_ClearVehicles(void) {
         gWorldInstance.ClearVehicles();
+        gWorldInstance.Crossings.clear();
         gWorldInstance.BombKarts.clear();
         gWorldInstance.Thwomps.clear();
+        gWorldInstance.Penguins.clear();
     }
 
     void CourseManager_CrossingTrigger() {
@@ -497,6 +499,22 @@ extern "C" {
         for (auto& thwomp : gWorldInstance.Thwomps) {
             if (thwomp) {
                 thwomp->Draw(cameraId);
+            }
+        }
+    }
+
+    void CourseManager_TickPenguins(void) {
+        for (auto& penguin : gWorldInstance.Penguins) {
+            if (penguin) {
+                penguin->Tick();
+            }
+        }
+    }
+
+    void CourseManager_DrawPenguins(s32 cameraId) {
+        for (auto& penguin : gWorldInstance.Penguins) {
+            if (penguin) {
+                penguin->Draw(cameraId);
             }
         }
     }
