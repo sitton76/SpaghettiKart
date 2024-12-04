@@ -343,7 +343,7 @@ Acmd* synthesis_process_note(s32 noteIndex, struct NoteSubEu* noteSubEu, struct 
     u16 resamplingRateFixedPoint;
     s32 nSamplesToLoad;
 
-    s32 spFC;
+    s32 spFC = 0;
     UNUSED s32 pad2[2];
 
     s32 loopInfo_2;
