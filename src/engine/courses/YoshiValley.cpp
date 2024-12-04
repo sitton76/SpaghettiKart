@@ -142,6 +142,12 @@ void YoshiValley::MinimapSettings() {
 void YoshiValley::InitCourseObjects() {
     size_t objectId;
     size_t i;
+
+    //! @bug Skip spawning due to animation crash for now
+    if (gGamestate == CREDITS_SEQUENCE) {
+        return;
+    }
+
     for (i = 0; i < NUM_YV_FLAG_POLES; i++) {
         init_object(indexObjectList1[i], 0);
     }

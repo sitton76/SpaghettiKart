@@ -98,6 +98,10 @@ void CourseManager_DrawThwomps(s32 cameraId);
 
 void CourseManager_TickThwomps();
 
+void CourseManager_DrawPenguins(s32 cameraId);
+
+void CourseManager_TickPenguins();
+
 void CourseManager_CrossingTrigger();
 
 void CourseManager_VehiclesCollision(s32 playerId, Player* player);

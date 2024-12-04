@@ -3637,7 +3637,6 @@ void func_80052D70(s32 playerId) {
 
 void func_80052E30(UNUSED s32 arg0) {
     s32 var_s0;
-    // Lights1 D_800E4620l = *(Lights1 *) LOAD_ASSET(D_800E4620);
     D_800E4620.l[0].l.dir[0] = D_80165840[0];
     D_800E4620.l[0].l.dir[1] = D_80165840[1];
     D_800E4620.l[0].l.dir[2] = D_80165840[2];
@@ -3760,20 +3759,12 @@ void render_lakitu(s32 cameraId) {
 
 void translate_thwomp_lights(UNUSED s32 arg0) {
     func_800419F8();
-    // Lights1 *D_800E4638l = (Lights1 *) LOAD_ASSET(D_800E4638);
     D_800E4638.l[0].l.dir[0] = D_80165840[0];
     D_800E4638.l[0].l.dir[1] = D_80165840[1];
     D_800E4638.l[0].l.dir[2] = D_80165840[2];
 }
 
 void thwomp_lights(s32 objectIndex) {
-
-    // Lights1 *D_800E4638l = (Lights1 *) LOAD_ASSET(D_800E4638);
-    // Lights1 *D_800E4650l = (Lights1 *) LOAD_ASSET(D_800E4650);
-    // Lights1 *D_800E4668l = (Lights1 *) LOAD_ASSET(D_800E4668);
-    // Lights1 *D_800E4680l = (Lights1 *) LOAD_ASSET(D_800E4680);
-    // Lights1 *D_800E4698l = (Lights1 *) LOAD_ASSET(D_800E4698);
-
     // Why these don't just use `gSPSetLights1` calls...
     switch (gObjectList[objectIndex].type) { // hmm very strange 80165C18
         case 0:

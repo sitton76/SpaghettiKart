@@ -47,6 +47,7 @@ static size_t tankerTrucks;
 static size_t cars;
 static size_t boats;
 static size_t thwomps;
+static size_t penguins;
 
 /**
  * Note that you can only remove the tender if there are no carriages
@@ -102,6 +103,13 @@ void World::AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16
         std::make_unique<OThwomp>(thwomps, x, z, direction, scale, behaviour, primAlpha, boundingBoxSize));
     thwomps++;
     gNumActiveThwomps = thwomps;
+}
+
+std::shared_ptr<OPenguin> World::AddPenguin(Vec3f pos, u16 direction, OPenguin::PenguinType type, OPenguin::Behaviour behaviour) {
+    auto penguin = std::make_shared<OPenguin>(penguins, pos, direction, type, behaviour);
+    Penguins.push_back(penguin);
+    penguins++;
+    return penguin;
 }
 
 u32 World::GetCupIndex() {
