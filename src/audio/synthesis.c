@@ -7,7 +7,7 @@
 #include "audio/load.h"
 #include "audio/seqplayer.h"
 #include "audio/internal.h"
-// #include "audio/external.h"
+#include "port/Engine.h"
 #include <libultra/abi.h>
 
 #define aSetLoadBufferPair(pkt, c, off)                                               \
@@ -161,8 +161,7 @@ Acmd* synthesis_execute(Acmd* acmd, s32* writtenCmds, s16* aiBuf, s32 bufLen) {
         process_sequences(i - 1);
         synthesis_load_note_subs_eu(gAudioBufferParameters.updatesPerFrame - i);
     }
-    // UTODO: Stubbed
-    // aSegment(cmd++, 0, 0);
+    aSegment(cmd++, 0, 0);
     aiBufPtr = (u32*) aiBuf;
     for (i = gAudioBufferParameters.updatesPerFrame; i > 0; i--) {
         if (i == 1) {
@@ -325,7 +324,7 @@ Acmd* synthesis_do_one_audio_update(s16* aiBuf, s32 bufLen, Acmd* acmd, s32 upda
     temp = bufLen * 2;
     aSetBuffer(acmd++, 0, 0, DMEM_ADDR_TEMP, temp);
     // UTODO: Stubbed
-    // aInterleave(acmd++, DMEM_ADDR_LEFT_CH, DMEM_ADDR_RIGHT_CH);
+    aInterleave(acmd++, 0, DMEM_ADDR_LEFT_CH, DMEM_ADDR_RIGHT_CH, 0);
     aSaveBuffer(acmd++, DMEM_ADDR_TEMP, VIRTUAL_TO_PHYSICAL2(aiBuf), temp * 2);
     return acmd;
 }
@@ -344,7 +343,7 @@ Acmd* synthesis_process_note(s32 noteIndex, struct NoteSubEu* noteSubEu, struct 
     u16 resamplingRateFixedPoint;
     s32 nSamplesToLoad;
 
-    s32 spFC;
+    s32 spFC = 0;
     UNUSED s32 pad2[2];
 
     s32 loopInfo_2;
@@ -613,8 +612,7 @@ Acmd* load_wave_samples(Acmd* acmd, struct NoteSubEu* noteSubEu, struct NoteSynt
                         s32 nSamplesToLoad) {
     s32 a3;
     s32 repeats;
-    // UTODO: Stubbed
-    // aLoadBuffer(acmd++, VIRTUAL_TO_PHYSICAL2(noteSubEu->sound.samples), 0x1A0, 128);
+    aLoadBuffer(acmd++, VIRTUAL_TO_PHYSICAL2(noteSubEu->sound.samples), 0x1A0, 128);
 
     synthesisState->samplePosInt &= 0x3f;
     a3 = 64 - synthesisState->samplePosInt;
@@ -622,7 +620,7 @@ Acmd* load_wave_samples(Acmd* acmd, struct NoteSubEu* noteSubEu, struct NoteSynt
         repeats = (nSamplesToLoad - a3 + 63) / 64;
         if (repeats != 0) {
             // UTODO: Stubbed
-            // aDMEMMove2(acmd++, repeats, 0x1A0, 0x1A0 + 128, 128);
+            aDMEMMove2(acmd++, repeats, 0x1A0, 0x1A0 + 128, 128);
         }
     }
     return acmd;

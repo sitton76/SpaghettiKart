@@ -271,7 +271,7 @@ void func_800C8AE4(void);
 void func_800C8C7C(u8);
 void func_800C8CCC(void);
 void play_sound2(s32);
-void func_800C8EAC(u16);
+void play_sequence(u16);
 void func_800C8EF8(u16);
 void func_800C8F44(u8);
 void func_800C8F80(u8, u32);
@@ -321,6 +321,8 @@ void func_800CB134(void);
 void func_800CB14C(void);
 void func_800CB2C4(void);
 void func_800CBC24(void);
+
+extern void audio_set_player_volume(u8 player, f32 volume);
 
 // This is some from other file, its definitely not part of audio's data/bss
 extern s8 D_801657E5;
@@ -399,7 +401,7 @@ extern f32 D_800EA120[4];
 extern f32 D_800EA130[8];
 extern f32 D_800EA150; // = 1.4f;
 extern u8 D_800EA154[];
-extern u16 D_800EA15C;
+extern u16 gCurrentMusicSeq;
 extern u16 D_800EA160;
 extern u8 D_800EA164;
 extern s8 D_800EA168;

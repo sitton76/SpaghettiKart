@@ -5,10 +5,12 @@
 #include "audio/data.h"
 #include "audio/heap.h"
 #include "audio/internal.h"
+#include "audio/external.h"
 #include "audio/playback.h"
 #include "audio/synthesis.h"
 #include "audio/seqplayer.h"
 #include "audio/port_eu.h"
+#include "port/Engine.h"
 #include "buffers/gfx_output_buffer.h"
 
 #include <string.h>
@@ -598,58 +600,19 @@ void* sequence_dma_async(s32 seqId, s32 arg1, struct SequencePlayer* seqPlayer) 
     return ptr;
 }
 
-u8 get_missing_bank(u32 seqId, s32* nonNullCount, s32* nullCount) {
-    void* temp;
-    u32 bankId;
-    u16 offset;
-    u8 i;
-    u8 ret;
-
-    *nullCount = 0;
-    *nonNullCount = 0;
-    offset = ((u16*) gAlBankSets)[seqId];
-    for (i = gAlBankSets[offset++], ret = 0; i != 0; i--) {
-        bankId = gAlBankSets[offset++];
-
-        if (IS_BANK_LOAD_COMPLETE(bankId) == true) {
-            temp = get_bank_or_seq(1, 2, bankId);
-        } else {
-            temp = NULL;
-        }
-
-        if (temp == NULL) {
-            (*nullCount)++;
-            ret = bankId;
-        } else {
-            (*nonNullCount)++;
-        }
-    }
-
-    return ret;
+uint8_t* load_sequence_immediate(s32 seqId, s32 arg1) {
+    return GameEngine_LoadSequence(seqId)->data;
 }
 
-struct AudioBank* load_banks_immediate(s32 seqId, u8* outDefaultBank) {
-    void* ret;
+struct CtlEntry* load_banks_immediate(s32 seqId, u8 *outDefaultBank) {
     u32 bankId;
-    u16 offset;
-    u8 i;
-
-    offset = ((u16*) gAlBankSets)[seqId];
-    for (i = gAlBankSets[offset++]; i != 0; i--) {
-        bankId = gAlBankSets[offset++];
-
-        if (IS_BANK_LOAD_COMPLETE(bankId) == true) {
-            ret = get_bank_or_seq(1, 2, bankId);
-        } else {
-            ret = NULL;
-        }
-
-        if (ret == NULL) {
-            ret = bank_load_immediate(bankId, 2);
-        }
+    struct AudioSequenceData *seqData = GameEngine_LoadSequence(seqId);
+    struct CtlEntry *output;
+    for(size_t i = 0; i < seqData->bankCount; i++) {
+        output = GameEngine_LoadBank(bankId = seqData->banks[i]);
     }
     *outDefaultBank = bankId;
-    return ret;
+    return output;
 }
 
 void preload_sequence(u32 seqId, u8 preloadMask) {
@@ -660,9 +623,9 @@ void preload_sequence(u32 seqId, u8 preloadMask) {
         return;
     }
 
-    if (gSeqFileHeader->seqArray[seqId].len == 0) {
-        seqId = (u32) gSeqFileHeader->seqArray[seqId].offset;
-    }
+    // if (gSeqFileHeader->seqArray[seqId].len == 0) {
+    //     seqId = (u32) gSeqFileHeader->seqArray[seqId].offset;
+    // }
 
     gAudioLoadLock = AUDIO_LOCK_LOADING;
     if (preloadMask & PRELOAD_BANKS) {
@@ -671,8 +634,8 @@ void preload_sequence(u32 seqId, u8 preloadMask) {
 
     if (preloadMask & PRELOAD_SEQUENCE) {
         //! @bug should be IS_SEQ_LOAD_COMPLETE
-        if (IS_BANK_LOAD_COMPLETE(seqId) == true) {
-            sequenceData = get_bank_or_seq(0, 2, seqId);
+        if (IS_SEQ_LOAD_COMPLETE(seqId) == true) {
+            sequenceData = load_sequence_immediate(seqId, 2);
         } else {
             sequenceData = NULL;
         }
@@ -696,63 +659,32 @@ void load_sequence(u32 player, u32 seqId, s32 loadAsync) {
 }
 
 void load_sequence_internal(u32 player, u32 seqId, s32 loadAsync) {
-    void* sequenceData;
-    struct SequencePlayer* seqPlayer = &gSequencePlayers[player];
-    UNUSED u32 padding[2];
+    struct SequencePlayer *seqPlayer = &gSequencePlayers[player];
 
     if (seqId >= gSequenceCount) {
         return;
     }
 
-    if (gSeqFileHeader->seqArray[seqId].len == 0) {
-        seqId = (u32) gSeqFileHeader->seqArray[seqId].offset;
+    sequence_player_disable(seqPlayer);
+    struct CtlEntry* bank = load_banks_immediate(seqId, &seqPlayer->defaultBank[0]);
+
+    if (bank == NULL) {
+        return;
     }
 
-    sequence_player_disable(seqPlayer);
-    if (loadAsync) {
-        s32 numMissingBanks = 0;
-        s32 dummy = 0;
-        s32 bankId = get_missing_bank(seqId, &dummy, &numMissingBanks);
-        if (numMissingBanks == 1) {
-            if (bank_load_async(bankId, 2, seqPlayer) == NULL) {
-                return;
-            }
-            /**
-             * @bug This should set the last bank (i.e. the first in the JSON)
-             * as default, not the missing one. This code path never gets
-             * taken, though -- all sequence loading is synchronous.
-             */
-            seqPlayer->defaultBank[0] = bankId;
-        } else {
-            if (load_banks_immediate(seqId, &seqPlayer->defaultBank[0]) == NULL) {
-                return;
-            }
-        }
-    } else if (load_banks_immediate(seqId, &seqPlayer->defaultBank[0]) == NULL) {
+    eu_stubbed_printf_2("Seq %d:Default Load Id is %d\n", seqId, seqPlayer->defaultBank[0]);
+    eu_stubbed_printf_0("Seq Loading Start\n");
+
+    uint8_t* sequenceData = load_sequence_immediate(seqId, 2);
+    if (sequenceData == NULL) {
         return;
     }
 
     seqPlayer->seqId = seqId;
-    sequenceData = get_bank_or_seq(0, 2, seqId);
-    if (sequenceData == NULL) {
-        if (seqPlayer->seqDmaInProgress) {
-            return;
-        }
-        if (loadAsync) {
-            sequenceData = sequence_dma_async(seqId, 2, seqPlayer);
-        } else {
-            sequenceData = sequence_dma_immediate(seqId, 2);
-        }
-
-        if (sequenceData == NULL) {
-            return;
-        }
-    }
-
     init_sequence_player(player);
     seqPlayer->scriptState.depth = 0;
     seqPlayer->delay = 0;
-    seqPlayer->enabled = true;
+    seqPlayer->enabled = 1;
     seqPlayer->seqData = sequenceData;
     seqPlayer->scriptState.pc = sequenceData;
 }
@@ -801,21 +733,8 @@ void audio_init(void) {
 #endif
 
     // UTODO: Which is the correct one?
-    switch (0) { /* irregular */
-        case 0:
-            D_803B7178 = 20.03042f;
-            gRefreshRate = 0x00000032;
-            break;
-        case 2:
-            D_803B7178 = 16.546f;
-            gRefreshRate = 0x0000003C;
-            break;
-        case 1:
-        default:
-            D_803B7178 = 16.713f;
-            gRefreshRate = 0x0000003C;
-            break;
-    }
+    D_803B7178 = 16.713f;
+    gRefreshRate = 60;
     port_eu_init();
     for (i = 0; i < NUMAIBUFFERS; i++) {
         gAiBufferLengths[i] = 0xa0;
@@ -845,6 +764,7 @@ void audio_init(void) {
     gAudioResetPresetIdToLoad = 0;
     gAudioResetStatus = one;
     audio_shut_down_and_reset_step();
+    gSequenceCount = GameEngine_GetSequenceCount();
 #ifdef TARGET_N64
     gSeqFileHeader = (ALSeqFile*) sp60;
     test = &_sequencesSegmentRomStart;
@@ -884,6 +804,11 @@ void audio_init(void) {
     sound_alloc_pool_init(&gUnkPool1.pool, soundAlloc(&gAudioInitPool, (u32) D_800EA5D8), (u32) D_800EA5D8);
     init_sequence_players();
     gAudioLoadLock = 0x76557364;
+
+    audio_set_player_volume(SEQ_PLAYER_LEVEL, CVarGetFloat("gMainMusicVolume", 1.0f));
+    audio_set_player_volume(SEQ_PLAYER_ENV, CVarGetFloat("gEnvironmentVolume", 1.0f));
+    audio_set_player_volume(SEQ_PLAYER_SFX, CVarGetFloat("gSFXMusicVolume", 1.0f));
+
 }
 #else
 #ifdef VERSION_EU

@@ -3,6 +3,7 @@
 
 #include <libultraship.h>
 #include "common_structs.h"
+#include "port/resource/type/AudioSequence.h"
 
 #define SEQUENCE_PLAYERS 4
 #define SEQUENCE_CHANNELS 48
@@ -121,13 +122,13 @@ struct AdpcmLoop {
     u32 end;
     u32 count;
     u32 pad;
-    s16 state[16]; // only exists if count != 0. 8-byte aligned
+    s16* state; // only exists if count != 0. 8-byte aligned
 };
 
 struct AdpcmBook {
     s32 order;
     s32 npredictors;
-    s16 book[1]; // size 8 * order * npredictors. 8-byte aligned
+    s16* book; // size 8 * order * npredictors. 8-byte aligned
 };
 
 struct AudioBankSample {
@@ -169,7 +170,7 @@ struct AudioBank {
 }; // dynamic size
 
 struct CtlEntry {
-    u8 unused;
+    u8 bankId;
     u8 numInstruments;
     u8 numDrums;
     struct Instrument** instruments;
@@ -227,6 +228,7 @@ struct SequencePlayer {
     /*0x130, 0x13C*/ u8* bankDmaCurrMemAddr;
     /*0x138, 0x140*/ uintptr_t bankDmaCurrDevAddr;
     /*0x13C, 0x144*/ size_t bankDmaRemaining;
+    f32 gameVolume;
 }; // size = 0x140, 0x148 on EU, 0x14C on SH
 
 struct AdsrSettings {
@@ -556,13 +558,14 @@ struct AudioBufferParametersEU {
  *     The version of that function in MK64 is significantly different
  *     from its SM64 counterpart
  * Or we just have a poor understanding of this part of the system.
+**/
 
 struct EuAudioCmd {
     union {
 #if IS_BIG_ENDIAN
         struct {
             u8 op;
-            u8 arg1;
+            u8 bankId;
             u8 arg2;
             u8 arg3;
         } s;
@@ -570,7 +573,7 @@ struct EuAudioCmd {
         struct {
             u8 arg3;
             u8 arg2;
-            u8 arg1;
+            u8 bankId;
             u8 op;
         } s;
 #endif
@@ -595,25 +598,7 @@ struct EuAudioCmd {
 #endif
     } u2;
 };
-**/
 
-struct EuAudioCmd {
-    union {
-        struct {
-            u8 op;
-            u8 bankId;
-            u8 arg2;
-            u8 arg3;
-        } s;
-        u32 first;
-    } u;
-    union {
-        s32 as_s32;
-        u32 as_u32;
-        f32 as_f32;
-        u8 as_u8;
-        s8 as_s8;
-    } u2;
-};
+extern void create_next_audio_buffer(s16* samples, u32 num_samples);
 
 #endif // AUDIO_INTERNAL_H

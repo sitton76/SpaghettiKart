@@ -9,6 +9,7 @@
 #include "audio/effects.h"
 #include "audio/playback.h"
 #include "audio/external.h"
+#include "port/Engine.h"
 
 /**
  * Given that (almost) all of these are format strings, it is highly likely
@@ -248,11 +249,11 @@ void sequence_player_disable(struct SequencePlayer* seqPlayer) {
     seqPlayer->enabled = false;
 
     if (IS_SEQ_LOAD_COMPLETE(seqPlayer->seqId) && gSeqLoadStatus[seqPlayer->seqId] != 5) {
-        gSeqLoadStatus[seqPlayer->seqId] = SOUND_LOAD_STATUS_DISCARDABLE;
+        GameEngine_UnloadSequence(seqPlayer->seqId);
     }
 
     if (IS_BANK_LOAD_COMPLETE(seqPlayer->defaultBank[0]) && gBankLoadStatus[seqPlayer->defaultBank[0]] != 5) {
-        gBankLoadStatus[seqPlayer->defaultBank[0]] = 4;
+        GameEngine_UnloadBank(seqPlayer->defaultBank[0]);
     }
 
     // (Note that if this is called from alloc_bank_or_seq, the side will get swapped
@@ -732,11 +733,14 @@ void seq_channel_layer_process_script(struct SequenceChannelLayer* layer) {
     if (seqChannel) {}
 }
 
-u8 get_instrument(struct SequenceChannel* seqChannel, u8 instId, struct Instrument** instOut,
-                  struct AdsrSettings* adsr) {
-    struct Instrument* inst;
-    inst = get_instrument_inner(seqChannel->bankId, instId);
-    if (inst == NULL) {
+u8 get_instrument(struct SequenceChannel *seqChannel, u8 instId, struct Instrument **instOut, struct AdsrSettings *adsr) {
+    struct CtlEntry *bank = GameEngine_LoadBank(seqChannel->bankId);
+    if(instId >= bank->numInstruments) {
+        *instOut = NULL;
+        return 0;
+    }
+    struct Instrument* inst = bank->instruments[instId];
+    if(inst == NULL) {
         *instOut = NULL;
         return 0;
     }
@@ -905,14 +909,14 @@ void sequence_channel_process_script(struct SequenceChannel* seqChannel) {
                         }
                         break;
 
-                    case 0xEB:
+                    case 0xEB: {
                         cmd = m64_read_u8(state);
-                        sp38 = ((u16*) gAlBankSets)[seqPlayer->seqId];
-                        loBits = *(sp38 + gAlBankSets);
-                        cmd = gAlBankSets[(((s32) sp38) + loBits) - cmd];
-                        if (get_bank_or_seq(1, 2, cmd) != NULL) {
+                        struct AudioSequenceData *sequence = GameEngine_LoadSequence(seqPlayer->seqId);
+                        cmd = sequence->banks[cmd];
+                        if(IS_BANK_LOAD_COMPLETE(cmd)) {
                             seqChannel->bankId = cmd;
                         }
+                    }
 
                     case 0xC1:
                         set_instrument(seqChannel, m64_read_u8(state));
@@ -1003,15 +1007,15 @@ void sequence_channel_process_script(struct SequenceChannel* seqChannel) {
                         seqChannel->reverbVol = m64_read_u8(state);
                         break;
 
-                    case 0xC6:
+                    case 0xC6: {
                         cmd = m64_read_u8(state);
-                        sp5A = ((u16*) gAlBankSets)[seqPlayer->seqId];
-                        loBits = *(sp5A + gAlBankSets);
-                        cmd = gAlBankSets[(sp5A + loBits) - cmd];
-                        if (get_bank_or_seq(1, 2, cmd) != NULL) {
+                        struct AudioSequenceData *sequence = GameEngine_LoadSequence(seqPlayer->seqId);
+                        cmd = sequence->banks[cmd];
+                        if(IS_BANK_LOAD_COMPLETE(cmd)) {
                             seqChannel->bankId = cmd;
                         }
                         break;
+                    }
 
                     case 0xC7:
                         cmd = m64_read_u8(state);
@@ -1210,6 +1214,9 @@ void sequence_player_process_sequence(struct SequencePlayer* seqPlayer) {
     if (seqPlayer->enabled == false) {
         return;
     }
+    
+    GameEngine_LoadSequence(seqPlayer->seqId);
+    GameEngine_LoadBank(seqPlayer->defaultBank[0]);
 
     if (seqPlayer->bankDmaInProgress == true) {
         if (osRecvMesg(&seqPlayer->bankDmaMesgQueue, NULL, 0) == -1) {

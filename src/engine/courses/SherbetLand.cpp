@@ -100,6 +100,7 @@ SherbetLand::SherbetLand() {
     Props.Skybox.FloorBottomRight = {128, 184, 248};
     Props.Skybox.FloorBottomLeft = {128, 184, 248};
     Props.Skybox.FloorTopLeft = {216, 232, 248};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_FRAPPE_SNOWLAND;
 }
 
 void SherbetLand::Load() {

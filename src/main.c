@@ -1239,7 +1239,7 @@ void thread5_game_loop(void) {
 }
 
 void thread5_iteration(void) {
-    // func_800CB2C4();
+    func_800CB2C4();
     calculate_delta_time();
 #ifdef TARGET_N64
     while (true) {

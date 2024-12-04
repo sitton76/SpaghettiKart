@@ -92,7 +92,7 @@ f32 D_800EA120[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 f32 D_800EA130[] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 f32 D_800EA150 = 1.4f;
 u8 D_800EA154[] = { 2, 2, 88, 90, 3, 48, 88, 48 };
-u16 D_800EA15C = 0;
+u16 gCurrentMusicSeq = 0;
 u16 D_800EA160 = 0;
 u8 D_800EA164 = 0;
 s8 D_800EA168 = 0;
@@ -565,7 +565,7 @@ void func_800C2474(void) {
     D_800EA16C = 0;
     func_800CBBB8(0xF2000000U, 0);
     D_800EA16C = 0;
-    D_800EA15C = 0;
+    gCurrentMusicSeq = 0;
     D_800EA160 = 0;
     D_800EA164 = 0;
     D_800EA178 = 1.0f;
@@ -1253,7 +1253,7 @@ void func_800C4398(void) {
     u8 soundIndex;
     u8 var_a3;
     struct Sound* var_a2;
-    u8 var_t2;
+    u8 var_t2 = 0;
     u32 var_t3;
 
     var_a2 = &sSoundRequests[sNumProcessedSoundRequests];
@@ -2834,9 +2834,9 @@ void play_sound2(s32 soundBits) {
     play_sound(soundBits, &D_800EA1C8, 4, &D_800EA1D4, &D_800EA1D4, &D_800EA1DC);
 }
 
-void func_800C8EAC(u16 arg0) {
+void play_sequence(u16 arg0) {
     func_800C3448(arg0 | 0x10000);
-    D_800EA15C = arg0;
+    gCurrentMusicSeq = arg0;
 }
 
 void func_800C8EF8(u16 arg0) {
@@ -3284,7 +3284,7 @@ void func_800CA49C(u8 arg0) {
             func_800C3448(0x100100FF); // 0x19000000
             func_800C3448(0x110100FF);
             func_800C8EF8(0xC);
-            func_800C3448(D_800EA15C | 0xC1500000);
+            func_800C3448(gCurrentMusicSeq | 0xC1500000);
             func_800C3448(0xC130017D);
         }
         D_8018FC08 = D_8018FC08 + 1;
@@ -3334,20 +3334,20 @@ void func_800CA730(u8 arg0) {
                         if (D_8018FC08 != 0) {
                             if (((u32) (gSequencePlayers[1].enabled)) == 0) {
                                 func_800C3608(1, 5);
-                                func_800C8EAC(D_800EA15C);
+                                play_sequence(gCurrentMusicSeq);
                                 func_800C3448(0xB001307DU);
                             } else if ((func_800C3508(1) == 0xC) || (func_800C357C(0x0101000C) == 0)) {
                                 func_800C3448(0xC1F00000U);
-                                func_800C3448(D_800EA15C | 0xC1500000);
+                                func_800C3448(gCurrentMusicSeq | 0xC1500000);
                                 func_800C3448(0xC130017DU);
                             } else {
                                 func_800C3448(0x110100FFU);
-                                func_800C8EAC(D_800EA15C);
+                                play_sequence(gCurrentMusicSeq);
                                 func_800C3448(0xB001307DU);
                             }
                         } else {
                             func_800C3448(0x110100FFU);
-                            func_800C8EAC(D_800EA15C);
+                            play_sequence(gCurrentMusicSeq);
                         }
                     }
                     D_800EA164 = 0;
@@ -3512,11 +3512,11 @@ void func_800CB14C() {
     if (D_800EA174 != 0) {
         D_800EA174++;
         if (D_800EA174 == 3) {
-            func_800C8EAC(0x001AU);
+            play_sequence(MUSIC_SEQ_AWARD_CEREMONY_BUILDUP);
             func_800C3448(0x4000007F);
         }
         if (D_800EA174 == 0x012C) {
-            func_800C8EAC(0x001BU);
+            play_sequence(MUSIC_SEQ_AWARD_CEREMONY_1ST_3RD);
             func_800C3448(0x4000007F);
             func_800C8EF8(0x001DU);
             func_800C3448(0x41000000);
@@ -3541,10 +3541,15 @@ void func_800CB14C() {
             func_800C3448(0x110100FF);
         }
         if (D_800EA174 == 0x04CE) {
-            func_800C8EAC(0x0014U);
+            play_sequence(MUSIC_SEQ_GAME_OVER);
             func_800C3448(0x4000007F);
         }
     }
+}
+
+void audio_set_player_volume(u8 player, f32 volume) {
+    gSequencePlayers[player].gameVolume = volume;
+    gSequencePlayers[player].recalculateVolume = 1;
 }
 
 // run audio?

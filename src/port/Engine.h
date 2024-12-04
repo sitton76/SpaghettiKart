@@ -10,25 +10,41 @@
 #include <Fast3D/gfx_pc.h>
 #include "libultraship/src/Context.h"
 
-#define SAMPLES_HIGH 544
-#define SAMPLES_LOW 528
+#define SAMPLES_HIGH 448
+#define SAMPLES_LOW 432
 #define AUDIO_FRAMES_PER_UPDATE 2
 #define NUM_AUDIO_CHANNELS 2
 #define SAMPLES_PER_FRAME (SAMPLES_HIGH * NUM_AUDIO_CHANNELS * 2)
+
+struct CtlEntry;
+struct AudioBankSample;
+struct AudioSequenceData;
 
 class GameEngine {
   public:
     static GameEngine* Instance;
 
     std::shared_ptr<Ship::Context> context;
+    std::vector<CtlEntry*> banksTable;
+    std::vector<std::string> sequenceTable;
+    std::vector<AudioSequenceData*> audioSequenceTable;
 
+    std::unordered_map<std::string, uint8_t> bankMapTable;
     GameEngine();
     static void Create();
+
+    void AudioInit();
+    static void HandleAudioThread();
+    static void StartAudioFrame();
+    static void EndAudioFrame();
+    static void AudioExit();
+
     void StartFrame() const;
     static void RunCommands(Gfx* Commands);
     void ProcessFrame(void (*run_one_game_iter)()) const;
     static void Destroy();
     static void ProcessGfxCommands(Gfx* commands);
+    static uint8_t GetBankIdByName(const std::string& name);
     float OTRGetAspectRatio(void);
     float OTRGetDimensionFromLeftEdge(float v);
     float OTRGetDimensionFromRightEdge(float v);
@@ -39,7 +55,16 @@ class GameEngine {
 };
 #else
 void GameEngine_ProcessGfxCommands(Gfx* commands);
+uint32_t GameEngine_GetSampleRate();
+uint32_t GameEngine_GetSamplesPerFrame();
 float GameEngine_GetAspectRatio();
+struct CtlEntry* GameEngine_LoadBank(uint8_t bankId);
+uint8_t GameEngine_IsBankLoaded(uint8_t bankId);
+void GameEngine_UnloadBank(uint8_t bankId);
+struct AudioSequenceData* GameEngine_LoadSequence(uint8_t seqId);
+uint32_t GameEngine_GetSequenceCount();
+uint8_t GameEngine_IsSequenceLoaded(uint8_t seqId);
+void GameEngine_UnloadSequence(uint8_t seqId);
 uint8_t GameEngine_OTRSigCheck(char* imgData);
 float OTRGetAspectRatio(void);
 float OTRGetDimensionFromLeftEdge(float v);

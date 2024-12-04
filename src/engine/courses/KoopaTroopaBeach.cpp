@@ -102,6 +102,7 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {48, 152, 120};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_KOOPA_TROOPA_BEACH;
 }
 
 void KoopaTroopaBeach::Load() {

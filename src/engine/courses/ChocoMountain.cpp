@@ -101,6 +101,7 @@ ChocoMountain::ChocoMountain() {
     Props.Skybox.FloorBottomRight = {255, 255, 255};
     Props.Skybox.FloorBottomLeft = {255, 255, 255};
     Props.Skybox.FloorTopLeft = {255, 255, 255};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_CHOCO_MOUNTAIN;
 }
 
 void ChocoMountain::Load() {

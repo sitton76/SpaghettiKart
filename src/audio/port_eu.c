@@ -46,6 +46,40 @@ s32 D_800EA4A4 = 0;
 
 char port_eu_unused_string7[] = "Undefined Port Command %d\n";
 
+void create_next_audio_buffer(s16* samples, u32 num_samples) {
+    static s32 gMaxAbiCmdCnt = 128;
+    s32 abiCmdCount;
+    OSMesg specId;
+    OSMesg msg;
+
+    gAudioFrameCount++;
+    gCurrAiBufferIndex %= 3;
+
+    gCurrAudioFrameDmaCount = 0;
+
+    if (osRecvMesg(D_800EA3B0, &specId, 0) != -1) {
+        gAudioResetPresetIdToLoad = specId.data8;
+        gAudioResetStatus = 5;
+    }
+
+    if (gAudioResetStatus != 0) {
+        if (audio_shut_down_and_reset_step() == 0) {
+            if (gAudioResetStatus == 0) {
+                osSendMesg(D_800EA3B4, OS_MESG_8(gAudioResetPresetIdToLoad), OS_MESG_NOBLOCK);
+            }
+            return;
+        }
+    }
+
+    if (osRecvMesg(D_800EA3AC, &msg, 0) != -1) {
+        func_800CBCB0(msg.data32);
+    }
+
+    gAudioCmd = gAudioCmdBuffers[gAudioTaskIndex];
+    gAudioCmd = synthesis_execute((Acmd*) gAudioCmd, &abiCmdCount, samples, num_samples);
+    gAudioRandom = osGetCount() * (gAudioRandom + gAudioFrameCount);
+}
+
 struct SPTask* create_next_audio_frame_task(void) {
     u32 samplesRemainingInAI;
     s32 writtenCmds;
@@ -126,7 +160,7 @@ struct SPTask* create_next_audio_frame_task(void) {
         gAiBufferLengths[index] = gAudioBufferParameters.maxAiBufferLength;
     }
     if (osRecvMesg(D_800EA3AC, &sp54, 0) != -1) {
-        func_800CBCB0((u32) sp54.data16);
+        func_800CBCB0(sp54.data32);
     }
     gAudioCmd = synthesis_execute((Acmd*) gAudioCmd, &writtenCmds, currAiBuffer, gAiBufferLengths[index]);
     gAudioRandom = osGetCount() * (gAudioRandom + gAudioFrameCount);
@@ -266,26 +300,26 @@ void func_800CBBE8(u32 arg0, s8 arg1) {
 }
 
 //! @todo clenanup, something's weird with the variables. D_800EA4A4 is probably EuAudioCmd bc of the + 0x100
+#if 1
 void func_800CBC24(void) {
     s32 temp_t6;
     s32 test;
-    OSMesg thing;
     temp_t6 = D_800EA3A0[0] - D_800EA3A4[0];
     test = (u8) temp_t6;
     test = (test + 0x100) & 0xFF;
-    do {
-    } while (0);
     if (D_800EA4A4 < test) {
         D_800EA4A4 = test;
     }
 
-    OSMesg audioMesg;
-    audioMesg.ptr = ((D_800EA3A0[0] & 0xFF) | ((D_800EA3A4[0] & 0xFF) << 8));
-
-    thing = audioMesg;
-    osSendMesg(D_800EA3AC, thing, 0);
+    osSendMesg(D_800EA3AC, OS_MESG_32(((D_800EA3A0[0] & 0xFF) | ((D_800EA3A4[0] & 0xFF) << 8))), 0);
     D_800EA3A4[0] = D_800EA3A0[0];
 }
+#else
+void func_800CBC24(void) {
+    osSendMesg(D_800EA3AC, OS_MESG_32(((D_800EA3A0[0] & 0xff) << 8 | (D_800EA3A4[0] & 0xff))), OS_MESG_NOBLOCK);
+    D_800EA3A4[0] = D_800EA3A0[0];
+}
+#endif
 
 void func_800CBCB0(u32 arg0) {
     struct EuAudioCmd* cmd;

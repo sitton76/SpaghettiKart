@@ -102,6 +102,7 @@ FrappeSnowland::FrappeSnowland() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 99, 164};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_FRAPPE_SNOWLAND;
 }
 
 void FrappeSnowland::Load() {

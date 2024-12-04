@@ -105,6 +105,7 @@ LuigiRaceway::LuigiRaceway() {
     Props.Skybox.FloorBottomRight = {0, 0, 0};
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {216, 232, 248};
+    Props.Sequence = MusicSeq::MUSIC_SEQ_RACEWAYS_WARIO_STADIUM;
 }
 
 void LuigiRaceway::Load() {
