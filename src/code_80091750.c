@@ -6818,6 +6818,7 @@ void func_800A1924(struct_8018D9E0_entry* arg0) {
         gDisplayListHead = draw_flash_select_case_slow(gDisplayListHead, 0x57, 0x84, 0x96, 0x95);
         gDisplayListHead = func_8009BA74(gDisplayListHead, D_02004A0C, 0x57, 0x84);
     }
+    //! @bug todo: This function will not work in custom courses.
     func_8004EF9C(gCupCourseOrder[gTimeTrialDataCourseIndex / 4][gTimeTrialDataCourseIndex % 4]);
     do {
         gDPSetTextureFilter(gDisplayListHead++, G_TF_BILERP);

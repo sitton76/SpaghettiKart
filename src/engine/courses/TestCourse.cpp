@@ -51,6 +51,8 @@ TestCourse::TestCourse() {
     this->gfxSize = 100;
     this->textures = NULL;
     Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Id = "mk:test_course";
     Props.Name = "Test Course";

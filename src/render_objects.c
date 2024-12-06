@@ -2587,7 +2587,7 @@ void func_8004EF9C(s32 arg0) {
 
     temp_v0 = CourseManager_GetProps()->D_800E5548[0]; // D_800E5548[arg0 * 2];
     temp_t0 = CourseManager_GetProps()->D_800E5548[1]; // D_800E5548[arg0 * 2 + 1];
-    func_8004D37C(0x00000104, 0x0000003C, D_8018D248[arg0], 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF, temp_v0,
+    func_8004D37C(0x00000104, 0x0000003C, CourseManager_GetProps()->MinimapTexture, 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF, temp_v0,
                   temp_t0, temp_v0, temp_t0);
 }
 
