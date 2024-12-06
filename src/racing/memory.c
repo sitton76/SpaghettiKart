@@ -489,7 +489,7 @@ u8* dma_textures(const char* texture, size_t arg1, size_t arg2) {
 #ifdef TARGET_N64
     temp_v0 = (u8*) gNextFreeMemoryAddress;
 #else
-    u8* tex = (u8*) LOAD_ASSET(texture);
+    //u8* tex = (u8*) LOAD_ASSET(texture);
 
     temp_v0 = (u8*) allocate_memory(arg2);
 #endif
@@ -504,7 +504,8 @@ u8* dma_textures(const char* texture, size_t arg1, size_t arg2) {
     mio0decode((u8*) temp_a0, temp_v0);
     gNextFreeMemoryAddress += arg2;
 #else
-    memcpy(temp_v0, tex, arg2);
+    //memcpy(temp_v0, tex, arg2);
+    strcpy(temp_v0, texture);
 #endif
     return temp_v0;
 }
