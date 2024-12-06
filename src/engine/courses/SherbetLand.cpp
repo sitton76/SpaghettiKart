@@ -4,11 +4,11 @@
 #include <memory>
 
 #include "SherbetLand.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "assets/sherbet_land_data.h"
+#include "engine/objects/OPenguin.h"
 
 extern "C" {
     #include "main.h"
@@ -34,11 +34,20 @@ extern "C" {
     extern const char *sherbet_land_dls_2[];
 }
 
+const course_texture sherbet_land_textures[] = {
+    { gTexture643B3C, 0x0798, 0x0800, 0x0 }, { gTexture66D024, 0x04EA, 0x0800, 0x0 },
+    { gTexture678118, 0x0314, 0x0800, 0x0 }, { gTextureSignWoodRedArrow, 0x04E1, 0x1000, 0x0 },
+    { gTexture678CC8, 0x058E, 0x0800, 0x0 }, { gTexture67842C, 0x050E, 0x0800, 0x0 },
+    { gTexture67893C, 0x038B, 0x0800, 0x0 }, { gTexture651984, 0x019C, 0x0800, 0x0 },
+    { gTexture651428, 0x055B, 0x0800, 0x0 }, { gTexture662924, 0x0110, 0x0800, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
 SherbetLand::SherbetLand() {
     this->vtx = d_course_sherbet_land_vertex;
     this->gfx = d_course_sherbet_land_packed_dls;
     this->gfxSize = 1803;
-    this->textures = sherbet_land_textures;
+    Props.textures = sherbet_land_textures;
     Props.MinimapTexture = gTextureCourseOutlineSherbetLand;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;

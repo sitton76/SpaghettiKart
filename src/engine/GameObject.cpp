@@ -1,20 +1,20 @@
-#include "GameObject.h"
-#include <libultraship.h>
+// #include <libultraship.h>
+// #include "GameObject.h"
 
-#include "World.h"
+// #include "World.h"
 
-extern "C" {
-    #include "camera.h"
-}
+// extern "C" {
+//     #include "camera.h"
+// }
 
 
-    //GameActor()
+//     //GameActor()
 
-GameObject::GameObject() {}
+// GameObject::GameObject() {}
 
-    // Virtual functions to be overridden by derived classes
-void GameObject::Tick() {  }
-void GameObject::Draw(Camera* camera) { }
-void GameObject::Collision() {}
-void GameObject::Expire() { }
-void GameObject::Destroy() { }
+//     // Virtual functions to be overridden by derived classes
+// void GameObject::Tick() {  }
+// void GameObject::Draw(Camera* camera) { }
+// void GameObject::Collision() {}
+// void GameObject::Expire() { }
+// void GameObject::Destroy() { }

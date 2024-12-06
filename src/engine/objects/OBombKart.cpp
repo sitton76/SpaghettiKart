@@ -1,5 +1,5 @@
 #include <libultraship.h>
-#include "engine/vehicles/OBombKart.h"
+#include "OBombKart.h"
 #include <vector>
 
 #include "port/Game.h"

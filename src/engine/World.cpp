@@ -9,10 +9,11 @@
 #include "vehicles/Bus.h"
 #include "vehicles/TankerTruck.h"
 #include "vehicles/Car.h"
-#include "vehicles/OBombKart.h"
+#include "objects/OBombKart.h"
+#include "objects/OPenguin.h"
 #include "TrainCrossing.h"
 #include <memory>
-
+//#include "objects/GameObject.h"
 
 extern "C" {
    #include "camera.h"
@@ -184,11 +185,11 @@ void World::PreviousCourse() {
     gWorldInstance.CurrentCourse = Courses[CourseIndex];
 }
 
-Object* World::AddObject(std::unique_ptr<GameObject> object) {
-    GameObject* rawPtr = object.get();
-    GameObjects.push_back(std::move(object));
-    return &rawPtr->o;
-}
+// Object* World::AddObject(std::unique_ptr<GameObject> object) {
+//     GameObject* rawPtr = object.get();
+//     GameObjects.push_back(std::move(object));
+//     return &rawPtr->o;
+// }
 
 AActor* World::AddActor(AActor* actor) {
     Actors.push_back(actor);
@@ -240,22 +241,22 @@ void RemoveExpiredActors() {
 }
 
 void World::TickObjects() {
-    for (const auto& object : this->GameObjects) {
-        object->Tick();
-    }
+    //for (const auto& object : this->GameObjects) {
+    //    object->Tick();
+    //}
 }
 
 void World::DrawObjects(Camera *camera) {
-    for (const auto& object : this->GameObjects) {
-        object->Draw(camera);
-    }
+    //for (const auto& object : this->GameObjects) {
+    //    object->Draw(camera);
+    //}
 }
 
 void World::ExpiredObjects() {
-    this->GameObjects.erase(
-        std::remove_if(this->GameObjects.begin(), this->GameObjects.end(),
-                        [](const std::unique_ptr<GameObject>& object) { return object->uuid == 0; }), // Example condition
-        this->GameObjects.end());
+    //this->GameObjects.erase(
+    //    std::remove_if(this->GameObjects.begin(), this->GameObjects.end(),
+    //                    [](const std::unique_ptr<GameObject>& object) { return object->uuid == 0; }), // Example condition
+    //    this->GameObjects.end());
 }
 
 void World::DestroyObjects() {
@@ -263,9 +264,9 @@ void World::DestroyObjects() {
 }
 
 Object* World::GetObjectByIndex(size_t index) {
-    if (index < this->GameObjects.size()) {
+    //if (index < this->GameObjects.size()) {
         // Assuming GameActor::a is accessible, use reinterpret_cast if needed
-        return reinterpret_cast<Object*>(&this->GameObjects[index]->o);
-    }
+    //    return reinterpret_cast<Object*>(&this->GameObjects[index]->o);
+    //}
     return nullptr; // Or handle the error as needed
 }

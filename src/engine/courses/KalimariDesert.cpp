@@ -4,10 +4,9 @@
 #include <memory>
 
 #include "KalimariDesert.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "kalimari_desert_data.h"
 #include "engine/vehicles/Utils.h"
 
@@ -36,11 +35,27 @@ extern "C" {
     extern const char *kalimari_desert_dls[];
 }
 
+const course_texture kalimari_desert_textures[] = {
+    { gTexture6684F8, 0x010D, 0x0800, 0x0 },           { gTextureSignLuigis0, 0x0287, 0x1000, 0x0 },
+    { gTextureSignLuigis1, 0x02AF, 0x1000, 0x0 },      { gTextureSignMarioStar0, 0x02D2, 0x1000, 0x0 },
+    { gTextureSignMarioStar1, 0x02B1, 0x1000, 0x0 },   { gTextureSignNintendoRed0, 0x02A6, 0x1000, 0x0 },
+    { gTextureSignNintendoRed1, 0x02F7, 0x1000, 0x0 }, { gTexture67490C, 0x021C, 0x0800, 0x0 },
+    { gTextureSignYoshi, 0x04DF, 0x1000, 0x0 },        { gTextureCheckerboardBlueGray, 0x04A1, 0x1000, 0x0 },
+    { gTexture646CA8, 0x073A, 0x1000, 0x0 },           { gTexture6473E4, 0x05AD, 0x1000, 0x0 },
+    { gTexture647994, 0x05B5, 0x1000, 0x0 },           { gTexture668920, 0x03D9, 0x0800, 0x0 },
+    { gTextureRailroadTrack, 0x0B5B, 0x1000, 0x0 },    { gTextureRailroadCrossingTrack, 0x0208, 0x1000, 0x0 },
+    { gTexture67291C, 0x059C, 0x0800, 0x0 },           { gTextureFenceBarbedWire, 0x021E, 0x1000, 0x0 },
+    { gTexture67D304, 0x091C, 0x1000, 0x0 },           { gTexture67E010, 0x0415, 0x0800, 0x0 },
+    { gTexture67EEAC, 0x0140, 0x0800, 0x0 },           { gTextureSignShellShot0, 0x038C, 0x1000, 0x0 },
+    { gTextureSignShellShot1, 0x0247, 0x1000, 0x0 },   { gTextureSignKoopaAir0, 0x0360, 0x1000, 0x0 },
+    { gTextureSignKoopaAir1, 0x0304, 0x1000, 0x0 },    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
 KalimariDesert::KalimariDesert() {
     this->vtx = d_course_kalimari_desert_vertex;
     this->gfx = d_course_kalimari_desert_packed_dls;
     this->gfxSize = 5328;
-    this->textures = kalimari_desert_textures;
+    Props.textures = kalimari_desert_textures;
     Props.MinimapTexture = gTextureCourseOutlineKalimariDesert;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 96;

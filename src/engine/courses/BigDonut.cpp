@@ -4,9 +4,8 @@
 #include <memory>
 
 #include "BigDonut.h"
-#include "GameObject.h"
 #include "World.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "assets/big_donut_data.h"
 
 extern "C" {
@@ -33,11 +32,17 @@ extern "C" {
     extern s16 currentScreenSection;
 }
 
+const course_texture big_donut_textures[] = {
+    { gTexture66ABA4, 0x0312, 0x0800, 0x0 }, { gTexture6747C4, 0x0145, 0x0800, 0x0 },
+    { gTexture67490C, 0x021C, 0x0800, 0x0 }, { gTexture64BA50, 0x0110, 0x0800, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
 BigDonut::BigDonut() {
     this->vtx = d_course_big_donut_vertex;
     this->gfx = d_course_big_donut_packed_dls;
     this->gfxSize = 528;
-    this->textures = big_donut_textures;
+    Props.textures = big_donut_textures;
     Props.MinimapTexture = gTextureCourseOutlineBigDonut;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;

@@ -4,10 +4,9 @@
 #include <memory>
 
 #include "TestCourse.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "assets/mario_raceway_data.h"
 #include "assets/bowsers_castle_data.h"
 #include "assets/bowsers_castle_displaylists.h"

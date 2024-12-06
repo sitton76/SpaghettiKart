@@ -4,9 +4,8 @@
 #include <memory>
 
 #include "ChocoMountain.h"
-#include "GameObject.h"
 #include "World.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "choco_mountain_data.h"
 #include "engine/actors/AFinishline.h"
 
@@ -31,14 +30,39 @@ extern "C" {
     #include "collision.h"
     #include "code_8003DC40.h"
     #include "memory.h"
+    #include "course_offsets.h"
     extern const char *choco_mountain_dls[];
 }
+
+const course_texture choco_mountain_textures[] = {
+    { gTexture64619C, 0x0124, 0x0800, 0x0 },
+    { gTexture64647C, 0x0829, 0x1000, 0x0 },
+    { gTexture647F4C, 0x05BC, 0x1000, 0x0 },
+    { gTexture64FBF4, 0x0274, 0x0800, 0x0 },
+    { gTexture653DB0, 0x06AE, 0x0800, 0x0 },
+    { gTexture652B54, 0x0606, 0x0800, 0x0 },
+    { gTexture65315C, 0x04A9, 0x0800, 0x0 },
+    { gTexture6684F8, 0x010D, 0x0800, 0x0 },
+    { gTextureSignLuigis0, 0x0287, 0x1000, 0x0 },
+    { gTextureSignLuigis1, 0x02AF, 0x1000, 0x0 },
+    { gTextureSignNintendoRed0, 0x02A6, 0x1000, 0x0 },
+    { gTextureSignNintendoRed1, 0x02F7, 0x1000, 0x0 },
+    { gTexture6774D8, 0x0113, 0x0800, 0x0 },
+    { gTextureSignFallingRocks, 0x012C, 0x0800, 0x0 },
+    { gTextureSignBackside, 0x011E, 0x0800, 0x0 },
+    { gTexture679C04, 0x012F, 0x0800, 0x0 },
+    { gTexture67B864, 0x014C, 0x0800, 0x0 },
+    { gTexture67DC20, 0x03EF, 0x0800, 0x0 },
+    { gTextureSignYoshi, 0x04DF, 0x1000, 0x0 },
+    { gTextureCheckerboardBlueGray, 0x04A1, 0x1000, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
 
 ChocoMountain::ChocoMountain() {
     this->vtx = d_course_choco_mountain_vertex;
     this->gfx = d_course_choco_mountain_packed_dls;
     this->gfxSize = 2910;
-    this->textures = choco_mountain_textures;
+    Props.textures = choco_mountain_textures;
     Props.MinimapTexture = gTextureCourseOutlineChocoMountain;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;

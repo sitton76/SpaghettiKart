@@ -31,7 +31,7 @@
 #include "engine/courses/PodiumCeremony.h"
 
 #include "engine/TrainCrossing.h"
-#include "engine/vehicles/OBombKart.h"
+#include "src/engine/objects/OBombKart.h"
 
 #include "Smoke.h"
 

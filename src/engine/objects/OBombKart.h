@@ -1,7 +1,7 @@
 #pragma once
 
 #include <libultraship.h>
-#include "Vehicle.h"
+#include "src/engine/vehicles/Vehicle.h"
 #include <vector>
 #include "engine/Matrix.h"
 

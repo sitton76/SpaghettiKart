@@ -1,16 +1,16 @@
 #pragma once
 
 #include <libultraship.h>
-#include "GameObject.h"
+//#include "objects/GameObject.h"
 #include "Cup.h"
 #include "vehicles/Vehicle.h"
 #include "vehicles/Train.h"
 #include "vehicles/Car.h"
-#include "vehicles/OBombKart.h"
+#include "objects/OBombKart.h"
 #include "vehicles/Train.h"
 #include "TrainCrossing.h"
-#include "vehicles/OThwomp.h"
-#include "vehicles/OPenguin.h"
+#include "objects/OThwomp.h"
+#include "objects/OPenguin.h"
 #include <memory>
 #include "Actor.h"
 
@@ -20,6 +20,7 @@ extern "C" {
 #include "engine/Engine.h"
 };
 
+//class GameObject;
 class Cup; // <-- Forward declaration
 class Course;
 class AVehicle;
@@ -92,7 +93,7 @@ public:
     AActor* ConvertActorToAActor(Actor* actor);
     Actor* ConvertAActorToActor(AActor* actor);
 
-    Object* AddObject(std::unique_ptr<GameObject> object);
+//    Object* AddObject(std::unique_ptr<GameObject> object);
 
     CProperties* GetCourseProps();
     void TickObjects();
@@ -128,7 +129,7 @@ public:
     size_t CupIndex = 1;
 
     std::vector<AActor*> Actors;
-    std::vector<std::unique_ptr<GameObject>> GameObjects;
+//    std::vector<std::unique_ptr<GameObject>> GameObjects;
 
     /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);

@@ -2,14 +2,6 @@
 #include "course_offsets.h"
 #include <assets/frappe_snowland_data.h>
 
-const course_texture frappe_snowland_textures[] = {
-    { gTexture6684F8, 0x010D, 0x0800, 0x0 }, { gTexture66CA98, 0x02C9, 0x0800, 0x0 },
-    { gTexture66EBF0, 0x0146, 0x0800, 0x0 }, { gTexture675434, 0x0245, 0x0800, 0x0 },
-    { gTexture677F04, 0x0213, 0x0800, 0x0 }, { gTexture678118, 0x0314, 0x0800, 0x0 },
-    { gTexture679258, 0x04E3, 0x1000, 0x0 }, { gTexture67973C, 0x04C6, 0x1000, 0x0 },
-    { 0x00000000, 0x0000, 0x0000, 0x0 },
-};
-
 const Gfx* d_course_frappe_snowland_dl_list[] = {
     d_course_frappe_snowland_dl_0,    d_course_frappe_snowland_dl_1B8,  d_course_frappe_snowland_dl_C8,
     d_course_frappe_snowland_dl_298,  d_course_frappe_snowland_dl_398,  d_course_frappe_snowland_dl_540,

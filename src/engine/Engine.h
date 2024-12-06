@@ -7,6 +7,7 @@
 #include "path_spawn_metadata.h"
 #include "waypoints.h"
 #include "sounds.h"
+#include "course_offsets.h"
 
 typedef struct {
     RGB8 TopRight;
@@ -45,6 +46,7 @@ typedef struct {
     s32 MinimapFinishlineX;
     s32 MinimapFinishlineY;
     SkyboxColours Skybox;
+    const course_texture *textures;
     enum MusicSeq Sequence;
 } CProperties;
 

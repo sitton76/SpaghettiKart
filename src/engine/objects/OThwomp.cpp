@@ -1,6 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
-#include "engine/vehicles/OThwomp.h"
+#include "OThwomp.h"
 #include <vector>
 
 #include "port/Game.h"

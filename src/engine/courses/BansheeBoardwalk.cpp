@@ -4,10 +4,9 @@
 #include <memory>
 
 #include "BansheeBoardwalk.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "assets/banshee_boardwalk_data.h"
 #include "assets/boo_frames.h"
 
@@ -31,14 +30,41 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "course_offsets.h"
     extern const char *banshee_boardwalk_dls[];
 }
+
+const course_texture banshee_boardwalk_textures[] = {
+    { gTexture6447C4, 0x0106, 0x0800, 0x0 },
+    { gTexture676FB0, 0x0525, 0x0800, 0x0 },
+    { gTexture643B3C, 0x0798, 0x0800, 0x0 },
+    { gTexture64BB60, 0x0169, 0x0800, 0x0 },
+    { gTexture64BCCC, 0x0450, 0x0800, 0x0 },
+    { gTexture64FBF4, 0x0274, 0x0800, 0x0 },
+    { gTexture651B20, 0x041D, 0x0800, 0x0 },
+    { gTexture66262C, 0x02F7, 0x0800, 0x0 },
+    { gTexture668728, 0x01F5, 0x0800, 0x0 },
+    { gTexture66A3DC, 0x07C5, 0x0800, 0x0 },
+    { gTexture66CA98, 0x02C9, 0x0800, 0x0 },
+    { gTexture66CD64, 0x02C0, 0x0800, 0x0 },
+    { gTexture66D698, 0x0370, 0x0800, 0x0 },
+    { gTexture66E608, 0x05E8, 0x0800, 0x0 },
+    { gTexture67B388, 0x03D2, 0x0800, 0x0 },
+    { gTextureSignWelcome0, 0x0A2E, 0x1000, 0x0 },
+    { gTextureSignWelcome1, 0x0A0A, 0x1000, 0x0 },
+    { gTextureSignWoodenBack0, 0x06EF, 0x1000, 0x0 },
+    { gTextureSignWoodenBack1, 0x06D1, 0x1000, 0x0 },
+    { gTextureSignWoodRedArrow, 0x04E1, 0x1000, 0x0 },
+    { gTexture68D940, 0x057D, 0x0800, 0x0 },
+    { gTexture685AC0, 0x07CC, 0x1000, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
 
 BansheeBoardwalk::BansheeBoardwalk() {
     this->vtx = d_course_banshee_boardwalk_vertex;
     this->gfx = d_course_banshee_boardwalk_packed_dls;
     this->gfxSize = 3689;
-    this->textures = banshee_boardwalk_textures;
+    Props.textures = banshee_boardwalk_textures;
     Props.MinimapTexture = gTextureCourseOutlineBansheeBoardwalk;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;

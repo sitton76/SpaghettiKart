@@ -4,10 +4,9 @@
 #include <memory>
 
 #include "FrappeSnowland.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "assets/frappe_snowland_data.h"
 #include "assets/boo_frames.h"
 
@@ -32,15 +31,24 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "update_objects.h"
+    #include "course_offsets.h"
     extern const char *d_course_frappe_snowland_dl_list[];
     extern s8 gPlayerCount;
 }
+
+const course_texture frappe_snowland_textures[] = {
+    { gTexture6684F8, 0x010D, 0x0800, 0x0 }, { gTexture66CA98, 0x02C9, 0x0800, 0x0 },
+    { gTexture66EBF0, 0x0146, 0x0800, 0x0 }, { gTexture675434, 0x0245, 0x0800, 0x0 },
+    { gTexture677F04, 0x0213, 0x0800, 0x0 }, { gTexture678118, 0x0314, 0x0800, 0x0 },
+    { gTexture679258, 0x04E3, 0x1000, 0x0 }, { gTexture67973C, 0x04C6, 0x1000, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
 
 FrappeSnowland::FrappeSnowland() {
     this->vtx = d_course_frappe_snowland_vertex;
     this->gfx = d_course_frappe_snowland_packed_dls;
     this->gfxSize = 4140;
-    this->textures = frappe_snowland_textures;
+    Props.textures = frappe_snowland_textures;
     Props.MinimapTexture = gTextureCourseOutlineFrappeSnowland;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;

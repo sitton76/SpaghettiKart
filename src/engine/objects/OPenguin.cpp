@@ -1,6 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
-#include "engine/vehicles/OPenguin.h"
+#include "OPenguin.h"
 #include <vector>
 
 #include "port/Game.h"

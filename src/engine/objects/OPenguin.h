@@ -2,7 +2,6 @@
 
 #include <libultraship.h>
 #include <vector>
-#include "engine/vehicles/OPenguin.h"
 
 extern "C" {
 #include "macros.h"
@@ -11,6 +10,7 @@ extern "C" {
 #include "waypoints.h"
 #include "common_structs.h"
 #include "objects.h"
+#include "course_offsets.h"
 }
 
 //! @todo Make shadow size bigger if thwomp is scaled up

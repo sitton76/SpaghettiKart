@@ -4,9 +4,8 @@
 #include <memory>
 
 #include "DoubleDeck.h"
-#include "GameObject.h"
 #include "World.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/OBombKart.h"
 #include "assets/double_deck_data.h"
 
 extern "C" {
@@ -33,11 +32,17 @@ extern "C" {
     extern s16 currentScreenSection;
 }
 
+const course_texture double_deck_textures[] = {
+    { gTextureGrayCobblestone, 0x010C, 0x0800, 0x0 },
+    { gTexture642978, 0x010D, 0x0800, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
 DoubleDeck::DoubleDeck() {
     this->vtx = d_course_double_deck_vertex;
     this->gfx = d_course_double_deck_packed_dls;
     this->gfxSize = 699;
-    this->textures = double_deck_textures;
+    Props.textures = double_deck_textures;
     Props.MinimapTexture = gTextureCourseOutlineDoubleDeck;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;
