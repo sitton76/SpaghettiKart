@@ -27,6 +27,7 @@
 #include "engine/courses/DKJungle.h"
 #include "engine/courses/BigDonut.h"
 #include "engine/courses/TestCourse.h"
+#include "engine/actors/AFinishline.h"
 
 #include "engine/courses/PodiumCeremony.h"
 
@@ -375,6 +376,16 @@ extern "C" {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->SpawnActors();
         }
+    }
+
+    // Helps prevents users from forgetting to add a finishline to their course
+    bool cm_DoesFinishlineExist() {
+        for (AActor* actor : gWorldInstance.Actors) {
+            if (dynamic_cast<AFinishline*>(actor))  {
+                return true;
+            }
+        }
+        return false;
     }
 
     void CourseManager_InitClouds() {

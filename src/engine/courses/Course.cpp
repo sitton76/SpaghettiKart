@@ -104,7 +104,6 @@ void Course::Load() {
         freeMemory = (u8*) allocate_memory(size);
 
         texture = (u8*)(asset->addr);
-        printf("TEXTURE: 0x%llX\n",texture);
         if (texture) {
             if (asset == &this->Props.textures[0]) {
                 gSegmentTable[5] = reinterpret_cast<uintptr_t>(&freeMemory[0]);

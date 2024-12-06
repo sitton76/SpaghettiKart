@@ -43,6 +43,8 @@ void CourseManager_RenderCredits();
 
 void CourseManager_SpawnActors();
 
+bool cm_DoesFinishlineExist();
+
 void CourseManager_InitClouds();
 
 void CourseManager_DrawActor(Camera* camera, struct Actor* actor);

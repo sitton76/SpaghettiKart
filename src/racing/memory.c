@@ -828,7 +828,6 @@ uintptr_t get_texture(size_t offset) {
 
     while (textures->addr) {
         if (totalOffset == offset) {
-            printf("FOUND TEXTURE: 0x%s\n", (textures->addr));
             return (textures->addr);
         }
         totalOffset += textures->data_size;

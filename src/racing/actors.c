@@ -1045,6 +1045,15 @@ void spawn_course_actors(void) {
     gNumPermanentActors = 0;
     CourseManager_SpawnActors();
 
+    if (gModeSelection != BATTLE) {
+        if (!cm_DoesFinishlineExist()) {
+            printf("\n[actors.c] COURSE MISSING THE FINISHLINE\n");
+            printf("  In the course class SpawnActors() function make sure to include:\n");
+            printf("  gWorldInstance.AddActor(new AFinishline());\n\n");
+            printf("\n  Otherwise, course textures may glitch out or other strange issues may occur.\n");
+        }
+    }
+
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
     //         // spawn_foliage(d_course_mario_raceway_tree_spawns);
