@@ -254,8 +254,6 @@ void func_8007E1F4(s32);
 void func_8007E358(s32);
 void func_8007E3EC(s32);
 void func_8007E4C4(void);
-s32 func_8007E50C(s32, Player*, Camera*);
-s32 func_8007E59C(s32);
 void func_8007E63C(s32);
 void func_8007EC30(s32);
 void func_8007ED6C(s32);

@@ -1403,27 +1403,6 @@ void func_8008A454(s32 objectIndex, s32 cameraId, s32 arg2) {
     }
 }
 
-void func_8008A4CC(s32 objectIndex) {
-    s32 loopIndex;
-    Camera* camera;
-
-    set_object_flag_status_false(objectIndex, 0x00070000);
-    for (loopIndex = 0, camera = camera1; loopIndex < gPlayerCountSelection1; loopIndex++, camera++) {
-        if (gObjectList[objectIndex].state != 0) {
-            if ((D_8018CF68[loopIndex] >= (gObjectList[objectIndex].unk_0DF - 1)) &&
-                ((gObjectList[objectIndex].unk_0DF + 1) >= D_8018CF68[loopIndex])) {
-                set_object_flag_status_true(objectIndex, 0x00010000);
-                if (D_8018CF68[loopIndex] == gObjectList[objectIndex].unk_0DF) {
-                    set_object_flag_status_true(objectIndex, 0x00020000);
-                }
-                if (is_object_visible_on_camera(objectIndex, camera, 0x2AABU) != 0) {
-                    set_object_flag_status_true(objectIndex, VISIBLE);
-                }
-            }
-        }
-    }
-}
-
 UNUSED void func_8008A610(s32 objectIndex) {
     s32 loopIndex;
     Camera* camera;

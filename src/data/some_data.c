@@ -307,18 +307,6 @@ ThwompSpawn gThomwpSpawns150CC[] = {
     { 0x0596, 0xf92f, 0x0006, 0x0000 }, { 0x082a, 0xf9f2, 0x0005, 0x0000 }, { 0x073a, 0xf9f2, 0x0005, 0x0001 },
 };
 
-f32 D_800E594C[][2] = {
-    { -8.0, 8.0 },
-    { 8.0, 8.0 },
-    { 0.0, 0.0 },
-    { 8.0, -8.0 },
-    { -8.0, -8.0 },
-    // This feels super fake, but it matches
-    { -0.0, 0.0 },
-};
-
-s16 D_800E597C[] = { 0x0000, 0x0000, 0x4000, 0x8000, 0x8000, 0xc000 };
-
 // Seems to be related to the Boos in Banshee Boardwalk
 SplineData D_800E5988 = {
     0x0016,

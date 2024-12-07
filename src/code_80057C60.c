@@ -1573,7 +1573,7 @@ void func_8005A3C0(void) {
 
 void func_8005A71C(void) {
     //if (GetCourse() == GetBowsersCastle()) {
-        func_80081210();
+        //func_80081210();
     //}
 }
 
