@@ -336,7 +336,6 @@ void func_80084430(s32, s32);
 void func_8008453C(s32, s32);
 void func_800845C8(s32, s32);
 void func_80084B7C(s32, s32);
-void func_80084D2C(s32, s32);
 void func_80085024(void);
 void func_8008502C(s32, s32);
 void func_80085080(s32);

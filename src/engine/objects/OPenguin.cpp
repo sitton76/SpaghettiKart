@@ -144,28 +144,28 @@ void OPenguin::Draw(s32 cameraId) {
     }
 }
 
-void OPenguin::Behaviours(s32 objectIndex, s32 arg1) {
+void OPenguin::Behaviours(s32 objectIndex, s32 arg1) { // func_800850B0
     Object* object;
 
     object = &gObjectList[objectIndex];
     switch (_bhv) {
         case 1: // emperor
-            func_80085080(objectIndex);
+            OPenguin::func_80085080(objectIndex);
             break;
         case 2:
-            func_8008502C(objectIndex, arg1);
+            OPenguin::func_8008502C(objectIndex, arg1);
             break;
         case 3:
-            func_80084D2C(objectIndex, 0);
+            OPenguin::func_80084D2C(objectIndex, 0);
             break;
         case 4:
-            func_80084D2C(objectIndex, 1);
+            OPenguin::func_80084D2C(objectIndex, 1);
             break;
         case 5:
-            func_80084D2C(objectIndex, 2);
+            OPenguin::func_80084D2C(objectIndex, 2);
             break;
         case 6:
-            func_80084D2C(objectIndex, 3);
+            OPenguin::func_80084D2C(objectIndex, 3);
             break;
     }
     if (func_80072320(objectIndex, 0x00000020) != 0) {
@@ -188,6 +188,105 @@ void OPenguin::Behaviours(s32 objectIndex, s32 arg1) {
         object->orientation[2] = object->direction_angle[2];
     }
 }
+
+void OPenguin::func_80084D2C(s32 objectIndex, s32 arg1) {
+    f32 sp24;
+
+    switch (gObjectList[objectIndex].unk_0AE) {
+        case 0:
+            break;
+        case 1:
+            gObjectList[objectIndex].direction_angle[1] =
+                func_800417B4(gObjectList[objectIndex].direction_angle[1], gObjectList[objectIndex].unk_0C6);
+            if (gObjectList[objectIndex].direction_angle[1] == gObjectList[objectIndex].unk_0C6) {
+                gObjectList[objectIndex].unk_09C = 4;
+                gObjectList[objectIndex].unk_034 = 0.4f;
+                func_80086FD4(objectIndex);
+            }
+            break;
+        case 2:
+            f32_step_towards(&gObjectList[objectIndex].unk_034, 0.8f, 0.02f);
+            if (func_80087060(objectIndex, 0x0000000F) != 0) {
+                func_800722A4(objectIndex, 1);
+                func_800722A4(objectIndex, 2);
+                gObjectList[objectIndex].unk_09C = 1;
+                gObjectList[objectIndex].unk_0D8 = 1;
+                gObjectList[objectIndex].textureListIndex = 0;
+                gObjectList[objectIndex].type =
+                    get_animation_length(d_course_sherbet_land_unk_data11, gObjectList[objectIndex].unk_0D8);
+                func_800726CC(objectIndex, 3);
+                func_80086FD4(objectIndex);
+                if (func_80072354(objectIndex, 0x00000020) != 0) {
+                    func_800722A4(objectIndex, 0x00000080);
+                }
+            }
+            break;
+        case 3:
+            switch (arg1) { /* switch 1; irregular */
+                case 0:     /* switch 1 */
+                    sp24 = 1.0f;
+                    break;
+                case 1: /* switch 1 */
+                    sp24 = 1.5f;
+                    break;
+                case 2: /* switch 1 */
+                    sp24 = 2.0f;
+                    break;
+                case 3: /* switch 1 */
+                    sp24 = 2.5f;
+                    break;
+            }
+            f32_step_towards(&gObjectList[objectIndex].unk_034, sp24, 0.15f);
+            if ((func_80072354(objectIndex, 2) != 0) && (sp24 == gObjectList[objectIndex].unk_034)) {
+                func_80086FD4(objectIndex);
+            }
+            break;
+        case 4:
+            if (func_80087060(objectIndex, 0x0000001E) != 0) {
+                func_800722CC(objectIndex, 1);
+                func_80086FD4(objectIndex);
+            }
+            break;
+        case 5:
+            f32_step_towards(&gObjectList[objectIndex].unk_034, 0.4f, 0.2f);
+            if (func_80087060(objectIndex, 0x0000000A) != 0) {
+                func_800722A4(objectIndex, 2);
+                gObjectList[objectIndex].unk_0D8 = 2;
+                gObjectList[objectIndex].textureListIndex = 0;
+                gObjectList[objectIndex].type =
+                    get_animation_length(d_course_sherbet_land_unk_data11, gObjectList[objectIndex].unk_0D8);
+                func_800726CC(objectIndex, 3);
+                func_80086FD4(objectIndex);
+            }
+            break;
+        case 6:
+            if (func_80072354(objectIndex, 2) != 0) {
+                gObjectList[objectIndex].unk_0D8 = 0;
+                gObjectList[objectIndex].textureListIndex = 0;
+                gObjectList[objectIndex].type =
+                    get_animation_length(d_course_sherbet_land_unk_data11, gObjectList[objectIndex].unk_0D8);
+                gObjectList[objectIndex].unk_0C6 += 0x8000;
+                func_800726CC(objectIndex, 2);
+                func_8008701C(objectIndex, 1);
+            }
+            break;
+    }
+    func_8008781C(objectIndex);
+    object_calculate_new_pos_offset(objectIndex);
+}
+
+void OPenguin::func_80085080(s32 objectIndex) {
+    func_8008B78C(objectIndex);
+    object_calculate_new_pos_offset(objectIndex);
+    func_800873F4(objectIndex);
+}
+
+void OPenguin::func_8008502C(s32 objectIndex, s32 arg1) {
+    func_80088038(objectIndex, gObjectList[objectIndex].unk_01C[1], gObjectList[objectIndex].unk_0C6);
+    object_calculate_new_pos_offset(objectIndex);
+    func_800873F4(objectIndex);
+}
+
 
 void OPenguin::EmperorPenguin(s32 objectIndex) {
     switch (gObjectList[objectIndex].state) {
@@ -280,6 +379,8 @@ void OPenguin::InitOtherPenguin(s32 objectIndex) {
     object->unk_04C = random_int(0x012CU);
     set_object_flag_status_true(objectIndex, 0x04000220);
 
+    // This code has been significantly refactored from the original func_800845C8
+    // Into a switch statement instead of checking for the index of the penguin
     switch(_bhv) {
         case Behaviour::CIRCLE:
             object->unk_01C[1] = Diameter;
@@ -301,81 +402,6 @@ void OPenguin::InitOtherPenguin(s32 objectIndex) {
             break;
     }
 
-    if ((_idx > 0) && (_idx < 9)) {
-        if ((_idx == 1) || (_idx == 2)) {
-            //object->unk_0C6 = 0x0150;
-            //object->unk_01C[1] = 100.0f;
-        } else if ((_idx == 3) || (_idx == 4)) {
-            //object->unk_0C6 = 0x0100;
-            //object->unk_01C[1] = 80.0f;
-        } else if ((_idx == 5) || (_idx == 6)) {
-            //object->unk_0C6 = 0xFF00;
-            //object->unk_01C[1] = 80.0f;
-        } else if ((_idx == 7) || (_idx == 8)) {
-            //object->unk_0C6 = 0x0150;
-            //object->unk_01C[1] = 80.0f;
-        }
-        //object->unk_0C4 = (_idx << 0xF) & 0xFFFF;
-        //object->surfaceHeight = -80.0f;
-        //object->sizeScaling = 0.08f;
-        //object->unk_0DD = 2;
-        //func_800722A4(objectIndex, 8);
-    } else if ((_idx > 8) && (_idx < 15)) {
-        switch (_idx) {
-            case 9:
-                if (gGamestate != CREDITS_SEQUENCE) {
-                } else {
-                    //object->sizeScaling = 0.15f;
-                }
-                //object->unk_0C6 = 0x9000;
-                if (gIsMirrorMode != 0) {
-                    //object->unk_0C6 -= 0x4000;
-                }
-                //object->unk_0DD = 3;
-                break;
-            case 10:
-                //object->unk_0C6 = 0x5000;
-                if (gIsMirrorMode != 0) {
-                    //object->unk_0C6 += 0x8000;
-                }
-                //object->unk_0DD = 4;
-                break;
-            case 11:
-                //object->unk_0C6 = 0xC000;
-                //object->unk_0DD = 6;
-                if (gIsMirrorMode != 0) {
-                    //object->unk_0C6 += 0x8000;
-                }
-                break;
-            case 12:
-                //object->unk_0C6 = 0x4000;
-                //object->unk_0DD = 6;
-                if (gIsMirrorMode != 0) {
-                    //object->unk_0C6 += 0x8000;
-                }
-                break;
-            case 13:
-               // object->unk_0C6 = 0x8000;
-                //object->unk_0DD = 6;
-                if (gIsMirrorMode != 0) {
-                    //object->unk_0C6 -= 0x4000;
-                }
-                break;
-            case 14:
-                //object->unk_0C6 = 0x9000;
-                //object->unk_0DD = 6;
-                if (gIsMirrorMode != 0) {
-                    //object->unk_0C6 -= 0x4000;
-                }
-                break;
-            default:
-                break;
-        }
-        //set_obj_direction_angle(objectIndex, 0U, object->unk_0C6 + 0x8000, 0U);
-        //object->surfaceHeight = 5.0f;
-        //object->sizeScaling = 0.04f;
-        //func_800722A4(objectIndex, 0x00000014);
-    }
     func_80086EF0(objectIndex);
     object->unk_034 = 0.0f;
     object->type = get_animation_length(d_course_sherbet_land_unk_data11, 0);

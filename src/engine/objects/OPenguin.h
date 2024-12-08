@@ -56,9 +56,14 @@ public:
 private:
     void Behaviours(s32 objectIndex, s32 arg1);
     void EmperorPenguin(s32 objectIndex);
+    void func_80085080(s32 objectIndex);
+    void func_8008502C(s32 objectIndex, s32 arg1);
+    void func_80084D2C(s32 objectIndex, s32 arg1);
+
     void InitEmperorPenguin(s32 objectIndex);
     void OtherPenguin(s32 objectIndex);
     void InitOtherPenguin(s32 objectIndex);
+
 
     s32 _idx;
     PenguinType _type;
