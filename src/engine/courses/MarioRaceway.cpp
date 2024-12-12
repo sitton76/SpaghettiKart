@@ -6,7 +6,7 @@
 #include "MarioRaceway.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 
 extern "C" {
     #include "main.h"

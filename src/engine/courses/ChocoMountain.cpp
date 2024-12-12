@@ -5,7 +5,7 @@
 
 #include "ChocoMountain.h"
 #include "World.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "choco_mountain_data.h"
 #include "engine/actors/AFinishline.h"
 

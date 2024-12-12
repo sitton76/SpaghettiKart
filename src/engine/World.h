@@ -1,16 +1,17 @@
 #pragma once
 
 #include <libultraship.h>
-//#include "objects/GameObject.h"
+#include "objects/GameObject.h"
 #include "Cup.h"
 #include "vehicles/Vehicle.h"
 #include "vehicles/Train.h"
 #include "vehicles/Car.h"
-#include "objects/OBombKart.h"
+#include "objects/BombKart.h"
 #include "vehicles/Train.h"
 #include "TrainCrossing.h"
-#include "objects/OThwomp.h"
-#include "objects/OPenguin.h"
+#include "objects/Thwomp.h"
+#include "objects/Penguin.h"
+#include "objects/Seagull.h"
 #include <memory>
 #include "Actor.h"
 
@@ -20,7 +21,7 @@ extern "C" {
 #include "engine/Engine.h"
 };
 
-//class GameObject;
+class GameObject;
 class Cup; // <-- Forward declaration
 class Course;
 class AVehicle;
@@ -28,6 +29,7 @@ class ATrain;
 class ACar;
 class TrainCrossing;
 class OThwomp;
+class OSeagull;
 
 class World {
 
@@ -93,7 +95,7 @@ public:
     AActor* ConvertActorToAActor(Actor* actor);
     Actor* ConvertAActorToActor(AActor* actor);
 
-//    Object* AddObject(std::unique_ptr<GameObject> object);
+    GameObject* AddObject(GameObject* object);
 
     CProperties* GetCourseProps();
     void TickObjects();
@@ -129,7 +131,7 @@ public:
     size_t CupIndex = 1;
 
     std::vector<AActor*> Actors;
-//    std::vector<std::unique_ptr<GameObject>> GameObjects;
+    std::vector<GameObject*> Objects;
 
     /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);
@@ -150,6 +152,9 @@ public:
 
     std::vector<std::shared_ptr<OPenguin>> Penguins;
     std::shared_ptr<OPenguin> AddPenguin(Vec3f pos, u16 direction, OPenguin::PenguinType type, OPenguin::Behaviour behaviour);
+
+    std::vector<std::shared_ptr<OSeagull>> Seagulls;
+    std::shared_ptr<OSeagull> AddSeagull(Vec3f pos);
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

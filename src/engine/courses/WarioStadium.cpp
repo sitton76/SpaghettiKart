@@ -5,7 +5,7 @@
 
 #include "WarioStadium.h"
 #include "World.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/wario_stadium_data.h"
 #include "engine/actors/AWarioSign.h"
 #include "engine/actors/AFinishline.h"

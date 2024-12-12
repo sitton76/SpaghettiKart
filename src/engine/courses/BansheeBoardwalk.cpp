@@ -6,7 +6,7 @@
 #include "BansheeBoardwalk.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/banshee_boardwalk_data.h"
 #include "assets/boo_frames.h"
 

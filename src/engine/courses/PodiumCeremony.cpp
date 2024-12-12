@@ -5,7 +5,7 @@
 
 #include "PodiumCeremony.h"
 #include "World.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/royal_raceway_data.h"
 #include "assets/ceremony_data.h"
 

@@ -5,7 +5,7 @@
 
 #include "DoubleDeck.h"
 #include "World.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/double_deck_data.h"
 
 extern "C" {

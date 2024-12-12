@@ -6,7 +6,7 @@
 #include "DKJungle.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/dks_jungle_parkway_data.h"
 
 #include "engine/vehicles/Utils.h"

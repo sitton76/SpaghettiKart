@@ -6,7 +6,7 @@
 #include "TestCourse.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/mario_raceway_data.h"
 #include "assets/bowsers_castle_data.h"
 #include "assets/bowsers_castle_displaylists.h"
@@ -187,8 +187,13 @@ void TestCourse::SpawnActors() {
                                                                             ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing1;
 
-    //Vec3f pos = {-80, 7, -20};
+    Vec3f pos = {0, 80, 0};
     //gWorldInstance.AddActor(new ACloud(pos));
+
+    gWorldInstance.AddActor(new OSeagull(0, pos));
+    gWorldInstance.AddActor(new OSeagull(1, pos));
+    gWorldInstance.AddActor(new OSeagull(2, pos));
+    gWorldInstance.AddActor(new OSeagull(3, pos));
 }
 
 // Likely sets minimap boundaries

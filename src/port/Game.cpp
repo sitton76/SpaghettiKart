@@ -32,7 +32,7 @@
 #include "engine/courses/PodiumCeremony.h"
 
 #include "engine/TrainCrossing.h"
-#include "src/engine/objects/OBombKart.h"
+#include "src/engine/objects/BombKart.h"
 
 #include "Smoke.h"
 
@@ -378,6 +378,18 @@ extern "C" {
         }
     }
 
+    void CourseManager_TickObjects() {
+        if (gWorldInstance.CurrentCourse) {
+            gWorldInstance.TickObjects();
+        }
+    }
+
+    void CourseManager_DrawObjects(Camera* camera) {
+        if (gWorldInstance.CurrentCourse) {
+            gWorldInstance.DrawObjects(camera);
+        }
+    }
+
     // Helps prevents users from forgetting to add a finishline to their course
     bool cm_DoesFinishlineExist() {
         for (AActor* actor : gWorldInstance.Actors) {
@@ -518,6 +530,22 @@ extern "C" {
         for (auto& penguin : gWorldInstance.Penguins) {
             if (penguin) {
                 penguin->Tick();
+            }
+        }
+    }
+
+    void CourseManager_DrawSeagulls(s32 cameraId) {
+        for (auto& seagull : gWorldInstance.Seagulls) {
+            if (seagull) {
+               // seagull->Draw(cameraId);
+            }
+        }
+    }
+
+    void CourseManager_TickSeagulls(void) {
+        for (auto& seagull : gWorldInstance.Seagulls) {
+            if (seagull) {
+                //seagull->Tick();
             }
         }
     }

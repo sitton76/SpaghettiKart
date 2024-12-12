@@ -1,6 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
-#include "OPenguin.h"
+#include "Penguin.h"
 #include <vector>
 
 #include "port/Game.h"
@@ -98,7 +98,7 @@ void OPenguin::Tick(void) {
     if ((is_obj_flag_status_active(objectIndex, 0x02000000) != 0) &&
         (func_80072354(objectIndex, 0x00000020) != 0)) {
         func_800722A4(objectIndex, 0x00000060);
-        set_object_flag_status_false(objectIndex, 0x02000000);
+        clear_object_flag(objectIndex, 0x02000000);
     }
 }
 
@@ -315,7 +315,7 @@ void OPenguin::InitEmperorPenguin(s32 objectIndex) {
     object->unk_0DD = 1;
     func_80086EF0(objectIndex);
     object->spline = D_800E672C[0];
-    set_object_flag_status_true(objectIndex, 0x04000800);
+    set_object_flag(objectIndex, 0x04000800);
     object->type = get_animation_length(d_course_sherbet_land_unk_data11, 0);
     object_next_state(objectIndex);
 }
@@ -377,7 +377,7 @@ void OPenguin::InitOtherPenguin(s32 objectIndex) {
     //object->boundingBoxSize = 4;
     object->unk_09C = 2;
     object->unk_04C = random_int(0x012CU);
-    set_object_flag_status_true(objectIndex, 0x04000220);
+    set_object_flag(objectIndex, 0x04000220);
 
     // This code has been significantly refactored from the original func_800845C8
     // Into a switch statement instead of checking for the index of the penguin

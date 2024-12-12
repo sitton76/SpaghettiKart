@@ -5,7 +5,7 @@
 
 #include "BlockFort.h"
 #include "World.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/block_fort_data.h"
 
 extern "C" {

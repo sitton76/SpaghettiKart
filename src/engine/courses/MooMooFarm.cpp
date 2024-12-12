@@ -6,8 +6,9 @@
 #include "MooMooFarm.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/moo_moo_farm_data.h"
+#include "engine/objects/Mole.h"
 
 extern "C" {
     #include "main.h"
@@ -223,27 +224,37 @@ void MooMooFarm::InitCourseObjects() {
             D_8018D1D0 = 6;
             D_8018D1D8 = 6;
         }
-        for (i = 0; i < NUM_GROUP1_MOLES; i++) {
+
+        Vec3f pos = {0, 22, 0};
+        for (size_t i = 0; i < NUM_GROUP1_MOLES; i++) {
             D_8018D198[i] = 0;
-            find_unused_obj_index(&indexObjectList1[i]);
+            gWorldInstance.AddObject(new OMole(pos));
+
         }
-        for (i = 0; i < NUM_GROUP2_MOLES; i++) {
-            D_8018D1A8[i] = 0;
-            find_unused_obj_index(&indexObjectList1[i]);
-        }
-        for (i = 0; i < NUM_GROUP3_MOLES; i++) {
-            D_8018D1B8[i] = 0;
-            find_unused_obj_index(&indexObjectList1[i]);
-        }
-        for (i = 0; i < NUM_TOTAL_MOLES; i++) {
-            find_unused_obj_index(&gObjectParticle1[i]);
-            objectId = gObjectParticle1[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].pos[0] = gMoleSpawns.asVec3sList[i][0] * xOrientation;
-            gObjectList[objectId].pos[2] = gMoleSpawns.asVec3sList[i][2];
-            func_800887C0(objectId);
-            gObjectList[objectId].sizeScaling = 0.7f;
-        }
+
+        // for (i = 0; i < NUM_GROUP1_MOLES; i++) {
+        //     D_8018D198[i] = 0;
+        //     find_unused_obj_index(&indexObjectList1[i]);
+        // }
+        // for (i = 0; i < NUM_GROUP2_MOLES; i++) {
+        //     D_8018D1A8[i] = 0;
+        //     find_unused_obj_index(&indexObjectList1[i]);
+        // }
+        // for (i = 0; i < NUM_GROUP3_MOLES; i++) {
+        //     D_8018D1B8[i] = 0;
+        //     find_unused_obj_index(&indexObjectList1[i]);
+        // }
+        // for (i = 0; i < NUM_TOTAL_MOLES; i++) {
+        //     find_unused_obj_index(&gObjectParticle1[i]);
+        //     objectId = gObjectParticle1[i];
+        //     init_object(objectId, 0);
+        //     gObjectList[objectId].pos[0] = gMoleSpawns.asVec3sList[i][0] * xOrientation;
+        //     gObjectList[objectId].pos[2] = gMoleSpawns.asVec3sList[i][2];
+        //     func_800887C0(objectId);
+        //     gObjectList[objectId].sizeScaling = 0.7f;
+        // }
+
+
         for (i = 0; i < gObjectParticle2_SIZE; i++) {
             find_unused_obj_index(&gObjectParticle2[i]);
         }
@@ -252,13 +263,13 @@ void MooMooFarm::InitCourseObjects() {
 
 void MooMooFarm::UpdateCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
-        update_moles();
+        //update_moles();
     }
 }
 
 void MooMooFarm::RenderCourseObjects(s32 cameraId) {
     if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_moles(cameraId);
+        //render_object_moles(cameraId);
     }
 }
 

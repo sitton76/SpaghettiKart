@@ -13,19 +13,6 @@ extern "C" {
 #include "course_offsets.h"
 }
 
-//! @todo Make shadow size bigger if thwomp is scaled up
-//! @todo make adjustable properties for squishSize and boundingBoxSize
-
-    /**
- * Thwomp GameObject
- * 
- * The game automatically places the actor on the ground so you do not need to provide a Y coordinate value.
- * 
- * @arg direction the rotational direction the thwomp is facing.
- * @arg behaviour the behaviour of the thwomp, uses values 1-6.
- * @arg primAlpha unknown
- * @arg boundingBoxSize optional. The size of the bounding box for the thwomp. Default value is 12
- */
 class OPenguin {
 public:
     enum PenguinType : uint32_t {

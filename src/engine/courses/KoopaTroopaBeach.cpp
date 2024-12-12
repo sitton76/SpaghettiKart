@@ -6,7 +6,7 @@
 #include "KoopaTroopaBeach.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/koopa_troopa_beach_data.h"
 
 extern "C" {
@@ -185,37 +185,45 @@ void KoopaTroopaBeach::InitCourseObjects() {
             gObjectList[objectId].unk_01C[2] = gCrabSpawns[i].patrolZ;
         }
     }
-    for (i = 0; i < NUM_SEAGULLS; i++) {
-        objectId = indexObjectList2[i];
-        init_object(objectId, 0);
-        if (i < (NUM_SEAGULLS / 2)) {
-            gObjectList[objectId].unk_0D5 = 0;
-        } else {
-            gObjectList[objectId].unk_0D5 = 1;
+
+    if (gGamestate == CREDITS_SEQUENCE) {
+        Vec3f pos = {-360.0f, 60.0f, -1300.0f};
+        for (size_t i = 0; i < NUM_SEAGULLS; i++) {
+            gWorldInstance.AddSeagull(pos);
+        }
+    } else { // Normal gameplay
+        Vec3f pos = {-985.0f, 15.0f, 1200.0f};
+        for (size_t i = 0; i < 4; i++) {
+            gWorldInstance.AddSeagull(pos);
+        }
+
+        Vec3f pos2 = {328.0f, 20.0f, 2541.0f};
+        for (size_t i = 0; i < 6; i++) {
+            gWorldInstance.AddSeagull(pos2);
         }
     }
 }
 
 void KoopaTroopaBeach::UpdateCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
-        update_crabs();
+        //update_crabs();
     }
     if ((gPlayerCount == 1) || (gPlayerCount == 2) || (gGamestate == CREDITS_SEQUENCE)) {
-        update_seagulls();
+        //update_seagulls();
     }
 }
 
 void KoopaTroopaBeach::RenderCourseObjects(s32 cameraId) {
     if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_crabs(cameraId);
+        //render_object_crabs(cameraId);
     }
     if (gGamestate != CREDITS_SEQUENCE) {
 
         if ((gPlayerCount == 1) || (gPlayerCount == 2)) {
-            render_object_seagulls(cameraId);
+            //render_object_seagulls(cameraId);
         }
     } else {
-        render_object_seagulls(cameraId);
+        //render_object_seagulls(cameraId);
     }
 }
 

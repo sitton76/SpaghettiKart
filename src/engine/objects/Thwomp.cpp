@@ -1,6 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
-#include "OThwomp.h"
+#include "Thwomp.h"
 #include <vector>
 
 #include "port/Game.h"
@@ -305,17 +305,17 @@ void OThwomp::SetVisibility(s32 objectIndex) { // func_8008A4CC
     s32 loopIndex;
     Camera* camera;
 
-    set_object_flag_status_false(objectIndex, 0x00070000);
+    clear_object_flag(objectIndex, 0x00070000);
     for (loopIndex = 0, camera = camera1; loopIndex < gPlayerCountSelection1; loopIndex++, camera++) {
         if (gObjectList[objectIndex].state != 0) {
             if ((D_8018CF68[loopIndex] >= (gObjectList[objectIndex].unk_0DF - 1)) &&
                 ((gObjectList[objectIndex].unk_0DF + 1) >= D_8018CF68[loopIndex])) {
-                set_object_flag_status_true(objectIndex, 0x00010000);
+                set_object_flag(objectIndex, 0x00010000);
                 if (D_8018CF68[loopIndex] == gObjectList[objectIndex].unk_0DF) {
-                    set_object_flag_status_true(objectIndex, 0x00020000);
+                    set_object_flag(objectIndex, 0x00020000);
                 }
                 if (is_object_visible_on_camera(objectIndex, camera, 0x2AABU) != 0) {
-                    set_object_flag_status_true(objectIndex, VISIBLE);
+                    set_object_flag(objectIndex, VISIBLE);
                 }
             }
         }
@@ -619,7 +619,7 @@ void OThwomp::func_80080B28(s32 objectIndex, s32 playerId) {
                         }
                         OThwomp::func_80080DE4(objectIndex);
                         func_80075304(gObjectList[objectIndex].pos, 3, 3, D_8018D3C4);
-                        set_object_flag_status_false(objectIndex, 0x00000200);
+                        clear_object_flag(objectIndex, 0x00000200);
                         func_800722A4(objectIndex, 0x00000040);
                         func_80086F60(objectIndex);
                         func_800726CC(objectIndex, 0x000000C8);
@@ -666,7 +666,7 @@ void OThwomp::Draw(s32 cameraId) {
     camera = &camera1[cameraId];
     if (cameraId == PLAYER_ONE) {
         objectIndex = indexObjectList1[_idx];
-        set_object_flag_status_false(objectIndex, 0x00070000);
+        clear_object_flag(objectIndex, 0x00070000);
         func_800722CC(objectIndex, 0x00000110);
     }
 
@@ -831,7 +831,7 @@ void OThwomp::func_8007EC30(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
     object->unk_01C[1] = 30.0f;
-    set_object_flag_status_true(objectIndex, 0x05000220);
+    set_object_flag(objectIndex, 0x05000220);
     object->type = 0;
     object->unk_0DF = 6;
     func_800724DC(objectIndex);
@@ -868,7 +868,7 @@ void OThwomp::func_8007EE5C(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    set_object_flag_status_true(objectIndex, 0x04000220);
+    set_object_flag(objectIndex, 0x04000220);
     object->type = 0;
     object->unk_0DF = 6;
     func_80086E70(objectIndex);
@@ -921,7 +921,7 @@ void OThwomp::func_8007FA08(s32 objectIndex) {
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    set_object_flag_status_true(objectIndex, 0x04000220);
+    set_object_flag(objectIndex, 0x04000220);
     object->type = 0;
     object->surfaceHeight = 0.0f;
     object->origin_pos[1] = 0.0f;
@@ -1087,7 +1087,7 @@ void OThwomp::func_80080078(s32 objectIndex) { // func_80080078
                         0x10U, (u16) 0x00000040);
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
-    set_object_flag_status_true(objectIndex, 0x04000220);
+    set_object_flag(objectIndex, 0x04000220);
     object->type = 2;
     object->unk_0DF = 8;
     set_obj_direction_angle(objectIndex, 0U, 0U, 0U);
@@ -1159,7 +1159,7 @@ void OThwomp::func_800802C0(s32 objectIndex) {
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
     object->textureListIndex = 0;
     //object->sizeScaling = 1.5f;
-    set_object_flag_status_true(objectIndex, 0x05000220);
+    set_object_flag(objectIndex, 0x05000220);
     object->type = 1;
     object->unk_0DF = 6;
     set_obj_origin_offset(objectIndex, 0.0f, 0.0f, 0.0f);
@@ -1269,7 +1269,7 @@ void OThwomp::func_80080524(s32 objectIndex) {
     object = &gObjectList[objectIndex];
     object->model = (Gfx*)d_course_bowsers_castle_dl_thwomp;
     object->textureListIndex = 0;
-    set_object_flag_status_true(objectIndex, 0x04000220);
+    set_object_flag(objectIndex, 0x04000220);
     object->type = 0;
     object->unk_0DF = 0x0A;
     func_80086E70(objectIndex);
@@ -1302,7 +1302,7 @@ void OThwomp::func_8007E63C(s32 objectIndex) {
         case 0x32:
             if (f32_step_up_towards(&gObjectList[objectIndex].offset[1], gObjectList[objectIndex].unk_01C[1] + 15.0,
                                     1.5f) != 0) {
-                set_object_flag_status_true(objectIndex, 0x00000200);
+                set_object_flag(objectIndex, 0x00000200);
                 func_800722A4(objectIndex, 1);
                 func_800722CC(objectIndex, 2);
                 object_next_state(objectIndex);
@@ -1345,7 +1345,7 @@ void OThwomp::func_8007E63C(s32 objectIndex) {
             }
             if (f32_step_up_towards(&gObjectList[objectIndex].offset[1], gObjectList[objectIndex].unk_01C[1], 0.5f) !=
                 0) {
-                set_object_flag_status_false(objectIndex, 0x00000200);
+                clear_object_flag(objectIndex, 0x00000200);
                 func_8007266C(objectIndex);
             }
             break;
@@ -1417,7 +1417,7 @@ void OThwomp::func_8007E63C(s32 objectIndex) {
         case 0x6C:
             if (set_and_run_timer_object(objectIndex, 0x00000064) != 0) {
                 func_800722CC(objectIndex, 2);
-                set_object_flag_status_false(objectIndex, 0x00000200);
+                clear_object_flag(objectIndex, 0x00000200);
                 func_8007266C(objectIndex);
             }
             break;

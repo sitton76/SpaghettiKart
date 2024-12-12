@@ -6,7 +6,7 @@
 #include "FrappeSnowland.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/frappe_snowland_data.h"
 #include "assets/boo_frames.h"
 

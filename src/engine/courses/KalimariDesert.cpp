@@ -6,7 +6,7 @@
 #include "KalimariDesert.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "kalimari_desert_data.h"
 #include "engine/vehicles/Utils.h"
 

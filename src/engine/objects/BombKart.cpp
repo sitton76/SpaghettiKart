@@ -1,5 +1,5 @@
 #include <libultraship.h>
-#include "OBombKart.h"
+#include "BombKart.h"
 #include <vector>
 
 #include "port/Game.h"
@@ -358,7 +358,7 @@ void OBombKart::Draw(s32 cameraId) {
         } else if (gGamestate != ENDING) {
             Unk_4A = 1;
         }
-        set_object_flag_status_false(ObjectIndex, 0x00200000);
+        clear_object_flag(ObjectIndex, 0x00200000);
     }
 
     // huh???
@@ -369,7 +369,7 @@ void OBombKart::Draw(s32 cameraId) {
         gObjectList[ObjectIndex].pos[2] = Pos[2];
         temp_s4 = func_8008A364(ObjectIndex, cameraId, 0x31C4U, 0x000001F4);
         if (is_obj_flag_status_active(ObjectIndex, VISIBLE) != 0) {
-            set_object_flag_status_true(ObjectIndex, 0x00200000);
+            set_object_flag(ObjectIndex, 0x00200000);
             D_80183E80[0] = 0;
             D_80183E80[1] = func_800418AC(Pos[0], Pos[2], camera->pos);
             D_80183E80[2] = 0x8000;

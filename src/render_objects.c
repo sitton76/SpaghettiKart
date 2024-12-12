@@ -4015,86 +4015,6 @@ void func_80054BE8(s32 cameraId) {
     }
 }
 
-void func_80054D00(s32 objectIndex, s32 cameraId) {
-    Camera* camera;
-
-    camera = &camera1[cameraId];
-    if (gObjectList[objectIndex].state >= 3) {
-        func_8008A364(objectIndex, cameraId, 0x2AABU, 0x0000012C);
-        if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-            D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
-            D_80183E80[1] =
-                func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
-            D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
-            func_80048130(gObjectList[objectIndex].pos, (u16*) D_80183E80, gObjectList[objectIndex].sizeScaling,
-                          (u8*) gObjectList[objectIndex].activeTLUT, gObjectList[objectIndex].activeTexture,
-                          LOAD_ASSET(D_0D0062B0), 0x00000020, 0x00000040, 0x00000020, 0x00000040, 5);
-        }
-    }
-}
-
-void func_80054E10(s32 objectIndex) {
-    if (gObjectList[objectIndex].state > 0) {
-        if (is_obj_flag_status_active(objectIndex, 0x00800000) != 0) {
-            D_80183E50[0] = gObjectList[objectIndex].pos[0];
-            D_80183E50[1] = gObjectList[objectIndex].surfaceHeight + 0.8;
-            D_80183E50[2] = gObjectList[objectIndex].pos[2];
-            D_80183E70[0] = gObjectList[objectIndex].velocity[0];
-            D_80183E70[1] = gObjectList[objectIndex].velocity[1];
-            D_80183E70[2] = gObjectList[objectIndex].velocity[2];
-            func_8004A9B8(gObjectList[objectIndex].sizeScaling);
-        }
-    }
-}
-
-// Almost certainly responsible for spawning/handling the moles on Moo Moo farm
-void func_80054EB8(UNUSED s32 unused) {
-    s32 someIndex;
-
-    for (someIndex = 0; someIndex < NUM_TOTAL_MOLES; someIndex++) {
-        func_80054E10(gObjectParticle1[someIndex]);
-    }
-}
-
-void func_80054F04(s32 cameraId) {
-    s32 var_s2;
-    s32 objectIndex;
-    Camera* sp44;
-    Object* object;
-
-    sp44 = &camera1[cameraId];
-    gSPDisplayList(gDisplayListHead++, D_0D0079C8);
-    load_texture_block_rgba16_mirror((u8*) LOAD_ASSET(d_course_moo_moo_farm_mole_dirt), 0x00000010, 0x00000010);
-    for (var_s2 = 0; var_s2 < gObjectParticle2_SIZE; var_s2++) {
-        objectIndex = gObjectParticle2[var_s2];
-        object = &gObjectList[objectIndex];
-        if (object->state > 0) {
-            func_8008A364(objectIndex, cameraId, 0x2AABU, 0x000000C8);
-            if ((is_obj_flag_status_active(objectIndex, VISIBLE) != 0) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
-                object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], sp44->pos);
-                rsp_set_matrix_gObjectList(objectIndex);
-                gSPDisplayList(gDisplayListHead++, D_0D006980);
-            }
-        }
-    }
-    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
-}
-
-void render_object_moles(s32 cameraId) {
-    s32 i;
-
-    for (i = 0; i < NUM_GROUP1_MOLES; i++) {
-        func_80054D00(indexObjectList1[i], cameraId);
-    }
-    for (i = 0; i < NUM_GROUP2_MOLES; i++) {
-        func_80054D00(indexObjectList2[i], cameraId);
-    }
-    for (i = 0; i < NUM_GROUP3_MOLES; i++) {
-        func_80054D00(indexObjectList3[i], cameraId);
-    }
-    func_80054EB8(cameraId);
-    func_80054F04(cameraId);
-}
 
 void func_80055164(s32 objectIndex) {
     if (gObjectList[objectIndex].state >= 2) {
@@ -4141,51 +4061,6 @@ void func_800552BC(s32 objectIndex) {
     }
 }
 
-void render_object_seagulls(s32 arg0) {
-    s32 i;
-    s32 var_s1;
-
-    for (i = 0; i < NUM_SEAGULLS; i++) {
-        var_s1 = indexObjectList2[i];
-        if (func_8008A364(var_s1, arg0, 0x5555U, 0x000005DC) < 0x9C401 && CVarGetInteger("gNoCulling", 0) == 0) {
-            D_80165908 = 1;
-            func_800722A4(var_s1, 2);
-        }
-        if (is_obj_flag_status_active(var_s1, VISIBLE) != 0) {
-            func_800552BC(var_s1);
-        }
-    }
-}
-
-void draw_crabs(s32 objectIndex, s32 cameraId) {
-    Camera* camera;
-
-    if (gObjectList[objectIndex].state >= 2) {
-        Vtx* vtx = (Vtx*) LOAD_ASSET(common_vtx_hedgehog);
-        camera = &camera1[cameraId];
-        func_8004A6EC(objectIndex, 0.5f);
-        gObjectList[objectIndex].orientation[1] =
-            func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
-        draw_2d_texture_at(gObjectList[objectIndex].pos, gObjectList[objectIndex].orientation,
-                           gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT,
-                           gObjectList[objectIndex].activeTexture, vtx, 64, 64,
-                           64, 32);
-    }
-}
-
-void render_object_crabs(s32 arg0) {
-    s32 someIndex;
-    s32 test;
-
-    for (someIndex = 0; someIndex < NUM_CRABS; someIndex++) {
-        test = indexObjectList1[someIndex];
-        func_8008A364(test, arg0, 0x2AABU, 0x00000320);
-        if (is_obj_flag_status_active(test, VISIBLE) != 0) {
-            draw_crabs(test, arg0);
-        }
-    }
-}
-
 void func_800555BC(s32 objectIndex, s32 cameraId) {
     Camera* camera;
 
@@ -4212,14 +4087,14 @@ void render_object_hedgehogs(s32 arg0) {
             something = MIN(something, 0x52211U - 1);
         }
         if (is_obj_flag_status_active(test, VISIBLE) != 0) {
-            set_object_flag_status_true(test, 0x00200000);
+            set_object_flag(test, 0x00200000);
             if (something < 0x2711U) {
-                set_object_flag_status_true(test, 0x00000020);
+                set_object_flag(test, 0x00000020);
             } else {
-                set_object_flag_status_false(test, 0x00000020);
+                clear_object_flag(test, 0x00000020);
             }
             if (something < 0x57E41U) {
-                set_object_flag_status_true(test, 0x00400000);
+                set_object_flag(test, 0x00400000);
             }
             if (something < 0x52211U) {
                 func_800555BC(test, arg0);
@@ -4382,7 +4257,7 @@ void render_object_hot_air_balloon(s32 arg0) {
             func_80055CCC(objectIndex, arg0);
         }
     } else {
-        set_object_flag_status_false(objectIndex, 0x00100000);
+        clear_object_flag(objectIndex, 0x00100000);
         func_80055CCC(objectIndex, arg0);
     }
 }
@@ -4682,7 +4557,7 @@ void render_bomb_karts(s32 cameraId) {
             } else if (gGamestate != 5) {
                 gBombKarts[i].unk_4A = 1;
             }
-            set_object_flag_status_false(objectIndex, 0x00200000);
+            clear_object_flag(objectIndex, 0x00200000);
         }
     }
 
@@ -4697,7 +4572,7 @@ void render_bomb_karts(s32 cameraId) {
             gObjectList[objectIndex].pos[2] = var_s1_2->bombPos[2];
             temp_s4 = func_8008A364(objectIndex, cameraId, 0x31C4U, 0x000001F4);
             if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-                set_object_flag_status_true(objectIndex, 0x00200000);
+                set_object_flag(objectIndex, 0x00200000);
                 D_80183E80[0] = 0;
                 D_80183E80[1] = func_800418AC(var_s1_2->bombPos[0], var_s1_2->bombPos[2], camera->pos);
                 D_80183E80[2] = 0x8000;

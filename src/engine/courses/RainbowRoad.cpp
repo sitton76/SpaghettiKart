@@ -6,7 +6,7 @@
 #include "RainbowRoad.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/rainbow_road_data.h"
 
 extern "C" {

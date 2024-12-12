@@ -9,11 +9,11 @@
 #include "vehicles/Bus.h"
 #include "vehicles/TankerTruck.h"
 #include "vehicles/Car.h"
-#include "objects/OBombKart.h"
-#include "objects/OPenguin.h"
+#include "objects/BombKart.h"
+#include "objects/Penguin.h"
 #include "TrainCrossing.h"
 #include <memory>
-//#include "objects/GameObject.h"
+#include "objects/GameObject.h"
 
 extern "C" {
    #include "camera.h"
@@ -49,6 +49,7 @@ static size_t cars;
 static size_t boats;
 static size_t thwomps;
 static size_t penguins;
+static size_t seagulls;
 
 /**
  * Note that you can only remove the tender if there are no carriages
@@ -111,6 +112,13 @@ std::shared_ptr<OPenguin> World::AddPenguin(Vec3f pos, u16 direction, OPenguin::
     Penguins.push_back(penguin);
     penguins++;
     return penguin;
+}
+
+std::shared_ptr<OSeagull> World::AddSeagull(Vec3f pos) {
+    auto seagull = std::make_shared<OSeagull>(seagulls, pos);
+    Seagulls.push_back(seagull);
+    seagulls++;
+    return seagull;
 }
 
 u32 World::GetCupIndex() {
@@ -185,12 +193,6 @@ void World::PreviousCourse() {
     gWorldInstance.CurrentCourse = Courses[CourseIndex];
 }
 
-// Object* World::AddObject(std::unique_ptr<GameObject> object) {
-//     GameObject* rawPtr = object.get();
-//     GameObjects.push_back(std::move(object));
-//     return &rawPtr->o;
-// }
-
 AActor* World::AddActor(AActor* actor) {
     Actors.push_back(actor);
     return Actors.back();
@@ -240,16 +242,21 @@ void RemoveExpiredActors() {
     //    Actors.end());
 }
 
+GameObject* World::AddObject(GameObject* object) {
+    Objects.push_back(object);
+    return Objects.back();
+}
+
 void World::TickObjects() {
-    //for (const auto& object : this->GameObjects) {
-    //    object->Tick();
-    //}
+    for (const auto& object : Objects) {
+       object->Tick();
+    }
 }
 
 void World::DrawObjects(Camera *camera) {
-    //for (const auto& object : this->GameObjects) {
-    //    object->Draw(camera);
-    //}
+    for (const auto& object : Objects) {
+       object->Draw(camera);
+    }
 }
 
 void World::ExpiredObjects() {

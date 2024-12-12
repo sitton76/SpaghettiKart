@@ -5,7 +5,7 @@
 
 #include "ToadsTurnpike.h"
 #include "World.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/toads_turnpike_data.h"
 #include "engine/actors/AFinishline.h"
 

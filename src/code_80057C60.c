@@ -700,10 +700,13 @@ void render_player_snow_effect_four(void) {
 
 void render_object_for_player(s32 cameraId) {
 
-    CourseManager_RenderCourseObjects(cameraId);
-    CourseManager_TrainSmokeDraw(cameraId);
-    CourseManager_DrawThwomps(cameraId);
-    CourseManager_DrawPenguins(cameraId);
+    CourseManager_DrawObjects(cameraId);
+
+    // CourseManager_RenderCourseObjects(cameraId);
+    // CourseManager_TrainSmokeDraw(cameraId);
+    // CourseManager_DrawThwomps(cameraId);
+    // CourseManager_DrawPenguins(cameraId);
+    // CourseManager_DrawSeagulls(cameraId);
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -1338,7 +1341,6 @@ void func_80059D00(void) {
                     func_80059820(PLAYER_TWO);
                     func_80078C70(2);
                 }
-                update_object();
                 break;
             case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
                 randomize_seed_from_controller(PLAYER_ONE);
@@ -1357,7 +1359,6 @@ void func_80059D00(void) {
                 }
                 func_80078C70(2);
                 func_8005D1F4(1);
-                update_object();
                 break;
             case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
                 randomize_seed_from_controller(PLAYER_ONE);
@@ -1376,7 +1377,6 @@ void func_80059D00(void) {
                 }
                 func_80078C70(4);
                 func_8005D1F4(1);
-                update_object();
                 break;
             case SCREEN_MODE_3P_4P_SPLITSCREEN:
                 randomize_seed_from_controller(PLAYER_ONE);
@@ -1409,9 +1409,9 @@ void func_80059D00(void) {
                     }
                     func_8005D1F4(3);
                 }
-                update_object();
                 break;
         }
+        CourseManager_TickObjects();
         func_800744CC();
     }
 }
@@ -1431,7 +1431,7 @@ void func_8005A070(void) {
         } else if (gGamestate == CREDITS_SEQUENCE) {
             func_80059820(PLAYER_ONE);
             func_80078C70(0);
-            update_object();
+            CourseManager_TickObjects();
         } else {
             func_80059D00();
         }
@@ -1579,9 +1579,10 @@ void func_8005A71C(void) {
 
 void update_object(void) {
 
-    CourseManager_UpdateCourseObjects();
-    CourseManager_TrainSmokeTick();
-    CourseManager_TickPenguins();
+    // CourseManager_UpdateCourseObjects();
+    // CourseManager_TrainSmokeTick();
+    // CourseManager_TickPenguins();
+    // CourseManager_TickSeagulls();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:

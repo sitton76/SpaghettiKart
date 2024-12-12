@@ -2,6 +2,7 @@
 
 #include <libultraship.h>
 #include "Course.h"
+#include "engine/objects/Mole.h"
 
 extern "C" {
     #include "assets/moo_moo_farm_vertices.h"
@@ -14,6 +15,8 @@ extern "C" {
     #include "path_spawn_metadata.h"
     extern const course_texture moo_moo_farm_textures[];
 }
+
+class OMole;
 
 class MooMooFarm : public Course {
 public:

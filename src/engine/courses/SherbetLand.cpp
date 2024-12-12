@@ -6,9 +6,9 @@
 #include "SherbetLand.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/objects/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/sherbet_land_data.h"
-#include "engine/objects/OPenguin.h"
+#include "engine/objects/Penguin.h"
 
 extern "C" {
     #include "main.h"

@@ -60,7 +60,6 @@ extern SplineData D_800E6034;
 extern SplineData D_800E60F0;
 extern SplineData D_800E61B4;
 extern SplineData D_800E6280;
-extern SplineData* D_800E633C[];
 extern Vec3s D_800E634C[];
 extern MoleSpawnUnion gMoleSpawns;
 extern SplineData D_800E641C;

@@ -49,6 +49,9 @@ void CourseManager_InitClouds();
 
 void CourseManager_DrawActor(Camera* camera, struct Actor* actor);
 
+void CourseManager_TickObjects();
+void CourseManager_DrawObjects(Camera* camera);
+
 void CourseManager_UpdateClouds(s32 arg0, Camera* camera);
 
 void CourseManager_Waypoints(Player* player, int8_t playerId);
@@ -99,6 +102,10 @@ void CourseManager_DrawVehicles(s32 playerId);
 void CourseManager_DrawThwomps(s32 cameraId);
 
 void CourseManager_TickThwomps();
+
+void CourseManager_DrawSeagulls(s32 cameraId);
+
+void CourseManager_TickSeagulls();
 
 void CourseManager_DrawPenguins(s32 cameraId);
 
