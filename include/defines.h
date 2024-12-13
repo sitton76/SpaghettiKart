@@ -352,6 +352,11 @@ enum DIRECTION {
 #define BALLOON_STATUS_DEPARTING 2
 
 /**
+ * Number of podiums in podium ceremony
+ */
+#define NUM_PODIUMS 3
+
+/**
  * @brief Max representable time, 100 minutes measured in centiseconds
  */
 #define MAX_TIME 0x927C0
@@ -397,7 +402,6 @@ enum DIRECTION {
 #define COLOR_LAVA GPACK_RGB888(0x34, 0x00, 0x00)
 #define COLOR_BLACK GPACK_RGB888(0, 0, 0)
 
-#endif // DEFINES_H
 
 /**
  *
@@ -410,3 +414,5 @@ enum DIRECTION {
 #define FACING_Y_AXIS 0x4000
 #define FACING_X_AXIS 0x8000
 #define FACING_Z_AXIS 0x2000
+
+#endif // DEFINES_H

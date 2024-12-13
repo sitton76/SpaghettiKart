@@ -1,7 +1,7 @@
 #pragma once
 
 #include <libultraship.h>
-#include "objects/GameObject.h"
+#include "objects/Object.h"
 #include "Cup.h"
 #include "vehicles/Vehicle.h"
 #include "vehicles/Train.h"
@@ -14,6 +14,7 @@
 #include "objects/Seagull.h"
 #include <memory>
 #include "Actor.h"
+#include "particles/ParticleEmitter.h"
 
 extern "C" {
 #include "camera.h"
@@ -21,7 +22,7 @@ extern "C" {
 #include "engine/Engine.h"
 };
 
-class GameObject;
+class OObject;
 class Cup; // <-- Forward declaration
 class Course;
 class AVehicle;
@@ -95,11 +96,11 @@ public:
     AActor* ConvertActorToAActor(Actor* actor);
     Actor* ConvertAActorToActor(AActor* actor);
 
-    GameObject* AddObject(GameObject* object);
+    OObject* AddObject(OObject* object);
 
     CProperties* GetCourseProps();
     void TickObjects();
-    void DrawObjects(Camera *camera);
+    void DrawObjects(s32 cameraId);
     void ExpiredObjects();
     void DestroyObjects();
     Object *GetObjectByIndex(size_t);
@@ -131,7 +132,8 @@ public:
     size_t CupIndex = 1;
 
     std::vector<AActor*> Actors;
-    std::vector<GameObject*> Objects;
+    std::vector<OObject*> Objects;
+    std::vector<ParticleEmitter*> Emitters;
 
     /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);

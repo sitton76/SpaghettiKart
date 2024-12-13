@@ -13,7 +13,7 @@
 #include "objects/Penguin.h"
 #include "TrainCrossing.h"
 #include <memory>
-#include "objects/GameObject.h"
+#include "objects/Object.h"
 
 extern "C" {
    #include "camera.h"
@@ -242,7 +242,7 @@ void RemoveExpiredActors() {
     //    Actors.end());
 }
 
-GameObject* World::AddObject(GameObject* object) {
+OObject* World::AddObject(OObject* object) {
     Objects.push_back(object);
     return Objects.back();
 }
@@ -253,17 +253,17 @@ void World::TickObjects() {
     }
 }
 
-void World::DrawObjects(Camera *camera) {
+void World::DrawObjects(s32 cameraId) {
     for (const auto& object : Objects) {
-       object->Draw(camera);
+       object->Draw(cameraId);
     }
 }
 
 void World::ExpiredObjects() {
-    //this->GameObjects.erase(
-    //    std::remove_if(this->GameObjects.begin(), this->GameObjects.end(),
-    //                    [](const std::unique_ptr<GameObject>& object) { return object->uuid == 0; }), // Example condition
-    //    this->GameObjects.end());
+    //this->Objects.erase(
+    //    std::remove_if(this->Objects.begin(), this->Objects.end(),
+    //                    [](const std::unique_ptr<OObject>& object) { return object->uuid == 0; }), // Example condition
+    //    this->Objects.end());
 }
 
 void World::DestroyObjects() {
@@ -271,9 +271,9 @@ void World::DestroyObjects() {
 }
 
 Object* World::GetObjectByIndex(size_t index) {
-    //if (index < this->GameObjects.size()) {
+    //if (index < this->Objects.size()) {
         // Assuming GameActor::a is accessible, use reinterpret_cast if needed
-    //    return reinterpret_cast<Object*>(&this->GameObjects[index]->o);
+    //    return reinterpret_cast<Object*>(&this->Objects[index]->o);
     //}
     return nullptr; // Or handle the error as needed
 }
