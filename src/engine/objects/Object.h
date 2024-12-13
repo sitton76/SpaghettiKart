@@ -7,17 +7,17 @@ extern "C" {
     #include "objects.h"
 }
 
-class GameObject {
+class OObject {
 public:
     uint8_t uuid[16];
     Object o;
 
-    virtual ~GameObject() = default;
+    virtual ~OObject() = default;
 
-    explicit GameObject();
+    explicit OObject();
 
     virtual void Tick();
-    virtual void Draw(Camera* camera);
+    virtual void Draw(s32 cameraId);
     virtual void Collision();
     virtual void Expire();
     virtual void Destroy();

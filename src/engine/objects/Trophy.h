@@ -15,6 +15,17 @@ extern "C" {
 #include "some_data.h"
 }
 
+//! @todo move this like World.h or something
+struct FVector {
+    float x, y, z;
+
+    FVector& operator=(const FVector& other) {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+        return *this;
+    }
+};
 
 class OTrophy : public OObject {
 public:

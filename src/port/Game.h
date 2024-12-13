@@ -50,7 +50,7 @@ void CourseManager_InitClouds();
 void CourseManager_DrawActor(Camera* camera, struct Actor* actor);
 
 void CourseManager_TickObjects();
-void CourseManager_DrawObjects(Camera* camera);
+void CourseManager_DrawObjects(s32 cameraId);
 
 void CourseManager_UpdateClouds(s32 arg0, Camera* camera);
 

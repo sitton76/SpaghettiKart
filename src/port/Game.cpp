@@ -384,9 +384,9 @@ extern "C" {
         }
     }
 
-    void CourseManager_DrawObjects(Camera* camera) {
+    void CourseManager_DrawObjects(s32 cameraId) {
         if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.DrawObjects(camera);
+            gWorldInstance.DrawObjects(cameraId);
         }
     }
 

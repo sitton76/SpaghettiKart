@@ -18,7 +18,7 @@ extern "C" {
 //! @todo make adjustable properties for squishSize and boundingBoxSize
 
 /**
- * Thwomp GameObject
+ * Thwomp OObject
  * 
  * The game automatically places the actor on the ground so you do not need to provide a Y coordinate value.
  * 
