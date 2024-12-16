@@ -22,6 +22,53 @@ extern "C" {
 #include "engine/Engine.h"
 };
 
+struct FVector {
+    float x, y, z;
+
+    FVector& operator=(const FVector& other) {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+        return *this;
+    }
+};
+
+/**
+ * For selecting a section of a course path
+ * Usage: IPathSpan(point1, point2) --> IPathSpan(40, 65)
+ */
+struct IPathSpan {
+    int Start, End;
+
+    // Default Constructor
+    IPathSpan() : Start(0), End(0) {}
+
+    // Parameterized Constructor
+    IPathSpan(int InStart, int InEnd)
+        : Start(InStart), End(InEnd) {}
+
+    // Copy Assignment Operator
+    IPathSpan& operator=(const IPathSpan& Other) {
+        if (this != &Other) { // Avoid self-assignment
+            Start = Other.Start;
+            End = Other.End;
+        }
+        return *this;
+    }
+
+    // Equality Operator
+    bool operator==(const IPathSpan& Other) const {
+        return Start == Other.Start && End == Other.End;
+    }
+
+    // Inequality Operator
+    bool operator!=(const IPathSpan& Other) const {
+        return !(*this == Other);
+    }
+};
+
+
+
 class OObject;
 class Cup; // <-- Forward declaration
 class Course;

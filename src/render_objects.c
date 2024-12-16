@@ -3411,35 +3411,6 @@ void func_800520C0(s32 arg0) {
     }
 }
 
-void func_8005217C(UNUSED s32 arg0) {
-    Lights1* D_800E45C0l = LOAD_ASSET(D_800E45C0);
-    Object* object;
-    s32 temp_a3;
-
-    temp_a3 = indexObjectList2[0];
-    object = &gObjectList[temp_a3];
-    if (object->state >= 2) {
-        if (is_obj_flag_status_active(temp_a3, 0x00000010) != 0) {
-            rsp_set_matrix_transformation(object->pos, object->direction_angle, object->sizeScaling);
-            func_800520C0(temp_a3);
-
-            gSPDisplayList(gDisplayListHead++, D_0D007828);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[0].l[0], LIGHT_1);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[0].a, LIGHT_2);
-            gSPDisplayList(gDisplayListHead++, d_course_banshee_boardwalk_dl_7B38);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[1].l[0], LIGHT_1);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[1].a, LIGHT_2);
-            gSPDisplayList(gDisplayListHead++, d_course_banshee_boardwalk_dl_7978);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[2].l[0], LIGHT_1);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[2].a, LIGHT_2);
-            gSPDisplayList(gDisplayListHead++, d_course_banshee_boardwalk_dl_78C0);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[3].l[0], LIGHT_1);
-            gSPLight(gDisplayListHead++, &D_800E45C0l[3].a, LIGHT_2);
-            gSPDisplayList(gDisplayListHead++, d_course_banshee_boardwalk_dl_7650);
-        }
-    }
-}
-
 void func_800523B8(s32 objectIndex, s32 arg1, u32 arg2) {
     UNUSED s32 pad[2];
     Object* object;
@@ -3997,25 +3968,6 @@ void func_80054AFC(s32 objectIndex, Vec3f arg1) {
     gSPDisplayList(gDisplayListHead++, common_rectangle_display);
 }
 
-void func_80054BE8(s32 cameraId) {
-    s32 var_s0;
-    s32 temp_a0;
-    Camera* camera;
-
-    camera = &camera1[cameraId];
-    gSPDisplayList(gDisplayListHead++, D_0D007AE0);
-    load_texture_block_ia8_nomirror(D_8018D488, 0x00000020, 0x00000020);
-    func_8004B35C(0x000000FF, 0x000000FF, 0, 0x000000FF);
-    D_80183E80[0] = 0;
-    for (var_s0 = 0; var_s0 < gObjectParticle3_SIZE; var_s0++) {
-        temp_a0 = gObjectParticle3[var_s0];
-        if ((temp_a0 != -1) && (gObjectList[temp_a0].state >= 2)) {
-            func_80054AFC(temp_a0, camera->pos);
-        }
-    }
-}
-
-
 void func_80055164(s32 objectIndex) {
     if (gObjectList[objectIndex].state >= 2) {
         gSPDisplayList(gDisplayListHead++, D_0D0077A0);
@@ -4269,45 +4221,6 @@ void func_80055EF4(s32 objectIndex, UNUSED s32 arg1) {
     if (object->state >= 2) {
         func_80043220(object->pos, object->direction_angle, object->sizeScaling, object->model);
     }
-}
-
-void func_80055F48(s32 arg0) {
-    s32 someIndex;
-
-    for (someIndex = 0; someIndex < 3; someIndex++) {
-        func_80055EF4(indexObjectList1[someIndex], arg0);
-    }
-}
-
-void func_80055FA0(s32 objectIndex, UNUSED s32 arg1) {
-    Mat4 someMatrix1;
-    Mat4 someMatrix2;
-    Object* object;
-
-    object = &gObjectList[objectIndex];
-    if (object->state >= 2) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        mtxf_set_matrix_transformation(someMatrix1, object->pos, object->direction_angle, object->sizeScaling);
-        //convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], someMatrix1);
-        //gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
-        //          G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-
-        AddHudMatrix(someMatrix1, G_MTX_NOPUSH | G_MTX_MUL | G_MTX_MODELVIEW);
-
-        gSPDisplayList(gDisplayListHead++, D_0D0077A0);
-        gSPDisplayList(gDisplayListHead++, object->model);
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
-                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
-        mtxf_identity(someMatrix2);
-        render_set_position(someMatrix2, 0);
-    }
-}
-
-void func_80056160(s32 arg0) {
-    func_80055FA0(indexObjectList1[3], arg0);
 }
 
 void render_object_neon(s32 cameraId) {

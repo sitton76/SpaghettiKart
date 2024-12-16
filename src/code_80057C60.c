@@ -561,10 +561,10 @@ void render_object_p1(void) {
     CourseManager_DrawBombKarts(PLAYER_ONE);
     //render_bomb_karts_wrap(PLAYER_ONE);
     if (gGamestate == ENDING) {
-        func_80055F48(PLAYER_ONE);
-        func_80056160(PLAYER_ONE);
-        func_8005217C(PLAYER_ONE);
-        func_80054BE8(PLAYER_ONE);
+        //func_80055F48(PLAYER_ONE);
+        //func_80056160(PLAYER_ONE);
+        //func_8005217C(PLAYER_ONE);
+        //func_80054BE8(PLAYER_ONE);
         return;
     }
     if (!gDemoMode) {
@@ -1424,9 +1424,9 @@ void func_8005A070(void) {
     if (gIsGamePaused == false) {
         func_8005C728();
         if (gGamestate == ENDING) {
-            func_80086604();
-            func_80086D80();
-            update_cheep_cheep(1);
+            //func_80086604();
+            //func_80086D80();
+            //update_cheep_cheep(1);
             func_80077640();
         } else if (gGamestate == CREDITS_SEQUENCE) {
             func_80059820(PLAYER_ONE);

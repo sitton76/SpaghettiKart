@@ -8,6 +8,9 @@
 #include "engine/objects/BombKart.h"
 #include "assets/royal_raceway_data.h"
 #include "assets/ceremony_data.h"
+#include "engine/objects/Trophy.h"
+#include "engine/objects/Podium.h"
+#include "engine/objects/CheepCheep.h"
 
 extern "C" {
     #include "main.h"
@@ -30,6 +33,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "courses/staff_ghost_data.h"
+    #include "podium_ceremony_actors.h"
     extern const char *royal_raceway_dls[];
 }
 
@@ -160,6 +164,43 @@ void PodiumCeremony::SpawnActors() {
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_item_box_spawns));
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_piranha_plant_spawn));
+
+    gWorldInstance.AddObject(new OCheepCheep(FVector((f32)0xf37e, (f32)0x0013, (f32)0xfe22), OCheepCheep::CheepType::PODIUM_CEREMONY, IPathSpan(0, 0)));
+    gWorldInstance.AddObject(new OPodium(FVector((f32)0xf37e, (f32)0x0013, (f32)0xfe22)));
+    
+    FVector pos = {0,0,0};
+    pos.y = 90.0f;
+    OTrophy::TrophyType type = OTrophy::TrophyType::BRONZE;
+    switch(D_802874D8.unk1D) {
+        case 0: // Bronze
+            if (gCCSelection == CC_150) {
+                OTrophy::TrophyType::BRONZE_150;
+            } else {
+                OTrophy::TrophyType::BRONZE;
+            }
+            break;
+        case 1: // Silver
+            pos.x -= 3.0;
+            pos.z += 15.0;
+
+            if (gCCSelection == CC_150) {
+                OTrophy::TrophyType::SILVER_150;
+            } else {
+                OTrophy::TrophyType::SILVER;
+            }
+            break;
+        case 2: // Gold
+            pos.x -= 2.0;
+            pos.z -= 15.0;
+            if (gCCSelection == CC_150) {
+                OTrophy::TrophyType::GOLD_150;
+            } else {
+                OTrophy::TrophyType::GOLD;
+            }
+            break;
+    }
+
+    gWorldInstance.AddObject(new OTrophy(pos, type, OTrophy::Behaviour::PODIUM_CEREMONY));
 }
 
 void PodiumCeremony::SpawnVehicles() {

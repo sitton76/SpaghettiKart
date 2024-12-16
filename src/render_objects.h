@@ -330,7 +330,6 @@ void func_80051F9C(void);
 void func_80052044(void);
 void func_80052080(void);
 void func_800520C0(s32);
-void func_8005217C(s32);
 void func_800523B8(s32, s32, u32);
 void render_object_boos(s32);
 void render_object_bat(s32);
@@ -361,7 +360,6 @@ void render_object_bowser_flame(s32);
 void func_8005477C(s32, u8, Vec3f);
 void render_object_smoke_particles(s32);
 void func_80054AFC(s32, Vec3f);
-void func_80054BE8(s32);
 void func_80054D00(s32, s32);
 void func_80054E10(s32);
 void func_80054EB8(s32);
@@ -430,6 +428,7 @@ void func_80057B14(s32, s32, char*, u32);
 void func_80057B80(s32, s32, char*, u32);
 void func_80057BEC(s32, s32, char*, u32);
 
+extern Lights1 D_800E45C0[];
 extern Lights1 D_800E4668;
 
 extern f32 D_801637C4;

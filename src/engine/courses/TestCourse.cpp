@@ -14,6 +14,7 @@
 #include "engine/actors/ACloud.h"
 #include "engine/vehicles/Train.h"
 #include "engine/objects/Trophy.h"
+#include "engine/objects/CheepCheep.h"
 
 extern "C" {
     #include "main.h"
@@ -189,14 +190,14 @@ void TestCourse::SpawnActors() {
     rrxing->crossingTrigger = crossing1;
 
     Vec3f pos = {0, 80, 0};
-    //gWorldInstance.AddActor(new ACloud(pos));
+    // gWorldInstance.AddActor(new ACloud(pos));
 
     // gWorldInstance.AddActor(new OSeagull(0, pos));
     // gWorldInstance.AddActor(new OSeagull(1, pos));
     // gWorldInstance.AddActor(new OSeagull(2, pos));
     // gWorldInstance.AddActor(new OSeagull(3, pos));
-
-    gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
+    gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
+    //gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
 }
 
 // Likely sets minimap boundaries

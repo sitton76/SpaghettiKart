@@ -2,7 +2,7 @@
 
 #include <libultraship.h>
 #include <vector>
-#include "GameObject.h"
+#include "Object.h"
 
 extern "C" {
 #include "macros.h"
@@ -16,7 +16,7 @@ extern "C" {
 }
 
 
-class OMole : public GameObject {
+class OMole : public OObject {
 public:
     enum Behaviour : uint16_t {
     };
@@ -25,7 +25,7 @@ public:
     explicit OMole(Vec3f pos);
 
     virtual void Tick() override;
-    virtual void Draw(Camera*) override;
+    virtual void Draw(s32 cameraId) override;
 
     void func_80054E10(s32 objectIndex);
     void func_80054EB8();

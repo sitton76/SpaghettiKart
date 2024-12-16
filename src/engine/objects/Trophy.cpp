@@ -226,7 +226,6 @@ void OTrophy::Draw(s32 cameraId) {
                 func_80057A50(40, 0, (char*) "Trophies Collected: ", (s16) numTrophies);
                 break;
         }
-
     }
 }
 

@@ -72,7 +72,7 @@ void OMole::Tick() {
     }
 }
 
-void OMole::Draw(Camera* camera) {
+void OMole::Draw(s32 cameraId) {
 
 }
 

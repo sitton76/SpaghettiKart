@@ -2289,6 +2289,18 @@ void func_80077428(s32 arg0) {
     func_80086E70(arg0);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
 void func_80077450(s32 objectIndex) {
     UNUSED s16 stackPadding0;
     s16 sp3C;
@@ -2356,6 +2368,20 @@ void func_80077640(void) {
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void init_object_leaf_particle(s32 objectIndex, Vec3f arg1, s32 num) {
     UNUSED s32 stackPadding1;
@@ -4496,206 +4522,27 @@ void func_8007BB9C(s32 arg0) {
     func_8007B34C(arg0);
 }
 
-void func_8007BBBC(s32 objectIndex) {
-    f32 var_f14;
-    Object* object;
 
-    object = &gObjectList[objectIndex];
-    switch (object->state) { /* irregular */
-        case 1:
-            func_800735BC(objectIndex, d_course_banshee_boardwalk_dl_cheep_cheep, 2.0f);
-            set_object_flag(objectIndex, 0x00000010);
-            object->unk_0D5 = 0;
-            break;
-        case 2:
-            if (gIsMirrorMode != 0) {
-                func_80087E08(objectIndex, 18.0f, 0.7f, 25.0f, (s16) -0x00005800, 0x0000012C);
-            } else {
-                func_80087E08(objectIndex, 18.0f, 0.7f, 25.0f, (s16) 0x00005800, 0x0000012C);
-            }
-            if (object->velocity[2] < 0.0f) {
-                var_f14 = -object->velocity[2];
-            } else {
-                var_f14 = object->velocity[2];
-            }
-            object->direction_angle[0] = func_80041658(object->velocity[1], var_f14);
-            set_and_run_timer_object(objectIndex, 0x00000046);
-            break;
-        case 3:
-            func_80072428(objectIndex);
-            break;
-        case 0:
-            break;
-    }
-}
 
-void func_8007BD04(s32 playerId) {
-    s32 objectIndex;
 
-    objectIndex = indexObjectList2[0];
-    if (gObjectList[objectIndex].state == 0) {
-        if (((s32) gNearestWaypointByPlayerId[playerId] >= 0xA0) &&
-            ((s32) gNearestWaypointByPlayerId[playerId] < 0xAB)) {
-            set_obj_origin_pos(objectIndex, xOrientation * -1650.0, -200.0f, -1650.0f);
-            init_object(objectIndex, 1);
-        }
-    }
-}
 
-void update_cheep_cheep_race(void) {
-    UNUSED s32 pad;
-    s32 objectIndex;
 
-    func_8007BD04(0);
-    objectIndex = indexObjectList2[0];
-    func_8007BBBC(objectIndex);
-    object_calculate_new_pos_offset(objectIndex);
-}
 
-void init_var_cheep_cheep(s32 objectIndex) {
-    Object* object;
 
-    object = &gObjectList[objectIndex];
-    object->unk_0D5 = 1;
-    object->status = 0;
-    object->model = d_course_banshee_boardwalk_dl_cheep_cheep;
-    object->sizeScaling = 0.2f;
-    object_next_state(objectIndex);
-    set_obj_origin_pos(objectIndex, D_800E634C[0][0], D_800E634C[0][1] + 55.0, D_800E634C[0][2]);
-    set_obj_origin_offset(objectIndex, 0.0f, 30.0f, 0.0f);
-    set_obj_direction_angle(objectIndex, 0U, 0x3800U, 0U);
-}
 
-void func_8007BEC8(s32 objectIndex) {
-    Object* object;
 
-    object = &gObjectList[objectIndex];
-    switch (object->state) {
-        case 1:
-            init_var_cheep_cheep(objectIndex);
-            break;
-        case 2:
-            if (set_and_run_timer_object(objectIndex, 0x0000003C) != 0) {
-                set_object_flag(objectIndex, 0x00000010);
-                func_80086E70(objectIndex);
-            }
-            break;
-        case 3:
-            if (object->unk_0AE == 0) {
-                object_next_state(objectIndex);
-            }
-            break;
-        case 4:
-            if (set_and_run_timer_object(objectIndex, 0x0000000A) != 0) {
-                func_8008701C(objectIndex, 2);
-            }
-            break;
-        case 5:
-            if (object->unk_0AE == 0) {
-                func_80072428(objectIndex);
-            }
-            break;
-        case 0:
-        default:
-            break;
-    }
-}
 
-void func_8007BFB0(s32 objectIndex) {
-    Object* object;
 
-    object = &gObjectList[objectIndex];
-    switch (object->unk_0AE) {
-        case 0:
-            break;
-        case 1:
-            object->velocity[1] = -0.2f;
-            if ((f64) object->offset[1] <= 0.0) {
-                object->offset[1] = 0.0f;
-                object->velocity[1] = 0.0f;
-                func_80086F60(objectIndex);
-            }
-            break;
-        case 2:
-            if (func_800871AC(objectIndex, 0x00000014) != 0) {
-                object->unk_084[7] = 0x0040;
-            }
-            break;
-        case 3:
-            object->sizeScaling = (f32) ((f64) object->sizeScaling - 0.0015);
-            if ((s32) object->direction_angle[0] >= 0xA01) {
-                object->unk_084[7] -= 4;
-            }
-            if (u16_step_up_towards(object->direction_angle, 0x0C00U, (u16) object->unk_084[7]) != 0) {
-                func_80086FD4(objectIndex);
-            }
-            break;
-        case 4:
-            object->sizeScaling = (f32) ((f64) object->sizeScaling - 0.0015);
-            object->unk_034 = 0.001f;
-            func_80086FD4(objectIndex);
-            object->unk_084[7] = 0;
-            break;
-        case 5:
-            if (object->unk_034 <= 0.004) {
-                object->unk_034 += 0.0002;
-            }
-            object->sizeScaling += object->unk_034;
-            s16_step_up_towards(&object->unk_084[7], 0x0100, 0x0010);
-            object->direction_angle[0] -= object->unk_084[7];
-            if (func_80087060(objectIndex, 0x00000035) != 0) {
-                func_80086FD4(objectIndex);
-            }
-            break;
-        case 6:
-            if (func_80087060(objectIndex, 0x0000000F) != 0) {
-                func_80086FD4(objectIndex);
-                D_801658CE = 1;
-            }
-            break;
-        case 7:
-            object->sizeScaling = (f32) ((f64) object->sizeScaling - 0.05);
-            if ((f64) object->sizeScaling <= 0.01) {
-                clear_object_flag(objectIndex, 0x00000010);
-                object->sizeScaling = 0.000001f;
-                func_80086FD4(objectIndex);
-            }
-            break;
-        case 8:
-            func_80086F60(objectIndex);
-            break;
-    }
-    if (object->unk_0AE < 0xA) {
-        func_80074344(objectIndex, &object->sizeScaling, 0.2f, 0.21f, 0.001f, 0, -1);
-    }
-    object_add_velocity_offset_y(objectIndex);
-    object_calculate_new_pos_offset(objectIndex);
-}
 
-void update_cheep_cheep_ending(void) {
-    s32 objectIndex;
 
-    objectIndex = indexObjectList2[0];
-    if (D_801658BC == 1) {
-        D_801658BC = 0;
-        init_object(objectIndex, 0);
-    }
-    if (gObjectList[objectIndex].state != 0) {
-        func_8007BEC8(objectIndex);
-        func_8007BFB0(objectIndex);
-    }
-}
 
-void update_cheep_cheep(s32 arg0) {
-    switch (arg0) {
-        case 0:
-            update_cheep_cheep_race();
-            break;
-        case 1:
-            update_cheep_cheep_ending();
-            break;
-    }
-}
+
+
+
+
+
+
+
 
 void wrapper_update_boos(void) {
     update_boos();
@@ -6362,257 +6209,6 @@ void update_neon(void) {
             if (gObjectList[objectIndex].state >= 2) {
                 update_neon_texture(objectIndex);
                 object_calculate_new_pos_offset(objectIndex);
-            }
-        }
-    }
-}
-
-void func_8008629C(s32 objectIndex, s32 arg1) {
-    switch (arg1) { /* irregular */
-        case 0:
-            gObjectList[objectIndex].model = podium_dl3;
-            gObjectList[objectIndex].unk_04C = 0x00000038;
-            break;
-        case 1:
-            gObjectList[objectIndex].model = podium2_dl3;
-            gObjectList[objectIndex].unk_04C = 0x0000002B;
-            break;
-        case 2:
-            gObjectList[objectIndex].model = podium3_dl3;
-            gObjectList[objectIndex].unk_04C = 0x0000001E;
-            break;
-        default:
-            break;
-    }
-    gObjectList[objectIndex].sizeScaling = 1.0f;
-    set_obj_origin_pos(objectIndex, D_800E634C[0][0] - 1.5, D_800E634C[0][1], D_800E634C[0][2]);
-    set_obj_origin_offset(objectIndex, 0.0f, -10.0f, 0.0f);
-    set_obj_direction_angle(objectIndex, 0U, 0xF8E4U, 0U);
-    gObjectList[objectIndex].unk_048 = 0;
-    object_next_state(objectIndex);
-}
-
-void func_80086424(s32 objectIndex) {
-    switch (gObjectList[objectIndex].unk_0AE) {
-        case 0:
-            break;
-        case 1:
-            gObjectList[objectIndex].velocity[1] = 0.75f;
-            func_80086FD4(objectIndex);
-            break;
-        case 2:
-            if (gObjectList[objectIndex].offset[1] >= -2.0) {
-                gObjectList[objectIndex].velocity[1] -= 0.1;
-            }
-            object_add_velocity_offset_y(objectIndex);
-            if (gObjectList[objectIndex].offset[1] >= 0.0) {
-                gObjectList[objectIndex].offset[1] = 0.0f;
-                gObjectList[objectIndex].velocity[1] = 0.0f;
-                func_80086F60(objectIndex);
-            }
-            break;
-    }
-    object_calculate_new_pos_offset(objectIndex);
-}
-
-void func_80086528(s32 objectIndex, s32 arg1) {
-    switch (gObjectList[objectIndex].state) { /* irregular */
-        case 1:
-            func_8008629C(objectIndex, arg1);
-            break;
-        case 2:
-            if (set_and_run_timer_object(objectIndex, gObjectList[objectIndex].unk_04C) != 0) {
-                func_80091440(arg1);
-                func_80086E70(objectIndex);
-                object_next_state(objectIndex);
-            }
-            break;
-        case 0:
-            break;
-        case 3:
-            if (gObjectList[objectIndex].unk_0AE == 0) {
-                gObjectList[objectIndex].unk_048 = 1;
-                object_next_state(objectIndex);
-            }
-            break;
-    }
-}
-
-void func_80086604(void) {
-    s32 objectIndex;
-    s32 var_s1;
-
-    if ((D_8016347C != 0) && (D_802874D8.unk1D < 3)) {
-        if (D_801658C6 == 0) {
-            for (var_s1 = 0; var_s1 < 3; var_s1++) {
-                objectIndex = indexObjectList1[var_s1];
-                init_object(objectIndex, 0);
-            }
-            D_801658C6 = 1;
-        }
-    }
-    for (var_s1 = 0; var_s1 != 3; var_s1++) {
-        objectIndex = indexObjectList1[var_s1];
-        if (gObjectList[objectIndex].state != 0) {
-            func_80086528(objectIndex, var_s1);
-            func_80086424(objectIndex);
-        }
-    }
-}
-
-void func_80086700(s32 objectIndex) {
-    if (gCCSelection < CC_150) {
-        switch (D_802874D8.unk1D) { /* switch 1; irregular */
-            case 0:                 /* switch 1 */
-                gObjectList[objectIndex].model = gold_trophy_dl10;
-                break;
-            case 1: /* switch 1 */
-                gObjectList[objectIndex].model = gold_trophy_dl12;
-                break;
-            case 2: /* switch 1 */
-                gObjectList[objectIndex].model = gold_trophy_dl14;
-                break;
-            default: /* switch 1 */
-                break;
-        }
-    } else {
-        switch (D_802874D8.unk1D) { /* irregular */
-            case 0:
-                gObjectList[objectIndex].model = gold_trophy_dl11;
-                break;
-            case 1:
-                gObjectList[objectIndex].model = gold_trophy_dl13;
-                break;
-            case 2:
-                gObjectList[objectIndex].model = gold_trophy_dl15;
-                break;
-            default:
-                break;
-        }
-    }
-    gObjectList[objectIndex].sizeScaling = 0.005f;
-    set_obj_origin_pos(objectIndex, gObjectList[indexObjectList2[0]].pos[0],
-                       gObjectList[indexObjectList2[0]].pos[1] + 16.0, gObjectList[indexObjectList2[0]].pos[2]);
-    set_obj_origin_offset(objectIndex, 0.0f, 0.0f, 0.0f);
-    set_obj_direction_angle(objectIndex, 0U, 0U, 0U);
-    gObjectList[objectIndex].unk_084[1] = 0x0200;
-    object_next_state(objectIndex);
-    func_80086E70(objectIndex);
-}
-
-void func_80086940(s32 objectIndex) {
-    Object* object;
-
-    object = &gObjectList[objectIndex];
-    switch (object->unk_0AE) {
-        case 0:
-            break;
-        case 1:
-            func_80086FD4(objectIndex);
-            break;
-        case 2:
-            f32_step_towards(&object->sizeScaling, 0.025f, 0.001f);
-            func_80087C48(objectIndex, 6.0f, 0.1f, 0x000000C8);
-            if ((f64) object->velocity[1] <= 0.0) {
-                func_8008701C(objectIndex, 3);
-            }
-            break;
-        case 3:
-            func_800871AC(objectIndex, 0x00000064);
-            break;
-        case 4:
-            D_801658D6 = 1;
-            object->velocity[1] = -0.4f;
-            func_80086FD4(objectIndex);
-            object->origin_pos[1] = 90.0f;
-            object->offset[1] = 60.0f;
-            switch (D_802874D8.unk1D) { /* switch 1; irregular */
-                case 1:                 /* switch 1 */
-                    object->origin_pos[0] -= 3.0;
-                    object->origin_pos[2] += 15.0;
-                    break;
-                case 2: /* switch 1 */
-                    object->origin_pos[0] -= 2.0;
-                    object->origin_pos[2] -= 15.0;
-                    break;
-            }
-            break;
-        case 5:
-            if ((f64) object->offset[1] <= 8.0) {
-                f32_step_towards(&object->velocity[1], -0.1f, -0.01f);
-            }
-            object_add_velocity_offset_y(objectIndex);
-            if ((f64) object->offset[1] <= 0.0) {
-                func_80086FD4(objectIndex);
-            }
-            break;
-        case 6:
-            if (func_800871AC(objectIndex, 0x00000041) != 0) {
-                D_801658F4 = 1;
-            }
-            break;
-        case 7:
-            if (func_800871AC(objectIndex, 0x00000064) != 0) {
-                func_8009265C();
-                func_80086F60(objectIndex);
-            }
-            break;
-    }
-    if (D_801658D6 != 0) {
-        object->direction_angle[0] += 0x400;
-        object->direction_angle[1] = 0xE800;
-        object->direction_angle[2] = 0xDA00;
-    } else {
-        object->direction_angle[0] += 0x400;
-        object->direction_angle[1] -= 0x200;
-    }
-    object_calculate_new_pos_offset(objectIndex);
-}
-
-void func_80086C14(s32 objectIndex) {
-    switch (gObjectList[objectIndex].state) { /* irregular */
-        case 1:
-            func_80086700(objectIndex);
-            break;
-        case 0:
-        case 2:
-            break;
-    }
-}
-
-void func_80086C6C(s32 objectIndex) {
-    Vec3f sp24;
-
-    sp24[0] = (gObjectList[objectIndex].pos[0] - 5.0f) + random_int(0x000AU);
-    sp24[2] = (gObjectList[objectIndex].pos[2] - 5.0f) + random_int(0x000AU);
-    if (D_801658F4 != 0) {
-        sp24[1] = gObjectList[objectIndex].pos[1] + 14.0;
-    } else {
-        sp24[1] = gObjectList[objectIndex].pos[1] - 2.0;
-    }
-    func_800773D8(sp24, (s32) D_801658F4);
-}
-
-void func_80086D80(void) {
-    s32 temp_s2;
-    s32 var_s0;
-
-    if ((D_801658CE != 0) && (D_801658DC == 0)) {
-        temp_s2 = indexObjectList1[3];
-        init_object(temp_s2, 0);
-        D_801658DC = 1;
-    }
-    temp_s2 = indexObjectList1[3];
-    if (gObjectList[temp_s2].state != 0) {
-        func_80086C14(temp_s2);
-        func_80086940(temp_s2);
-        if (D_801658F4 != 0) {
-            if (D_8016559C == 0) {
-                func_80086C6C(temp_s2);
-            }
-        } else {
-            for (var_s0 = 0; var_s0 < 2; var_s0++) {
-                func_80086C6C(temp_s2);
             }
         }
     }

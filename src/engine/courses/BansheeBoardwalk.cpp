@@ -7,6 +7,7 @@
 #include "World.h"
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
+#include "engine/objects/CheepCheep.h"
 #include "assets/banshee_boardwalk_data.h"
 #include "assets/boo_frames.h"
 
@@ -150,6 +151,9 @@ void BansheeBoardwalk::SpawnActors() {
     gWorldInstance.AddActor(new AFinishline());
 
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_banshee_boardwalk_item_box_spawns));
+
+
+    gWorldInstance.AddObject(new OCheepCheep(FVector(xOrientation * -1650.0, -200.0f, -1650.0f), OCheepCheep::CheepType::RACE, IPathSpan(160, 170)));
 }
 
 void BansheeBoardwalk::SpawnVehicles() {
@@ -199,7 +203,7 @@ void BansheeBoardwalk::UpdateCourseObjects() {
             update_bat();
         }
         wrapper_update_boos();
-        update_cheep_cheep(0);
+        //update_cheep_cheep(0);
     }
 }
 
@@ -207,7 +211,7 @@ void BansheeBoardwalk::RenderCourseObjects(s32 cameraId) {
     if (gGamestate != CREDITS_SEQUENCE) {
         render_object_trash_bin(cameraId);
         render_object_bat(cameraId);
-        func_8005217C(cameraId);
+        //func_8005217C(cameraId); // render cheep cheep
         render_object_boos(cameraId);
     }
 }

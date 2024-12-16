@@ -2,7 +2,6 @@
 #include <libultra/gbi.h>
 #include "Seagull.h"
 #include "engine/Actor.h"
-#include "ObjectReimpl.h"
 #include <vector>
 
 #include "port/Game.h"
@@ -135,7 +134,7 @@ void OSeagull::func_8008275C(s32 objectIndex) {
     switch (gObjectList[objectIndex].unk_0DD) {
         case 1:
             func_8008B78C(objectIndex);
-            ObjectImpl::CalculateNewPosOffset(this);
+            object_calculate_new_pos_offset(objectIndex);
             break;
         case 2:
             func_8008B78C(objectIndex);
@@ -145,7 +144,7 @@ void OSeagull::func_8008275C(s32 objectIndex) {
             Offset[0] *= 2.0;
             Offset[1] *= 2.5;
             Offset[2] *= 2.0;
-            ObjectImpl::CalculateNewPosOffset(this);
+            object_calculate_new_pos_offset(objectIndex);
             gObjectList[objectIndex].direction_angle[1] =
                 get_angle_between_two_vectors(gObjectList[objectIndex].unk_01C, gObjectList[objectIndex].pos);
             break;
