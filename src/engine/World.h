@@ -33,6 +33,17 @@ struct FVector {
     }
 };
 
+struct FRotation {
+    float pitch, yaw, roll;
+
+    FRotation& operator=(const FRotation& other) {
+        pitch = other.pitch;
+        yaw = other.yaw;
+        roll = other.roll;
+        return *this;
+    }
+};
+
 /**
  * For selecting a section of a course path
  * Usage: IPathSpan(point1, point2) --> IPathSpan(40, 65)

@@ -8,6 +8,7 @@
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
 #include "engine/objects/CheepCheep.h"
+#include "engine/objects/TrashBin.h"
 #include "assets/banshee_boardwalk_data.h"
 #include "assets/boo_frames.h"
 
@@ -154,6 +155,12 @@ void BansheeBoardwalk::SpawnActors() {
 
 
     gWorldInstance.AddObject(new OCheepCheep(FVector(xOrientation * -1650.0, -200.0f, -1650.0f), OCheepCheep::CheepType::RACE, IPathSpan(160, 170)));
+
+    if (gIsMirrorMode) {
+        gWorldInstance.AddObject(new OTrashBin(FVector(1765.0f, 45.0f, 195.0f), FRotation(0, 180.0f, 0), 1.0f));
+    } else {
+        gWorldInstance.AddObject(new OTrashBin(FVector(-1765.0f, 45.0f, 70.0f), FRotation(0, 0, 0), 1.0f));
+    }
 }
 
 void BansheeBoardwalk::SpawnVehicles() {
@@ -197,21 +204,17 @@ void BansheeBoardwalk::InitCourseObjects() {
 
 void BansheeBoardwalk::UpdateCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
-        update_trash_bin();
         func_8007E4C4();
         if (gModeSelection != TIME_TRIALS) {
             update_bat();
         }
         wrapper_update_boos();
-        //update_cheep_cheep(0);
     }
 }
 
 void BansheeBoardwalk::RenderCourseObjects(s32 cameraId) {
     if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_trash_bin(cameraId);
         render_object_bat(cameraId);
-        //func_8005217C(cameraId); // render cheep cheep
         render_object_boos(cameraId);
     }
 }

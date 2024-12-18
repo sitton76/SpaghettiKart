@@ -6,6 +6,7 @@
 #include "TestCourse.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
+#include "engine/objects/Object.h"
 #include "engine/objects/BombKart.h"
 #include "assets/mario_raceway_data.h"
 #include "assets/bowsers_castle_data.h"
@@ -15,6 +16,8 @@
 #include "engine/vehicles/Train.h"
 #include "engine/objects/Trophy.h"
 #include "engine/objects/CheepCheep.h"
+#include "engine/objects/Snowman.h"
+#include "engine/objects/TrashBin.h"
 
 extern "C" {
     #include "main.h"
@@ -196,8 +199,10 @@ void TestCourse::SpawnActors() {
     // gWorldInstance.AddActor(new OSeagull(1, pos));
     // gWorldInstance.AddActor(new OSeagull(2, pos));
     // gWorldInstance.AddActor(new OSeagull(3, pos));
-    gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
-    //gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
+    // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
+    // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
+    gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
+    gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f));
 }
 
 // Likely sets minimap boundaries

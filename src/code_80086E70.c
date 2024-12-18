@@ -1457,10 +1457,16 @@ s32 func_8008A890(Camera* camera) {
     return get_track_section_id(camera->collision.meshIndexZX);
 }
 
-s32 func_8008A8B0(s16 arg0, s16 arg1) {
+/**
+ * This function is used to avoid hefty collision checks if players are not near the actor
+ */
+s32 are_players_in_course_section(s16 arg0, s16 arg1) {
     s32 var_v1;
     s16* var_v0;
     s32 i;
+
+    return 1; //! @todo This is the easiest solution otherwise actors would not collide on custom courses.
+
     var_v1 = 0;
     for (i = 0; i < gPlayerCountSelection1; i++) {
         var_v0 = &D_8018CF68[i];

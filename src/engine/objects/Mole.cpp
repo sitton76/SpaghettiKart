@@ -34,7 +34,7 @@ void OMole::Tick() {
     for (var_s1 = 0; var_s1 < D_8018D1C8; var_s1++) {
         objectIndex = indexObjectList1[var_s1];
         if (gObjectList[objectIndex].state == 0) {
-            if (func_8008A8B0(8, 9) != 0) {
+            if (are_players_in_course_section(8, 9) != 0) {
                 func_80081FF4(objectIndex, 1);
             }
         } else {
@@ -45,7 +45,7 @@ void OMole::Tick() {
     for (var_s1 = 0; var_s1 < D_8018D1D0; var_s1++) {
         objectIndex = indexObjectList2[var_s1];
         if (gObjectList[objectIndex].state == 0) {
-            if (func_8008A8B0(0x0010, 0x0013) != 0) {
+            if (are_players_in_course_section(0x0010, 0x0013) != 0) {
                 OMole::func_80081FF4(objectIndex, 2);
             }
         } else {
@@ -56,7 +56,7 @@ void OMole::Tick() {
     for (var_s1 = 0; var_s1 < D_8018D1D8; var_s1++) {
         objectIndex = indexObjectList3[var_s1];
         if (gObjectList[objectIndex].state == 0) {
-            if (func_8008A8B0(0x0011, 0x0014) != 0) {
+            if (are_players_in_course_section(0x0011, 0x0014) != 0) {
                 func_80081FF4(objectIndex, 3);
             }
         } else {

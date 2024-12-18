@@ -7,6 +7,7 @@
 #include "World.h"
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
+#include "engine/objects/Snowman.h"
 #include "assets/frappe_snowland_data.h"
 #include "assets/boo_frames.h"
 
@@ -131,6 +132,28 @@ void FrappeSnowland::SpawnActors() {
 
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_frappe_snowland_tree_spawns));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_frappe_snowland_item_box_spawns));
+    
+    if (gGamestate != CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OSnowman(FVector(697, 0, -1684)));
+        gWorldInstance.AddObject(new OSnowman(FVector(82, 0, -2245)));
+        gWorldInstance.AddObject(new OSnowman(FVector(27, 5, -2067)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-656, 0, -1735)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1497, 0, -83)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1643, 0, -25)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1547, 0, -20)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1445, 0, -10)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1502, 0, 61)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1429, 0, 79)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1586, 0, 71)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1471, 0, 157)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1539, 0, 175)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1484, 0, 303)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1442, 0, 358)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-1510, 0, 426)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-665, 0, 830)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-701, 3, 853)));
+        gWorldInstance.AddObject(new OSnowman(FVector(-602, 0, 929)));
+    }
 }
 
 void FrappeSnowland::SpawnVehicles() {
@@ -184,34 +207,13 @@ void FrappeSnowland::InitCourseObjects() {
     for (i = 0; i < NUM_SNOWFLAKES; i++) {
         find_unused_obj_index(&gObjectParticle1[i]);
     }
-    if (gGamestate != CREDITS_SEQUENCE) {
-        for (i = 0; i < NUM_SNOWMEN; i++) {
-            objectId = indexObjectList2[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].origin_pos[0] = gSnowmanSpawns[i].pos[0] * xOrientation;
-            gObjectList[objectId].origin_pos[1] = gSnowmanSpawns[i].pos[1] + 5.0 + 3.0;
-            gObjectList[objectId].origin_pos[2] = gSnowmanSpawns[i].pos[2];
-            objectId = indexObjectList1[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].origin_pos[0] = gSnowmanSpawns[i].pos[0] * xOrientation;
-            gObjectList[objectId].origin_pos[1] = gSnowmanSpawns[i].pos[1] + 3.0;
-            gObjectList[objectId].origin_pos[2] = gSnowmanSpawns[i].pos[2];
-            gObjectList[objectId].unk_0D5 = gSnowmanSpawns[i].unk_6;
-        }
-    }
 }
 
 void FrappeSnowland::UpdateCourseObjects() {
-    if (gGamestate != CREDITS_SEQUENCE) {
-        update_snowmen();
-    }
     update_snowflakes();
 }
 
 void FrappeSnowland::RenderCourseObjects(s32 cameraId) {
-    if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_snowmans(cameraId);
-    }
 }
 
 void FrappeSnowland::SomeSounds() {

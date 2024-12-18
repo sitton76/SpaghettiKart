@@ -3488,20 +3488,6 @@ void render_object_bat(s32 cameraId) {
     gSPTexture(gDisplayListHead++, 0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF);
 }
 
-void render_object_trash_bin(s32 cameraId) {
-    s32 objectIndex;
-    Object* object;
-
-    objectIndex = indexObjectList1[1];
-    func_8008A364(objectIndex, cameraId, 0x5555U, 0x00000320);
-    if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-        object = &gObjectList[objectIndex];
-        if (object->state >= 2) {
-            func_80043220(object->pos, object->orientation, object->sizeScaling, object->model);
-        }
-    }
-}
-
 void func_8005285C(s32 arg0) {
     Player* temp_v0;
 
@@ -3611,70 +3597,6 @@ void func_80052E30(UNUSED s32 arg0) {
             func_80052D70(var_s0);
         }
     }
-}
-
-void render_object_snowmans_list_2(s32 cameraId) {
-    UNUSED s32 stackPadding[2];
-    Camera* sp44;
-    s32 someIndex;
-    s32 objectIndex;
-    Object* object;
-
-    sp44 = &camera1[cameraId];
-    load_texture_and_tlut(d_course_frappe_snowland_snow_tlut, d_course_frappe_snowland_snow, 0x00000020, 0x00000020);
-    for (someIndex = 0; someIndex < gObjectParticle2_SIZE; someIndex++) {
-        objectIndex = gObjectParticle2[someIndex];
-        if (objectIndex != NULL_OBJECT_ID) {
-            object = &gObjectList[objectIndex];
-            if (object->state > 0) {
-                func_8008A364(objectIndex, cameraId, 0x2AABU, 0x000001F4);
-                if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-                    object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], sp44->pos);
-                    rsp_set_matrix_gObjectList(objectIndex);
-                    gSPDisplayList(gDisplayListHead++, D_0D0069E0);
-                }
-            }
-        }
-    }
-    gSPTexture(gDisplayListHead++, 1, 1, 0, G_TX_RENDERTILE, G_OFF);
-}
-
-void render_object_snowmans_list_1(s32 cameraId) {
-    s32 var_s4;
-    s32 objectIndex;
-    Camera* camera;
-
-    camera = &camera1[cameraId];
-    for (var_s4 = 0; var_s4 < NUM_SNOWMEN; var_s4++) {
-        objectIndex = indexObjectList1[var_s4];
-        if (gObjectList[objectIndex].state >= 2) {
-            func_8008A364(objectIndex, cameraId, 0x2AABU, 0x00000258);
-            if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-                D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
-                D_80183E80[1] =
-                    func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
-                D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
-                if (is_obj_flag_status_active(objectIndex, 0x00000010) != 0) {
-                    draw_2d_texture_at(gObjectList[objectIndex].pos, (u16*) D_80183E80,
-                                       gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT,
-                                       gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].vertex,
-                                       0x00000040, 0x00000040, 0x00000040, 0x00000020);
-                }
-                objectIndex = indexObjectList2[var_s4];
-                D_80183E80[0] = (s16) gObjectList[objectIndex].orientation[0];
-                D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
-                draw_2d_texture_at(gObjectList[objectIndex].pos, (u16*) D_80183E80,
-                                   gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT,
-                                   gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].vertex, 0x00000040,
-                                   0x00000040, 0x00000040, 0x00000020);
-            }
-        }
-    }
-}
-
-void render_object_snowmans(s32 arg0) {
-    render_object_snowmans_list_1(arg0);
-    render_object_snowmans_list_2(arg0);
 }
 
 void render_lakitu(s32 cameraId) {
