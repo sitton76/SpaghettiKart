@@ -28,6 +28,7 @@ Course::Course() {
     // Props.CourseLength = "567m";
     // Props.Cup = FLOWER_CUP;
     // Props.CupIndex = 3;
+    Props.LakituTowType = (s32)OLakitu::LakituTowType::NORMAL;
     Props.AIBehaviour = D_0D008F28;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;

@@ -897,6 +897,9 @@ void race_logic_loop(void) {
     FB_WriteFramebufferSliceToCPU(&gDisplayListHead, gPortFramebuffers[sRenderingFramebuffer], true);
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
+
+    // End of frame cleanup of actors, objects, etc.
+    CM_RunGarbageCollector();
 }
 
 /**

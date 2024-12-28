@@ -3501,7 +3501,7 @@ void func_8005285C(s32 arg0) {
     func_80043500(D_80183E40, D_80183E80, 0.02f, d_course_sherbet_land_dl_ice_block);
 }
 
-void func_800528EC(s32 arg0) {
+void func_800528EC(s32 playerId) {
     s32 var_s3;
     s32 objectIndex;
     Object* object;
@@ -3517,7 +3517,7 @@ void func_800528EC(s32 arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BOTH);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_LIGHTING | G_SHADING_SMOOTH);
-    load_texture_block_ia16_nomirror(d_course_sherbet_land_ice, 0x00000020, 0x00000020);
+    load_texture_block_ia16_nomirror(d_course_sherbet_land_ice, 32, 32);
     if (gPlayerCountSelection1 < 3) {
         for (var_s3 = 0; var_s3 < gObjectParticle2_SIZE; var_s3++) {
             objectIndex = gObjectParticle2[var_s3];
@@ -3535,7 +3535,7 @@ void func_800528EC(s32 arg0) {
             objectIndex = gObjectParticle2[var_s3];
             if (objectIndex != NULL_OBJECT_ID) {
                 object = &gObjectList[objectIndex];
-                if ((object->state > 0) && (arg0 == object->unk_084[7]) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                if ((object->state > 0) && (playerId == object->unk_084[7]) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
                     rsp_set_matrix_transformation(object->pos, D_80183E80, object->sizeScaling);
                     gSPVertex(gDisplayListHead++, D_0D005BD0, 3, 0);
                     gSPDisplayList(gDisplayListHead++, D_0D006930);
@@ -3548,8 +3548,7 @@ void func_800528EC(s32 arg0) {
     gSPTexture(gDisplayListHead++, 0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF);
 }
 
-void render_ice_block(s32 arg0) {
-    s32 playerId;
+void render_ice_block(s32 playerId) {
     s32 objectIndex;
     // Lights1 D_800E4620l = *(Lights1 *) LOAD_ASSET(D_800E4620);
     D_800E4620.l[0].l.dir[0] = D_80165840[0];
@@ -3557,15 +3556,15 @@ void render_ice_block(s32 arg0) {
     D_800E4620.l[0].l.dir[2] = D_80165840[2];
     gSPLight(gDisplayListHead++, &D_800E4620.l[0], LIGHT_1);
     gSPLight(gDisplayListHead++, &D_800E4620.a, LIGHT_2);
-    for (playerId = 0; playerId < gPlayerCountSelection1; playerId++) {
-        objectIndex = gIndexLakituList[playerId];
+    for (size_t i = 0; i < gPlayerCountSelection1; i++) {
+        objectIndex = gIndexLakituList[i];
         if (objectIndex) {}
         if (func_80072320(objectIndex, 4) != false) {
-            func_8005285C(playerId);
+            func_8005285C(i);
         }
         func_80072320(objectIndex, 0x00000010);
     }
-    func_800528EC(arg0);
+    func_800528EC(playerId);
 }
 
 void func_80052D70(s32 playerId) {
@@ -3595,47 +3594,6 @@ void func_80052E30(UNUSED s32 arg0) {
     if (gPlayerCount == 1) {
         for (var_s0 = 0; var_s0 < gPlayerCountSelection1; var_s0++) {
             func_80052D70(var_s0);
-        }
-    }
-}
-
-void render_lakitu(s32 cameraId) {
-    UNUSED s32 stackPadding;
-    Camera* camera;
-    f32 var_f0;
-    f32 var_f2;
-    s32 objectIndex;
-    Object* object;
-
-    objectIndex = gIndexLakituList[cameraId];
-    camera = &camera1[cameraId];
-    if (is_obj_flag_status_active(objectIndex, 0x00000010) != 0) {
-        object = &gObjectList[objectIndex];
-        object->orientation[0] = 0;
-        object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], camera->pos);
-        object->orientation[2] = 0x8000;
-        if (func_80072354(objectIndex, 2) != 0) {
-            draw_2d_texture_at(object->pos, object->orientation, object->sizeScaling, (u8*) object->activeTLUT,
-                               object->activeTexture, object->vertex, (s32) object->textureWidth,
-                               (s32) object->textureHeight, (s32) object->textureWidth,
-                               (s32) object->textureHeight / 2);
-        } else {
-            func_800485C4(object->pos, object->orientation, object->sizeScaling, (s32) object->primAlpha,
-                          (u8*) object->activeTLUT, object->activeTexture, object->vertex, (s32) object->textureWidth,
-                          (s32) object->textureHeight, (s32) object->textureWidth, (s32) object->textureHeight / 2);
-        }
-        if (gScreenModeSelection == SCREEN_MODE_1P) {
-            var_f0 = object->pos[0] - D_8018CF14->pos[0];
-            var_f2 = object->pos[2] - D_8018CF14->pos[2];
-            if (var_f0 < 0.0f) {
-                var_f0 = -var_f0;
-            }
-            if (var_f2 < 0.0f) {
-                var_f2 = -var_f2;
-            }
-            if ((var_f0 + var_f2) <= 200.0) {
-                func_8004A630(&D_8018C0B0[cameraId], object->pos, 0.35f);
-            }
         }
     }
 }

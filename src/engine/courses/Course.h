@@ -6,7 +6,7 @@
 
 // C-compatible function declaration
 #ifdef __cplusplus
-//#include "World.h"
+#include "engine/objects/Lakitu.h"
 extern "C" {
 #endif
 
@@ -56,6 +56,7 @@ public:
         const char* CourseLength;
         const char* AIBehaviour;
         const char* MinimapTexture;
+        s32 LakituTowType;
         s16 D_800E5548[2];
         float AIMaximumSeparation;
         float AIMinimumSeparation;

@@ -55,6 +55,9 @@ SherbetLand::SherbetLand() {
     Props.Name = "sherbet land";
     Props.DebugName = "sherbet";
     Props.CourseLength = "756m";
+
+    Props.LakituTowType = (s32)OLakitu::LakituTowType::ICE;
+
     Props.AIBehaviour = D_0D009280;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;

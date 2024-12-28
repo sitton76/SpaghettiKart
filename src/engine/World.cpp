@@ -235,13 +235,6 @@ void World::TickActors() {
     }
 }
 
-void RemoveExpiredActors() {
-    // Actors.erase(
-    //    std::remove_if(Actors.begin(), Actors.end(),
-    //                    [](const std::unique_ptr<AActor>& actor) { return actor->uuid == 0; }),
-    //    Actors.end());
-}
-
 OObject* World::AddObject(OObject* object) {
     Objects.push_back(object);
     return Objects.back();
@@ -249,25 +242,23 @@ OObject* World::AddObject(OObject* object) {
 
 void World::TickObjects() {
     for (const auto& object : Objects) {
-       object->Tick();
+        object->Tick();
     }
 }
+
+// Some objects such as lakitu are ticked in process_game_tick.
+// This is a fallback to support those objects. Probably don't use this.
+void World::TickObjects60fps() {
+    for (const auto& object : Objects) {
+       object->Tick60fps();
+    }
+}
+
 
 void World::DrawObjects(s32 cameraId) {
     for (const auto& object : Objects) {
        object->Draw(cameraId);
     }
-}
-
-void World::ExpiredObjects() {
-    //this->Objects.erase(
-    //    std::remove_if(this->Objects.begin(), this->Objects.end(),
-    //                    [](const std::unique_ptr<OObject>& object) { return object->uuid == 0; }), // Example condition
-    //    this->Objects.end());
-}
-
-void World::DestroyObjects() {
-
 }
 
 Object* World::GetObjectByIndex(size_t index) {

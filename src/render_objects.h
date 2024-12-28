@@ -343,7 +343,6 @@ void render_object_snowmans_list_2(s32);
 
 void render_object_snowmans_list_1(s32);
 void render_object_snowmans(s32);
-void render_lakitu(s32);
 void translate_thwomp_lights(s32);
 void thwomp_lights(s32);
 void render_object_thwomps_model(s32);

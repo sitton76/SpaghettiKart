@@ -12,7 +12,9 @@
 #include "objects/Thwomp.h"
 #include "objects/Penguin.h"
 #include "objects/Seagull.h"
+#include "objects/Lakitu.h"
 #include <memory>
+#include <unordered_map>
 #include "Actor.h"
 #include "particles/ParticleEmitter.h"
 
@@ -89,6 +91,7 @@ class ACar;
 class TrainCrossing;
 class OThwomp;
 class OSeagull;
+class OLakitu;
 
 class World {
 
@@ -150,7 +153,6 @@ public:
     AActor* GetActor(size_t index);
 
     void TickActors();
-    void RemoveExpiredActors();
     AActor* ConvertActorToAActor(Actor* actor);
     Actor* ConvertAActorToActor(AActor* actor);
 
@@ -158,9 +160,8 @@ public:
 
     CProperties* GetCourseProps();
     void TickObjects();
+    void TickObjects60fps();
     void DrawObjects(s32 cameraId);
-    void ExpiredObjects();
-    void DestroyObjects();
     Object *GetObjectByIndex(size_t);
 
     void AddCup(Cup*);
@@ -192,6 +193,8 @@ public:
     std::vector<AActor*> Actors;
     std::vector<OObject*> Objects;
     std::vector<ParticleEmitter*> Emitters;
+
+    std::unordered_map<s32, OLakitu*> Lakitus;
 
     /** Actors */
     void AddBoat(f32 speed, uint32_t waypoint);
