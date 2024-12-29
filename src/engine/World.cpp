@@ -254,10 +254,26 @@ void World::TickObjects60fps() {
     }
 }
 
+ParticleEmitter* World::AddEmitter(ParticleEmitter* emitter) {
+    Emitters.push_back(emitter);
+    return Emitters.back();
+}
 
 void World::DrawObjects(s32 cameraId) {
     for (const auto& object : Objects) {
        object->Draw(cameraId);
+    }
+}
+
+void World::TickParticles() {
+    for (const auto& emitter : Emitters) {
+       emitter->Tick();
+    }
+}
+
+void World::DrawParticles(s32 cameraId) {
+    for (const auto& emitter : Emitters) {
+       emitter->Draw(cameraId);
     }
 }
 

@@ -35,4 +35,5 @@ public:
 private:
 
     s32 _idx;
+    FVector _pos;
 };

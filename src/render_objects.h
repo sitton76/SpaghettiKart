@@ -358,7 +358,6 @@ void render_object_bowser_flame_particle(s32, s32);
 void render_object_bowser_flame(s32);
 void func_8005477C(s32, u8, Vec3f);
 void render_object_smoke_particles(s32);
-void func_80054AFC(s32, Vec3f);
 void func_80054D00(s32, s32);
 void func_80054E10(s32);
 void func_80054EB8(s32);
@@ -381,7 +380,6 @@ void func_80055CCC(s32, s32);
 void render_object_hot_air_balloon(s32);
 void func_80055EF4(s32, s32);
 void func_80055F48(s32);
-void func_80055FA0(s32, s32);
 
 void func_80056160(s32);
 void render_object_neon(s32);

@@ -1205,7 +1205,7 @@ void update_gamestate(void) {
         case ENDING:
             gCurrentlyLoadedCourseId = COURSE_NULL;
             init_segment_ending_sequences();
-            load_ceremony_cutscene();
+            setup_podium_ceremony();
             break;
         case CREDITS_SEQUENCE:
             gCurrentlyLoadedCourseId = COURSE_NULL;

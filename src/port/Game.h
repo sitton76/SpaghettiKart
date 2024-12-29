@@ -43,14 +43,24 @@ void CourseManager_RenderCredits();
 
 void CourseManager_SpawnActors();
 
+void CM_SpawnStarterLakitu();
+void CM_ActivateFinishLakitu(s32 playerId);
+void CM_ActivateSecondLapLakitu(s32 playerId);
+void CM_ActivateFinalLapLakitu(s32 playerId);
+void CM_ActivateReverseLakitu(s32 playerId);
+
 bool cm_DoesFinishlineExist();
 
 void CourseManager_InitClouds();
 
-void CourseManager_DrawActor(Camera* camera, struct Actor* actor);
+void CourseManager_DrawActors(Camera* camera, struct Actor* actor);
 
 void CourseManager_TickObjects();
+void CourseManager_TickObjects60fps();
 void CourseManager_DrawObjects(s32 cameraId);
+
+void CM_TickParticles(void);
+void CM_DrawParticles(s32 cameraId);
 
 void CourseManager_UpdateClouds(s32 arg0, Camera* camera);
 
@@ -149,7 +159,7 @@ struct Actor* m_AddBaseActor(void);
 size_t m_GetActorSize();
 size_t m_FindActorIndex(struct Actor* actor);
 void m_ActorCollision(Player* player, struct Actor* actor);
-void m_ClearActors(void);
+void CM_CleanWorld(void);
 
 void* GetMarioRaceway(void);
 
@@ -204,6 +214,8 @@ void* GetSpecialCup(void);
 void* GetBattleCup(void);
 
 void* GetCup();
+
+void CM_RunGarbageCollector(void);
 
 #ifdef __cplusplus
 }

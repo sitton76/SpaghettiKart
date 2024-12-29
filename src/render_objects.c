@@ -3836,18 +3836,6 @@ void render_object_smoke_particles(s32 cameraId) {
     }
 }
 
-void func_80054AFC(s32 objectIndex, Vec3f arg1) {
-    D_80183E80[0] = func_800418E8(gObjectList[objectIndex].pos[2], gObjectList[objectIndex].pos[1], arg1);
-    D_80183E80[1] = func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], arg1);
-    D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
-    func_8004B138((s32) gObjectList[objectIndex].unk_084[0], (s32) gObjectList[objectIndex].unk_084[1],
-                  (s32) gObjectList[objectIndex].unk_084[2], (s32) gObjectList[objectIndex].primAlpha);
-    rsp_set_matrix_transformation(gObjectList[objectIndex].pos, (u16*) D_80183E80,
-                                  gObjectList[objectIndex].sizeScaling);
-    gSPVertex(gDisplayListHead++, D_0D005AE0, 4, 0);
-    gSPDisplayList(gDisplayListHead++, common_rectangle_display);
-}
-
 void func_80055164(s32 objectIndex) {
     if (gObjectList[objectIndex].state >= 2) {
         gSPDisplayList(gDisplayListHead++, D_0D0077A0);

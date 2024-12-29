@@ -551,22 +551,21 @@ void render_object(u32 arg0) {
 }
 
 void render_object_p1(void) {
-
     gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
 
-    CourseManager_DrawBombKarts(PLAYER_ONE);
-    //render_bomb_karts_wrap(PLAYER_ONE);
-    if (gGamestate == ENDING) {
-        //func_80055F48(PLAYER_ONE);
-        //func_80056160(PLAYER_ONE);
-        //func_8005217C(PLAYER_ONE);
-        //func_80054BE8(PLAYER_ONE);
-        return;
-    }
+    CourseManager_DrawBombKarts(PLAYER_ONE); // render_bomb_karts_wrap(PLAYER_ONE);
+
+    // if (gGamestate == ENDING) {
+    //     //func_80055F48(PLAYER_ONE);
+    //     //func_80056160(PLAYER_ONE);
+    //     //func_8005217C(PLAYER_ONE);
+    //     //func_80054BE8(PLAYER_ONE);
+    //     return;
+    // }
     render_object_for_player(PLAYER_ONE);
 }
 
@@ -690,8 +689,8 @@ void render_player_snow_effect_four(void) {
 }
 
 void render_object_for_player(s32 cameraId) {
-
     CourseManager_DrawObjects(cameraId);
+    CM_DrawParticles(cameraId);
 
     // CourseManager_RenderCourseObjects(cameraId);
     // CourseManager_TrainSmokeDraw(cameraId);
@@ -1408,6 +1407,7 @@ void func_80059D00(void) {
         }
         update_object();
         CourseManager_TickObjects();
+        CM_TickParticles();
         func_800744CC();
     }
 }
@@ -1423,12 +1423,15 @@ void func_8005A070(void) {
             //func_80086604();
             //func_80086D80();
             //update_cheep_cheep(1);
-            func_80077640();
+            //func_80077640();
+            CourseManager_TickObjects();
+            CM_TickParticles();
         } else if (gGamestate == CREDITS_SEQUENCE) {
             func_80059820(PLAYER_ONE);
             func_80078C70(0);
             CourseManager_TickObjects();
-        } else {
+            CM_TickParticles();
+        } else { // normal gameplay
             func_80059D00();
         }
     }

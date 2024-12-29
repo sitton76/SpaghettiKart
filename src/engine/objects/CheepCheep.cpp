@@ -52,7 +52,6 @@ void OCheepCheep::Draw(s32 cameraId) { // func_8005217C
     Lights1* D_800E45C0l = (Lights1*) (D_800E45C0);
     Object* object;
     s32 temp_a3;
-
     temp_a3 = indexObjectList2[0];
     object = &gObjectList[temp_a3];
     if (object->state >= 2) {

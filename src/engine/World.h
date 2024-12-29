@@ -164,6 +164,10 @@ public:
     void DrawObjects(s32 cameraId);
     Object *GetObjectByIndex(size_t);
 
+    void TickParticles();
+    void DrawParticles(s32 cameraId);
+    ParticleEmitter* AddEmitter(ParticleEmitter* emitter);
+
     void AddCup(Cup*);
     void SetCup(Cup* cup);
     const char* GetCupName();

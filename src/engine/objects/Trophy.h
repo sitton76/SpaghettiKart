@@ -43,6 +43,8 @@ public:
     void func_80086940(s32 objectIndex);
     void func_80086C14(s32 objectIndex);
     void func_80086C6C(s32 objectIndex);
+    void func_800773D8(f32* arg0, s32 arg1);
+    void func_80077138(s32 objectIndex, Vec3f arg1, s32 arg2);
 
 private:
 
@@ -52,4 +54,5 @@ private:
     Behaviour _bhv;
     int8_t *_toggleVisibility;
     Vec3f _oldPos;
+    bool _isMod = false;
 };

@@ -3,6 +3,7 @@
 #include <libultraship.h>
 #include <vector>
 #include "ParticleEmitter.h"
+#include "World.h"
 
 extern "C" {
 #include "macros.h"
@@ -27,14 +28,14 @@ public:
     f32 Diameter = 0.0f; // Waddle in a circle around the spawn point at this diameter.
     uint16_t MirrorModeAngleOffset;
 
-    explicit StarEmitter(Vec3f pos);
+    explicit StarEmitter(FVector pos);
 
     virtual void Tick() override;
     virtual void Draw(s32 cameraId) override;
-    void func_80086700(s32 objectIndex);
-    void func_80086940(s32 objectIndex);
-    void func_80086C14(s32 objectIndex);
-    void func_80086C6C(s32 objectIndex);
+    void func_80077428(s32 objectIndex);
+    void func_80077584(s32 objectIndex);
+    void func_80077450(s32 objectIndex);
+    void func_80054AFC(s32 objectIndex, Vec3f arg1);
 
 private:
 
