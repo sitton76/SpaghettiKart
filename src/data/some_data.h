@@ -50,7 +50,7 @@ extern SplineData D_800E5D78;
 extern SplineData* D_800E5D9C[];
 extern SplineData* D_800E5DB0;
 extern s8 D_800E5DB4[];
-extern YVFlagPoleSpawn D_800E5DF4[];
+extern YVFlagPoleSpawn gFlagpoleSpawns[];
 extern HegdehogSpawn gHedgehogSpawns[];
 extern Vec3s gHedgehogPatrolPoints[];
 extern SnowmanSpawn gSnowmanSpawns[];

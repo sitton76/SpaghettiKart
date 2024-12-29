@@ -7,6 +7,8 @@
 #include "World.h"
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
+#include "engine/objects/Hedgehog.h"
+#include "engine/objects/Flagpole.h"
 #include "assets/yoshi_valley_data.h"
 #include "assets/boo_frames.h"
 
@@ -147,6 +149,30 @@ void YoshiValley::SpawnActors() {
     vec3f_set(position, -2300.0f, 0.0f, 634.0f);
     position[0] *= gCourseDirection;
     add_actor_to_empty_slot(position, rotation, velocity, ACTOR_YOSHI_EGG);
+
+    if (gGamestate != CREDITS_SEQUENCE) {
+        //! @bug Skip spawning in credits due to animation crash for now
+        gWorldInstance.AddObject(new OFlagpole(FVector(-902, 70, -1406), 0x3800));
+        gWorldInstance.AddObject(new OFlagpole(FVector(-948, 70, -1533), 0x3800));
+        gWorldInstance.AddObject(new OFlagpole(FVector(-2170, 0, 723), 0x400));
+        gWorldInstance.AddObject(new OFlagpole(FVector(-2193, 0, 761), 0x400));
+
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1683, -80, -88), FVector2D(-1650, -114), 9));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1636, -93, -147), FVector2D(-1661, -151), 9));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1628, -86, -108), FVector2D(-1666, -58), 9));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1676, -69, -30), FVector2D(-1651, -26), 9));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1227, -27, -989), FVector2D(-1194, -999), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1261, -41, -880), FVector2D(-1213, -864), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1342, -60, -830), FVector2D(-1249, -927), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1429, -78, -849), FVector2D(-1347, -866), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1492, -94, -774), FVector2D(-1427, -891), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1453, -87, -784), FVector2D(-1509, -809), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1488, 89, -852), FVector2D(-1464, -822), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-1301, 47, -904), FVector2D(-1537, -854), 26));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-2587, 56, -259), FVector2D(-2624, -241), 28));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-2493, 94, -454), FVector2D(-2505, -397), 28));
+        gWorldInstance.AddObject(new OHedgehog(FVector(-2477, 3, -57), FVector2D(-2539, -66), 28));
+    }
 }
 
 // Likely sets minimap boundaries
@@ -158,31 +184,6 @@ void YoshiValley::MinimapSettings() {
 }
 
 void YoshiValley::InitCourseObjects() {
-    size_t objectId;
-    size_t i;
-
-    //! @bug Skip spawning due to animation crash for now
-    if (gGamestate == CREDITS_SEQUENCE) {
-        return;
-    }
-
-    for (i = 0; i < NUM_YV_FLAG_POLES; i++) {
-        init_object(indexObjectList1[i], 0);
-    }
-    if (gGamestate != CREDITS_SEQUENCE) {
-        for (i = 0; i < NUM_HEDGEHOGS; i++) {
-            objectId = indexObjectList2[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] =
-                gHedgehogSpawns[i].pos[0] * xOrientation;
-            gObjectList[objectId].pos[1] = gObjectList[objectId].surfaceHeight =
-                gHedgehogSpawns[i].pos[1] + 6.0;
-            gObjectList[objectId].pos[2] = gObjectList[objectId].origin_pos[2] = gHedgehogSpawns[i].pos[2];
-            gObjectList[objectId].unk_0D5 = gHedgehogSpawns[i].unk_06;
-            gObjectList[objectId].unk_09C = gHedgehogPatrolPoints[i][0] * xOrientation;
-            gObjectList[objectId].unk_09E = gHedgehogPatrolPoints[i][2];
-        }
-    }
 }
 
 void YoshiValley::SpawnVehicles() {
@@ -210,17 +211,9 @@ void YoshiValley::SpawnVehicles() {
 }
 
 void YoshiValley::UpdateCourseObjects() {
-    func_80083080();
-    if (gGamestate != CREDITS_SEQUENCE) {
-        update_hedgehogs();
-    }
 }
 
 void YoshiValley::RenderCourseObjects(s32 cameraId) {
-    func_80055228(cameraId);
-    if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_hedgehogs(cameraId);
-    }
 }
 
 void YoshiValley::SomeSounds() {

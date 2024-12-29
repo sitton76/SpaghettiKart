@@ -35,6 +35,22 @@ struct FVector {
     }
 };
 
+/**
+ * For providing X and Z when you do not need Y
+ * Some actors set themselves on the surface automatically
+ * which means it does not use a Y coordinate
+ * The train follows a set Y value. The hedgehog's patrolPoint only uses X and Z.
+ */
+struct FVector2D {
+    float x, z;
+
+    FVector2D& operator=(const FVector2D& other) {
+        x = other.x;
+        z = other.z;
+        return *this;
+    }
+};
+
 struct FRotation {
     float pitch, yaw, roll;
 

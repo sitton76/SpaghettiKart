@@ -43,6 +43,8 @@ public:
     void func_80083BE4(s32);
     void func_800836F0(Vec3f);
     bool func_80073D0C(s32 objectIndex, s16* arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6);
+    void func_80083538(s32 objectIndex, Vec3f arg1, s32 arg2, s32 arg3);
+    void func_8008379C(s32 objectIndex);
 
 
 private:

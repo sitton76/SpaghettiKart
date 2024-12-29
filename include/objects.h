@@ -223,7 +223,7 @@ typedef struct {
     /* 0x6 */ u16 rot;
 } YVFlagPoleSpawn; // size = 0x8;
 
-extern YVFlagPoleSpawn D_800E5DF4[];
+extern YVFlagPoleSpawn gFlagpoleSpawns[];
 
 #define NUM_CRABS 0xA
 

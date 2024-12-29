@@ -124,9 +124,25 @@ void OSeagull::Draw(Camera* camera) { // render_object_seagulls
             _toggle = true;
         //}
         //if (is_obj_flag_status_active(var_s1, VISIBLE) != 0) {
-            func_800552BC(var_s1);
+            OSeagull::func_800552BC(var_s1);
         //}
     //}
+}
+
+void OSeagull::func_800552BC(s32 objectIndex) {
+    if (gObjectList[objectIndex].state >= 2) {
+        rsp_set_matrix_transformation(gObjectList[objectIndex].pos, gObjectList[objectIndex].direction_angle,
+                                      gObjectList[objectIndex].sizeScaling);
+        gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D0077D0);
+        if (gIsGamePaused == 0) {
+            gObjectList[objectIndex].unk_0A2 = render_animated_model((Armature*) gObjectList[objectIndex].model,
+                                                                     (Animation**) gObjectList[objectIndex].vertex, 0,
+                                                                     gObjectList[objectIndex].unk_0A2);
+        } else {
+            render_animated_model((Armature*) gObjectList[objectIndex].model,
+                                  (Animation**) gObjectList[objectIndex].vertex, 0, gObjectList[objectIndex].unk_0A2);
+        }
+    }
 }
 
 void OSeagull::func_8008275C(s32 objectIndex) {

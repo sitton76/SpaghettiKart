@@ -17,6 +17,11 @@ StarEmitter::StarEmitter(FVector pos) {
     s8 temp_v0_3;
     Vec3s sp30;
 
+    for (size_t i = 0; i < D_80165738; i++) {
+        find_unused_obj_index(&gObjectParticle3[i]);
+        init_object(gObjectParticle3[i], 0);
+    }
+
     if (objectIndex == NULL_OBJECT_ID) {
         return;
         //func_80077138(objectIndex, arg0, arg1);
@@ -84,7 +89,7 @@ void StarEmitter::Tick() { // func_80077640
                 StarEmitter::func_80077450(objectIndex);
                 StarEmitter::func_80077584(objectIndex);
                 if (object->state == 0) {
-                    delete_object_wrapper(&gObjectParticle3[someIndex]);
+                    //delete_object_wrapper(&gObjectParticle3[someIndex]);
                 }
             }
         }
@@ -101,10 +106,10 @@ void StarEmitter::Draw(s32 cameraId) { // func_80054BE8
     load_texture_block_ia8_nomirror(D_8018D488, 0x00000020, 0x00000020);
     func_8004B35C(0x000000FF, 0x000000FF, 0, 0x000000FF);
     D_80183E80[0] = 0;
-    printf("Draw Star\n");
     for (var_s0 = 0; var_s0 < gObjectParticle3_SIZE; var_s0++) {
         temp_a0 = gObjectParticle3[var_s0];
         if ((temp_a0 != -1) && (gObjectList[temp_a0].state >= 2)) {
+    printf("Draw Star\n");
             StarEmitter::func_80054AFC(temp_a0, camera->pos);
         }
     }
@@ -163,7 +168,7 @@ void StarEmitter::func_80077450(s32 objectIndex) {
                 (func_80073B00(objectIndex, &gObjectList[objectIndex].primAlpha, 0x000000FF, 0, 0x00000010, 0, 0) !=
                  0)) {
                 func_80086F60(objectIndex);
-                func_80072428(objectIndex);
+                //func_80072428(objectIndex);
             }
             break;
     }

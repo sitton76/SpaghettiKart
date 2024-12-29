@@ -18,6 +18,9 @@
 #include "engine/objects/CheepCheep.h"
 #include "engine/objects/Snowman.h"
 #include "engine/objects/TrashBin.h"
+#include "engine/objects/Hedgehog.h"
+#include "engine/objects/Flagpole.h"
+#include "engine/particles/StarEmitter.h"
 
 extern "C" {
     #include "main.h"
@@ -201,8 +204,12 @@ void TestCourse::SpawnActors() {
     // gWorldInstance.AddActor(new OSeagull(3, pos));
     // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
     // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
-    gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
-    gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f));
+    //gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
+    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f));
+
+//gWorldInstance.AddEmitter(new StarEmitter(FVector(0,50,0)));
+    //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
+    //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
 }
 
 // Likely sets minimap boundaries
