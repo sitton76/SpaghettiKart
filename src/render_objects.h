@@ -370,8 +370,6 @@ void func_800557B4(s32, u32, u32);
 void render_object_train_penguins(s32);
 void func_80055AB8(s32, s32);
 void render_object_chain_chomps(s32);
-void func_80055CCC(s32, s32);
-void render_object_hot_air_balloon(s32);
 void func_80055EF4(s32, s32);
 void func_80055F48(s32);
 

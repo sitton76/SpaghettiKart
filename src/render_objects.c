@@ -3931,50 +3931,6 @@ void render_object_chain_chomps(s32 cameraId) {
     }
 }
 
-void func_80055CCC(s32 objectIndex, s32 cameraId) {
-    UNUSED s32 pad;
-    f32 test;
-    Camera* camera;
-
-    camera = &camera1[cameraId];
-    if (gObjectList[objectIndex].state >= 2) {
-        func_8008A454(objectIndex, cameraId, 0x0000012C);
-        test = gObjectList[objectIndex].pos[1] - gObjectList[objectIndex].surfaceHeight;
-        func_8004A6EC(objectIndex, (20.0 / test) + 0.5);
-        if (is_obj_index_flag_status_inactive(objectIndex, 0x00100000) != 0) {
-            func_80043328(gObjectList[objectIndex].pos, (u16*) gObjectList[objectIndex].direction_angle,
-                          gObjectList[objectIndex].sizeScaling, d_course_luigi_raceway_dl_F960);
-            gSPDisplayList(gDisplayListHead++, d_course_luigi_raceway_dl_F650);
-        } else {
-            D_80183E80[0] = (s16) gObjectList[objectIndex].direction_angle[0];
-            D_80183E80[1] =
-                (s16) (func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos) +
-                       0x8000);
-            D_80183E80[2] = (u16) gObjectList[objectIndex].direction_angle[2];
-            func_80043328(gObjectList[objectIndex].pos, D_80183E80, gObjectList[objectIndex].sizeScaling,
-                          d_course_luigi_raceway_dl_FBE0);
-            gSPDisplayList(gDisplayListHead++, d_course_luigi_raceway_dl_FA20);
-            if (gPlayerCountSelection1 == 1) {
-                gObjectList[objectIndex].direction_angle[1] = 0;
-            }
-        }
-    }
-}
-
-void render_object_hot_air_balloon(s32 arg0) {
-    s32 objectIndex;
-    objectIndex = indexObjectList1[0];
-    if (gGamestate != 9) {
-        func_8008A1D0(objectIndex, arg0, 0x000005DC, 0x00000BB8);
-        if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-            func_80055CCC(objectIndex, arg0);
-        }
-    } else {
-        clear_object_flag(objectIndex, 0x00100000);
-        func_80055CCC(objectIndex, arg0);
-    }
-}
-
 void func_80055EF4(s32 objectIndex, UNUSED s32 arg1) {
     Object* object;
 

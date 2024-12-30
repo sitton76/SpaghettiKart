@@ -20,6 +20,7 @@
 #include "engine/objects/TrashBin.h"
 #include "engine/objects/Hedgehog.h"
 #include "engine/objects/Flagpole.h"
+#include "engine/objects/HotAirBalloon.h"
 #include "engine/particles/StarEmitter.h"
 
 extern "C" {
@@ -210,6 +211,7 @@ void TestCourse::SpawnActors() {
 //gWorldInstance.AddEmitter(new StarEmitter(FVector(0,50,0)));
     //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
     //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
+    gWorldInstance.AddObject(new OHotAirBalloon(FVector(0.0, 20.0f, -200.0f)));
 }
 
 // Likely sets minimap boundaries

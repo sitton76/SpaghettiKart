@@ -7,6 +7,7 @@
 #include "World.h"
 #include "engine/objects/BombKart.h"
 #include "assets/luigi_raceway_data.h"
+#include "engine/objects/HotAirBalloon.h"
 #include "engine/actors/AFinishline.h"
 
 extern "C" {
@@ -168,6 +169,12 @@ void LuigiRaceway::SpawnActors() {
     gWorldInstance.AddActor(new AFinishline());
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_luigi_raceway_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_luigi_raceway_item_box_spawns));
+
+    if (gGamestate == CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OHotAirBalloon(FVector(-1250.0f, 0.0f, 1110.0f)));
+    } else { // Normal gameplay
+        gWorldInstance.AddObject(new OHotAirBalloon(FVector(-176.0, 0.0f, -2323.0f)));
+    }
 }
 
 void LuigiRaceway::SpawnVehicles() {
@@ -202,8 +209,7 @@ void LuigiRaceway::InitCourseObjects() {
         if (gModeSelection == GRAND_PRIX) {
             func_80070714();
         }
-        D_80165898 = 0;
-        init_object(indexObjectList1[0], 0);
+
         for (i = 0; i < D_80165738; i++) {
             find_unused_obj_index(&gObjectParticle3[i]);
             init_object(gObjectParticle3[i], 0);
@@ -212,15 +218,9 @@ void LuigiRaceway::InitCourseObjects() {
 }
 
 void LuigiRaceway::UpdateCourseObjects() {
-    if (D_80165898 != 0) {
-        update_hot_air_balloon();
-    }
 }
 
 void LuigiRaceway::RenderCourseObjects(s32 cameraId) {
-    if (D_80165898 != 0) {
-        render_object_hot_air_balloon(cameraId);
-    }
 }
 
 void LuigiRaceway::SomeSounds() {
