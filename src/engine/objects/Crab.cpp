@@ -23,25 +23,28 @@ extern "C" {
 #include "assets/koopa_troopa_beach_data.h"
 }
 
-OCrab::OCrab(s32 i, Vec3f pos) {
+size_t OCrab::_count = 0;
+
+OCrab::OCrab(const FVector2D& start, const FVector2D& end) {
     s32 objectId;
-        //for (i = 0; i < NUM_CRABS; i++) {
-    _idx = i;
-    objectId = indexObjectList1[i];
+    _idx = _count;
+    _start = start;
+    _end = end;
+
+    objectId = indexObjectList1[_idx];
     init_object(objectId, 0);
-    gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] =
-           gCrabSpawns[i].startX * xOrientation;
+    gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] = start.x * xOrientation;
+    gObjectList[objectId].pos[2] = gObjectList[objectId].origin_pos[2] = start.z;
 
-    gObjectList[objectId].unk_01C[0] = gCrabSpawns[i].patrolX * xOrientation;
+    gObjectList[objectId].unk_01C[0] = end.x * xOrientation;
+    gObjectList[objectId].unk_01C[2] = end.z;
 
-    gObjectList[objectId].pos[2] = gObjectList[objectId].origin_pos[2] = gCrabSpawns[i].startZ;
-    gObjectList[objectId].unk_01C[2] = gCrabSpawns[i].patrolZ;
+    _count++;
 }
 
 void OCrab::Tick(void) {
     s32 objectIndex;
 
-    //for (var_s1 = 0; var_s1 < NUM_CRABS; var_s1++) {
     objectIndex = indexObjectList1[_idx];
     if (gObjectList[objectIndex].state != 0) {
         OCrab::func_80082B34(objectIndex);
@@ -49,12 +52,11 @@ void OCrab::Tick(void) {
         OCrab::func_80082C30(objectIndex);
         OCrab::func_80082E18(objectIndex);
     }
-    //}
 }
 
-void OCrab::Draw(s32 objectIndex, s32 cameraId) {
+void OCrab::Draw(s32 cameraId) {
     Camera* camera;
-
+    s32 objectIndex = indexObjectList1[_idx];
     if (gObjectList[objectIndex].state >= 2) {
         Vtx* vtx = (Vtx*) LOAD_ASSET_RAW(common_vtx_hedgehog);
         camera = &camera1[cameraId];
@@ -72,7 +74,6 @@ void OCrab::DrawModel(s32 cameraId) {
     s32 someIndex;
     s32 test;
 
-    //for (someIndex = 0; someIndex < NUM_CRABS; someIndex++) {
     test = indexObjectList1[_idx];
     func_8008A364(test, cameraId, 0x2AABU, 800);
     if (is_obj_flag_status_active(test, VISIBLE) != 0) {
@@ -86,7 +87,6 @@ void OCrab::DrawModel(s32 cameraId) {
             draw_2d_texture_at(gObjectList[objectIndex].pos, gObjectList[objectIndex].orientation, gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT, (u8*)gObjectList[objectIndex].activeTexture, (Vtx*)common_vtx_hedgehog, 0x00000040, 0x00000040, 0x00000040, 0x00000020);
         }
     }
-    //}
 }
 
 void OCrab::init_ktb_crab(s32 objectIndex) {

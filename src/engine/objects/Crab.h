@@ -2,6 +2,8 @@
 
 #include <libultraship.h>
 #include <vector>
+#include "engine/objects/Object.h"
+#include "World.h"
 
 extern "C" {
 #include "macros.h"
@@ -14,20 +16,23 @@ extern "C" {
 #include "some_data.h"
 }
 
-
-class OCrab {
+/**
+ * @arg start x and z spawn location
+ * @arg end x and z patrol location
+ * 
+ * Crab patrols between start and end.
+ * The game automatically places the actor on the course surface.
+ * Therefore, providing a Y height is unnecessary.
+ * 
+ * Crab appears to have a maximum patrolling distance and will patrol between
+ * end --> max distance rather than start --> end or start --> max distance.
+ */
+class OCrab : public OObject {
 public:
-    enum Behaviour : uint16_t {
-    };
+    explicit OCrab(const FVector2D& start, const FVector2D& end);
 
-public:
-    f32 Diameter = 0.0f; // Waddle in a circle around the spawn point at this diameter.
-    uint16_t MirrorModeAngleOffset;
-
-    explicit OCrab(s32 i, Vec3f pos);
-
-    void Tick();
-    void Draw(s32 objectIndex, s32 cameraId);
+    virtual void Tick() override;
+    virtual void Draw(s32 cameraId) override;
     void DrawModel(s32 cameraId);
 
     void init_ktb_crab(s32 objectIndex);
@@ -36,6 +41,8 @@ public:
     void func_80082E18(s32 objectIndex);
 
 private:
-
+    FVector2D _start;
+    FVector2D _end;
+    static size_t _count;
     s32 _idx;
 };

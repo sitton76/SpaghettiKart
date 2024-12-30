@@ -7,6 +7,7 @@
 #include "World.h"
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
+#include "engine/objects/Crab.h"
 #include "assets/koopa_troopa_beach_data.h"
 
 extern "C" {
@@ -144,6 +145,19 @@ void KoopaTroopaBeach::SpawnActors() {
     init_actor_hot_air_balloon_item_box(328.0f * gCourseDirection, 70.0f, 2541.0f);
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_item_box_spawns));
     spawn_palm_trees((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_tree_spawn));
+
+    if (gGamestate != CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1809, 625), FVector2D(-1666, 594)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1852, 757), FVector2D(-1620, 740)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1478, 1842), FVector2D(-1453, 1833)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1418, 1967), FVector2D(-1455, 1962)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1472, 2112), FVector2D(-1417, 2100)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1389, 2152), FVector2D(-1335, 2136)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(218, 693), FVector2D(69, 696)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(235, 528), FVector2D(24, 501)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(268, 406), FVector2D(101, 394)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(223, 318), FVector2D(86, 308)));
+    }
 }
 
 void KoopaTroopaBeach::SpawnVehicles() {
@@ -172,19 +186,6 @@ void KoopaTroopaBeach::MinimapSettings() {
 void KoopaTroopaBeach::InitCourseObjects() {
     size_t objectId;
     size_t i;
-
-    if (gGamestate != CREDITS_SEQUENCE) {
-        for (i = 0; i < NUM_CRABS; i++) {
-            objectId = indexObjectList1[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] =
-                gCrabSpawns[i].startX * xOrientation;
-            gObjectList[objectId].unk_01C[0] = gCrabSpawns[i].patrolX * xOrientation;
-
-            gObjectList[objectId].pos[2] = gObjectList[objectId].origin_pos[2] = gCrabSpawns[i].startZ;
-            gObjectList[objectId].unk_01C[2] = gCrabSpawns[i].patrolZ;
-        }
-    }
 
     if (gGamestate == CREDITS_SEQUENCE) {
         Vec3f pos = {-360.0f, 60.0f, -1300.0f};
