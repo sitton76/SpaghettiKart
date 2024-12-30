@@ -102,11 +102,8 @@ class OObject;
 class Cup; // <-- Forward declaration
 class Course;
 class AVehicle;
-class ATrain;
-class ACar;
+class OBombKart;
 class TrainCrossing;
-class OThwomp;
-class OSeagull;
 class OLakitu;
 
 class World {
@@ -212,32 +209,18 @@ public:
 
     std::vector<AActor*> Actors;
     std::vector<OObject*> Objects;
+    std::vector<AVehicle*> Vehicles;
+    std::vector<OBombKart*> BombKarts;
     std::vector<ParticleEmitter*> Emitters;
 
     std::unordered_map<s32, OLakitu*> Lakitus;
 
-    /** Actors */
-    void AddBoat(f32 speed, uint32_t waypoint);
-    void AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint);
-    void AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    void AddBus(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    void AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    void AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    std::vector<std::unique_ptr<AVehicle>> Vehicles;
+    AVehicle* AddVehicle(AVehicle* vehicle);
+
     void ClearVehicles(void);
 
     /** Objects **/
-    std::vector<std::unique_ptr<OBombKart>> BombKarts;
     void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
-
-    std::vector<std::unique_ptr<OThwomp>> Thwomps;
-    void AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize = 7);
-
-    std::vector<std::shared_ptr<OPenguin>> Penguins;
-    std::shared_ptr<OPenguin> AddPenguin(Vec3f pos, u16 direction, OPenguin::PenguinType type, OPenguin::Behaviour behaviour);
-
-    std::vector<std::shared_ptr<OSeagull>> Seagulls;
-    std::shared_ptr<OSeagull> AddSeagull(Vec3f pos);
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

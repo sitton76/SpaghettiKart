@@ -692,12 +692,6 @@ void render_object_for_player(s32 cameraId) {
     CourseManager_DrawObjects(cameraId);
     CM_DrawParticles(cameraId);
 
-    // CourseManager_RenderCourseObjects(cameraId);
-    // CourseManager_TrainSmokeDraw(cameraId);
-    // CourseManager_DrawThwomps(cameraId);
-    // CourseManager_DrawPenguins(cameraId);
-    // CourseManager_DrawSeagulls(cameraId);
-
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
     //         break;
@@ -1287,9 +1281,6 @@ void func_80059AC8(void) {
         }
 
         CourseManager_TickObjects60fps();
-
-        CourseManager_TickThwomps(); // func_8005A71C();
-
     }
 }
 
@@ -1579,9 +1570,6 @@ void func_8005A71C(void) {
 void update_object(void) {
 
     CourseManager_UpdateCourseObjects();
-    // CourseManager_TrainSmokeTick();
-    // CourseManager_TickPenguins();
-    // CourseManager_TickSeagulls();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:

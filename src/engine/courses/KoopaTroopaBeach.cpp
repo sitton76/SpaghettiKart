@@ -158,6 +158,26 @@ void KoopaTroopaBeach::SpawnActors() {
         gWorldInstance.AddObject(new OCrab(FVector2D(268, 406), FVector2D(101, 394)));
         gWorldInstance.AddObject(new OCrab(FVector2D(223, 318), FVector2D(86, 308)));
     }
+
+    if (gGamestate == CREDITS_SEQUENCE) {
+        for (size_t i = 0; i < NUM_SEAGULLS; i++) {
+            //gWorldInstance.AddObject(new OSeagull(FVector(-360.0f, 60.0f, -1300.0f)));
+            Vec3f pos = {-360.0f, 60.0f, -1300.0f};
+            gWorldInstance.AddObject(new OSeagull(pos));
+        }
+    } else { // Normal gameplay
+        for (size_t i = 0; i < 4; i++) {
+            Vec3f pos = {-985.0f, 15.0f, 1200.0f};
+            gWorldInstance.AddObject(new OSeagull(pos));
+            //gWorldInstance.AddObject(new OSeagull(FVector(-985.0f, 15.0f, 1200.0f)));
+        }
+
+        for (size_t i = 0; i < 6; i++) {
+            //gWorldInstance.AddObject(new OSeagull(FVector(328.0f, 20.0f, 2541.0f)));
+            Vec3f pos2 = {328.0f, 20.0f, 2541.0f};
+            gWorldInstance.AddObject(new OSeagull(pos2));
+        }
+    }
 }
 
 void KoopaTroopaBeach::SpawnVehicles() {
@@ -184,25 +204,6 @@ void KoopaTroopaBeach::MinimapSettings() {
 }
 
 void KoopaTroopaBeach::InitCourseObjects() {
-    size_t objectId;
-    size_t i;
-
-    if (gGamestate == CREDITS_SEQUENCE) {
-        Vec3f pos = {-360.0f, 60.0f, -1300.0f};
-        for (size_t i = 0; i < NUM_SEAGULLS; i++) {
-            gWorldInstance.AddSeagull(pos);
-        }
-    } else { // Normal gameplay
-        Vec3f pos = {-985.0f, 15.0f, 1200.0f};
-        for (size_t i = 0; i < 4; i++) {
-            gWorldInstance.AddSeagull(pos);
-        }
-
-        Vec3f pos2 = {328.0f, 20.0f, 2541.0f};
-        for (size_t i = 0; i < 6; i++) {
-            gWorldInstance.AddSeagull(pos2);
-        }
-    }
 }
 
 void KoopaTroopaBeach::UpdateCourseObjects() {

@@ -24,7 +24,7 @@ void TrainSmokeTick() {
     Object* object;
 
     for (auto& vehicle : gWorldInstance.Vehicles) {
-        if (auto train = dynamic_cast<ATrain*>(vehicle.get())) {
+        if (auto train = dynamic_cast<ATrain*>(vehicle)) {
             if (train->SmokeTimer != 0) {
                 train->SmokeTimer -= 1;
             }
@@ -48,7 +48,7 @@ void TrainSmokeTick() {
                     train->SmokeTimer = 100;
                 }
             }
-        } else if (auto boat = dynamic_cast<ABoat*>(vehicle.get())) {
+        } else if (auto boat = dynamic_cast<ABoat*>(vehicle)) {
             if (boat->SmokeTimer != 0) {
                 boat->SmokeTimer -= 1;
             }
@@ -79,7 +79,7 @@ void TrainSmokeTick() {
 void TrainSmokeDraw(s32 cameraId) {
     Camera* camera = &camera1[cameraId];
     for (auto& vehicle : gWorldInstance.Vehicles) {
-        if (auto train = dynamic_cast<ATrain*>(vehicle.get())) {
+        if (auto train = dynamic_cast<ATrain*>(vehicle)) {
             gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D007AE0);
             load_texture_block_i8_nomirror((uint8_t*)D_0D029458, 32, 32);
             func_8004B72C(255, 255, 255, 255, 255, 255, 255);
@@ -92,7 +92,7 @@ void TrainSmokeDraw(s32 cameraId) {
                     render_object_train_smoke_particle(train->SmokeParticles[i], cameraId);
                 }
             }
-        } else if (auto boat = dynamic_cast<ABoat*>(vehicle.get())) {
+        } else if (auto boat = dynamic_cast<ABoat*>(vehicle)) {
             gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D007AE0);
 
             load_texture_block_i8_nomirror((uint8_t*)D_0D029458, 32, 32);

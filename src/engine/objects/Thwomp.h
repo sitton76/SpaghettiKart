@@ -3,6 +3,9 @@
 #include <libultraship.h>
 #include <vector>
 
+#include "engine/World.h"
+#include "engine/objects/Object.h"
+
 extern "C" {
 #include "macros.h"
 #include "main.h"
@@ -27,7 +30,7 @@ extern "C" {
  * @arg primAlpha unknown
  * @arg boundingBoxSize optional. The size of the bounding box for the thwomp. Default value is 12
  */
-class OThwomp {
+class OThwomp : public OObject {
 private:
     enum States : uint16_t {
         DISABLED,
@@ -42,12 +45,20 @@ private:
 public:
     States State = States::DISABLED;
 
-    explicit OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize);
+    explicit OThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize = 7);
 
-    void Tick();
+    ~OThwomp() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
+
+    virtual void Tick60fps() override;
+    virtual void Draw(s32 cameraId) override;
     void SetVisibility(s32 objectIndex);
     void func_80080B28(s32 objectIndex, s32 playerId);
-    void Draw(s32 playerId);
     void DrawModel(s32);
     void TranslateThwompLights();
     void ThwompLights(s32 objectIndex);
@@ -100,6 +111,7 @@ public:
 
     void func_8007E63C(s32 objectIndex);
 private:
+    static size_t _count;
     s32 _idx;
     s16 _faceDirection;
     //! @todo Write this better. This effects the squish size and the bounding box size.

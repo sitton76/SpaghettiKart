@@ -301,8 +301,6 @@ extern "C" {
         gWorldInstance.ClearVehicles();
         gWorldInstance.Crossings.clear();
         gWorldInstance.BombKarts.clear();
-        gWorldInstance.Thwomps.clear();
-        gWorldInstance.Penguins.clear();
     }
 
     void CourseManager_CrossingTrigger() {
@@ -568,61 +566,6 @@ extern "C" {
             return;
         }
         gWorldInstance.Lakitus[playerId]->Activate(OLakitu::LakituType::REVERSE);
-    }
-
-    extern Vec3su D_80165834;
-    void CourseManager_TickThwomps() {
-        // TickLights
-        if (gWorldInstance.Thwomps.size()) {
-            D_80165834[0] += 0x100;
-            D_80165834[1] += 0x200;
-        }
-
-        for (auto& thwomp : gWorldInstance.Thwomps) {
-            if (thwomp) {
-                thwomp->Tick();
-            }
-        }
-    }
-
-    void CourseManager_DrawThwomps(s32 cameraId) {
-        for (auto& thwomp : gWorldInstance.Thwomps) {
-            if (thwomp) {
-                thwomp->Draw(cameraId);
-            }
-        }
-    }
-
-    void CourseManager_TickPenguins(void) {
-        for (auto& penguin : gWorldInstance.Penguins) {
-            if (penguin) {
-                penguin->Tick();
-            }
-        }
-    }
-
-    void CourseManager_DrawSeagulls(s32 cameraId) {
-        for (auto& seagull : gWorldInstance.Seagulls) {
-            if (seagull) {
-               // seagull->Draw(cameraId);
-            }
-        }
-    }
-
-    void CourseManager_TickSeagulls(void) {
-        for (auto& seagull : gWorldInstance.Seagulls) {
-            if (seagull) {
-                //seagull->Tick();
-            }
-        }
-    }
-
-    void CourseManager_DrawPenguins(s32 cameraId) {
-        for (auto& penguin : gWorldInstance.Penguins) {
-            if (penguin) {
-                penguin->Draw(cameraId);
-            }
-        }
     }
 
     size_t GetCupCursorPosition() {

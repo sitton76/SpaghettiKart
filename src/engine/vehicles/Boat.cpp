@@ -14,10 +14,12 @@ extern "C" {
 extern s8 gPlayerCount;
 }
 
-ABoat::ABoat(size_t idx, f32 speed, u32 waypoint) {
+size_t ABoat::_count = 0;
+
+ABoat::ABoat(f32 speed, u32 waypoint) {
     Path2D* temp_a2;
     u16 waypointOffset;
-    Index = idx;
+    Index = _count;
     Speed = speed;
 
     // Set to the default value
@@ -36,6 +38,8 @@ ABoat::ABoat(size_t idx, f32 speed, u32 waypoint) {
     Velocity[0] = 0.0f;
     Velocity[1] = 0.0f;
     Velocity[2] = 0.0f;
+
+    _count++;
 }
 
 void ABoat::Spawn() {

@@ -3,6 +3,8 @@
 #include <libultraship.h>
 #include "Course.h"
 
+#include "World.h"
+
 extern "C" {
     #include "assets/koopa_troopa_beach_vertices.h"
     #include "assets/koopa_troopa_beach_displaylists.h"

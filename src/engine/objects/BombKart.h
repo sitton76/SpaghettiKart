@@ -5,6 +5,8 @@
 #include <vector>
 #include "engine/Matrix.h"
 
+#include "World.h"
+
 extern "C" {
 #include "macros.h"
 #include "main.h"
@@ -53,16 +55,26 @@ public:
     // Set waypoint to NULL if using a spawn position and not a waypoint.
     explicit OBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
 
+    ~OBombKart() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
+
     void Spawn();
     void BeginPlay();
     void Tick();
-    void Draw(s32 playerId);
+    void Draw(s32 cameraId);
     void DrawBattle(s32 cameraId);
     void Collision(s32 playerId, Player* player);
     void SomeRender(Vec3f arg1);
     void LoadMtx();
     void Waypoint(s32 screenId);
 private:
+    static size_t _count;
+    s32 _idx;
     Player* FindTarget();
     void Chase(Player*, Vec3f pos);
 

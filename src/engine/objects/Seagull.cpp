@@ -1,8 +1,8 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
 #include "Seagull.h"
-#include "engine/Actor.h"
 #include <vector>
+#include "World.h"
 
 #include "port/Game.h"
 
@@ -29,9 +29,14 @@ extern SplineData D_800E6280;
 
 SplineData* D_800E633C[] = { &D_800E6034, &D_800E60F0, &D_800E61B4, &D_800E6280 };
 
-OSeagull::OSeagull(s32 i, Vec3f pos) {
-    size_t objectId;
-    _idx = i;
+size_t OSeagull::_count = 0;
+
+OSeagull::OSeagull(Vec3f pos) {
+    size_t objectIndex;
+    _idx = _count;
+    _pos[0] = pos[0];
+    _pos[1] = pos[1];
+    _pos[2] = pos[2];
 
     s16 randZ;
     s16 randX;
@@ -40,60 +45,48 @@ OSeagull::OSeagull(s32 i, Vec3f pos) {
     randY = random_int(20);
     randZ = random_int(200) + -100.0;
 
-    SpawnPos[0] = pos[0] + randX;
-    SpawnPos[1] = pos[1] + randY;
-    SpawnPos[2] = pos[2] + randZ;
-
     //for (i = 0; i < NUM_SEAGULLS; i++) {
 
 
-    //objectId = indexObjectList2[i];
-    //init_object(objectId, 0);
+    objectIndex = indexObjectList2[_idx];
+    init_object(objectIndex, 0);
 
 
-    //set_obj_origin_pos(objectId, pos[0], pos[1], pos[2]);
-        //if (i < (NUM_SEAGULLS / 2)) {
-    //gObjectList[objectId].unk_0D5 = 0;
-        //} else {
-        //    gObjectList[objectId].unk_0D5 = 1;
-        //}
-    //}
+    set_obj_origin_pos(objectIndex, pos[0], pos[1], pos[2]);
+    if (_idx < (NUM_SEAGULLS / 2)) {
+        gObjectList[objectIndex].unk_0D5 = 0;
+    } else {
+        gObjectList[objectIndex].unk_0D5 = 1;
+    }
+
+    _count++;
 }
-
-bool OSeagull::IsMod() { return true; }
 
 void OSeagull::Tick() {
     Object* object;
-    UNUSED s32* var_s4;
-    s32 temp_s0;
+    s32 objectIndex = indexObjectList2[_idx];
 
-    //for (var_s3 = 0; var_s3 < NUM_SEAGULLS; var_s3++) {
-        //temp_s0 = indexObjectList2[_idx];
-
-        //object = &gObjectList[temp_s0];
-        if (_state == 0) {
+        object = &gObjectList[objectIndex];
+        if (object->state == 0) {
             return;
         }
 
-        OSeagull::func_80082714(temp_s0, _idx);
-        OSeagull::func_8008275C(temp_s0);
-        if (_toggle) {
-            _toggle = false;
+        OSeagull::func_80082714(objectIndex, _idx);
+        OSeagull::func_8008275C(objectIndex);
+        if (func_80072320(objectIndex, 2) != 0) {
+            func_800722CC(objectIndex, 2);
             if (D_80165A90 != 0) {
                 D_80165A90 = 0;
                 D_80183E40[0] = 0.0f;
                 D_80183E40[1] = 0.0f;
                 D_80183E40[2] = 0.0f;
                 if (gGamestate != CREDITS_SEQUENCE) {
-                    func_800C98B8(Pos, D_80183E40, SOUND_ARG_LOAD(0x19, 0x01, 0x70, 0x43));
+                    func_800C98B8(object->pos, D_80183E40, SOUND_ARG_LOAD(0x19, 0x01, 0x70, 0x43));
                 } else {
-                    //temp_s0 = indexObjectList2[1];
-                    //! @todo confirm this is equivallent to indexObjectList2[1];
-                    if (_idx == 1) {
-                        if (gCutsceneShotTimer <= 150) {
-                            //object = &gObjectList[temp_s0];
-                            func_800C98B8(Pos, D_80183E40, SOUND_ARG_LOAD(0x19, 0x01, 0x70, 0x43));
-                        }
+                    objectIndex = indexObjectList2[1];
+                    if (gCutsceneShotTimer <= 150) {
+                        object = &gObjectList[objectIndex];
+                        func_800C98B8(object->pos, D_80183E40, SOUND_ARG_LOAD(0x19, 0x01, 0x70, 0x43));
                     }
                 }
             }
@@ -114,19 +107,16 @@ void OSeagull::Tick() {
     D_80165908 = 0;
 }
 
-void OSeagull::Draw(Camera* camera) { // render_object_seagulls
-    s32 var_s1;
-    //for (i = 0; i < NUM_SEAGULLS; i++) {
-        var_s1 = indexObjectList2[_idx];
-        //! @todo: Quick hack to let seagull work in actor system. Should be cameraId not camera->playerId
-        //if (func_8008A364(var_s1, camera->playerId, 0x5555U, 0x000005DC) < 0x9C401 && CVarGetInteger("gNoCulling", 0) == 0) {
-            D_80165908 = 1;
-            _toggle = true;
-        //}
-        //if (is_obj_flag_status_active(var_s1, VISIBLE) != 0) {
-            OSeagull::func_800552BC(var_s1);
-        //}
-    //}
+void OSeagull::Draw(s32 cameraId) { // render_object_seagulls
+    s32 objectIndex = indexObjectList2[_idx];
+
+    if (func_8008A364(objectIndex, cameraId, 0x5555U, 0x000005DC) < 0x9C401 && CVarGetInteger("gNoCulling", 0) == 0) {
+        D_80165908 = 1;
+        _toggle = true;
+    }
+    if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
+        OSeagull::func_800552BC(objectIndex);
+    }
 }
 
 void OSeagull::func_800552BC(s32 objectIndex) {
@@ -155,11 +145,11 @@ void OSeagull::func_8008275C(s32 objectIndex) {
         case 2:
             func_8008B78C(objectIndex);
             vec3f_copy(gObjectList[objectIndex].unk_01C, gObjectList[objectIndex].pos);
-            func_8000D940(SpawnPos, (s16*) &gObjectList[objectIndex].unk_0C6,
+            func_8000D940(gObjectList[objectIndex].origin_pos, (s16*) &gObjectList[objectIndex].unk_0C6,
                           gObjectList[objectIndex].unk_034, 0.0f, 0);
-            Offset[0] *= 2.0;
-            Offset[1] *= 2.5;
-            Offset[2] *= 2.0;
+            gObjectList[objectIndex].offset[0] *= 2.0;
+            gObjectList[objectIndex].offset[1] *= 2.5;
+            gObjectList[objectIndex].offset[2] *= 2.0;
             object_calculate_new_pos_offset(objectIndex);
             gObjectList[objectIndex].direction_angle[1] =
                 get_angle_between_two_vectors(gObjectList[objectIndex].unk_01C, gObjectList[objectIndex].pos);
@@ -169,31 +159,26 @@ void OSeagull::func_8008275C(s32 objectIndex) {
 }
 
 void OSeagull::func_8008241C(s32 objectIndex, s32 arg1) {
-    UNUSED s16 stackPadding0;
+    s16 randZ;
+    s16 randX;
+    s16 randY;
 
     gObjectList[objectIndex].unk_0D8 = 1;
     gObjectList[objectIndex].model = (Gfx*) d_course_koopa_troopa_beach_unk4;
     gObjectList[objectIndex].vertex = (Vtx*) d_course_koopa_troopa_beach_unk_data5;
     gObjectList[objectIndex].sizeScaling = 0.2f;
     gObjectList[objectIndex].unk_0DD = 1;
-    // if (gGamestate == CREDITS_SEQUENCE) {
-    //     set_obj_origin_pos(objectIndex, randX + -360.0, randY + 60.0, randZ + -1300.0);
-    // } else if (gObjectList[objectIndex].unk_0D5 != 0) {
-    //     set_obj_origin_pos(objectIndex, (randX + 328.0) * xOrientation, randY + 20.0, randZ + 2541.0);
-    // } else {
-    //     set_obj_origin_pos(objectIndex, (randX + -985.0) * xOrientation, randY + 15.0, randZ + 1200.0);
-    // }
+    randX = random_int(0x00C8) + -100.0;
+    randY = random_int(0x0014);
+    randZ = random_int(0x00C8) + -100.0;
+
+    set_obj_origin_pos(objectIndex, (randX + _pos[0]) * xOrientation, randY + _pos[1], randZ + _pos[2]);
     set_obj_direction_angle(objectIndex, 0U, 0U, 0U);
     gObjectList[objectIndex].unk_034 = 1.0f;
     func_80086EF0(objectIndex);
-    //gObjectList[objectIndex].spline = D_800E633C[arg1 % 4];
-    spline = D_800E633C[arg1 % 4];
-    //set_object_flag(objectIndex, 0x800);
-    //object_next_state(objectIndex);
-    _status |= 0x800;
-    _timer = 0;
-    _status &= ~0x2000;
-    _state++;
+    gObjectList[objectIndex].spline = D_800E633C[arg1 % 4];
+    set_object_flag(objectIndex, 0x00000800);
+    object_next_state(objectIndex);
 }
 
 

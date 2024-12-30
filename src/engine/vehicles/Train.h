@@ -11,6 +11,10 @@ extern "C" {
 
 class AVehicle; // Forward declare
 
+/**
+ * Note that you can only remove the tender if there are no carriages
+ * @arg waypoint initial waypoint to spawn at.
+ */
 class ATrain : public AVehicle {
     public:
 
@@ -35,7 +39,15 @@ class ATrain : public AVehicle {
     int16_t AnotherSmokeTimer = 0;
     int16_t SmokeTimer = 0;
 
-    explicit ATrain(size_t idx, ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint);
+    explicit ATrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint);
+
+    ~ATrain() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
 
     virtual void Spawn() override;
     virtual void BeginPlay() override;
@@ -44,4 +56,7 @@ class ATrain : public AVehicle {
     virtual void Collision(s32 playerId, Player* player) override;
     s32 AddSmoke(s32 trainIndex, Vec3f pos, f32 velocity);
     void SyncComponents(TrainCarStuff* trainCar, s16 orientationY);
+
+private:
+    static size_t _count;
 };
