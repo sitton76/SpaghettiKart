@@ -16,7 +16,7 @@ extern "C" {
 #include "camera.h"
 }
 
-
+//! @todo unk_0D5 needs to be a struct variable probably. What does it do? Behaviour?
 class OSeagull : public OObject {
 public:
     explicit OSeagull(Vec3f pos);
