@@ -551,25 +551,21 @@ void render_object(u32 arg0) {
 }
 
 void render_object_p1(void) {
-
     gDPSetTexturePersp(gDisplayListHead++, G_TP_PERSP);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[0]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
 
-    CourseManager_DrawBombKarts(PLAYER_ONE);
-    //render_bomb_karts_wrap(PLAYER_ONE);
-    if (gGamestate == ENDING) {
-        //func_80055F48(PLAYER_ONE);
-        //func_80056160(PLAYER_ONE);
-        //func_8005217C(PLAYER_ONE);
-        //func_80054BE8(PLAYER_ONE);
-        return;
-    }
-    if (!gDemoMode) {
-        render_lakitu(PLAYER_ONE);
-    }
+    CourseManager_DrawBombKarts(PLAYER_ONE); // render_bomb_karts_wrap(PLAYER_ONE);
+
+    // if (gGamestate == ENDING) {
+    //     //func_80055F48(PLAYER_ONE);
+    //     //func_80056160(PLAYER_ONE);
+    //     //func_8005217C(PLAYER_ONE);
+    //     //func_80054BE8(PLAYER_ONE);
+    //     return;
+    // }
     render_object_for_player(PLAYER_ONE);
 }
 
@@ -582,9 +578,6 @@ void render_object_p2(void) {
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
     CourseManager_DrawBombKarts(PLAYER_TWO);
     //render_bomb_karts_wrap(PLAYER_TWO);
-    if (!gDemoMode) {
-        render_lakitu(PLAYER_TWO);
-    }
     render_object_for_player(PLAYER_TWO);
 }
 
@@ -596,9 +589,6 @@ void render_object_p3(void) {
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
     CourseManager_DrawBombKarts(PLAYER_THREE);
     //render_bomb_karts_wrap(PLAYER_THREE);
-    if (!gDemoMode) {
-        render_lakitu(PLAYER_THREE);
-    }
     render_object_for_player(PLAYER_THREE);
 }
 
@@ -612,7 +602,7 @@ void render_object_p4(void) {
     CourseManager_DrawBombKarts(PLAYER_FOUR);
     //render_bomb_karts_wrap(PLAYER_FOUR);
     if ((!gDemoMode) && (gPlayerCountSelection1 == 4)) {
-        render_lakitu(PLAYER_FOUR);
+        //render_lakitu(PLAYER_FOUR);
     }
     render_object_for_player(PLAYER_FOUR);
 }
@@ -699,14 +689,8 @@ void render_player_snow_effect_four(void) {
 }
 
 void render_object_for_player(s32 cameraId) {
-
     CourseManager_DrawObjects(cameraId);
-
-    // CourseManager_RenderCourseObjects(cameraId);
-    // CourseManager_TrainSmokeDraw(cameraId);
-    // CourseManager_DrawThwomps(cameraId);
-    // CourseManager_DrawPenguins(cameraId);
-    // CourseManager_DrawSeagulls(cameraId);
+    CM_DrawParticles(cameraId);
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -805,7 +789,7 @@ void render_object_for_player(s32 cameraId) {
     }
 }
 
-void render_snowing_effect(s32 arg0) {
+void render_snowing_effect(s32 playerId) {
     if (GetCourse() == GetFrappeSnowland()) {
         if (gGamestate != 9) {
             if ((D_8015F894 == 0) && (gPlayerCountSelection1 == 1)) {
@@ -814,8 +798,9 @@ void render_snowing_effect(s32 arg0) {
         } else {
             render_object_snowflakes_particles();
         }
-    } else if (GetCourse() == GetSherbetLand()) {
-        render_ice_block(arg0);
+    }
+    if (CourseManager_GetProps()->LakituTowType == 1) {
+        render_ice_block(playerId);
     }
 }
 
@@ -1253,7 +1238,7 @@ void func_8005995C(void) {
 void func_80059A88(s32 playerId) {
     func_80059820(playerId);
     if (!gDemoMode) {
-        update_object_lakitu(playerId);
+        //update_object_lakitu(playerId); // Moved to CourseManager_TickObjects60fps
         func_8007BB9C(playerId);
     }
 }
@@ -1270,7 +1255,7 @@ void func_80059AC8(void) {
         }
         switch (gScreenModeSelection) {
             case SCREEN_MODE_1P:
-                if (gGamestate != 9) {
+                if (gGamestate != CREDITS_SEQUENCE) {
                     func_80059A88(PLAYER_ONE);
                     if (gModeSelection == TIME_TRIALS) {
                         func_8005995C();
@@ -1294,8 +1279,8 @@ void func_80059AC8(void) {
                 func_80059A88(PLAYER_FOUR);
                 break;
         }
-        CourseManager_TickThwomps(); // func_8005A71C();
 
+        CourseManager_TickObjects60fps();
     }
 }
 
@@ -1328,7 +1313,7 @@ void func_80059D00(void) {
                     func_80059820(PLAYER_ONE);
                     func_8005B914();
                     if (!gDemoMode) {
-                        func_8007AA44(0);
+                        //func_8007AA44(0);
                     }
                     func_80078C70(0);
                     if (playerHUD[PLAYER_ONE].raceCompleteBool == 0) {
@@ -1348,14 +1333,14 @@ void func_80059D00(void) {
                 func_80059820(PLAYER_ONE);
                 func_8005D0FC(PLAYER_ONE);
                 if (!gDemoMode) {
-                    func_8007AA44(0);
+                    //func_8007AA44(0);
                 }
                 func_80078C70(1);
                 func_8005D1F4(0);
                 func_80059820(PLAYER_TWO);
                 func_8005D0FC(PLAYER_TWO);
                 if (!gDemoMode) {
-                    func_8007AA44(1);
+                    //func_8007AA44(1);
                 }
                 func_80078C70(2);
                 func_8005D1F4(1);
@@ -1366,14 +1351,14 @@ void func_80059D00(void) {
                 func_80059820(PLAYER_ONE);
                 func_8005D0FC(PLAYER_ONE);
                 if (!gDemoMode) {
-                    func_8007AA44(0);
+                    //func_8007AA44(0);
                 }
                 func_80078C70(3);
                 func_8005D1F4(0);
                 func_80059820(PLAYER_TWO);
                 func_8005D0FC(PLAYER_TWO);
                 if (!gDemoMode) {
-                    func_8007AA44(1);
+                    //func_8007AA44(1);
                 }
                 func_80078C70(4);
                 func_8005D1F4(1);
@@ -1386,32 +1371,34 @@ void func_80059D00(void) {
                 func_80059820(PLAYER_ONE);
                 func_8005D0FC(PLAYER_ONE);
                 if (!gDemoMode) {
-                    func_8007AA44(0);
+                    //func_8007AA44(0);
                 }
                 func_8005D1F4(0);
                 func_80059820(PLAYER_TWO);
                 func_8005D0FC(PLAYER_TWO);
                 if (!gDemoMode) {
-                    func_8007AA44(1);
+                    //func_8007AA44(1);
                 }
                 func_8005D1F4(1);
                 func_80059820(PLAYER_THREE);
                 func_8005D0FC(PLAYER_THREE);
                 if (!gDemoMode) {
-                    func_8007AA44(2);
+                    //func_8007AA44(2);
                 }
                 func_8005D1F4(2);
                 if (gPlayerCountSelection1 == 4) {
                     func_80059820(PLAYER_FOUR);
                     func_8005D0FC(PLAYER_FOUR);
                     if ((!gDemoMode) && (gPlayerCountSelection1 == 4)) {
-                        func_8007AA44(3);
+                        //func_8007AA44(3);
                     }
                     func_8005D1F4(3);
                 }
                 break;
         }
+        update_object();
         CourseManager_TickObjects();
+        CM_TickParticles();
         func_800744CC();
     }
 }
@@ -1427,12 +1414,15 @@ void func_8005A070(void) {
             //func_80086604();
             //func_80086D80();
             //update_cheep_cheep(1);
-            func_80077640();
+            //func_80077640();
+            CourseManager_TickObjects();
+            CM_TickParticles();
         } else if (gGamestate == CREDITS_SEQUENCE) {
             func_80059820(PLAYER_ONE);
             func_80078C70(0);
             CourseManager_TickObjects();
-        } else {
+            CM_TickParticles();
+        } else { // normal gameplay
             func_80059D00();
         }
     }
@@ -1579,10 +1569,7 @@ void func_8005A71C(void) {
 
 void update_object(void) {
 
-    // CourseManager_UpdateCourseObjects();
-    // CourseManager_TrainSmokeTick();
-    // CourseManager_TickPenguins();
-    // CourseManager_TickSeagulls();
+    CourseManager_UpdateCourseObjects();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -1721,7 +1708,7 @@ void func_8005AAF0(void) {
 
 void func_8005AB20(void) {
     if ((gModeSelection == GRAND_PRIX) && (gPlayerCountSelection1 == 1)) {
-        func_8005AA6C(0x14);
+        func_8005AA6C(20);
     }
 }
 
@@ -2396,7 +2383,7 @@ void func_8005B914(void) {
     } else if (D_8018D1CC < 0xC8) {
         func_8005B7A0();
     }
-    if ((D_8018D1CC != 0) && (D_8018D1CC >= 0x14) && (D_8018D1CC < 0x1E)) {
+    if ((D_8018D1CC != 0) && (D_8018D1CC >= 20) && (D_8018D1CC < 0x1E)) {
         for (i = 0; i < 4; i++) {
             f32_step_towards(&D_8018D028[i], D_8018D0C8[i], D_8018D078[i]);
             if (D_8018D028[i] == D_8018D0C8[i]) {
@@ -2604,7 +2591,7 @@ void func_8005CB60(s32 playerId, s32 lapCount) {
                 case 0:             /* switch 1 */
                     break;
                 case 1: /* switch 1 */
-                    func_80079084(playerId);
+                    CM_ActivateSecondLapLakitu(playerId); // func_80079084(playerId);
                     func_800C9060(playerId, SOUND_ARG_LOAD(0x19, 0x00, 0xF0, 0x15));
                     if ((GetCourse() == GetLuigiRaceway()) && (D_80165898 == 0) &&
                         (gModeSelection != (s32) TIME_TRIALS)) {
@@ -2612,7 +2599,7 @@ void func_8005CB60(s32 playerId, s32 lapCount) {
                     }
                     break;
                 case 2: /* switch 1 */
-                    func_800790B4(playerId);
+                    CM_ActivateFinalLapLakitu(playerId); // func_800790B4(playerId);
                     break;
                 case 3: /* switch 1 */
                     if ((D_8018D114 == 0) || (D_8018D114 == 1)) {
@@ -2637,7 +2624,7 @@ void func_8005CB60(s32 playerId, s32 lapCount) {
                     playerHUD[playerId].totalTimeX = 0x0320;
                     D_8016587C = (s32) 1;
                     if (D_8018D20C == 0) {
-                        func_80079054(playerId);
+                        CM_ActivateFinishLakitu(playerId); // func_80079054(playerId);
                         D_8018D20C = 1;
                         if (gPlayerCount == (s8) 1) {
                             D_8018D1CC = 0x00000064;

@@ -31,8 +31,11 @@
 
 #include "engine/courses/PodiumCeremony.h"
 
+#include "engine/GarbageCollector.h"
+
 #include "engine/TrainCrossing.h"
-#include "src/engine/objects/BombKart.h"
+#include "engine/objects/BombKart.h"
+#include "engine/objects/Lakitu.h"
 
 #include "Smoke.h"
 
@@ -298,8 +301,6 @@ extern "C" {
         gWorldInstance.ClearVehicles();
         gWorldInstance.Crossings.clear();
         gWorldInstance.BombKarts.clear();
-        gWorldInstance.Thwomps.clear();
-        gWorldInstance.Penguins.clear();
     }
 
     void CourseManager_CrossingTrigger() {
@@ -365,7 +366,7 @@ extern "C" {
         }
     }
 
-    void CourseManager_DrawActor(Camera* camera, struct Actor* actor) {
+    void CourseManager_DrawActors(Camera* camera, struct Actor* actor) {
         AActor* a = gWorldInstance.ConvertActorToAActor(actor);
         if (a->IsMod()) {
             a->Draw(camera);
@@ -384,9 +385,29 @@ extern "C" {
         }
     }
 
+    // A couple objects such as lakitu are ticked inside of process_game_tick which support 60fps.
+    // This is a fallback to support that.
+    void CourseManager_TickObjects60fps() {
+        if (gWorldInstance.CurrentCourse) {
+            gWorldInstance.TickObjects60fps();
+        }
+    }
+
     void CourseManager_DrawObjects(s32 cameraId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.DrawObjects(cameraId);
+        }
+    }
+
+    void CM_TickParticles() {
+        if (gWorldInstance.CurrentCourse) {
+            gWorldInstance.TickParticles();
+        }
+    }
+
+    void CM_DrawParticles(s32 cameraId) {
+        if (gWorldInstance.CurrentCourse) {
+            gWorldInstance.DrawParticles(cameraId);
         }
     }
 
@@ -503,59 +524,48 @@ extern "C" {
         }
     }
 
-    extern Vec3su D_80165834;
-    void CourseManager_TickThwomps() {
-        // TickLights
-        if (gWorldInstance.Thwomps.size()) {
-            D_80165834[0] += 0x100;
-            D_80165834[1] += 0x200;
+    /**
+     * This should only be ran once per course, otherwise animation/timings might become sped up.
+     */
+    void CM_SpawnStarterLakitu() {
+        if ((gDemoMode) || (gGamestate == CREDITS_SEQUENCE)) {
+            return;
         }
 
-        for (auto& thwomp : gWorldInstance.Thwomps) {
-            if (thwomp) {
-                thwomp->Tick();
-            }
+        for (size_t i = 0; i < gPlayerCountSelection1; i++) {
+            OLakitu* lakitu = new OLakitu(i, OLakitu::LakituType::STARTER);
+            gWorldInstance.Lakitus[i] = lakitu;
+            gWorldInstance.AddObject(lakitu);
         }
     }
 
-    void CourseManager_DrawThwomps(s32 cameraId) {
-        for (auto& thwomp : gWorldInstance.Thwomps) {
-            if (thwomp) {
-                thwomp->Draw(cameraId);
-            }
+    // Checkered flag lakitu
+    void CM_ActivateFinishLakitu(s32 playerId) {
+        if ((gDemoMode) || (gGamestate == CREDITS_SEQUENCE)) {
+            return;
         }
+        gWorldInstance.Lakitus[playerId]->Activate(OLakitu::LakituType::FINISH);
     }
 
-    void CourseManager_TickPenguins(void) {
-        for (auto& penguin : gWorldInstance.Penguins) {
-            if (penguin) {
-                penguin->Tick();
-            }
+    void CM_ActivateSecondLapLakitu(s32 playerId) {
+        if ((gDemoMode) || (gGamestate == CREDITS_SEQUENCE)) {
+            return;
         }
+        gWorldInstance.Lakitus[playerId]->Activate(OLakitu::LakituType::SECOND_LAP);
     }
 
-    void CourseManager_DrawSeagulls(s32 cameraId) {
-        for (auto& seagull : gWorldInstance.Seagulls) {
-            if (seagull) {
-               // seagull->Draw(cameraId);
-            }
+    void CM_ActivateFinalLapLakitu(s32 playerId) {
+        if ((gDemoMode) || (gGamestate == CREDITS_SEQUENCE)) {
+            return;
         }
+        gWorldInstance.Lakitus[playerId]->Activate(OLakitu::LakituType::FINAL_LAP);
     }
 
-    void CourseManager_TickSeagulls(void) {
-        for (auto& seagull : gWorldInstance.Seagulls) {
-            if (seagull) {
-                //seagull->Tick();
-            }
+    void CM_ActivateReverseLakitu(s32 playerId) {
+        if ((gDemoMode) || (gGamestate == CREDITS_SEQUENCE)) {
+            return;
         }
-    }
-
-    void CourseManager_DrawPenguins(s32 cameraId) {
-        for (auto& penguin : gWorldInstance.Penguins) {
-            if (penguin) {
-                penguin->Draw(cameraId);
-            }
-        }
+        gWorldInstance.Lakitus[playerId]->Activate(OLakitu::LakituType::REVERSE);
     }
 
     size_t GetCupCursorPosition() {
@@ -614,8 +624,14 @@ extern "C" {
         }
     }
     
-    void m_ClearActors(void) {
+    /**
+     * Clean up actors and other game objects.
+     */
+    void CM_CleanWorld(void) {
         gWorldInstance.Actors.clear();
+        gWorldInstance.Objects.clear();
+        gWorldInstance.Emitters.clear();
+        gWorldInstance.Lakitus.clear();
     }
 
     struct Actor* m_AddBaseActor(void) {
@@ -736,6 +752,11 @@ extern "C" {
 
     void* GetBattleCup(void) {
         return gBattleCup;
+    }
+
+    // End of frame cleanup of actors, objects, etc.
+    void CM_RunGarbageCollector(void) {
+        RunGarbageCollector();
     }
 }
 

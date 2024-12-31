@@ -44,16 +44,19 @@ f32 D_800E594C[][2] = {
 
 s16 D_800E597C[] = { 0x0000, 0x0000, 0x4000, 0x8000, 0x8000, 0xc000 };
 
-OThwomp::OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize) {
-    if (i >= 32) {
-        printf("MAX THWOMPS REACHED (32), skipping\n");
-        return;
-    }
-    _idx = i;
+size_t OThwomp::_count = 0;
+
+OThwomp::OThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize) {
+    _idx = _count;
     _faceDirection = direction;
     _boundingBoxSize = boundingBoxSize;
     State = (States)behaviour;
-    s32 objectId = indexObjectList1[i];
+    
+    if (_idx >= 32) {
+        printf("MAX THWOMPS REACHED (32), skipping\n");
+        return;
+    }
+    s32 objectId = indexObjectList1[_idx];
     init_object(objectId, 0);
     gObjectList[objectId].origin_pos[0] = x * xOrientation;
     gObjectList[objectId].origin_pos[2] = z;
@@ -66,9 +69,11 @@ OThwomp::OThwomp(s32 i, s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s
     }
 
     gObjectList[objectId].sizeScaling = scale;
+
+    _count++;
 }
 
-void OThwomp::Tick() { // func_80081210
+void OThwomp::Tick60fps() { // func_80081210
     Player* player;
     s32 objectIndex;
     s32 var_s2_3;
@@ -79,6 +84,13 @@ void OThwomp::Tick() { // func_80081210
     OThwomp::SetVisibility(objectIndex);
 
     OThwomp::func_8007F8D8();
+
+    // Tick lights only one time. This gets applied to every thwomp.
+    // Running this more than once per frame will result in the lights moving at a high rate of speed.
+    if (_idx == 0) {
+        D_80165834[0] += 0x100;
+        D_80165834[1] += 0x200;
+    }
 
     objectIndex = indexObjectList1[_idx];
     if (gObjectList[objectIndex].state != 0) {

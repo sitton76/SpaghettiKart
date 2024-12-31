@@ -4,7 +4,7 @@
 #include <vector>
 #include "Object.h"
 
-#include "engine/World.h"
+#include "World.h"
 
 extern "C" {
 #include "macros.h"
@@ -14,14 +14,14 @@ extern "C" {
 #include "common_structs.h"
 #include "objects.h"
 #include "camera.h"
+#include "some_data.h"
 }
 
-//! @todo unk_0D5 needs to be a struct variable probably. What does it do? Behaviour?
-class OSeagull : public OObject {
+class OFlagpole : public OObject {
 public:
-    explicit OSeagull(Vec3f pos);
+    explicit OFlagpole(const FVector& pos, s16 direction);
 
-    ~OSeagull() {
+    ~OFlagpole() {
         _count--;
     }
 
@@ -32,16 +32,14 @@ public:
     virtual void Tick() override;
     virtual void Draw(s32 cameraId) override;
 
-    void func_800552BC(s32 objectIndex);
+    void func_80055164(s32 objectIndex);
+    void func_80082F1C(s32 objectIndex);
+    void func_80083018(s32 objectIndex);
+    void func_80083060(s32 objectIndex);
 
-    void func_8008275C(s32 objectIndex);
-    void func_8008241C(s32 objectIndex, s32 arg1);
-    void func_80082714(s32 objectIndex, s32 arg1);
 private:
-    Vec3f _pos;
+    FVector _pos;
+    s16 _direction;
     static size_t _count;
-    s32 _idx;
-    bool _toggle;
-
-    SplineData *spline;
+    size_t _idx;
 };

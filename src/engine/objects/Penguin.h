@@ -2,6 +2,8 @@
 
 #include <libultraship.h>
 #include <vector>
+#include "engine/World.h"
+#include "engine/objects/Object.h"
 
 extern "C" {
 #include "macros.h"
@@ -13,7 +15,7 @@ extern "C" {
 #include "course_offsets.h"
 }
 
-class OPenguin {
+class OPenguin : public OObject {
 public:
     enum PenguinType : uint32_t {
         CHICK,
@@ -36,10 +38,19 @@ public:
     f32 Diameter = 0.0f; // Waddle in a circle around the spawn point at this diameter.
     uint16_t MirrorModeAngleOffset;
 
-    explicit OPenguin(s32 i, Vec3f pos, u16 direction, PenguinType type, Behaviour behaviour);
+    explicit OPenguin(Vec3f pos, u16 direction, PenguinType type, Behaviour behaviour);
 
-    void Tick();
-    void Draw(s32 playerId);
+    ~OPenguin() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
+
+
+    virtual void Tick() override;
+    virtual void Draw(s32 cameraId) override;
 private:
     void Behaviours(s32 objectIndex, s32 arg1);
     void EmperorPenguin(s32 objectIndex);
@@ -51,7 +62,7 @@ private:
     void OtherPenguin(s32 objectIndex);
     void InitOtherPenguin(s32 objectIndex);
 
-
+    static size_t _count;
     s32 _idx;
     PenguinType _type;
     Behaviour _bhv;

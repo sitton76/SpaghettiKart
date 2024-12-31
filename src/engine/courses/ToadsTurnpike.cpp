@@ -8,6 +8,10 @@
 #include "engine/objects/BombKart.h"
 #include "assets/toads_turnpike_data.h"
 #include "engine/actors/AFinishline.h"
+#include "engine/vehicles/Bus.h"
+#include "engine/vehicles/Car.h"
+#include "engine/vehicles/Truck.h"
+#include "engine/vehicles/TankerTruck.h"
 
 #include "engine/vehicles/Utils.h"
 
@@ -257,22 +261,22 @@ void ToadsTurnpike::SpawnVehicles() {
     
     for (size_t i = 0; i < _numTrucks; i++) {
         waypoint = CalculateWaypointDistribution(i, _numTrucks, gWaypointCountByPathIndex[0], 0);
-        gWorldInstance.AddTruck(a, b,  &D_80164550[0][0], waypoint);
+        gWorldInstance.AddVehicle(new ATruck(a, b,  &D_80164550[0][0], waypoint));
     }
 
     for (size_t i = 0; i < _numBuses; i++) {
         waypoint = CalculateWaypointDistribution(i, _numBuses, gWaypointCountByPathIndex[0], 75);
-        gWorldInstance.AddBus(a, b,&D_80164550[0][0], waypoint);
+        gWorldInstance.AddVehicle(new ABus(a, b,&D_80164550[0][0], waypoint));
     }
 
     for (size_t i = 0; i < _numTankerTrucks; i++) {
         waypoint = CalculateWaypointDistribution(i, _numTankerTrucks, gWaypointCountByPathIndex[0], 50);
-        gWorldInstance.AddTankerTruck(a, b, &D_80164550[0][0], waypoint);
+        gWorldInstance.AddVehicle(new ATankerTruck(a, b, &D_80164550[0][0], waypoint));
     }
 
     for (size_t i = 0; i < _numCars; i++) {
         waypoint = CalculateWaypointDistribution(i, _numCars, gWaypointCountByPathIndex[0], 25);
-        gWorldInstance.AddCar(a, b, &D_80164550[0][0], waypoint);
+        gWorldInstance.AddVehicle(new ACar(a, b, &D_80164550[0][0], waypoint));
     }
 
     if (gModeSelection == VERSUS) {

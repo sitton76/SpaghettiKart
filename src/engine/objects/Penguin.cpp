@@ -33,16 +33,19 @@ extern "C" {
 extern s8 gPlayerCount;
 }
 
-OPenguin::OPenguin(s32 i, Vec3f pos, u16 direction, PenguinType type, Behaviour behaviour) {
-    if (i >= 32) {
-        printf("MAX penguin REACHED (32), skipping\n");
-        return;
-    }
-    _idx = i;
+size_t OPenguin::_count = 0;
+
+OPenguin::OPenguin(Vec3f pos, u16 direction, PenguinType type, Behaviour behaviour) {
+    _idx = _count;
     _type = type;
     _bhv = behaviour;
 
-    s32 objectIndex = indexObjectList1[i];
+    if (_idx >= 32) {
+        printf("MAX penguin REACHED (32), skipping\n");
+        return;
+    }
+
+    s32 objectIndex = indexObjectList1[_idx];
     init_object(objectIndex, 0);
 
     Object *object = &gObjectList[objectIndex];
@@ -73,6 +76,7 @@ OPenguin::OPenguin(s32 i, Vec3f pos, u16 direction, PenguinType type, Behaviour 
             break;
     }
 
+    _count++;
 }
 
 void OPenguin::Tick(void) {

@@ -7,6 +7,7 @@
 #include "World.h"
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
+#include "engine/objects/Thwomp.h"
 #include "bowsers_castle_data.h"
 
 extern "C" {
@@ -153,6 +154,47 @@ void BowsersCastle::SpawnActors() {
 
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_bowsers_castle_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_bowsers_castle_item_box_spawns));
+
+    switch (gCCSelection) {
+        case CC_100:
+        case CC_EXTRA:
+            gWorldInstance.AddObject(new OThwomp(0x0320, 0xf92a, 0xC000, 1.0f, 1, 0));
+            gWorldInstance.AddObject(new OThwomp(0x044c, 0xf92a, 0xC000, 1.0f, 1, 1));
+            gWorldInstance.AddObject(new OThwomp(0x02bc, 0xf95c, 0xC000, 1.0f, 2, 0));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf8f8, 0xC000, 1.0f, 2, 1));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf5ba, 0xC000, 1.0f, 3, 0));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf592, 0xC000, 1.0f, 3, 1));
+            gWorldInstance.AddObject(new OThwomp(0x091a, 0xf5bf, 0xC000, 1.0f, 4, 0));
+            gWorldInstance.AddObject(new OThwomp(0x091a, 0xf597, 0xC000, 1.0f, 4, 1));
+            gWorldInstance.AddObject(new OThwomp(0x0596, 0xf92f, 0xC000, 1.5f, 6, 0));
+            gWorldInstance.AddObject(new OThwomp(0x082a, 0xf9f2, 0x4000, 1.0f, 5, 0));
+            gWorldInstance.AddObject(new OThwomp(0x073a, 0xf9f2, 0x4000, 1.0f, 5, 1));
+            break;
+        case CC_50:
+            gWorldInstance.AddObject(new OThwomp(0x3B6, 0xF92A, 0xC000, 1.0f, 1, 0));
+            gWorldInstance.AddObject(new OThwomp(0x0352, 0xf95c, 0xC000, 1.0f, 2, 0));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf5ba, 0xC000, 1.0f, 3, 0));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf592, 0xC000, 1.0f, 3, 1));
+            gWorldInstance.AddObject(new OThwomp(0x091a, 0xf5b0, 0xC000, 1.0f, 4, 0));
+            gWorldInstance.AddObject(new OThwomp(0x0596, 0xf92f, 0xC000, 1.5f, 6, 0));
+            gWorldInstance.AddObject(new OThwomp(0x082a, 0xf9f2, 0x4000, 1.0f, 5, 0));
+            gWorldInstance.AddObject(new OThwomp(0x073a, 0xf9f2, 0x4000, 1.0f, 5, 1));
+            break;
+        case CC_150:
+            gWorldInstance.AddObject(new OThwomp(0x0320, 0xf92a, 0xC000, 1.0f, 1, 0));
+            gWorldInstance.AddObject(new OThwomp(0x044c, 0xf92a, 0xC000, 1.0f, 1, 1));
+            gWorldInstance.AddObject(new OThwomp(0x02bc, 0xf95c, 0xC000, 1.0f, 2, 0));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf8f8, 0xC000, 1.0f, 2, 1));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf5ba, 0xC000, 1.0f, 3, 0));
+            gWorldInstance.AddObject(new OThwomp(0x04b0, 0xf592, 0xC000, 1.0f, 3, 1));
+            gWorldInstance.AddObject(new OThwomp(0x091a, 0xf5c9, 0xC000, 1.0f, 4, 0));
+            gWorldInstance.AddObject(new OThwomp(0x091a, 0xf5ab, 0xC000, 1.0f, 4, 1));
+            gWorldInstance.AddObject(new OThwomp(0x091a, 0xf58d, 0xC000, 1.0f, 4, 2));
+            gWorldInstance.AddObject(new OThwomp(0x0596, 0xf92f, 0xC000, 1.5f, 6, 0));
+            gWorldInstance.AddObject(new OThwomp(0x082a, 0xf9f2, 0x4000, 1.0f, 5, 0));
+            gWorldInstance.AddObject(new OThwomp(0x073a, 0xf9f2, 0x4000, 1.0f, 5, 1));
+            break;
+    }
 }
 
 void BowsersCastle::SpawnVehicles() {
@@ -180,47 +222,6 @@ void BowsersCastle::MinimapSettings() {
 void BowsersCastle::InitCourseObjects() {
     size_t objectId;
     size_t i;
-
-    switch (gCCSelection) {
-        case CC_100:
-        case CC_EXTRA:
-            gWorldInstance.AddThwomp(0x0320, 0xf92a, 0xC000, 1.0f, 1, 0);
-            gWorldInstance.AddThwomp(0x044c, 0xf92a, 0xC000, 1.0f, 1, 1);
-            gWorldInstance.AddThwomp(0x02bc, 0xf95c, 0xC000, 1.0f, 2, 0);
-            gWorldInstance.AddThwomp(0x04b0, 0xf8f8, 0xC000, 1.0f, 2, 1);
-            gWorldInstance.AddThwomp(0x04b0, 0xf5ba, 0xC000, 1.0f, 3, 0);
-            gWorldInstance.AddThwomp(0x04b0, 0xf592, 0xC000, 1.0f, 3, 1);
-            gWorldInstance.AddThwomp(0x091a, 0xf5bf, 0xC000, 1.0f, 4, 0);
-            gWorldInstance.AddThwomp(0x091a, 0xf597, 0xC000, 1.0f, 4, 1);
-            gWorldInstance.AddThwomp(0x0596, 0xf92f, 0xC000, 1.5f, 6, 0);
-            gWorldInstance.AddThwomp(0x082a, 0xf9f2, 0x4000, 1.0f, 5, 0);
-            gWorldInstance.AddThwomp(0x073a, 0xf9f2, 0x4000, 1.0f, 5, 1);
-            break;
-        case CC_50:
-            gWorldInstance.AddThwomp(0x3B6, 0xF92A, 0xC000, 1.0f, 1, 0);
-            gWorldInstance.AddThwomp(0x0352, 0xf95c, 0xC000, 1.0f, 2, 0);
-            gWorldInstance.AddThwomp(0x04b0, 0xf5ba, 0xC000, 1.0f, 3, 0);
-            gWorldInstance.AddThwomp(0x04b0, 0xf592, 0xC000, 1.0f, 3, 1);
-            gWorldInstance.AddThwomp(0x091a, 0xf5b0, 0xC000, 1.0f, 4, 0);
-            gWorldInstance.AddThwomp(0x0596, 0xf92f, 0xC000, 1.5f, 6, 0);
-            gWorldInstance.AddThwomp(0x082a, 0xf9f2, 0x4000, 1.0f, 5, 0);
-            gWorldInstance.AddThwomp(0x073a, 0xf9f2, 0x4000, 1.0f, 5, 1);
-            break;
-        case CC_150:
-            gWorldInstance.AddThwomp(0x0320, 0xf92a, 0xC000, 1.0f, 1, 0);
-            gWorldInstance.AddThwomp(0x044c, 0xf92a, 0xC000, 1.0f, 1, 1);
-            gWorldInstance.AddThwomp(0x02bc, 0xf95c, 0xC000, 1.0f, 2, 0);
-            gWorldInstance.AddThwomp(0x04b0, 0xf8f8, 0xC000, 1.0f, 2, 1);
-            gWorldInstance.AddThwomp(0x04b0, 0xf5ba, 0xC000, 1.0f, 3, 0);
-            gWorldInstance.AddThwomp(0x04b0, 0xf592, 0xC000, 1.0f, 3, 1);
-            gWorldInstance.AddThwomp(0x091a, 0xf5c9, 0xC000, 1.0f, 4, 0);
-            gWorldInstance.AddThwomp(0x091a, 0xf5ab, 0xC000, 1.0f, 4, 1);
-            gWorldInstance.AddThwomp(0x091a, 0xf58d, 0xC000, 1.0f, 4, 2);
-            gWorldInstance.AddThwomp(0x0596, 0xf92f, 0xC000, 1.5f, 6, 0);
-            gWorldInstance.AddThwomp(0x082a, 0xf9f2, 0x4000, 1.0f, 5, 0);
-            gWorldInstance.AddThwomp(0x073a, 0xf9f2, 0x4000, 1.0f, 5, 1);
-            break;
-    }
 
     // Handle the big statue's fire breath
     objectId = indexObjectList2[0];

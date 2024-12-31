@@ -17,8 +17,8 @@ static const char* sSnowmanHeadList[] = { d_course_frappe_snowland_snowman_head 
 size_t OSnowman::_count = 0;
 
 OSnowman::OSnowman(const FVector& pos) {
-    _pos = pos;
     _idx = _count;
+    _pos = pos;
 
     s32 objectId = indexObjectList2[_idx];
     init_object(objectId, 0);
@@ -106,7 +106,7 @@ void OSnowman::func_800836F0(Vec3f pos) {
         if (objectIndex == NULL_OBJECT_ID) {
             break;
         }
-        func_80083538(objectIndex, pos, i, D_8018D3BC);
+        OSnowman::func_80083538(objectIndex, pos, i, D_8018D3BC);
     }
 }
 
@@ -297,4 +297,47 @@ void OSnowman::func_80083B0C(s32 objectIndex) {
     gObjectList[objectIndex].boundingBoxSize = 2;
     gObjectList[objectIndex].unk_034 = 1.5f;
     set_object_flag(objectIndex, 0x04000210);
+}
+
+
+void OSnowman::func_80083538(s32 objectIndex, Vec3f arg1, s32 arg2, s32 arg3) {
+    Object* object;
+
+    init_object(objectIndex, 0);
+    object = &gObjectList[objectIndex];
+    object->activeTexture = (const char*)d_course_frappe_snowland_snow;
+    object->textureList = (const char**)d_course_frappe_snowland_snow;
+    object->activeTLUT = d_course_frappe_snowland_snow_tlut;
+    object->tlutList = (u8*)d_course_frappe_snowland_snow_tlut;
+    object->sizeScaling = random_int(0x0064U);
+    object->sizeScaling = (object->sizeScaling * 0.001) + 0.05;
+    object->velocity[1] = random_int(0x0014U);
+    object->velocity[1] = (object->velocity[1] * 0.5) + 2.6;
+    object->unk_034 = random_int(0x000AU);
+    object->unk_034 = (object->unk_034 * 0.1) + 4.5;
+    object->direction_angle[1] = (arg2 << 0x10) / arg3;
+    object->origin_pos[0] = arg1[0];
+    object->origin_pos[1] = arg1[1];
+    object->origin_pos[2] = arg1[2];
+    object->primAlpha = random_int(0x4000U) + 0x1000;
+}
+
+void OSnowman::func_8008379C(s32 objectIndex) {
+    switch (gObjectList[objectIndex].state) {
+        case 0:
+            break;
+        case 1:
+            if (func_80087E08(objectIndex, gObjectList[objectIndex].velocity[1], 0.74f,
+                              gObjectList[objectIndex].unk_034, gObjectList[objectIndex].direction_angle[1],
+                              0x00000064) != 0) {
+                object_next_state(objectIndex);
+            }
+            break;
+        case 2:
+            func_80086F60(objectIndex);
+            func_80072428(objectIndex);
+            break;
+    }
+    object_calculate_new_pos_offset(objectIndex);
+    gObjectList[objectIndex].orientation[2] += gObjectList[objectIndex].primAlpha;
 }

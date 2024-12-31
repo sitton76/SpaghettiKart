@@ -9,6 +9,7 @@
 #include "engine/objects/BombKart.h"
 #include "assets/dks_jungle_parkway_data.h"
 
+#include "engine/vehicles/Boat.h"
 #include "engine/vehicles/Utils.h"
 
 extern "C" {
@@ -278,7 +279,7 @@ void DKJungle::SpawnVehicles() {
 
     // The original game only ran vehicle logic every second frame.
     // Thus the speed gets divided by two to set speed to match properly
-    gWorldInstance.AddBoat((0.6666666f)/4, 0);
+    gWorldInstance.AddVehicle(new ABoat((0.6666666f)/4, 0));
 
     if (gModeSelection == VERSUS) {
         Vec3f pos = {0, 0, 0};

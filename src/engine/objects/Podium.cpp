@@ -27,24 +27,26 @@ extern Vec3s D_800E634C[];
 
 OPodium::OPodium(const FVector& pos) {
 
+    _pos = pos;
+
     for (size_t i = 0; i < NUM_PODIUMS; i++) {
         s32 objectIndex = indexObjectList1[i];
-        init_object(objectIndex, 0);
-        set_obj_origin_pos(objectIndex, pos.x - 1.5, pos.y, pos.z);
+        //init_object(objectIndex, 0);
+        //set_obj_origin_pos(objectIndex, pos.x - 1.5, pos.y, pos.z);
     }
 }
 
 void OPodium::Tick() { // func_80086604
     s32 objectIndex;
-    // if ((D_8016347C != 0) && (D_802874D8.unk1D < 3)) {
-    //     if (D_801658C6 == 0) {
-    //         for (size_t i = 0; i < 3; i++) {
-    //             objectIndex = indexObjectList1[i];
-    //             init_object(objectIndex, 0);
-    //         }
-    //         D_801658C6 = 1;
-    //     }
-    // }
+    if ((D_8016347C != 0) && (D_802874D8.unk1D < 3)) {
+        if (D_801658C6 == 0) {
+            for (size_t i = 0; i < 3; i++) {
+                objectIndex = indexObjectList1[i];
+                init_object(objectIndex, 0);
+            }
+            D_801658C6 = 1;
+        }
+    }
     for (size_t i = 0; i != NUM_PODIUMS; i++) {
         objectIndex = indexObjectList1[i];
         if (gObjectList[objectIndex].state != 0) {
@@ -58,9 +60,9 @@ void OPodium::Draw(s32 cameraId) { // func_80055F48
     for (size_t i = 0; i < NUM_PODIUMS; i++) {
         Object* object;
 
-        object = &gObjectList[i];
+        object = &gObjectList[indexObjectList1[i]];
         if (object->state >= 2) {
-            func_80043220(object->pos, object->direction_angle, object->sizeScaling, object->model);
+            //func_80043220(object->pos, object->direction_angle, object->sizeScaling, object->model);
             rsp_set_matrix_transformation(object->pos, object->direction_angle, object->sizeScaling);
             gSPDisplayList(gDisplayListHead++, (Gfx*)D_0D0077A0);
             gSPDisplayList(gDisplayListHead++, object->model);
@@ -86,7 +88,7 @@ void OPodium::func_8008629C(s32 objectIndex, s32 arg1) {
             break;
     }
     gObjectList[objectIndex].sizeScaling = 1.0f;
-    //set_obj_origin_pos(objectIndex, D_800E634C[0][0] - 1.5, D_800E634C[0][1], D_800E634C[0][2]);
+    set_obj_origin_pos(objectIndex, _pos.x - 1.5, _pos.y, _pos.z);
     set_obj_origin_offset(objectIndex, 0.0f, -10.0f, 0.0f);
     set_obj_direction_angle(objectIndex, 0U, 0xF8E4U, 0U);
     gObjectList[objectIndex].unk_048 = 0;

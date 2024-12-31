@@ -16,12 +16,14 @@ extern "C" {
 extern s8 gPlayerCount;
 }
 
-ATruck::ATruck(size_t idx, f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
+size_t ATruck::_count = 0;
+
+ATruck::ATruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
     TrackWaypoint* temp_v0;
     u16 waypointOffset;
     s32 numWaypoints = gWaypointCountByPathIndex[0];
 
-    Index = idx;
+    Index = _count;
 
     waypointOffset = waypoint;
     temp_v0 = &path[waypointOffset];
@@ -54,6 +56,8 @@ ATruck::ATruck(size_t idx, f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t
             func_8000D940(Position, (s16*) &WaypointIndex, Speed, SomeMultiplierTheSequel, 0);
     }
     D_801631C8 = 10;
+
+    _count++;
 }
 
 void ATruck::Spawn() {

@@ -3,14 +3,7 @@
 #include "Cup.h"
 #include "courses/Course.h"
 #include "vehicles/Vehicle.h"
-#include "vehicles/Train.h"
-#include "vehicles/Boat.h"
-#include "vehicles/Truck.h"
-#include "vehicles/Bus.h"
-#include "vehicles/TankerTruck.h"
-#include "vehicles/Car.h"
 #include "objects/BombKart.h"
-#include "objects/Penguin.h"
 #include "TrainCrossing.h"
 #include <memory>
 #include "objects/Object.h"
@@ -40,53 +33,13 @@ void World::SetCourseFromCup() {
     CurrentCourse = CurrentCup->GetCourse();
 }
 
-// Required for spawning vehicles in divisions across path points
-static size_t trains;
-static size_t trucks;
-static size_t busses;
-static size_t tankerTrucks;
-static size_t cars;
-static size_t boats;
-static size_t thwomps;
-static size_t penguins;
-static size_t seagulls;
 
-/**
- * Note that you can only remove the tender if there are no carriages
- * @arg waypoint initial waypoint to spawn at.
- */
-void World::AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ATrain>(trains, tender, numCarriages, speed, waypoint));
-    trains++;
-}
-
-void World::AddBoat(f32 speed, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ABoat>(boats, speed, waypoint));
-    boats++;
-}
-
-void World::AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ATruck>(trucks, speedA, speedB, path, waypoint));
-    trucks++;
-}
-
-void World::AddBus(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ABus>(busses, speedA, speedB, path, waypoint));
-    busses++;
-}
-
-void World::AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ATankerTruck>(tankerTrucks, speedA, speedB, path, waypoint));
-    tankerTrucks++;
-}
-
-void World::AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint) {
-    Vehicles.push_back(std::make_unique<ACar>(cars, speedA, speedB, path, waypoint));
-    cars++;
+AVehicle* World::AddVehicle(AVehicle* vehicle) {
+    Vehicles.push_back(vehicle);
+    return Vehicles.back();
 }
 
 void World::ClearVehicles(void) {
-    trains = trucks = busses = tankerTrucks = cars = boats = thwomps = 0;
     Vehicles.clear();
 }
 
@@ -97,28 +50,7 @@ TrainCrossing* World::AddCrossing(Vec3f position, u32 waypointMin, u32 waypointM
 }
 
 void World::AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C) {
-    BombKarts.push_back(std::make_unique<OBombKart>(pos, waypoint, waypointIndex, state, unk_3C));
-}
-
-void World::AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize) {
-    Thwomps.push_back(
-        std::make_unique<OThwomp>(thwomps, x, z, direction, scale, behaviour, primAlpha, boundingBoxSize));
-    thwomps++;
-    gNumActiveThwomps = thwomps;
-}
-
-std::shared_ptr<OPenguin> World::AddPenguin(Vec3f pos, u16 direction, OPenguin::PenguinType type, OPenguin::Behaviour behaviour) {
-    auto penguin = std::make_shared<OPenguin>(penguins, pos, direction, type, behaviour);
-    Penguins.push_back(penguin);
-    penguins++;
-    return penguin;
-}
-
-std::shared_ptr<OSeagull> World::AddSeagull(Vec3f pos) {
-    auto seagull = std::make_shared<OSeagull>(seagulls, pos);
-    Seagulls.push_back(seagull);
-    seagulls++;
-    return seagull;
+    BombKarts.push_back(new OBombKart(pos, waypoint, waypointIndex, state, unk_3C));
 }
 
 u32 World::GetCupIndex() {
@@ -235,13 +167,6 @@ void World::TickActors() {
     }
 }
 
-void RemoveExpiredActors() {
-    // Actors.erase(
-    //    std::remove_if(Actors.begin(), Actors.end(),
-    //                    [](const std::unique_ptr<AActor>& actor) { return actor->uuid == 0; }),
-    //    Actors.end());
-}
-
 OObject* World::AddObject(OObject* object) {
     Objects.push_back(object);
     return Objects.back();
@@ -249,8 +174,21 @@ OObject* World::AddObject(OObject* object) {
 
 void World::TickObjects() {
     for (const auto& object : Objects) {
-       object->Tick();
+        object->Tick();
     }
+}
+
+// Some objects such as lakitu are ticked in process_game_tick.
+// This is a fallback to support those objects. Probably don't use this.
+void World::TickObjects60fps() {
+    for (const auto& object : Objects) {
+       object->Tick60fps();
+    }
+}
+
+ParticleEmitter* World::AddEmitter(ParticleEmitter* emitter) {
+    Emitters.push_back(emitter);
+    return Emitters.back();
 }
 
 void World::DrawObjects(s32 cameraId) {
@@ -259,15 +197,16 @@ void World::DrawObjects(s32 cameraId) {
     }
 }
 
-void World::ExpiredObjects() {
-    //this->Objects.erase(
-    //    std::remove_if(this->Objects.begin(), this->Objects.end(),
-    //                    [](const std::unique_ptr<OObject>& object) { return object->uuid == 0; }), // Example condition
-    //    this->Objects.end());
+void World::TickParticles() {
+    for (const auto& emitter : Emitters) {
+       emitter->Tick();
+    }
 }
 
-void World::DestroyObjects() {
-
+void World::DrawParticles(s32 cameraId) {
+    for (const auto& emitter : Emitters) {
+       emitter->Draw(cameraId);
+    }
 }
 
 Object* World::GetObjectByIndex(size_t index) {

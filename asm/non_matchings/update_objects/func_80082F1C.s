@@ -28,8 +28,8 @@ glabel func_80082F1C
 /* 083B68 80082F68 0C01C922 */  jal   object_next_state
 /* 083B6C 80082F6C E4440000 */   swc1  $f4, ($v0)
 /* 083B70 80082F70 8FA9002C */  lw    $t1, 0x2c($sp)
-/* 083B74 80082F74 3C0B800E */  lui   $t3, %hi(D_800E5DF4) # $t3, 0x800e
-/* 083B78 80082F78 256B5DF4 */  addiu $t3, %lo(D_800E5DF4) # addiu $t3, $t3, 0x5df4
+/* 083B74 80082F74 3C0B800E */  lui   $t3, %hi(gFlagpoleSpawns) # $t3, 0x800e
+/* 083B78 80082F78 256B5DF4 */  addiu $t3, %lo(gFlagpoleSpawns) # addiu $t3, $t3, 0x5df4
 /* 083B7C 80082F7C 000950C0 */  sll   $t2, $t1, 3
 /* 083B80 80082F80 014B1021 */  addu  $v0, $t2, $t3
 /* 083B84 80082F84 844C0000 */  lh    $t4, ($v0)

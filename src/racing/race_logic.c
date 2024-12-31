@@ -904,7 +904,7 @@ void func_8028FCBC(void) {
                 D_800DC510 = 2;
                 D_800DC5B0 = 0;
                 D_800DC5B8 = 1;
-                func_80078F64();
+                CM_SpawnStarterLakitu(); // func_80078F64();
                 if ((gModeSelection == TIME_TRIALS) && (D_80162DD6 == 0)) {
                     phi_v0_4 = 0x1;
                     for (i = 0; i < gCurrentCourseId; i++) {

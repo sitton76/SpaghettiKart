@@ -10,6 +10,7 @@
 #include "kalimari_desert_data.h"
 #include "engine/vehicles/Utils.h"
 
+#include "engine/vehicles/Train.h"
 #include "engine/vehicles/Vehicle.h"
 
 extern "C" {
@@ -237,7 +238,7 @@ void KalimariDesert::SpawnVehicles() {
             }
         }
 
-        gWorldInstance.AddTrain(_tender, _numCarriages, 2.5f, waypoint);
+        gWorldInstance.AddVehicle(new ATrain(_tender, _numCarriages, 2.5f, waypoint));
     }
 
     if (gModeSelection == VERSUS) {

@@ -24,7 +24,18 @@ OTrophy::OTrophy(const FVector& pos, TrophyType trophy, Behaviour bhv) {
     _spawnPos.y += 16.0f; // Adjust the height so the trophy sits on the surface when positioned to 0,0,0
     _bhv = bhv;
 
-    init_object(objectIndex, 0);
+    if (bhv == OTrophy::Behaviour::PODIUM_CEREMONY) {
+        _toggleVisibility = &D_801658CE;
+    } else {
+        int8_t toggle = 1;
+        _toggleVisibility = &toggle;
+        _isMod = true;
+    }
+
+    // This allows spawning for mods
+    if (*_toggleVisibility == true) {
+        init_object(objectIndex, 0);
+    }
 
     switch (trophy) {
         case TrophyType::GOLD:
@@ -45,13 +56,6 @@ OTrophy::OTrophy(const FVector& pos, TrophyType trophy, Behaviour bhv) {
         case TrophyType::BRONZE_150:
             gObjectList[objectIndex].model = (Gfx*)gold_trophy_dl15;
             break;
-    }
-
-    if (OTrophy::Behaviour::PODIUM_CEREMONY) {
-        _toggleVisibility = &D_801658CE;
-    } else {
-        int8_t toggle = 1;
-        _toggleVisibility = &toggle;
     }
 
     // Set defaults for modded behaviours
@@ -81,15 +85,15 @@ void OTrophy::Tick() { // func_80086D80
     s32 objectIndex = indexObjectList1[3];
     s32 var_s0;
 
-    // if ((D_801658CE != 0) && (D_801658DC == 0)) {
-    //     temp_s2 = indexObjectList1[3];
-    //     init_object(temp_s2, 0);
-    //     D_801658DC = 1;
-    // }
+    // Fallback for podium ceremony where the trophy is not spawned until it is needed
+    if ((*_toggleVisibility == true) && (D_801658DC == 0) && (_isMod == false)) {
+        init_object(objectIndex, 0);
+        D_801658DC = 1;
+    }
 
     switch(_bhv) {
         case OTrophy::Behaviour::PODIUM_CEREMONY:
-            if (gObjectList[objectIndex].state != 0) {
+            if (gObjectList[objectIndex].state != 0 && (*_toggleVisibility == true)) {
                 OTrophy::func_80086C14(objectIndex);
                 OTrophy::func_80086940(objectIndex);
                 if (D_801658F4 != 0) {
@@ -197,8 +201,7 @@ void OTrophy::Draw(s32 cameraId) {
     Mat4 someMatrix1;
     Mat4 someMatrix2;
     Object* object;
-
-    if (_toggleVisibility) {
+    if (*_toggleVisibility == true) {
         object = &gObjectList[listIndex];
         if (object->state >= 2) {
             gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[0]),
@@ -331,4 +334,61 @@ void OTrophy::func_80086C6C(s32 objectIndex) {
         sp24[1] = gObjectList[objectIndex].pos[1] - 2.0;
     }
     func_800773D8(sp24, (s32) D_801658F4);
+}
+
+void OTrophy::func_800773D8(f32* arg0, s32 arg1) {
+    s32 objectIndex = add_unused_obj_index(gObjectParticle3, &gNextFreeObjectParticle3, gObjectParticle3_SIZE);
+    if (objectIndex != NULL_OBJECT_ID) {
+        func_80077138(objectIndex, arg0, arg1);
+    }
+}
+
+void OTrophy::func_80077138(s32 objectIndex, Vec3f arg1, s32 arg2) {
+    s8 temp_v0_3;
+    Vec3s sp30;
+
+    init_object(objectIndex, arg2);
+    gObjectList[objectIndex].unk_0D5 = 0x0C;
+    gObjectList[objectIndex].sizeScaling = 0.05f;
+    set_obj_origin_pos(objectIndex, arg1[0], arg1[1], arg1[2]);
+    set_obj_orientation(objectIndex, 0U, 0U, 0U);
+    set_obj_origin_offset(objectIndex, 0.0f, 0.0f, 0.0f);
+    switch (arg2) {
+        case 0:
+            gObjectList[objectIndex].velocity[1] = -1.0f;
+            gObjectList[objectIndex].unk_034 = (f32) ((random_int(0x004BU) * 0.01) + 0.25);
+            gObjectList[objectIndex].direction_angle[1] = random_int(0x0040U) << 0xA;
+            func_8008751C(objectIndex);
+            gObjectList[objectIndex].unk_084[5] = 0x001E;
+            break;
+        case 1:
+            gObjectList[objectIndex].velocity[1] = 1.5f;
+            gObjectList[objectIndex].unk_034 = (f32) ((random_int(0x0064U) * 0.01) + 0.5);
+            gObjectList[objectIndex].direction_angle[1] = random_int(0x0040U) << 0xA;
+            func_8008751C(objectIndex);
+            gObjectList[objectIndex].unk_084[5] = 0x0032;
+            break;
+    }
+    temp_v0_3 = random_int(0x000CU);
+    if (temp_v0_3 < 9) {
+        func_8005C674(temp_v0_3, &sp30[2], &sp30[1], sp30);
+        gObjectList[objectIndex].unk_048 = 0;
+        gObjectList[objectIndex].unk_084[0] = sp30[2];
+        gObjectList[objectIndex].unk_084[1] = sp30[1];
+        gObjectList[objectIndex].unk_084[2] = sp30[0];
+    } else {
+        temp_v0_3 = random_int(3U);
+        func_8005C6B4(temp_v0_3, &sp30[2], &sp30[1], sp30);
+        gObjectList[objectIndex].unk_084[0] = sp30[2];
+        gObjectList[objectIndex].unk_084[1] = sp30[1];
+        gObjectList[objectIndex].unk_084[2] = sp30[0];
+        gObjectList[objectIndex].unk_084[4] = temp_v0_3;
+        gObjectList[objectIndex].unk_048 = 1;
+    }
+    gObjectList[objectIndex].primAlpha = 0x00FF;
+    gObjectList[objectIndex].unk_084[3] = random_int(0x0800U) + 0x400;
+    if ((gObjectList[objectIndex].direction_angle[1] < 0x3000) ||
+        (gObjectList[objectIndex].direction_angle[1] >= 0xB001)) {
+        gObjectList[objectIndex].unk_084[3] = -gObjectList[objectIndex].unk_084[3];
+    }
 }

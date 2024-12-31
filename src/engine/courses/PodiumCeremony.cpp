@@ -165,11 +165,11 @@ void PodiumCeremony::SpawnActors() {
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_item_box_spawns));
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_piranha_plant_spawn));
 
-    gWorldInstance.AddObject(new OCheepCheep(FVector((f32)0xf37e, (f32)0x0013, (f32)0xfe22), OCheepCheep::CheepType::PODIUM_CEREMONY, IPathSpan(0, 0)));
-    gWorldInstance.AddObject(new OPodium(FVector((f32)0xf37e, (f32)0x0013, (f32)0xfe22)));
+    gWorldInstance.AddObject(new OCheepCheep(FVector((f32)-3202, (f32)19, (f32)-478), OCheepCheep::CheepType::PODIUM_CEREMONY, IPathSpan(0, 0)));
+    gWorldInstance.AddObject(new OPodium(FVector((f32)-3202, (f32)19, (f32)-478)));
     
-    FVector pos = {0,0,0};
-    pos.y = 90.0f;
+    FVector pos = {0, 90.0f, 0};
+
     OTrophy::TrophyType type = OTrophy::TrophyType::BRONZE;
     switch(D_802874D8.unk1D) {
         case 0: // Bronze

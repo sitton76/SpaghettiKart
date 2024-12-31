@@ -1361,26 +1361,6 @@ void func_8004A7AC(s32 objectIndex, f32 arg1) {
     }
 }
 
-void func_8004A870(s32 objectIndex, f32 arg1) {
-    Mat4 mtx;
-    Object* object;
-
-    if ((is_obj_flag_status_active(objectIndex, 0x00000020) != 0) &&
-        (is_obj_flag_status_active(objectIndex, 0x00800000) != 0)) {
-        object = &gObjectList[objectIndex];
-        D_80183E50[0] = object->pos[0];
-        D_80183E50[1] = object->surfaceHeight + 0.8;
-        D_80183E50[2] = object->pos[2];
-        set_transform_matrix(mtx, object->unk_01C, D_80183E50, 0U, arg1);
-        // convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], mtx);
-        // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
-        //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-
-        AddHudMatrix(mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-        gSPDisplayList(gDisplayListHead++, D_0D007B98);
-    }
-}
-
 void func_8004A9B8(f32 arg0) {
     rsp_set_matrix_transl_rot_scale(D_80183E50, D_80183E70, arg0);
     gSPDisplayList(gDisplayListHead++, D_0D007C10);
@@ -3501,7 +3481,7 @@ void func_8005285C(s32 arg0) {
     func_80043500(D_80183E40, D_80183E80, 0.02f, d_course_sherbet_land_dl_ice_block);
 }
 
-void func_800528EC(s32 arg0) {
+void func_800528EC(s32 playerId) {
     s32 var_s3;
     s32 objectIndex;
     Object* object;
@@ -3517,7 +3497,7 @@ void func_800528EC(s32 arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BOTH);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_LIGHTING | G_SHADING_SMOOTH);
-    load_texture_block_ia16_nomirror(d_course_sherbet_land_ice, 0x00000020, 0x00000020);
+    load_texture_block_ia16_nomirror(d_course_sherbet_land_ice, 32, 32);
     if (gPlayerCountSelection1 < 3) {
         for (var_s3 = 0; var_s3 < gObjectParticle2_SIZE; var_s3++) {
             objectIndex = gObjectParticle2[var_s3];
@@ -3535,7 +3515,7 @@ void func_800528EC(s32 arg0) {
             objectIndex = gObjectParticle2[var_s3];
             if (objectIndex != NULL_OBJECT_ID) {
                 object = &gObjectList[objectIndex];
-                if ((object->state > 0) && (arg0 == object->unk_084[7]) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
+                if ((object->state > 0) && (playerId == object->unk_084[7]) && (gMatrixHudCount <= MTX_HUD_POOL_SIZE_MAX)) {
                     rsp_set_matrix_transformation(object->pos, D_80183E80, object->sizeScaling);
                     gSPVertex(gDisplayListHead++, D_0D005BD0, 3, 0);
                     gSPDisplayList(gDisplayListHead++, D_0D006930);
@@ -3548,8 +3528,7 @@ void func_800528EC(s32 arg0) {
     gSPTexture(gDisplayListHead++, 0x0001, 0x0001, 0, G_TX_RENDERTILE, G_OFF);
 }
 
-void render_ice_block(s32 arg0) {
-    s32 playerId;
+void render_ice_block(s32 playerId) {
     s32 objectIndex;
     // Lights1 D_800E4620l = *(Lights1 *) LOAD_ASSET(D_800E4620);
     D_800E4620.l[0].l.dir[0] = D_80165840[0];
@@ -3557,15 +3536,15 @@ void render_ice_block(s32 arg0) {
     D_800E4620.l[0].l.dir[2] = D_80165840[2];
     gSPLight(gDisplayListHead++, &D_800E4620.l[0], LIGHT_1);
     gSPLight(gDisplayListHead++, &D_800E4620.a, LIGHT_2);
-    for (playerId = 0; playerId < gPlayerCountSelection1; playerId++) {
-        objectIndex = gIndexLakituList[playerId];
+    for (size_t i = 0; i < gPlayerCountSelection1; i++) {
+        objectIndex = gIndexLakituList[i];
         if (objectIndex) {}
         if (func_80072320(objectIndex, 4) != false) {
-            func_8005285C(playerId);
+            func_8005285C(i);
         }
         func_80072320(objectIndex, 0x00000010);
     }
-    func_800528EC(arg0);
+    func_800528EC(playerId);
 }
 
 void func_80052D70(s32 playerId) {
@@ -3595,47 +3574,6 @@ void func_80052E30(UNUSED s32 arg0) {
     if (gPlayerCount == 1) {
         for (var_s0 = 0; var_s0 < gPlayerCountSelection1; var_s0++) {
             func_80052D70(var_s0);
-        }
-    }
-}
-
-void render_lakitu(s32 cameraId) {
-    UNUSED s32 stackPadding;
-    Camera* camera;
-    f32 var_f0;
-    f32 var_f2;
-    s32 objectIndex;
-    Object* object;
-
-    objectIndex = gIndexLakituList[cameraId];
-    camera = &camera1[cameraId];
-    if (is_obj_flag_status_active(objectIndex, 0x00000010) != 0) {
-        object = &gObjectList[objectIndex];
-        object->orientation[0] = 0;
-        object->orientation[1] = func_800418AC(object->pos[0], object->pos[2], camera->pos);
-        object->orientation[2] = 0x8000;
-        if (func_80072354(objectIndex, 2) != 0) {
-            draw_2d_texture_at(object->pos, object->orientation, object->sizeScaling, (u8*) object->activeTLUT,
-                               object->activeTexture, object->vertex, (s32) object->textureWidth,
-                               (s32) object->textureHeight, (s32) object->textureWidth,
-                               (s32) object->textureHeight / 2);
-        } else {
-            func_800485C4(object->pos, object->orientation, object->sizeScaling, (s32) object->primAlpha,
-                          (u8*) object->activeTLUT, object->activeTexture, object->vertex, (s32) object->textureWidth,
-                          (s32) object->textureHeight, (s32) object->textureWidth, (s32) object->textureHeight / 2);
-        }
-        if (gScreenModeSelection == SCREEN_MODE_1P) {
-            var_f0 = object->pos[0] - D_8018CF14->pos[0];
-            var_f2 = object->pos[2] - D_8018CF14->pos[2];
-            if (var_f0 < 0.0f) {
-                var_f0 = -var_f0;
-            }
-            if (var_f2 < 0.0f) {
-                var_f2 = -var_f2;
-            }
-            if ((var_f0 + var_f2) <= 200.0) {
-                func_8004A630(&D_8018C0B0[cameraId], object->pos, 0.35f);
-            }
         }
     }
 }
@@ -3878,105 +3816,6 @@ void render_object_smoke_particles(s32 cameraId) {
     }
 }
 
-void func_80054AFC(s32 objectIndex, Vec3f arg1) {
-    D_80183E80[0] = func_800418E8(gObjectList[objectIndex].pos[2], gObjectList[objectIndex].pos[1], arg1);
-    D_80183E80[1] = func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], arg1);
-    D_80183E80[2] = (u16) gObjectList[objectIndex].orientation[2];
-    func_8004B138((s32) gObjectList[objectIndex].unk_084[0], (s32) gObjectList[objectIndex].unk_084[1],
-                  (s32) gObjectList[objectIndex].unk_084[2], (s32) gObjectList[objectIndex].primAlpha);
-    rsp_set_matrix_transformation(gObjectList[objectIndex].pos, (u16*) D_80183E80,
-                                  gObjectList[objectIndex].sizeScaling);
-    gSPVertex(gDisplayListHead++, D_0D005AE0, 4, 0);
-    gSPDisplayList(gDisplayListHead++, common_rectangle_display);
-}
-
-void func_80055164(s32 objectIndex) {
-    if (gObjectList[objectIndex].state >= 2) {
-        gSPDisplayList(gDisplayListHead++, D_0D0077A0);
-        rsp_set_matrix_transformation(gObjectList[objectIndex].pos, gObjectList[objectIndex].direction_angle,
-                                      gObjectList[objectIndex].sizeScaling);
-        if (gIsGamePaused == 0) {
-            gObjectList[objectIndex].unk_0A2 = render_animated_model((Armature*) gObjectList[objectIndex].model,
-                                                                     (Animation**) gObjectList[objectIndex].vertex, 0,
-                                                                     gObjectList[objectIndex].unk_0A2);
-        } else {
-            render_animated_model((Armature*) gObjectList[objectIndex].model,
-                                  (Animation**) gObjectList[objectIndex].vertex, 0, gObjectList[objectIndex].unk_0A2);
-        }
-    }
-}
-
-void func_80055228(s32 cameraId) {
-    s32 var_s1;
-    s32 temp_s0;
-
-    for (var_s1 = 0; var_s1 < 4; var_s1++) {
-        temp_s0 = indexObjectList1[var_s1];
-        func_8008A364(temp_s0, cameraId, 0x4000U, 0x000005DC);
-        if (is_obj_flag_status_active(temp_s0, VISIBLE) != 0) {
-            func_80055164(temp_s0);
-        }
-    }
-}
-
-void func_800552BC(s32 objectIndex) {
-    if (gObjectList[objectIndex].state >= 2) {
-        rsp_set_matrix_transformation(gObjectList[objectIndex].pos, gObjectList[objectIndex].direction_angle,
-                                      gObjectList[objectIndex].sizeScaling);
-        gSPDisplayList(gDisplayListHead++, D_0D0077D0);
-        if (gIsGamePaused == 0) {
-            gObjectList[objectIndex].unk_0A2 = render_animated_model((Armature*) gObjectList[objectIndex].model,
-                                                                     (Animation**) gObjectList[objectIndex].vertex, 0,
-                                                                     gObjectList[objectIndex].unk_0A2);
-        } else {
-            render_animated_model((Armature*) gObjectList[objectIndex].model,
-                                  (Animation**) gObjectList[objectIndex].vertex, 0, gObjectList[objectIndex].unk_0A2);
-        }
-    }
-}
-
-void func_800555BC(s32 objectIndex, s32 cameraId) {
-    Camera* camera;
-
-    if (gObjectList[objectIndex].state >= 2) {
-        camera = &camera1[cameraId];
-        func_8004A870(objectIndex, 0.7f);
-        gObjectList[objectIndex].orientation[1] =
-            func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos);
-        draw_2d_texture_at(gObjectList[objectIndex].pos, gObjectList[objectIndex].orientation,
-                           gObjectList[objectIndex].sizeScaling, (u8*) gObjectList[objectIndex].activeTLUT,
-                           gObjectList[objectIndex].activeTexture, gObjectList[objectIndex].vertex, 64, 64, 64, 32);
-    }
-}
-
-void render_object_hedgehogs(s32 arg0) {
-    s32 test;
-    u32 something;
-    s32 someIndex;
-
-    for (someIndex = 0; someIndex < NUM_HEDGEHOGS; someIndex++) {
-        test = indexObjectList2[someIndex];
-        something = func_8008A364(test, arg0, 0x4000U, 0x000003E8);
-        if (CVarGetInteger("gNoCulling", 0) == 1) {
-            something = MIN(something, 0x52211U - 1);
-        }
-        if (is_obj_flag_status_active(test, VISIBLE) != 0) {
-            set_object_flag(test, 0x00200000);
-            if (something < 0x2711U) {
-                set_object_flag(test, 0x00000020);
-            } else {
-                clear_object_flag(test, 0x00000020);
-            }
-            if (something < 0x57E41U) {
-                set_object_flag(test, 0x00400000);
-            }
-            if (something < 0x52211U) {
-                func_800555BC(test, arg0);
-            }
-        }
-    }
-}
-
 UNUSED void func_800557AC() {
 }
 
@@ -4089,50 +3928,6 @@ void render_object_chain_chomps(s32 cameraId) {
         if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
             func_80055AB8(objectIndex, cameraId);
         }
-    }
-}
-
-void func_80055CCC(s32 objectIndex, s32 cameraId) {
-    UNUSED s32 pad;
-    f32 test;
-    Camera* camera;
-
-    camera = &camera1[cameraId];
-    if (gObjectList[objectIndex].state >= 2) {
-        func_8008A454(objectIndex, cameraId, 0x0000012C);
-        test = gObjectList[objectIndex].pos[1] - gObjectList[objectIndex].surfaceHeight;
-        func_8004A6EC(objectIndex, (20.0 / test) + 0.5);
-        if (is_obj_index_flag_status_inactive(objectIndex, 0x00100000) != 0) {
-            func_80043328(gObjectList[objectIndex].pos, (u16*) gObjectList[objectIndex].direction_angle,
-                          gObjectList[objectIndex].sizeScaling, d_course_luigi_raceway_dl_F960);
-            gSPDisplayList(gDisplayListHead++, d_course_luigi_raceway_dl_F650);
-        } else {
-            D_80183E80[0] = (s16) gObjectList[objectIndex].direction_angle[0];
-            D_80183E80[1] =
-                (s16) (func_800418AC(gObjectList[objectIndex].pos[0], gObjectList[objectIndex].pos[2], camera->pos) +
-                       0x8000);
-            D_80183E80[2] = (u16) gObjectList[objectIndex].direction_angle[2];
-            func_80043328(gObjectList[objectIndex].pos, D_80183E80, gObjectList[objectIndex].sizeScaling,
-                          d_course_luigi_raceway_dl_FBE0);
-            gSPDisplayList(gDisplayListHead++, d_course_luigi_raceway_dl_FA20);
-            if (gPlayerCountSelection1 == 1) {
-                gObjectList[objectIndex].direction_angle[1] = 0;
-            }
-        }
-    }
-}
-
-void render_object_hot_air_balloon(s32 arg0) {
-    s32 objectIndex;
-    objectIndex = indexObjectList1[0];
-    if (gGamestate != 9) {
-        func_8008A1D0(objectIndex, arg0, 0x000005DC, 0x00000BB8);
-        if (is_obj_flag_status_active(objectIndex, VISIBLE) != 0) {
-            func_80055CCC(objectIndex, arg0);
-        }
-    } else {
-        clear_object_flag(objectIndex, 0x00100000);
-        func_80055CCC(objectIndex, arg0);
     }
 }
 

@@ -26,8 +26,10 @@ extern "C" {
 extern s8 gPlayerCount;
 }
 
-OBombKart::OBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C) {
+size_t OBombKart::_count = 0;
 
+OBombKart::OBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C) {
+    _idx = _count;
     Vec3f _pos = {0, 0, 0};
 
     if (waypoint) { // Spawn kart on waypoint
@@ -68,6 +70,8 @@ OBombKart::OBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex,
     WheelPos[3][1] = _pos[1];
     WheelPos[3][2] = _pos[2];
     check_bounding_collision(&_Collision, 2.0f, _pos[0], _pos[1], _pos[2]);
+
+    _count++;
 }
 
 void OBombKart::Spawn() {
@@ -334,9 +338,7 @@ void OBombKart::Draw(s32 cameraId) {
     }
 
     if (GetCourse() == GetPodiumCeremony()) {
-        // This isn't functionally equivallent.
-        // Technicaly it should be if (kart[0].WaypointIndex < 16)
-        if (WaypointIndex < 16) {
+        if ((_idx == 0) && (WaypointIndex < 16)) {
             return;
         } else {
             cameraId = PLAYER_FOUR;

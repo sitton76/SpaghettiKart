@@ -89,7 +89,7 @@ void func_802818BC(void) {
     }
 }
 
-void load_ceremony_cutscene(void) {
+void setup_podium_ceremony(void) {
     Camera* camera = &cameras[0];
 
     gCurrentCourseId = COURSE_ROYAL_RACEWAY;
@@ -164,6 +164,7 @@ void load_ceremony_cutscene(void) {
     balloons_and_fireworks_init();
     init_camera_podium_ceremony();
     func_80093E60();
+    CourseManager_SpawnActors();
     D_801625F8 = (uintptr_t) gHeapEndPtr - gNextFreeMemoryAddress;
     D_801625FC = ((f32) D_801625F8 / 1000.0f);
 }

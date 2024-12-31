@@ -1214,7 +1214,7 @@ void init_actors_and_load_textures(void) {
 
     init_red_shell_texture();
     destroy_all_actors();
-    m_ClearActors();
+    CM_CleanWorld();
     spawn_course_actors();
 
     CourseManager_VehiclesSpawn();
@@ -2428,7 +2428,7 @@ void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
         }
         switch (actor->type) {
             default: // Draw custom actor
-                CourseManager_DrawActor(D_800DC5EC->camera, actor);
+                CourseManager_DrawActors(D_800DC5EC->camera, actor);
                 break;
             case ACTOR_TREE_MARIO_RACEWAY:
                 render_actor_tree_mario_raceway(camera, sBillBoardMtx, actor);

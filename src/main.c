@@ -897,6 +897,9 @@ void race_logic_loop(void) {
     FB_WriteFramebufferSliceToCPU(&gDisplayListHead, gPortFramebuffers[sRenderingFramebuffer], true);
     gDPFullSync(gDisplayListHead++);
     gSPEndDisplayList(gDisplayListHead++);
+
+    // End of frame cleanup of actors, objects, etc.
+    CM_RunGarbageCollector();
 }
 
 /**
@@ -1202,7 +1205,7 @@ void update_gamestate(void) {
         case ENDING:
             gCurrentlyLoadedCourseId = COURSE_NULL;
             init_segment_ending_sequences();
-            load_ceremony_cutscene();
+            setup_podium_ceremony();
             break;
         case CREDITS_SEQUENCE:
             gCurrentlyLoadedCourseId = COURSE_NULL;
