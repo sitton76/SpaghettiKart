@@ -73,7 +73,7 @@
 #include "src/update_objects.h"
 #include "src/code_80086E70.h"
 #include "src/code_80091440.h"
-#include "src/code_80091750.h"
+#include "src/menu_items.h"
 #include "src/code_800AF9B0.h"
 #include <assets/common_data.h>
 #include <assets/data_800E8700.h>

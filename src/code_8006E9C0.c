@@ -23,7 +23,7 @@
 #include "menus.h"
 #include <assets/other_textures.h>
 #include "render_objects.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "src/data/some_data.h"
 #include "effects.h"
 #include <assets/boo_frames.h>
@@ -117,7 +117,10 @@ void clear_object_list() {
     objectListSize = -1;
 }
 
-u8* func_8006ED94(u8* devAddr, u8* baseAddress, u32 size, u32 offset) {
+/**
+ * Dma's mario kart 64 logo and course outline textures.
+ */
+u8* dma_misc_textures(u8* devAddr, u8* baseAddress, u32 size, u32 offset) {
 #ifdef TARGET_N64
     u8** tempAddress;
     u8* address;
@@ -139,9 +142,8 @@ u8* func_8006ED94(u8* devAddr, u8* baseAddress, u32 size, u32 offset) {
     return baseAddress;
 }
 
+// Stubbed because load texture directly.
 void load_mario_kart_64_logo(void) {
-    u8* d_gTextureLogoMarioKart64 = LOAD_ASSET(gTextureLogoMarioKart64);
-    D_8018D1E0 = func_8006ED94((u8*) d_gTextureLogoMarioKart64, (u8*) D_8018D9B0, 0x79E1, 0x20000);
 }
 
 // Some kind of initalization for the Item Window part of the HUD
@@ -175,7 +177,7 @@ void func_8006EF60(void) {
     s16 huh;
     u8* wut;
 
-    wut = D_8018D9B4 + 0xFFFF0000;
+    wut = gMenuCompressedBuffer + 0xFFFF0000;
     // clang-format off
     // God forgive me for my sins...
     huh = 0x14; if (0) {} for (i = 0; i < huh; i++) { D_8018D248[i] = CourseManager_GetProps()->MinimapTexture; wut += ResourceGetTexSizeByName(CourseManager_GetProps()->MinimapTexture); }

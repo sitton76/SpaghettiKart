@@ -11,7 +11,7 @@
 #include <assets/common_data.h>
 #include "render_player.h"
 #include "code_80057C60.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "actors.h"
 #include "render_courses.h"
 #include "math_util.h"
@@ -131,7 +131,7 @@ void func_802A38B4(void) {
     gGamestate = 255;
     gIsInQuitToMenuTransition = 0;
     gQuitToMenuTransitionCounter = 0;
-    D_800E86A4 = 1;
+    gFadeModeSelection = 1;
 
     switch (gGotoMode) {
         case START_MENU_FROM_QUIT:

@@ -27,7 +27,7 @@
 #include <common_structs.h>
 #include "main.h"
 #include "menus.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "audio/external.h"
 #include "ending/podium_ceremony_actors.h"
 #include "spawn_players.h"
@@ -3553,7 +3553,7 @@ void func_8000F628(void) {
             }
         }
     }
-    if ((D_8018EE08 == 1) && (GetCourse() != GetPodiumCeremony())) {
+    if ((gDemoUseController == 1) && (GetCourse() != GetPodiumCeremony())) {
         for (i = 0; i < NUM_PLAYERS; i++) {
             D_80163330[i] = 0;
         }
@@ -3605,7 +3605,7 @@ void func_8000F628(void) {
     D_8016348C = 0;
     D_801634EC = 0;
     func_8001AB00();
-    if (D_8018EE08 == 1) {
+    if (gDemoUseController == 1) {
         if (gDemoMode == 1) {
 
             for (i = 0; i < NUM_PLAYERS; i++) {

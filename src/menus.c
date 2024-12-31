@@ -12,7 +12,7 @@
 #include "audio/external.h"
 #include "code_800029B0.h"
 #include "code_80005FD0.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "code_800AF9B0.h"
 #include "save.h"
 #include "staff_ghosts.h"
@@ -22,14 +22,14 @@
 #include "port/Game.h"
 
 /** BSS **/
-s32 D_8018EDC0;
-f32 D_8018EDC4;
-f32 D_8018EDC8;
-f32 D_8018EDCC;
-f32 D_8018EDD0;
-f32 D_8018EDD4;
-f32 D_8018EDD8;
-f32 D_8018EDDC;
+s32 gIntroModelZEye;
+f32 gIntroModelScale;
+f32 gIntroModelRotX;
+f32 gIntroModelRotY;
+f32 gIntroModelRotZ;
+f32 gIntroModelPosX;
+f32 gIntroModelPosY;
+f32 gIntroModelPosZ;
 s32 D_8018EDE0;
 s8 gCharacterGridSelections[4]; // map from player id to current grid position
 s8 D_8018EDE8[4];               // map player id to isCharSelected on CSS
@@ -52,7 +52,7 @@ s8 D_8018EDFB;
 s8 D_8018EDFC;
 s32 gMenuTimingCounter;
 s32 gMenuDelayTimer;
-s8 D_8018EE08;
+s8 gDemoUseController;
 s8 gCupSelection;
 s8 D_8018EE0A;
 s8 gCourseIndexInCup;
@@ -61,7 +61,7 @@ struct_8018EE10_entry D_8018EE10[2];
 
 /** Data **/
 s32 gMenuSelection = LOGO_INTRO_MENU;
-s32 D_800E86A4 = 0;
+s32 gFadeModeSelection = 0;
 s8 gCharacterSelections[4] = { MARIO, LUIGI, YOSHI, TOAD };
 
 // gGameModeRowSelectionForNumPlayers is (D_800E86AC - 1)
@@ -147,7 +147,7 @@ const union GameModePack gSoundMenuPack = { { SOUND_STEREO, SOUND_HEADPHONES, SO
 void update_menus(void) {
     u16 controllerIdx;
 
-    if (D_800E86A4 == 0) {
+    if (gFadeModeSelection == 0) {
         for (controllerIdx = 0; controllerIdx < 4; controllerIdx++) {
 
             // Debug, quick jump through menus using the start button.
@@ -215,7 +215,7 @@ void update_menus(void) {
 // navigation of the options menu
 void options_menu_act(struct Controller* controller, u16 arg1) {
     u16 btnAndStick; // sp3E
-    struct_8018D9E0_entry* sp38;
+    MenuItem* sp38;
     s32 res;
     struct_8018EE10_entry* sp30;
     bool sp2C; // cursorWasMoved or communicateStoredAction
@@ -228,8 +228,8 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
     }
 
     if (!func_800B4520()) {
-        sp38 = find_8018D9E0_entry_dupe(0xF0);
-        sp30 = (struct_8018EE10_entry*) D_8018D9C0;
+        sp38 = find_menu_items_dupe(0xF0);
+        sp30 = (struct_8018EE10_entry*) gSomeDLBuffer;
         switch (D_8018EDEC) {
             case 0x15:
             case 0x16:
@@ -239,35 +239,35 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                 if ((btnAndStick & D_JPAD) && (D_8018EDEC < 0x18)) {
                     D_8018EDEC += 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = 1;
+                    sp38->subState = 1;
                     sp2C = true;
                 }
                 if ((btnAndStick & U_JPAD) && (D_8018EDEC >= 0x16)) {
                     D_8018EDEC -= 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
                     sp2C = true;
-                    sp38->unk8 = -1;
+                    sp38->subState = -1;
                 }
-                if (sp2C && gSoundMode != sp38->cursor) {
+                if (sp2C && gSoundMode != sp38->state) {
                     gSaveData.main.saveInfo.soundMode = gSoundMode;
                     write_save_data_grand_prix_points_and_sound_mode();
                     update_save_data_backup();
-                    sp38->cursor = gSoundMode;
+                    sp38->state = gSoundMode;
                 }
                 if (btnAndStick & B_BUTTON) {
                     func_8009E280();
                     play_sound2(SOUND_MENU_GO_BACK);
-                    if (gSoundMode != sp38->cursor) {
+                    if (gSoundMode != sp38->state) {
                         gSaveData.main.saveInfo.soundMode = gSoundMode;
                         write_save_data_grand_prix_points_and_sound_mode();
                         update_save_data_backup();
-                        sp38->cursor = gSoundMode;
+                        sp38->state = gSoundMode;
                     }
                     return;
                 }
@@ -307,7 +307,7 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                                     switch (sp2C) {
                                         case PFS_INVALID_DATA:
                                             D_8018EDEC = 0x46;
-                                            sp38->cursor = 0;
+                                            sp38->state = 0;
                                             play_sound2(SOUND_MENU_SELECT);
                                             break;
                                         case PFS_NO_ERROR:
@@ -378,18 +378,18 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                 if ((btnAndStick & D_JPAD) && (D_8018EDEC < 0x1F)) {
                     D_8018EDEC += 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = 1;
+                    sp38->subState = 1;
                 }
                 if ((btnAndStick & U_JPAD) && (D_8018EDEC >= 0x1F)) {
                     D_8018EDEC -= 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = -1;
+                    sp38->subState = -1;
                 }
                 if (btnAndStick & B_BUTTON) {
                     D_8018EDEC = 0x18;
@@ -424,18 +424,18 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                 if ((btnAndStick & D_JPAD) && (D_8018EDEC < 0x29) && (sp30[1].ghostDataSaved)) {
                     D_8018EDEC += 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = 1;
+                    sp38->subState = 1;
                 }
                 if ((btnAndStick & U_JPAD) && (D_8018EDEC >= 0x29) && sp30[0].ghostDataSaved) {
                     D_8018EDEC -= 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = -1;
+                    sp38->subState = -1;
                 }
                 if (btnAndStick & B_BUTTON) {
                     D_8018EDEC = 0x17;
@@ -443,8 +443,8 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                     return;
                 }
                 if (btnAndStick & A_BUTTON) {
-                    sp38->unk20 = D_8018EDEC - 0x28;
-                    if (sp30[sp38->unk20].courseIndex == D_8018EE10[1].courseIndex && D_8018EE10[1].ghostDataSaved) {
+                    sp38->param2 = D_8018EDEC - 0x28;
+                    if (sp30[sp38->param2].courseIndex == D_8018EE10[1].courseIndex && D_8018EE10[1].ghostDataSaved) {
                         D_8018EDEC = 0x33;
                     } else {
                         D_8018EDEC = 0x32;
@@ -456,35 +456,35 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
             case 0x32:
             case 0x33: {
                 // bit of a fake match, but if it works it works?
-                if ((sp30[sp38->unk20].courseIndex != ((0, (D_8018EE10 + (D_8018EDEC - 0x32))->courseIndex))) ||
+                if ((sp30[sp38->param2].courseIndex != ((0, (D_8018EE10 + (D_8018EDEC - 0x32))->courseIndex))) ||
                     ((D_8018EE10 + (D_8018EDEC - 0x32))->ghostDataSaved == 0)) {
                     if ((btnAndStick & D_JPAD) && (D_8018EDEC < 0x33)) {
                         D_8018EDEC += 1;
                         play_sound2(SOUND_MENU_CURSOR_MOVE);
-                        if (sp38->unk24 < 4.2) {
-                            sp38->unk24 += 4.0;
+                        if (sp38->paramf < 4.2) {
+                            sp38->paramf += 4.0;
                         }
-                        sp38->unk8 = 1;
+                        sp38->subState = 1;
                     }
                     if ((btnAndStick & U_JPAD) && (D_8018EDEC >= 0x33)) {
                         D_8018EDEC -= 1;
                         play_sound2(SOUND_MENU_CURSOR_MOVE);
-                        if (sp38->unk24 < 4.2) {
-                            sp38->unk24 += 4.0;
+                        if (sp38->paramf < 4.2) {
+                            sp38->paramf += 4.0;
                         }
-                        sp38->unk8 = -1;
+                        sp38->subState = -1;
                     }
                 }
                 if (btnAndStick & B_BUTTON) {
-                    D_8018EDEC = sp38->unk20 + 0x28;
+                    D_8018EDEC = sp38->param2 + 0x28;
                     play_sound2(SOUND_MENU_GO_BACK);
                 } else if (btnAndStick & A_BUTTON) {
-                    sp38->unk1C = D_8018EDEC - 0x32;
-                    if (D_8018EE10[(sp38->unk1C)].ghostDataSaved) {
+                    sp38->param1 = D_8018EDEC - 0x32;
+                    if (D_8018EE10[(sp38->param1)].ghostDataSaved) {
                         D_8018EDEC = 0x38;
                     } else {
                         D_8018EDEC = 0x3A;
-                        sp38->cursor = 0;
+                        sp38->state = 0;
                     }
                     play_sound2(SOUND_MENU_SELECT);
                 }
@@ -511,21 +511,21 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                 if ((btnAndStick & R_JPAD) && D_8018EDEC < 0x39) {
                     D_8018EDEC += 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = 1;
+                    sp38->subState = 1;
                 }
                 if ((btnAndStick & L_JPAD) && D_8018EDEC >= 0x39) {
                     D_8018EDEC -= 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp38->unk24 < 4.2) {
-                        sp38->unk24 += 4.0;
+                    if (sp38->paramf < 4.2) {
+                        sp38->paramf += 4.0;
                     }
-                    sp38->unk8 = -1;
+                    sp38->subState = -1;
                 }
                 if (btnAndStick & B_BUTTON) {
-                    D_8018EDEC = sp38->unk1C + 0x32;
+                    D_8018EDEC = sp38->param1 + 0x32;
                     play_sound2(SOUND_MENU_GO_BACK);
                     return;
                 }
@@ -536,7 +536,7 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                     } else {
                         D_8018EDEC = 0x3A;
                         play_sound2(SOUND_MENU_SELECT);
-                        sp38->cursor = 0;
+                        sp38->state = 0;
                     }
                 }
                 // return?
@@ -544,9 +544,9 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
             }
             case 0x3A: {
                 if (arg1 == 0) {
-                    sp38->cursor += 1;
+                    sp38->state += 1;
                 }
-                if (sp38->cursor >= 3) {
+                if (sp38->state >= 3) {
                     D_8018EDEC = 0x3B;
                 }
                 break;
@@ -554,7 +554,7 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
             case 0x3B: {
                 res = controller_pak_2_status();
                 if (res == PFS_NO_ERROR) {
-                    res = func_800B65F4(sp38->unk20, sp38->unk1C);
+                    res = func_800B65F4(sp38->param2, sp38->param1);
                 }
                 if (res != 0) {
                     D_8018EDEC = 0x42;
@@ -564,7 +564,7 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                 res = osPfsFindFile(&gControllerPak1FileHandle, gCompanyCode, gGameCode, (u8*) gGameName,
                                     (u8*) gExtCode, &gControllerPak1FileNote);
                 if (res == PFS_NO_ERROR) {
-                    res = func_800B6178(sp38->unk1C);
+                    res = func_800B6178(sp38->param1);
                 }
                 if (res != 0) {
                     D_8018EDEC = 0x41;
@@ -572,15 +572,15 @@ void options_menu_act(struct Controller* controller, u16 arg1) {
                     return;
                 }
                 D_8018EDEC = 0x3C;
-                D_8018EE10[sp38->unk1C].courseIndex = (sp30 + sp38->unk20)->courseIndex;
-                func_800B6088(sp38->unk1C);
+                D_8018EE10[sp38->param1].courseIndex = (sp30 + sp38->param2)->courseIndex;
+                func_800B6088(sp38->param1);
                 break;
             }
             case 0x46: {
                 if (arg1 == 0) {
-                    sp38->cursor += 1;
+                    sp38->state += 1;
                 }
-                if (sp38->cursor >= 3) {
+                if (sp38->state >= 3) {
                     D_8018EDEC = 0x47;
                 }
                 break;
@@ -665,7 +665,7 @@ void data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
 
 void course_data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
     u16 btnAndStick; // sp2E
-    struct_8018D9E0_entry* sp28;
+    MenuItem* sp28;
     CourseTimeTrialRecords* sp24;
     s32 res;
 
@@ -688,7 +688,7 @@ void course_data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
                 }
 
-                sp28 = find_8018D9E0_entry_dupe(0xE8);
+                sp28 = find_menu_items_dupe(0xE8);
                 sp24 = &gSaveData.allCourseTimeTrialRecords.cupRecords[gTimeTrialDataCourseIndex / 4]
                             .courseRecords[gTimeTrialDataCourseIndex % 4];
                 if (gCourseRecordsMenuSelection == 2 && func_800B639C(gTimeTrialDataCourseIndex) < 0) {
@@ -705,10 +705,10 @@ void course_data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
                         gCourseRecordsMenuSelection -= 1;
                     }
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp28->unk24 < 4.2) {
-                        sp28->unk24 += 4.0;
+                    if (sp28->paramf < 4.2) {
+                        sp28->paramf += 4.0;
                     }
-                    sp28->unk8 = -1;
+                    sp28->subState = -1;
                 }
 
                 if ((btnAndStick & D_JPAD) && (gCourseRecordsMenuSelection < 2)) {
@@ -725,10 +725,10 @@ void course_data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
                         }
                     } else {
                         play_sound2(SOUND_MENU_CURSOR_MOVE);
-                        if (sp28->unk24 < 4.2) {
-                            sp28->unk24 += 4.0;
+                        if (sp28->paramf < 4.2) {
+                            sp28->paramf += 4.0;
                         }
-                        sp28->unk8 = 1;
+                        sp28->subState = 1;
                     }
                 }
 
@@ -736,8 +736,8 @@ void course_data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
                     func_8009E208();
                     play_sound2(SOUND_MENU_GO_BACK);
                 } else if (btnAndStick & A_BUTTON) {
-                    if (sp28->unk24 < 4.2) {
-                        sp28->unk24 += 4.0;
+                    if (sp28->paramf < 4.2) {
+                        sp28->paramf += 4.0;
                     }
                     if (gCourseRecordsMenuSelection == 0) {
                         func_8009E208();
@@ -751,23 +751,23 @@ void course_data_menu_act(struct Controller* controller, UNUSED u16 arg1) {
                 break;
             }
             case 0x0C: {
-                sp28 = find_8018D9E0_entry_dupe(0xE9);
+                sp28 = find_menu_items_dupe(0xE9);
                 if ((btnAndStick & U_JPAD) && (D_8018EDF9 > 0)) {
                     D_8018EDF9 -= 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp28->unk24 < 4.2) {
-                        sp28->unk24 += 4.0;
+                    if (sp28->paramf < 4.2) {
+                        sp28->paramf += 4.0;
                     }
-                    sp28->unk8 = -1;
+                    sp28->subState = -1;
                 }
 
                 if ((btnAndStick & D_JPAD) && (D_8018EDF9 <= 0)) {
                     D_8018EDF9 += 1;
                     play_sound2(SOUND_MENU_CURSOR_MOVE);
-                    if (sp28->unk24 < 4.2) {
-                        sp28->unk24 += 4.0;
+                    if (sp28->paramf < 4.2) {
+                        sp28->paramf += 4.0;
                     }
-                    sp28->unk8 = 1;
+                    sp28->subState = 1;
                 }
 
                 if (btnAndStick & B_BUTTON) {
@@ -1799,13 +1799,13 @@ void course_select_menu_act(struct Controller* arg0, u16 arg1) {
     }
 }
 
-void func_800B3F74(s32 menuSelection) {
+void load_menu_states(s32 menuSelection) {
     s32 i;
 
     gDebugMenuSelection = CVarGetInteger("gEnableDebugMode", 0) + 1;
     gMenuTimingCounter = 0;
     gMenuDelayTimer = 0;
-    D_8018EE08 = 0;
+    gDemoUseController = 0;
     D_8015F890 = 0;
     D_8015F892 = 0;
     gDebugGotoScene = DEBUG_GOTO_RACING;
@@ -2008,7 +2008,7 @@ bool func_800B4520(void) {
 
 UNUSED void func_800B4560(s32 arg0, s32 arg1) {
     struct_8018EE10_entry* pak1 = D_8018EE10;
-    struct_8018EE10_entry* pak2 = (struct_8018EE10_entry*) D_8018D9C0;
+    struct_8018EE10_entry* pak2 = (struct_8018EE10_entry*) gSomeDLBuffer;
 
     rmonPrintf("ghost_kart=%d,", D_80162DE0);
     rmonPrintf("pak1_ghost_kart=%d,", (pak1 + arg0)->characterId);

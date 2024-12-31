@@ -30,20 +30,20 @@ void main_menu_act(struct Controller*, u16);
 bool is_character_spot_free(s32);
 void player_select_menu_act(struct Controller* controller, u16 arg1);
 void course_select_menu_act(struct Controller*, u16);
-void func_800B3F74(s32);
+void load_menu_states(s32);
 void func_800B44AC(void);
 void func_800B44BC(void);
 bool func_800B4520(void);
 
 /* data */
-extern s32 D_8018EDC0;
-extern f32 D_8018EDC4;
-extern f32 D_8018EDC8;
-extern f32 D_8018EDCC;
-extern f32 D_8018EDD0;
-extern f32 D_8018EDD4;
-extern f32 D_8018EDD8;
-extern f32 D_8018EDDC;
+extern s32 gIntroModelZEye;
+extern f32 gIntroModelScale;
+extern f32 gIntroModelRotX;
+extern f32 gIntroModelRotY;
+extern f32 gIntroModelRotZ;
+extern f32 gIntroModelPosX;
+extern f32 gIntroModelPosY;
+extern f32 gIntroModelPosZ;
 extern s32 D_8018EDE0;
 
 extern s8 gCharacterGridSelections[];
@@ -67,7 +67,7 @@ extern s8 D_8018EDFB;
 extern s8 D_8018EDFC;
 extern s32 gMenuTimingCounter;
 extern s32 gMenuDelayTimer;
-extern s8 D_8018EE08;
+extern s8 gDemoUseController;
 extern s8 gCupSelection;
 extern s8 D_8018EE0A;
 extern s8 gCourseIndexInCup;
@@ -75,7 +75,7 @@ extern s8 D_8018EE0C;
 extern struct_8018EE10_entry D_8018EE10[];
 
 extern s32 gMenuSelection; // D_800E86A0
-extern s32 D_800E86A4;
+extern s32 gFadeModeSelection;
 extern s8 gCharacterSelections[];
 
 extern s8 D_800E86AC[];
