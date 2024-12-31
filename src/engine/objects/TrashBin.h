@@ -19,7 +19,12 @@ extern "C" {
 
 class OTrashBin : public OObject {
 public:
-    explicit OTrashBin(const FVector& pos, const FRotation& rotation, f32 scale);
+
+    enum Behaviour {
+        STATIC, // The lid stays shut
+        MUNCHING // The lid opens/closes in a scary munching manner
+    };
+    explicit OTrashBin(const FVector& pos, const FRotation& rotation, f32 scale, OTrashBin::Behaviour bhv);
 
     virtual void Tick() override;
     virtual void Draw(s32 cameraId) override;
@@ -27,8 +32,14 @@ public:
     void init_bb_trash_bin(s32);
 
 private:
+    static Gfx BinMod[];
+    static Vtx BinVtx[];
+    static Vtx BinVtx2[];
+
+    Behaviour _bhv;
     FVector _pos;
     FRotation _rot;
     float _scale;
     size_t _idx;
+    bool _drawBin = false;
 };

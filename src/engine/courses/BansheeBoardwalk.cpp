@@ -156,10 +156,17 @@ void BansheeBoardwalk::SpawnActors() {
 
     gWorldInstance.AddObject(new OCheepCheep(FVector(xOrientation * -1650.0, -200.0f, -1650.0f), OCheepCheep::CheepType::RACE, IPathSpan(160, 170)));
 
-    if (gIsMirrorMode) {
-        gWorldInstance.AddObject(new OTrashBin(FVector(1765.0f, 45.0f, 195.0f), FRotation(0, 180.0f, 0), 1.0f));
+    OTrashBin::Behaviour bhv;
+    if (gModeSelection == TIME_TRIALS) {
+        bhv = OTrashBin::Behaviour::STATIC;
     } else {
-        gWorldInstance.AddObject(new OTrashBin(FVector(-1765.0f, 45.0f, 70.0f), FRotation(0, 0, 0), 1.0f));
+        bhv = OTrashBin::Behaviour::MUNCHING;
+    }
+
+    if (gIsMirrorMode) {
+        gWorldInstance.AddObject(new OTrashBin(FVector(1765.0f, 45.0f, 195.0f), FRotation(0, 180.0f, 0), 1.0f, bhv));
+    } else {
+        gWorldInstance.AddObject(new OTrashBin(FVector(-1765.0f, 45.0f, 70.0f), FRotation(0, 0, 0), 1.0f, bhv));
     }
 }
 
@@ -197,7 +204,6 @@ void BansheeBoardwalk::InitCourseObjects() {
         gObjectList[objectId].orientation[0] = 0;
         gObjectList[objectId].orientation[1] = 0;
         gObjectList[objectId].orientation[2] = 0x8000;
-        init_object(indexObjectList1[1], 0);
         init_object(indexObjectList1[2], 0);
     }
 }
