@@ -4,11 +4,13 @@
 #include <memory>
 
 #include "PodiumCeremony.h"
-#include "GameObject.h"
 #include "World.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/royal_raceway_data.h"
 #include "assets/ceremony_data.h"
+#include "engine/objects/Trophy.h"
+#include "engine/objects/Podium.h"
+#include "engine/objects/CheepCheep.h"
 
 extern "C" {
     #include "main.h"
@@ -31,14 +33,62 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "courses/staff_ghost_data.h"
+    #include "podium_ceremony_actors.h"
     extern const char *royal_raceway_dls[];
 }
+
+const course_texture podium_ceremony_textures[] = {
+    { gTexture64619C, 0x0124, 0x0800, 0x0 },
+    { gTexture645134, 0x052C, 0x0800, 0x0 },
+    { gTextureWoodDoor1, 0x0903, 0x1000, 0x0 },
+    { gTexture64BB60, 0x0169, 0x0800, 0x0 },
+    { gTextureGrass3, 0x0372, 0x0800, 0x0 },
+    { gTexture64F9E8, 0x020B, 0x1000, 0x0 },
+    { gTextureFlagRed, 0x019E, 0x0800, 0x0 },
+    { gTextureCrownJewelBlue, 0x0301, 0x0800, 0x0 },
+    { gTextureCrown, 0x0106, 0x0800, 0x0 },
+    { gTextureCrownJewelPink, 0x0313, 0x0800, 0x0 },
+    { gTextureSignKoopaAir0, 0x0360, 0x1000, 0x0 },
+    { gTextureSignKoopaAir1, 0x0304, 0x1000, 0x0 },
+    { gTexture6684F8, 0x010D, 0x0800, 0x0 },
+    { gTextureSignLuigis0, 0x0287, 0x1000, 0x0 },
+    { gTextureSignLuigis1, 0x02AF, 0x1000, 0x0 },
+    { gTextureSignMarioStar0, 0x02D2, 0x1000, 0x0 },
+    { gTextureSignMarioStar1, 0x02B1, 0x1000, 0x0 },
+    { gTexture66CA98, 0x02C9, 0x0800, 0x0 },
+    { gTextureCheckerboardPink, 0x0157, 0x0800, 0x0 },
+    { gTexture670AC8, 0x0FBF, 0x1000, 0x0 },
+    { gTextureRoad0, 0x0300, 0x1000, 0x0 },
+    { gTextureRoadFinish0, 0x0338, 0x1000, 0x0 },
+    { gTextureSignYoshi, 0x04DF, 0x1000, 0x0 },
+    { gTextureCheckerboardBlueGray, 0x04A1, 0x1000, 0x0 },
+    { gTextureCastleBricks, 0x0B33, 0x1000, 0x0 },
+    { gTextureCastleBridge, 0x0428, 0x0800, 0x0 },
+    { gTextureGrass8, 0x02CB, 0x0800, 0x0 },
+    { gTextureGrass9, 0x0421, 0x0800, 0x0 },
+    { gTexture6646B8, 0x0298, 0x1000, 0x0 },
+    { gTexture664408, 0x02AE, 0x1000, 0x0 },
+    { gTextureBricksRed, 0x0C55, 0x1000, 0x0 },
+    { gTexture665C0C, 0x059D, 0x0800, 0x0 },
+    { gTexture6661AC, 0x01F7, 0x0800, 0x0 },
+    { gTexture6663A4, 0x05F6, 0x0800, 0x0 },
+    { gTexture667BAC, 0x067A, 0x0800, 0x0 },
+    { gTextureFlagRed2, 0x0186, 0x0800, 0x0 },
+    { gTexture66DB60, 0x01D6, 0x0800, 0x0 },
+    { gTextureStainglassPeach0, 0x0ED1, 0x1000, 0x0 },
+    { gTextureStainglassPeach1, 0x0DA9, 0x1000, 0x0 },
+    { gTextureFencePostWooden, 0x083D, 0x1000, 0x0 },
+    { gTexture648508, 0x01FE, 0x1000, 0x0 },
+    { gTexture6449D4, 0x075D, 0x0800, 0x0 },
+    { gTexture67FE0C, 0x02DE, 0x0800, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
 
 PodiumCeremony::PodiumCeremony() {
     this->vtx = d_course_royal_raceway_vertex;
     this->gfx = d_course_royal_raceway_packed_dls;
     this->gfxSize = 5670;
-    this->textures = royal_raceway_textures;
+    Props.textures = podium_ceremony_textures;
     Props.D_800E5548[0] = 0;
     Props.D_800E5548[1] = 0;
 
@@ -114,6 +164,43 @@ void PodiumCeremony::SpawnActors() {
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_tree_spawn));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_item_box_spawns));
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_piranha_plant_spawn));
+
+    gWorldInstance.AddObject(new OCheepCheep(FVector((f32)-3202, (f32)19, (f32)-478), OCheepCheep::CheepType::PODIUM_CEREMONY, IPathSpan(0, 0)));
+    gWorldInstance.AddObject(new OPodium(FVector((f32)-3202, (f32)19, (f32)-478)));
+    
+    FVector pos = {0, 90.0f, 0};
+
+    OTrophy::TrophyType type = OTrophy::TrophyType::BRONZE;
+    switch(D_802874D8.unk1D) {
+        case 0: // Bronze
+            if (gCCSelection == CC_150) {
+                OTrophy::TrophyType::BRONZE_150;
+            } else {
+                OTrophy::TrophyType::BRONZE;
+            }
+            break;
+        case 1: // Silver
+            pos.x -= 3.0;
+            pos.z += 15.0;
+
+            if (gCCSelection == CC_150) {
+                OTrophy::TrophyType::SILVER_150;
+            } else {
+                OTrophy::TrophyType::SILVER;
+            }
+            break;
+        case 2: // Gold
+            pos.x -= 2.0;
+            pos.z -= 15.0;
+            if (gCCSelection == CC_150) {
+                OTrophy::TrophyType::GOLD_150;
+            } else {
+                OTrophy::TrophyType::GOLD;
+            }
+            break;
+    }
+
+    gWorldInstance.AddObject(new OTrophy(pos, type, OTrophy::Behaviour::PODIUM_CEREMONY));
 }
 
 void PodiumCeremony::SpawnVehicles() {

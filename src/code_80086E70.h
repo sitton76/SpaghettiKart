@@ -106,7 +106,7 @@ void func_8008A830(s32);
 void func_8008A850(s32);
 s32 func_8008A870(Player*);
 s32 func_8008A890(Camera*);
-s32 func_8008A8B0(s16, s16);
+s32 are_players_in_course_section(s16, s16);
 void func_8008A920(s32);
 void func_8008A9B8(s32);
 void func_8008AA3C(s32);

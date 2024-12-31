@@ -22,12 +22,14 @@ extern "C" {
   //  #include "common_structs.h"
 }
 
-ATrain::ATrain(size_t idx, ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
+size_t ATrain::_count = 0;
+
+ATrain::ATrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint) {
     u16 waypointOffset;
     TrainCarStuff* ptr1;
     Path2D* pos;
 
-    Index = idx;
+    Index = _count;
     Speed = speed;
 
     // Set to the default value
@@ -73,6 +75,8 @@ ATrain::ATrain(size_t idx, ATrain::TenderStatus tender, size_t numCarriages, f32
     NumCars = NUM_TENDERS + numCarriages;
 
     AnotherSmokeTimer = 0;
+
+    _count++;
 }
 
 void ATrain::Spawn() {

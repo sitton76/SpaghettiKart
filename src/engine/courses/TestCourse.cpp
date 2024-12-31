@@ -4,16 +4,25 @@
 #include <memory>
 
 #include "TestCourse.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/Object.h"
+#include "engine/objects/BombKart.h"
 #include "assets/mario_raceway_data.h"
 #include "assets/bowsers_castle_data.h"
 #include "assets/bowsers_castle_displaylists.h"
 #include "engine/actors/ATree.h"
 #include "engine/actors/ACloud.h"
 #include "engine/vehicles/Train.h"
+#include "engine/objects/Trophy.h"
+#include "engine/objects/CheepCheep.h"
+#include "engine/objects/Snowman.h"
+#include "engine/objects/TrashBin.h"
+#include "engine/objects/Hedgehog.h"
+#include "engine/objects/Flagpole.h"
+#include "engine/objects/HotAirBalloon.h"
+#include "engine/objects/Crab.h"
+#include "engine/particles/StarEmitter.h"
 
 extern "C" {
     #include "main.h"
@@ -52,6 +61,8 @@ TestCourse::TestCourse() {
     this->gfxSize = 100;
     this->textures = NULL;
     Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
+    Props.D_800E5548[0] = 64;
+    Props.D_800E5548[1] = 64;
 
     Props.Id = "mk:test_course";
     Props.Name = "Test Course";
@@ -186,8 +197,24 @@ void TestCourse::SpawnActors() {
                                                                             ACTOR_RAILROAD_CROSSING));
     rrxing->crossingTrigger = crossing1;
 
-    //Vec3f pos = {-80, 7, -20};
-    //gWorldInstance.AddActor(new ACloud(pos));
+    Vec3f pos = {0, 80, 0};
+    // gWorldInstance.AddActor(new ACloud(pos));
+
+    // gWorldInstance.AddActor(new OSeagull(0, pos));
+    // gWorldInstance.AddActor(new OSeagull(1, pos));
+    // gWorldInstance.AddActor(new OSeagull(2, pos));
+    // gWorldInstance.AddActor(new OSeagull(3, pos));
+    // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
+    // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
+    //gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
+    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f));
+
+//gWorldInstance.AddEmitter(new StarEmitter(FVector(0,50,0)));
+    //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
+    //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
+//    gWorldInstance.AddObject(new OHotAirBalloon(FVector(0.0, 20.0f, -200.0f)));
+
+    gWorldInstance.AddObject(new OCrab(FVector2D(0, 0), FVector2D(0, -200)));
 }
 
 // Likely sets minimap boundaries

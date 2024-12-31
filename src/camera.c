@@ -191,6 +191,7 @@ void camera_init(f32 posX, f32 posY, f32 posZ, UNUSED s16 rot, u32 arg4, s32 cam
     func_802B7F7C(camera->pos, camera->lookAt, camera->rot);
 }
 
+// Thwomp related
 void func_8001CA10(Camera* camera) {
     camera->unk_94.unk_8 = 0;
     camera->unk_94.unk_0 = 6.0f;

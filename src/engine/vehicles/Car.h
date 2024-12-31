@@ -16,7 +16,15 @@ class AVehicle; // Forward declare
 class ACar : public AVehicle {
     public:
 
-    explicit ACar(size_t idx, f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+    explicit ACar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+
+    ~ACar() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
 
     const char* Type;
     size_t Index;
@@ -40,4 +48,6 @@ class ACar : public AVehicle {
     virtual void Tick() override;
     virtual void Draw(s32 playerId) override;
     virtual void Collision(s32 playerId, Player* player) override;
+private:
+    static size_t _count;
 };

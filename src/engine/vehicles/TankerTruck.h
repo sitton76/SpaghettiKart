@@ -33,11 +33,22 @@ class ATankerTruck : public AVehicle {
     f32 SomeArg4 = 12.5f;
     u32 SoundBits = SOUND_ARG_LOAD(0x51, 0x01, 0x80, 0x03);
 
-    explicit ATankerTruck(size_t idx, f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+    explicit ATankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
+
+    ~ATankerTruck() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
 
     virtual void Spawn() override;
     virtual void BeginPlay() override;
     virtual void Tick() override;
     virtual void Draw(s32 playerId) override;
     virtual void Collision(s32 playerId, Player* player) override;
+
+private:
+    static size_t _count;
 };

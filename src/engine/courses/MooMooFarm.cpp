@@ -4,11 +4,11 @@
 #include <memory>
 
 #include "MooMooFarm.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/moo_moo_farm_data.h"
+#include "engine/objects/Mole.h"
 
 extern "C" {
     #include "main.h"
@@ -36,11 +36,43 @@ extern "C" {
     extern s8 gPlayerCount;
 }
 
+const course_texture moo_moo_farm_textures[] = {
+    { gTextureWoodDoor0, 0x0294, 0x1000, 0x0 },
+    { gTextureGrass2, 0x0415, 0x0800, 0x0 },
+    { gTexture64AF50, 0x0140, 0x0800, 0x0 },
+    { gTexture64B090, 0x0365, 0x0800, 0x0 },
+    { gTexture64B54C, 0x038C, 0x0800, 0x0 },
+    { gTexture64B3F8, 0x0153, 0x0800, 0x0 },
+    { gTextureSignNintendo0, 0x0541, 0x1000, 0x0 },
+    { gTextureSignNintendo1, 0x0512, 0x1000, 0x0 },
+    { gTexture6684F8, 0x010D, 0x0800, 0x0 },
+    { gTextureSignLuigis0, 0x0287, 0x1000, 0x0 },
+    { gTextureSignLuigis1, 0x02AF, 0x1000, 0x0 },
+    { gTextureSignMarioStar0, 0x02D2, 0x1000, 0x0 },
+    { gTextureSignMarioStar1, 0x02B1, 0x1000, 0x0 },
+    { gTexture674D58, 0x030C, 0x1000, 0x0 },
+    { gTexture675064, 0x01BB, 0x0800, 0x0 },
+    { gTexture675220, 0x0212, 0x0800, 0x0 },
+    { gTexture6775EC, 0x0233, 0x1000, 0x0 },
+    { gTexture683314, 0x02DC, 0x1000, 0x0 },
+    { gTexture68CDA0, 0x0110, 0x0800, 0x0 },
+    { gTexture6442D4, 0x0138, 0x0800, 0x0 },
+    { gTexture64440C, 0x029D, 0x1000, 0x0 },
+    { gTexture6446AC, 0x0116, 0x0800, 0x0 },
+    { gTextureMooMooFarmSignLeft, 0x0A66, 0x1000, 0x0 },
+    { gTextureMooMooFarmSignRight, 0x0A64, 0x1000, 0x0 },
+    { gTexture64ACAC, 0x02A3, 0x0800, 0x0 },
+    { gTexture66D698, 0x0370, 0x0800, 0x0 },
+    { gTexture66EBF0, 0x0146, 0x0800, 0x0 },
+    { gTextureWheelSteamEngineReal, 0x022F, 0x1000, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
 MooMooFarm::MooMooFarm() {
     this->vtx = d_course_moo_moo_farm_vertex;
     this->gfx = d_course_moo_moo_farm_packed_dls;
     this->gfxSize = 3304;
-    this->textures = moo_moo_farm_textures;
+    Props.textures = moo_moo_farm_textures;
     Props.MinimapTexture = gTextureCourseOutlineMooMooFarm;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;
@@ -192,27 +224,37 @@ void MooMooFarm::InitCourseObjects() {
             D_8018D1D0 = 6;
             D_8018D1D8 = 6;
         }
-        for (i = 0; i < NUM_GROUP1_MOLES; i++) {
+
+        Vec3f pos = {0, 22, 0};
+        for (size_t i = 0; i < NUM_GROUP1_MOLES; i++) {
             D_8018D198[i] = 0;
-            find_unused_obj_index(&indexObjectList1[i]);
+            gWorldInstance.AddObject(new OMole(pos));
+
         }
-        for (i = 0; i < NUM_GROUP2_MOLES; i++) {
-            D_8018D1A8[i] = 0;
-            find_unused_obj_index(&indexObjectList1[i]);
-        }
-        for (i = 0; i < NUM_GROUP3_MOLES; i++) {
-            D_8018D1B8[i] = 0;
-            find_unused_obj_index(&indexObjectList1[i]);
-        }
-        for (i = 0; i < NUM_TOTAL_MOLES; i++) {
-            find_unused_obj_index(&gObjectParticle1[i]);
-            objectId = gObjectParticle1[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].pos[0] = gMoleSpawns.asVec3sList[i][0] * xOrientation;
-            gObjectList[objectId].pos[2] = gMoleSpawns.asVec3sList[i][2];
-            func_800887C0(objectId);
-            gObjectList[objectId].sizeScaling = 0.7f;
-        }
+
+        // for (i = 0; i < NUM_GROUP1_MOLES; i++) {
+        //     D_8018D198[i] = 0;
+        //     find_unused_obj_index(&indexObjectList1[i]);
+        // }
+        // for (i = 0; i < NUM_GROUP2_MOLES; i++) {
+        //     D_8018D1A8[i] = 0;
+        //     find_unused_obj_index(&indexObjectList1[i]);
+        // }
+        // for (i = 0; i < NUM_GROUP3_MOLES; i++) {
+        //     D_8018D1B8[i] = 0;
+        //     find_unused_obj_index(&indexObjectList1[i]);
+        // }
+        // for (i = 0; i < NUM_TOTAL_MOLES; i++) {
+        //     find_unused_obj_index(&gObjectParticle1[i]);
+        //     objectId = gObjectParticle1[i];
+        //     init_object(objectId, 0);
+        //     gObjectList[objectId].pos[0] = gMoleSpawns.asVec3sList[i][0] * xOrientation;
+        //     gObjectList[objectId].pos[2] = gMoleSpawns.asVec3sList[i][2];
+        //     func_800887C0(objectId);
+        //     gObjectList[objectId].sizeScaling = 0.7f;
+        // }
+
+
         for (i = 0; i < gObjectParticle2_SIZE; i++) {
             find_unused_obj_index(&gObjectParticle2[i]);
         }
@@ -221,13 +263,13 @@ void MooMooFarm::InitCourseObjects() {
 
 void MooMooFarm::UpdateCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
-        update_moles();
+        //update_moles();
     }
 }
 
 void MooMooFarm::RenderCourseObjects(s32 cameraId) {
     if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_moles(cameraId);
+        //render_object_moles(cameraId);
     }
 }
 

@@ -104,7 +104,7 @@ enum SURFACE_TYPE {
     /* 0x10 */ ROPE_BRIDGE,  // Bowser's Castle bridge 2, DK Jungle bridge
     /* 0x11 */ WOOD_BRIDGE,  // Frappe Snowland bridge, Bowser's Castle bridge 1,3, Yoshi Valley bridge 2
     /* 0xFC */ BOOST_RAMP_WOOD = 0xFC, // DK Jungle
-    /* 0xFD */ OUT_OF_BOUNDS,          // DK Jungle river island
+    /* 0xFD */ OUT_OF_BOUNDS,          // DK Jungle river island oob / out of bounds
     /* 0xFE */ BOOST_RAMP_ASPHALT,     // Royal Raceway
     /* 0xFF */ RAMP                    // Koopa Troopa beach
 };
@@ -137,6 +137,39 @@ void gSPDisplayList(Gfx* pkt, Gfx* dl);
 void gSPDisplayListOffset(Gfx* pkt, Gfx* dl, int offset);
 void gSPVertex(Gfx* pkt, uintptr_t v, int n, int v0);
 void gSPInvalidateTexCache(Gfx* pkt, uintptr_t texAddr);
+
+// Dumb hack to fix load tile size on higher than native resolutions
+#define gMKLoadTextureTile(pkt, timg, fmt, siz, width, height, uls, ult, lrs, lrt, pal, cms, cmt, masks, maskt,        \
+                           shifts, shiftt)                                                                             \
+    _DW({                                                                                                              \
+        gDPSetTextureImage(pkt, fmt, siz, width, timg);                                                                \
+        gDPSetTile(pkt, fmt, siz, (((((lrs) - (uls) + 1) * siz##_TILE_BYTES) + 7) >> 3), 0, G_TX_LOADTILE, 0, cmt,     \
+                   maskt, shiftt, cms, masks, shifts);                                                                 \
+        gDPLoadSync(pkt);                                                                                              \
+        gDPLoadTile(pkt, G_TX_LOADTILE, (uls) << G_TEXTURE_IMAGE_FRAC, (ult) << G_TEXTURE_IMAGE_FRAC,                  \
+                    (lrs) << G_TEXTURE_IMAGE_FRAC, (lrt + 2) << G_TEXTURE_IMAGE_FRAC);                                     \
+        gDPPipeSync(pkt);                                                                                              \
+        gDPSetTile(pkt, fmt, siz, (((((lrs) - (uls) + 1) * siz##_LINE_BYTES) + 7) >> 3), 0, G_TX_RENDERTILE, pal, cmt, \
+                   maskt, shiftt, cms, masks, shifts);                                                                 \
+        gDPSetTileSize(pkt, G_TX_RENDERTILE, (uls) << G_TEXTURE_IMAGE_FRAC, (ult) << G_TEXTURE_IMAGE_FRAC,             \
+                       (lrs) << G_TEXTURE_IMAGE_FRAC, (lrt) << G_TEXTURE_IMAGE_FRAC);                                  \
+    })
+
+#define gMKLoadTextureTile_4b(pkt, timg, fmt, width, height, uls, ult, lrs, lrt, pal, cms, cmt, masks, maskt, shifts, \
+                              shiftt)                                                                                 \
+    _DW({                                                                                                             \
+        gDPSetTextureImage(pkt, fmt, G_IM_SIZ_8b, ((width) >> 1), timg);                                              \
+        gDPSetTile(pkt, fmt, G_IM_SIZ_8b, (((((lrs) - (uls) + 1) >> 1) + 7) >> 3), 0, G_TX_LOADTILE, 0, cmt, maskt,   \
+                   shiftt, cms, masks, shifts);                                                                       \
+        gDPLoadSync(pkt);                                                                                             \
+        gDPLoadTile(pkt, G_TX_LOADTILE, (uls) << (G_TEXTURE_IMAGE_FRAC - 1), (ult) << (G_TEXTURE_IMAGE_FRAC),         \
+                    (lrs) << (G_TEXTURE_IMAGE_FRAC - 1), (lrt + 2) << (G_TEXTURE_IMAGE_FRAC));                            \
+        gDPPipeSync(pkt);                                                                                             \
+        gDPSetTile(pkt, fmt, G_IM_SIZ_4b, (((((lrs) - (uls) + 1) >> 1) + 7) >> 3), 0, G_TX_RENDERTILE, pal, cmt,      \
+                   maskt, shiftt, cms, masks, shifts);                                                                \
+        gDPSetTileSize(pkt, G_TX_RENDERTILE, (uls) << G_TEXTURE_IMAGE_FRAC, (ult) << G_TEXTURE_IMAGE_FRAC,            \
+                       (lrs) << G_TEXTURE_IMAGE_FRAC, (lrt) << G_TEXTURE_IMAGE_FRAC);                                 \
+    })
 
 #ifdef __cplusplus
 }

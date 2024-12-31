@@ -28,6 +28,7 @@ Course::Course() {
     // Props.CourseLength = "567m";
     // Props.Cup = FLOWER_CUP;
     // Props.CupIndex = 3;
+    Props.LakituTowType = (s32)OLakitu::LakituTowType::NORMAL;
     Props.AIBehaviour = D_0D008F28;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;
@@ -94,7 +95,7 @@ void Course::Load() {
     func_802A86A8(reinterpret_cast<CourseVtx*>(LOAD_ASSET_RAW(this->vtx)), vtx, vtxSize / sizeof(Vtx));
 
     // Load and allocate memory for course textures
-    const course_texture* asset = this->textures;
+    const course_texture* asset = this->Props.textures;
     u8* freeMemory = NULL;
     u8* texture = NULL;
     size_t size = 0;
@@ -103,12 +104,13 @@ void Course::Load() {
         size = ResourceGetTexSizeByName(asset->addr);
         freeMemory = (u8*) allocate_memory(size);
 
-        texture = reinterpret_cast<u8*>(LOAD_ASSET_RAW(asset->addr));
+        texture = (u8*)(asset->addr);
         if (texture) {
-            if (asset == &textures[0]) {
+            if (asset == &this->Props.textures[0]) {
                 gSegmentTable[5] = reinterpret_cast<uintptr_t>(&freeMemory[0]);
             }
-            memcpy(freeMemory, texture, size);
+            strcpy(reinterpret_cast<char*>(freeMemory), asset->addr);
+            //memcpy(freeMemory, texture, size);
             texSegSize += size;
             // printf("Texture Addr: 0x%llX, size 0x%X\n", &freeMemory[0], size);
         }

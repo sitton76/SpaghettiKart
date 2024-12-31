@@ -6,7 +6,7 @@
 void debug_switch_character_ceremony_cutscene(void);
 s32 func_80281880(s32 arg0);
 void func_802818BC(void);
-void load_ceremony_cutscene(void);
+void setup_podium_ceremony(void);
 
 extern s32 D_80287554;
 extern f32 D_801647A4;

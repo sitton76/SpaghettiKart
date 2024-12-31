@@ -307,18 +307,6 @@ ThwompSpawn gThomwpSpawns150CC[] = {
     { 0x0596, 0xf92f, 0x0006, 0x0000 }, { 0x082a, 0xf9f2, 0x0005, 0x0000 }, { 0x073a, 0xf9f2, 0x0005, 0x0001 },
 };
 
-f32 D_800E594C[][2] = {
-    { -8.0, 8.0 },
-    { 8.0, 8.0 },
-    { 0.0, 0.0 },
-    { 8.0, -8.0 },
-    { -8.0, -8.0 },
-    // This feels super fake, but it matches
-    { -0.0, 0.0 },
-};
-
-s16 D_800E597C[] = { 0x0000, 0x0000, 0x4000, 0x8000, 0x8000, 0xc000 };
-
 // Seems to be related to the Boos in Banshee Boardwalk
 SplineData D_800E5988 = {
     0x0016,
@@ -451,7 +439,7 @@ s8 D_800E5DB4[] = {
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-YVFlagPoleSpawn D_800E5DF4[] = {
+YVFlagPoleSpawn gFlagpoleSpawns[] = {
     { { 0xfc7a, 0x0046, 0xfa82 }, 0x3800 },
     { { 0xfc4c, 0x0046, 0xfa03 }, 0x3800 },
     { { 0xf786, 0x0000, 0x02d3 }, 0x0400 },
@@ -572,10 +560,6 @@ SplineData D_800E6280 = { 0x0016,
                               { { 0xffce, 0x00aa, 0xfe70 }, 0x0028 }, { { 0xffce, 0x00aa, 0xfe0c }, 0x0028 },
                               { { 0xffce, 0x00aa, 0xfe0c }, 0x0028 },
                           } };
-
-// Note the use of the plain SplineData type here. Since these are pointers, we don't care
-// about their internal array size
-SplineData* D_800E633C[] = { &D_800E6034, &D_800E60F0, &D_800E61B4, &D_800E6280 };
 
 // Might be Cheep Cheep related?
 Vec3s D_800E634C[] = {

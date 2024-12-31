@@ -131,7 +131,7 @@ void func_80281D00(void) {
     render_players_on_screen_one();
     gSPDisplayList(gDisplayListHead++, VIRTUAL_TO_PHYSICAL2(&D_80284EE0));
     update_actors_loop();
-    render_object(PLAYER_ONE + SCREEN_MODE_1P);
+    render_object(RENDER_SCREEN_MODE_1P_PLAYER_ONE);
     func_80021B0C();
     gSPDisplayList(gDisplayListHead++, VIRTUAL_TO_PHYSICAL2(&D_80284EE0));
     func_80093F10();

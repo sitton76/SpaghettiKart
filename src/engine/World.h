@@ -1,18 +1,22 @@
 #pragma once
 
 #include <libultraship.h>
-#include "GameObject.h"
+#include "objects/Object.h"
 #include "Cup.h"
 #include "vehicles/Vehicle.h"
 #include "vehicles/Train.h"
 #include "vehicles/Car.h"
-#include "vehicles/OBombKart.h"
+#include "objects/BombKart.h"
 #include "vehicles/Train.h"
 #include "TrainCrossing.h"
-#include "vehicles/OThwomp.h"
-#include "vehicles/OPenguin.h"
+#include "objects/Thwomp.h"
+#include "objects/Penguin.h"
+#include "objects/Seagull.h"
+#include "objects/Lakitu.h"
 #include <memory>
+#include <unordered_map>
 #include "Actor.h"
+#include "particles/ParticleEmitter.h"
 
 extern "C" {
 #include "camera.h"
@@ -20,13 +24,87 @@ extern "C" {
 #include "engine/Engine.h"
 };
 
+struct FVector {
+    float x, y, z;
+
+    FVector& operator=(const FVector& other) {
+        x = other.x;
+        y = other.y;
+        z = other.z;
+        return *this;
+    }
+};
+
+/**
+ * For providing X and Z when you do not need Y
+ * Some actors set themselves on the surface automatically
+ * which means it does not use a Y coordinate
+ * The train follows a set Y value. The hedgehog's patrolPoint only uses X and Z.
+ */
+struct FVector2D {
+    float x, z;
+
+    FVector2D& operator=(const FVector2D& other) {
+        x = other.x;
+        z = other.z;
+        return *this;
+    }
+};
+
+struct FRotation {
+    float pitch, yaw, roll;
+
+    FRotation& operator=(const FRotation& other) {
+        pitch = other.pitch;
+        yaw = other.yaw;
+        roll = other.roll;
+        return *this;
+    }
+};
+
+/**
+ * For selecting a section of a course path
+ * Usage: IPathSpan(point1, point2) --> IPathSpan(40, 65)
+ */
+struct IPathSpan {
+    int Start, End;
+
+    // Default Constructor
+    IPathSpan() : Start(0), End(0) {}
+
+    // Parameterized Constructor
+    IPathSpan(int InStart, int InEnd)
+        : Start(InStart), End(InEnd) {}
+
+    // Copy Assignment Operator
+    IPathSpan& operator=(const IPathSpan& Other) {
+        if (this != &Other) { // Avoid self-assignment
+            Start = Other.Start;
+            End = Other.End;
+        }
+        return *this;
+    }
+
+    // Equality Operator
+    bool operator==(const IPathSpan& Other) const {
+        return Start == Other.Start && End == Other.End;
+    }
+
+    // Inequality Operator
+    bool operator!=(const IPathSpan& Other) const {
+        return !(*this == Other);
+    }
+};
+
+
+
+class OObject;
 class Cup; // <-- Forward declaration
 class Course;
 class AVehicle;
-class ATrain;
-class ACar;
+class OBombKart;
 class TrainCrossing;
-class OThwomp;
+class OLakitu;
 
 class World {
 
@@ -88,18 +166,20 @@ public:
     AActor* GetActor(size_t index);
 
     void TickActors();
-    void RemoveExpiredActors();
     AActor* ConvertActorToAActor(Actor* actor);
     Actor* ConvertAActorToActor(AActor* actor);
 
-    Object* AddObject(std::unique_ptr<GameObject> object);
+    OObject* AddObject(OObject* object);
 
     CProperties* GetCourseProps();
     void TickObjects();
-    void DrawObjects(Camera *camera);
-    void ExpiredObjects();
-    void DestroyObjects();
+    void TickObjects60fps();
+    void DrawObjects(s32 cameraId);
     Object *GetObjectByIndex(size_t);
+
+    void TickParticles();
+    void DrawParticles(s32 cameraId);
+    ParticleEmitter* AddEmitter(ParticleEmitter* emitter);
 
     void AddCup(Cup*);
     void SetCup(Cup* cup);
@@ -128,27 +208,19 @@ public:
     size_t CupIndex = 1;
 
     std::vector<AActor*> Actors;
-    std::vector<std::unique_ptr<GameObject>> GameObjects;
+    std::vector<OObject*> Objects;
+    std::vector<AVehicle*> Vehicles;
+    std::vector<OBombKart*> BombKarts;
+    std::vector<ParticleEmitter*> Emitters;
 
-    /** Actors */
-    void AddBoat(f32 speed, uint32_t waypoint);
-    void AddTrain(ATrain::TenderStatus tender, size_t numCarriages, f32 speed, uint32_t waypoint);
-    void AddTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    void AddBus(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    void AddTankerTruck(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    void AddCar(f32 speedA, f32 speedB, TrackWaypoint* path, uint32_t waypoint);
-    std::vector<std::unique_ptr<AVehicle>> Vehicles;
+    std::unordered_map<s32, OLakitu*> Lakitus;
+
+    AVehicle* AddVehicle(AVehicle* vehicle);
+
     void ClearVehicles(void);
 
     /** Objects **/
-    std::vector<std::unique_ptr<OBombKart>> BombKarts;
     void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
-
-    std::vector<std::unique_ptr<OThwomp>> Thwomps;
-    void AddThwomp(s16 x, s16 z, s16 direction, f32 scale, s16 behaviour, s16 primAlpha, u16 boundingBoxSize = 7);
-
-    std::vector<std::shared_ptr<OPenguin>> Penguins;
-    std::shared_ptr<OPenguin> AddPenguin(Vec3f pos, u16 direction, OPenguin::PenguinType type, OPenguin::Behaviour behaviour);
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

@@ -4,10 +4,9 @@
 #include <memory>
 
 #include "RainbowRoad.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/rainbow_road_data.h"
 
 extern "C" {
@@ -33,11 +32,21 @@ extern "C" {
     extern const char *rainbow_road_dls[];
 }
 
+const course_texture rainbow_road_textures[] = {
+    { gTextureStarOutline, 0x037A, 0x0800, 0x0 },
+    { gTexture67A1B8, 0x01B7, 0x0800, 0x0 },
+    { gTextureCheckerboardBlackWhite, 0x0107, 0x0800, 0x0 },
+    { gTexture662A34, 0x0106, 0x0800, 0x0 },
+    { gTextureRainbow, 0x025D, 0x1000, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
+
 RainbowRoad::RainbowRoad() {
     this->vtx = d_course_rainbow_road_vertex;
     this->gfx = d_course_rainbow_road_packed_dls;
     this->gfxSize = 5670;
-    this->textures = rainbow_road_textures;
+    Props.textures = rainbow_road_textures;
     Props.MinimapTexture = gTextureCourseOutlineRainbowRoad;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 96;

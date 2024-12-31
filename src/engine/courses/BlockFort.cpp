@@ -4,9 +4,8 @@
 #include <memory>
 
 #include "BlockFort.h"
-#include "GameObject.h"
 #include "World.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/BombKart.h"
 #include "assets/block_fort_data.h"
 
 extern "C" {
@@ -29,15 +28,23 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "course_offsets.h"
     extern const char *block_fort_dls[];
     extern s16 currentScreenSection;
 }
+
+const course_texture block_fort_textures[] = {
+    { gTexture64286C, 0x010A, 0x0800, 0x0 },          { gTextureGrayCheckerboard, 0x010C, 0x0800, 0x0 },
+    { gTextureGrayCobblestone, 0x010C, 0x0800, 0x0 }, { gTexture64275C, 0x0110, 0x0800, 0x0 },
+    { gTexture642978, 0x010D, 0x0800, 0x0 },          { gTexture6747C4, 0x0145, 0x0800, 0x0 },
+    { gTexture6442D4, 0x0138, 0x0800, 0x0 },          { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
 
 BlockFort::BlockFort() {
     this->vtx = d_course_block_fort_vertex;
     this->gfx = d_course_block_fort_packed_dls;
     this->gfxSize = 699;
-    this->textures = block_fort_textures;
+    Props.textures = block_fort_textures;
     Props.MinimapTexture = gTextureCourseOutlineBlockFort;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;

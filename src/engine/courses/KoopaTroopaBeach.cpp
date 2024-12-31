@@ -4,10 +4,10 @@
 #include <memory>
 
 #include "KoopaTroopaBeach.h"
-#include "GameObject.h"
 #include "World.h"
 #include "engine/actors/AFinishline.h"
-#include "engine/vehicles/OBombKart.h"
+#include "engine/objects/BombKart.h"
+#include "engine/objects/Crab.h"
 #include "assets/koopa_troopa_beach_data.h"
 
 extern "C" {
@@ -35,11 +35,31 @@ extern "C" {
     extern s8 gPlayerCount;
 }
 
+const course_texture koopa_troopa_beach_textures[] = {
+    { gTexture643B3C, 0x0798, 0x0800, 0x0 },
+    { gTexture66A3DC, 0x07C5, 0x0800, 0x0 },
+    { gTextureSignWoodRedArrow, 0x04E1, 0x1000, 0x0 },
+    { gTexture66DD38, 0x0330, 0x1000, 0x0 },
+    { gTexture643430, 0x0604, 0x0800, 0x0 },
+    { gTexture660D8C, 0x0126, 0x0800, 0x0 },
+    { gTexture6609D0, 0x03BB, 0x1000, 0x0 },
+    { gTextureGrass12, 0x0874, 0x0800, 0x0 },
+    { gTexture66CA98, 0x02C9, 0x0800, 0x0 },
+    { gTexture66EBF0, 0x0146, 0x0800, 0x0 },
+    { gTexture67BEE8, 0x02D0, 0x0800, 0x0 },
+    { gTextureSandFinish, 0x022E, 0x0800, 0x0 },
+    { gTextureWheelSteamEngine, 0x020F, 0x0800, 0x0 },
+    { gTexture669570, 0x0E6B, 0x1000, 0x0 },
+    { gTextureWaves1, 0x05C4, 0x0800, 0x0 },
+    { gTextureWaves2, 0x0488, 0x0800, 0x0 },
+    { 0x00000000, 0x0000, 0x0000, 0x0 },
+};
+
 KoopaTroopaBeach::KoopaTroopaBeach() {
     this->vtx = d_course_koopa_troopa_beach_vertex;
     this->gfx = d_course_koopa_troopa_beach_packed_dls;
     this->gfxSize = 5720;
-    this->textures = koopa_troopa_beach_textures;
+    Props.textures = koopa_troopa_beach_textures;
     Props.MinimapTexture = gTextureCourseOutlineKoopaTroopaBeach;
     Props.D_800E5548[0] = 64;
     Props.D_800E5548[1] = 64;
@@ -125,6 +145,39 @@ void KoopaTroopaBeach::SpawnActors() {
     init_actor_hot_air_balloon_item_box(328.0f * gCourseDirection, 70.0f, 2541.0f);
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_item_box_spawns));
     spawn_palm_trees((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_tree_spawn));
+
+    if (gGamestate != CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1809, 625), FVector2D(-1666, 594)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1852, 757), FVector2D(-1620, 740)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1478, 1842), FVector2D(-1453, 1833)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1418, 1967), FVector2D(-1455, 1962)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1472, 2112), FVector2D(-1417, 2100)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(-1389, 2152), FVector2D(-1335, 2136)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(218, 693), FVector2D(69, 696)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(235, 528), FVector2D(24, 501)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(268, 406), FVector2D(101, 394)));
+        gWorldInstance.AddObject(new OCrab(FVector2D(223, 318), FVector2D(86, 308)));
+    }
+
+    if (gGamestate == CREDITS_SEQUENCE) {
+        for (size_t i = 0; i < NUM_SEAGULLS; i++) {
+            //gWorldInstance.AddObject(new OSeagull(FVector(-360.0f, 60.0f, -1300.0f)));
+            Vec3f pos = {-360.0f, 60.0f, -1300.0f};
+            gWorldInstance.AddObject(new OSeagull(pos));
+        }
+    } else { // Normal gameplay
+        for (size_t i = 0; i < 4; i++) {
+            Vec3f pos = {-985.0f, 15.0f, 1200.0f};
+            gWorldInstance.AddObject(new OSeagull(pos));
+            //gWorldInstance.AddObject(new OSeagull(FVector(-985.0f, 15.0f, 1200.0f)));
+        }
+
+        for (size_t i = 0; i < 6; i++) {
+            //gWorldInstance.AddObject(new OSeagull(FVector(328.0f, 20.0f, 2541.0f)));
+            Vec3f pos2 = {328.0f, 20.0f, 2541.0f};
+            gWorldInstance.AddObject(new OSeagull(pos2));
+        }
+    }
 }
 
 void KoopaTroopaBeach::SpawnVehicles() {
@@ -151,52 +204,28 @@ void KoopaTroopaBeach::MinimapSettings() {
 }
 
 void KoopaTroopaBeach::InitCourseObjects() {
-    size_t objectId;
-    size_t i;
-
-    if (gGamestate != CREDITS_SEQUENCE) {
-        for (i = 0; i < NUM_CRABS; i++) {
-            objectId = indexObjectList1[i];
-            init_object(objectId, 0);
-            gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] =
-                gCrabSpawns[i].startX * xOrientation;
-            gObjectList[objectId].unk_01C[0] = gCrabSpawns[i].patrolX * xOrientation;
-
-            gObjectList[objectId].pos[2] = gObjectList[objectId].origin_pos[2] = gCrabSpawns[i].startZ;
-            gObjectList[objectId].unk_01C[2] = gCrabSpawns[i].patrolZ;
-        }
-    }
-    for (i = 0; i < NUM_SEAGULLS; i++) {
-        objectId = indexObjectList2[i];
-        init_object(objectId, 0);
-        if (i < (NUM_SEAGULLS / 2)) {
-            gObjectList[objectId].unk_0D5 = 0;
-        } else {
-            gObjectList[objectId].unk_0D5 = 1;
-        }
-    }
 }
 
 void KoopaTroopaBeach::UpdateCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
-        update_crabs();
+        //update_crabs();
     }
     if ((gPlayerCount == 1) || (gPlayerCount == 2) || (gGamestate == CREDITS_SEQUENCE)) {
-        update_seagulls();
+        //update_seagulls();
     }
 }
 
 void KoopaTroopaBeach::RenderCourseObjects(s32 cameraId) {
     if (gGamestate != CREDITS_SEQUENCE) {
-        render_object_crabs(cameraId);
+        //render_object_crabs(cameraId);
     }
     if (gGamestate != CREDITS_SEQUENCE) {
 
         if ((gPlayerCount == 1) || (gPlayerCount == 2)) {
-            render_object_seagulls(cameraId);
+            //render_object_seagulls(cameraId);
         }
     } else {
-        render_object_seagulls(cameraId);
+        //render_object_seagulls(cameraId);
     }
 }
 

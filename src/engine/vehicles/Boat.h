@@ -30,7 +30,15 @@ class ABoat : public AVehicle {
     int16_t AnotherSmokeTimer = 0;
     int16_t SmokeTimer = 0;
 
-    explicit ABoat(size_t idx, f32 speed, uint32_t waypoint);
+    explicit ABoat(f32 speed, uint32_t waypoint);
+
+    ~ABoat() {
+        _count--;
+    }
+
+    static size_t GetCount() {
+        return _count;
+    }
 
     virtual void Spawn() override;
     virtual void BeginPlay() override;
@@ -38,5 +46,7 @@ class ABoat : public AVehicle {
     virtual void Draw(s32 playerId) override;
     virtual void Collision(s32 playerId, Player* player) override;
     virtual s32 AddSmoke(size_t, Vec3f, f32);
+private:
+    static size_t _count;
 
 };

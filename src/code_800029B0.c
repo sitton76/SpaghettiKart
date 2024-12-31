@@ -322,7 +322,7 @@ void credits_spawn_actors(void) {
     // Stupid hack to sync segment 3 memory allocations with hard-coded address in data.
     gNextFreeMemoryAddress += 0x9000;
     destroy_all_actors();
-    m_ClearActors();
+    CM_CleanWorld();
 
     CourseManager_CreditsSpawnActors();
 
