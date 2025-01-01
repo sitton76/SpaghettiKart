@@ -56,9 +56,9 @@ extern s8 gControllerPakMenuSelection;
 extern s8 D_8018EDF1;
 extern u8 gSoundMode;
 extern s8 gPlayerCount;
-extern s8 D_8018EDF4;
-extern s8 D_8018EDF5;
-extern s8 D_8018EDF6;
+extern s8 gVersusResultCursorSelection;
+extern s8 gTimeTrialsResultCursorSelection;
+extern s8 gBattleResultCursorSelection;
 extern s8 gTimeTrialDataCourseIndex;
 extern s8 gCourseRecordsMenuSelection;
 extern s8 D_8018EDF9;
@@ -78,8 +78,8 @@ extern s32 gMenuSelection; // D_800E86A0
 extern s32 gFadeModeSelection;
 extern s8 gCharacterSelections[];
 
-extern s8 D_800E86AC[];
-extern s8 D_800E86B0[4][3];
+extern s8 gGameModeMenuColumn[];
+extern s8 gGameModeSubMenuColumn[4][3];
 extern s8 gNextDemoId;
 extern s8 gControllerPakSelectedTableRow;
 extern s8 D_800E86C4[];
