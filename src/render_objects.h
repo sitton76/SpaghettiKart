@@ -221,7 +221,7 @@ void draw_hud_2d_texture(s32, s32, u32, u32, u8*);
 void func_8004C450(s32, s32, u32, u32, u8*);
 void func_8004C53C(s32, s32, u32, u32, u8*);
 void func_8004C628(s32, s32, u32, u32, u8*);
-void func_8004C8D4(s16, s16);
+void render_game_logo(s16, s16);
 void func_8004C91C(s32, s32, u8*, s32, s32, s32);
 void func_8004C9D8(s32, s32, s32, u8*, s32, s32, s32, s32);
 void func_8004CA58(s32, s32, f32, u8*, s32, s32);

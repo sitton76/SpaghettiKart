@@ -1930,7 +1930,7 @@ void render_texture_tile_rgba32_block(s16 x, s16 y, u8* texture, u32 width, u32 
 GLOBAL_ASM("asm/non_matchings/render_objects/render_texture_tile_rgba32_block.s")
 #endif
 
-void func_8004C8D4(s16 arg0, s16 arg1) {
+void render_game_logo(s16 arg0, s16 arg1) {
     render_texture_tile_rgba32_block(arg0, arg1, gTextureLogoMarioKart64, 0x100, 0x80);
 }
 

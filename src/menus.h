@@ -4,7 +4,7 @@
 #include <common_structs.h>
 #include <defines.h>
 
-// D_8018EDEC is position on options screen?
+// gSubMenuSelection is position on options screen?
 enum MenuOptionsCursorPositions { MENU_OPTIONS_CSRPOS_SOUNDMODE = 0x16 };
 
 // needs to be a union (or array...?) to go into rodata as a const
@@ -48,7 +48,7 @@ extern s32 D_8018EDE0;
 
 extern s8 gCharacterGridSelections[];
 extern s8 D_8018EDE8[];
-extern s8 D_8018EDEC;
+extern s8 gSubMenuSelection;
 extern s8 gMainMenuSelectionDepth;
 extern s8 D_8018EDEE;
 extern s8 gDebugMenuSelection;
@@ -83,7 +83,7 @@ extern s8 D_800E86B0[4][3];
 extern s8 gNextDemoId;
 extern s8 gControllerPakSelectedTableRow;
 extern s8 D_800E86C4[];
-extern s8 D_800E86D0[];
+extern s8 gControllerPakScrollDirection[];
 extern s8 unref_800E86E0[];
 extern u32 sVIGammaOffDitherOn;
 
