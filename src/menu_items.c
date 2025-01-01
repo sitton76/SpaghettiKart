@@ -3772,9 +3772,9 @@ void func_80099AEC(void) {
 #endif
         }
 #ifdef TARGET_N64
-        mio0decode(gMenuCompressedBuffer, (u8*) &gMenuTextureBuffer[sMenuTextureMap[var_s1->unk_4].offset]);
+        mio0decode(gMenuCompressedBuffer, (u8*) &gMenuTextureBuffer[sMenuTextureMap[var_s1->texNum].offset]);
 #else
-        memcpy(&gMenuTextureBuffer[sMenuTextureMap[var_s1->unk_4].offset], var_s1->texture->textureData,
+        memcpy(&gMenuTextureBuffer[sMenuTextureMap[var_s1->texNum].offset], var_s1->texture->textureData,
                var_s1->texture->width * var_s1->texture->height * 2);
 #endif
         var_s1->texture = NULL;
@@ -4798,7 +4798,7 @@ void func_8009CE64(s32 arg0) {
     s32 thing;
     s32 var_a1;
     UNUSED s32 stackPadding0;
-    MenuItem* temp_v0;
+    MenuItem* menuItem;
 
     var_a1 = 0;
     if (gGamestate == 5) {
@@ -4827,9 +4827,9 @@ void func_8009CE64(s32 arg0) {
                 D_8018E7AC[arg0] = 5;
             } else {
                 var_a1 = 0;
-                temp_v0 = find_menu_items(0x000000B0);
-                if (temp_v0 != NULL) {
-                    switch (temp_v0->cursor) { /* switch 8; irregular */
+                menuItem = find_menu_items(0x000000B0);
+                if (menuItem != NULL) {
+                    switch (menuItem->state) { /* switch 8; irregular */
                         case 10:               /* switch 8 */
                             func_802903B0();
                             break;
@@ -4846,9 +4846,9 @@ void func_8009CE64(s32 arg0) {
                     }
                 } else {
                     var_a1 = 0;
-                    temp_v0 = find_menu_items(0x000000AC);
-                    if (temp_v0 != NULL) {
-                        switch (temp_v0->cursor) { /* switch 7; irregular */
+                    menuItem = find_menu_items(0x000000AC);
+                    if (menuItem != NULL) {
+                        switch (menuItem->state) { /* switch 7; irregular */
                             case 11:               /* switch 7 */
                                 func_802903B0();
                                 D_8016556E = 1;
@@ -4860,9 +4860,9 @@ void func_8009CE64(s32 arg0) {
                         }
                     } else {
                         var_a1 = 0;
-                        temp_v0 = find_menu_items(0x000000C7);
-                        if (temp_v0 != NULL) {
-                            switch (temp_v0->cursor) { /* switch 1 */
+                        menuItem = find_menu_items(0x000000C7);
+                        if (menuItem != NULL) {
+                            switch (menuItem->state) { /* switch 1 */
                                 case 12:               /* switch 1 */
                                     func_802903B0();
                                     var_a1 = 1;
@@ -4894,9 +4894,9 @@ void func_8009CE64(s32 arg0) {
                                 gIsGamePaused = 0;
                             }
                         }
-                        temp_v0 = find_menu_items(0x000000BD);
-                        if (temp_v0 != NULL) {
-                            switch (temp_v0->cursor) { /* switch 2 */
+                        menuItem = find_menu_items(0x000000BD);
+                        if (menuItem != NULL) {
+                            switch (menuItem->state) { /* switch 2 */
                                 case 11:               /* switch 2 */
                                     D_8015F892 = 1;
                                     D_8015F890 = 0;
@@ -7952,7 +7952,7 @@ void func_800A54EC(void) {
     }
     whyTheSequel = D_800F0B50[why];
     sp50.column = var_v1->column - 8;
-    sp50.row = (var_v1->row + ((sp48->cursor - whyTheSequel) * 0xD)) - 8;
+    sp50.row = (var_v1->row + ((sp48->state - whyTheSequel) * 0xD)) - 8;
     func_800A66A8(sp48, &sp50);
 }
 
@@ -8959,7 +8959,7 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
             case MENU_ITEM_TYPE_1CC:
             case MENU_ITEM_TYPE_1CD:
             case MENU_ITEM_TYPE_1CE:
-                func_800AF480(entry);
+                func_800AF480(menuItem);
                 break;
             case MENU_ITEM_UI_NONE:
             case MENU_ITEM_UI_START_BACKGROUND:
@@ -8983,7 +8983,7 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
             } else if (priSpecial == 0) {
                 isRendered = true;
             }
-            if ((isRendered) && (j == (s8) var_s1->priority)) {
+            if ((isRendered) && (j == (s8) menuItem->priority)) {
                 render_menus(menuItem);
             }
         }
@@ -10273,7 +10273,7 @@ MenuItem* find_menu_items(s32 arg0) {
 s32 get_character_menu_state(s32 arg0) {
     MenuItem* temp;
     temp = get_menu_item_character(arg0);
-    return temp->cursor;
+    return temp->state;
 }
 
 void hover_cursor_over_character_portrait(MenuItem* arg0, s32 arg1) {
@@ -11071,7 +11071,7 @@ void func_800ACC50(MenuItem* arg0) {
             }
             break;
         case 1:
-            if (find_menu_items_dupe(0x000000B1)->cursor >= 2) {
+            if (find_menu_items_dupe(0x000000B1)->state >= 2) {
                 arg0->state = 2;
             }
             break;
@@ -11171,7 +11171,7 @@ void func_800ACF40(MenuItem* arg0) {
             if (var_v1 == 0) {
                 arg0->param2++;
                 if (arg0->param2 >= 0x1F) {
-                    if (find_menu_items_dupe(0x000000B0)->cursor >= 2) {
+                    if (find_menu_items_dupe(0x000000B0)->state >= 2) {
                         func_8009A640(arg0->D_8018DEE0_index, 0, temp_a2,
                                       segmented_to_virtual_dupe_2(gCharacterCelebrateAnimation[temp_a1]));
                         arg0->state = 3;

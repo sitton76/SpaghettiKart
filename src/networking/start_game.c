@@ -129,7 +129,7 @@ void networking_start_session(const char* data) {
     gModeSelection = GRAND_PRIX;
     gPlayerCount = 1;
     // gCurrentCourseId = 8;
-    gDebugMenuSelection = DEBUG_MENU_EXITED;
+    gDebugMenuSelection = DEBUG_MENU_OPTION_SELECTED;
     func_8009E1C0();
     func_800CA330(0x19);
 }

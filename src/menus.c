@@ -1176,7 +1176,7 @@ void splash_menu_act(struct Controller* controller, u16 arg1) {
             if (btnAndStick & (A_BUTTON | START_BUTTON)) {
                 func_8009E1C0();
                 func_800CA330(0x19);
-                gDebugMenuSelection = DEBUG_MENU_EXITED;
+                gDebugMenuSelection = DEBUG_MENU_OPTION_SELECTED;
 
                 if (controller->button & CONT_L) {
                     gDemoMode = DEMO_MODE_ACTIVE;
@@ -1188,15 +1188,15 @@ void splash_menu_act(struct Controller* controller, u16 arg1) {
                     if (btnAndStick & A_BUTTON) {
                         gDebugGotoScene = DEBUG_GOTO_ENDING;
                     } else {
-                        gDebugGotoScene = DEBUG_GOTO_CREDITS_SEQUENCE_CC_EXTRA;
+                        gDebugGotoScene = DEBUG_GOTO_CREDITS_SEQUENCE_EXTRA;
                     }
                 }
                 play_sound2(SOUND_MENU_OK_CLICKED);
             } else if ((btnAndStick & B_BUTTON) && (controller->button & Z_TRIG)) {
                 func_8009E1C0();
                 func_800CA330(0x19);
-                gDebugMenuSelection = DEBUG_MENU_EXITED;
-                gDebugGotoScene = DEBUG_GOTO_CREDITS_SEQUENCE_CC_50;
+                gDebugMenuSelection = DEBUG_MENU_OPTION_SELECTED;
+                gDebugGotoScene = DEBUG_GOTO_CREDITS_SEQUENCE_DEFAULT;
                 play_sound2(SOUND_MENU_OK_CLICKED);
             } else if (btnAndStick & CONT_R) {
                 gDebugMenuSelection = DEBUG_MENU_DISABLED;
