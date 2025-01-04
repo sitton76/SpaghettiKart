@@ -14,6 +14,7 @@
 #define PFS_NO_ERROR 0        // controller pak no error return
 #define PFS_NO_PAK_INSERTED 1 // no pak pressent or wrong device inserted into the controller
 #define PFS_PAK_BAD_READ 2    // controller pak error while data transfer
+#define PFS_PAK_CORRUPTED 3   // controller pak has courrupted or has weird data
 #define PFS_FILE_OVERFLOW 4   // too many files written to in the controller pak
 #define PFS_INVALID_DATA -1   // bad arguments, game note does not exist, osPfsInit was not called.
 // controller pak test functions
@@ -54,7 +55,7 @@ void func_800B5404(s32, s32);
 u8 func_800B54C0(s32, s32);
 u8 func_800B54EC(s32, s32);
 u8 func_800B5508(s32, s32, s32);
-s32 func_800B5530(s32);
+s32 is_cc_mode_complete(s32);
 s32 has_unlocked_extra_mode(void);
 s32 has_completed_extra_mode(void);
 void func_800B559C(s32);
@@ -87,6 +88,7 @@ s32 func_800B6A68(void);
 // these might not be in this file, but for now...
 
 extern u32* D_800DC714;
+extern struct_8018EE10_entry D_8018EE10[];
 
 extern u16 gCompanyCode;
 extern u32 gGameCode;           // osPfs gamecode

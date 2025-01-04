@@ -14,7 +14,7 @@ extern "C" {
 #include "engine/Matrix.h"
 #include "render_objects.h"
 #include "code_80086E70.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 }
 
 OTrophy::OTrophy(const FVector& pos, TrophyType trophy, Behaviour bhv) {

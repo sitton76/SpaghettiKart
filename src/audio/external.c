@@ -12,7 +12,7 @@
 #include "audio/port_eu.h"
 #include "code_800029B0.h"
 #include "code_80005FD0.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include <stdbool.h>
 #include "port/Game.h"
 

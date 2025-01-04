@@ -23,7 +23,7 @@
 #include "main.h"
 #include "menus.h"
 #include "render_player.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "effects.h"
 #include "decode.h"
 #include "port/Game.h"
@@ -488,7 +488,7 @@ void func_80039DA4(void) {
     };
 
     if (((GetCupCursorPosition() == COURSE_ONE) && (D_8016556E == 0)) || (gDemoMode == 1) ||
-        (gDebugMenuSelection == DEBUG_MENU_EXITED)) {
+        (gDebugMenuSelection == DEBUG_MENU_OPTION_SELECTED)) {
         for (i = 0; i < NUM_PLAYERS; i++) {
             D_80165270[i] = sp2C[i];
         }
@@ -506,7 +506,7 @@ UNUSED s16 D_800E43A8 = 0;
 void spawn_players_gp_one_player(f32* arg0, f32* arg1, f32 arg2) {
     func_80039DA4();
     if (((GetCupCursorPosition() == COURSE_ONE) && (D_8016556E == 0)) || (gDemoMode == 1) ||
-        (gDebugMenuSelection == DEBUG_MENU_EXITED)) {
+        (gDebugMenuSelection == DEBUG_MENU_OPTION_SELECTED)) {
         s16 rand;
         s16 i;
 
@@ -639,7 +639,7 @@ void spawn_players_versus_one_player(f32* arg0, f32* arg1, f32 arg2) {
 
 void spawn_players_gp_two_player(f32* arg0, f32* arg1, f32 arg2) {
     func_80039DA4();
-    if ((GetCupCursorPosition() == COURSE_ONE) || (gDemoMode == 1) || (gDebugMenuSelection == DEBUG_MENU_EXITED)) {
+    if ((GetCupCursorPosition() == COURSE_ONE) || (gDemoMode == 1) || (gDebugMenuSelection == DEBUG_MENU_OPTION_SELECTED)) {
         s16 rand;
         s16 i;
 

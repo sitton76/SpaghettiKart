@@ -26,7 +26,7 @@
 #include "code_8006E9C0.h"
 #include "render_objects.h"
 #include "update_objects.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "collision.h"
 #include "main.h"
 #include "menus.h"
@@ -1535,7 +1535,7 @@ void func_8004B72C(s32 primRed, s32 primGreen, s32 primBlue, s32 envRed, s32 env
                       PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
 }
 
-void func_8004B7DC(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
+void render_texture_rectangle(s32 x, s32 y, s32 width, s32 height, s32 s, s32 w, s32 mode) {
 
     s32 xh = (((x + width) - 1) << 2);
     s32 yh = (((y + height) - 1) << 2);
@@ -1545,17 +1545,19 @@ void func_8004B7DC(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 
     s32 xh2 = (((x + width)) << 2);
     s32 yh2 = ((y + height) << 2);
 
-    if (arg6 == 0) {
+    // If no cycle mode is set, render texture rectangle in copy mode
+    if (mode == 0) {
         //! @todo Update to F3DEX. Uses OLD definition for gspTextureRectangle.
-        gSPTextureRectangle(gDisplayListHead++, xl, yl, xh, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
+        gSPTextureRectangle(gDisplayListHead++, xl, yl, xh, yh, G_TX_RENDERTILE, s << 5, (w << 5), 4 << 10,
                            1 << 10);
         return;
     }
-    gSPTextureRectangle(gDisplayListHead++, xl, yl, xh2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+    // Render texture rectangle in default cycle mode (1 cycle or 2 cycle)
+    gSPTextureRectangle(gDisplayListHead++, xl, yl, xh2, yh2, G_TX_RENDERTILE, s << 5, (w << 5), 1 << 10,
                        1 << 10);
 }
 
-void func_8004B7DC_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
+void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
 
     s32 xh = (((x + width) - 1));
     s32 yh = (((y + height) - 1) << 2);
@@ -1604,8 +1606,9 @@ void func_8004B7DC_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5,
     //                    1 << 10);
 }
 
-void func_8004B950(s32 x, s32 y, s32 width, s32 height, s32 arg4) {
-    func_8004B7DC(x, y, width, height, 0, 0, arg4);
+void render_texture_rectangle_wrap(s32 x, s32 y, s32 width, s32 height, s32 mode) {
+    // (0, 0) means texture coordinates will be rendered from the top left corner
+    render_texture_rectangle(x, y, width, height, 0, 0, mode);
 }
 
 // Positions item window, the Lap 1/2/3, TIME texture, and minimap on the screen.
@@ -1629,7 +1632,7 @@ void func_8004B97C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             var_v0 = -arg1;
             var_a1 = 0;
         }
-        func_8004B7DC(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
+        render_texture_rectangle(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
     }
 }
 
@@ -1653,7 +1656,7 @@ void func_8004B97C_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             var_v0 = -arg1;
             var_a1 = 0;
         }
-        func_8004B7DC_wide(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
+        render_texture_rectangle_wide(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
     }
 }
 
@@ -1677,7 +1680,7 @@ void func_8004BA08(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             phi_v0 = -arg1;
             phi_a1 = 0;
         }
-        func_8004B7DC(sp2C, phi_a1, arg2 - phi_v1, arg3 - phi_v0, phi_v1 + arg2, phi_v0, arg4);
+        render_texture_rectangle(sp2C, phi_a1, arg2 - phi_v1, arg3 - phi_v0, phi_v1 + arg2, phi_v0, arg4);
     }
 }
 
@@ -1708,7 +1711,7 @@ void func_8004BA98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
             sp30 = 0;
             phi_a3 = arg3 + arg1;
         }
-        func_8004B7DC_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+        render_texture_rectangle_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
     }
 }
 
@@ -1738,7 +1741,7 @@ void func_8004BA98_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
             sp30 = 0;
             phi_a3 = arg3 + arg1;
         }
-        func_8004B7DC_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+        render_texture_rectangle_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
     }
 }
 
@@ -1793,7 +1796,7 @@ UNUSED void func_8004BD14(s32 x, s32 y, u32 width, u32 height, s32 alpha, u8* te
     gDPLoadMultiTile(gDisplayListHead++, texture2, 256, G_TX_RENDERTILE + 1, G_IM_FMT_RGBA, G_IM_SIZ_16b, width, height,
                      0, 0, width - 1, height - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP,
                      G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
-    func_8004B950(x, y, width, height, 2);
+    render_texture_rectangle_wrap(x, y, width, height, 2);
     gSPDisplayList(gDisplayListHead++, D_0D008120);
 }
 
@@ -1879,56 +1882,52 @@ void func_8004C628(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
-#ifdef NON_MATCHING
-// https://decomp.me/scratch/TqXqn
-// There's a weird fakematch concerning `athing`, don't know that to make of. Can't quite get it over the finish line
-// though
-void func_8004C6FC(s16 arg0, s16 arg1, u8* texture, u32 width, u32 arg4) {
-    s32 temp_v0_3;
-    s32 var_s3;
-    s32 var_s4;
-    s32 athing;
-    s32 temp_t3;
-    u32 temp_t8;
-    s32 heigth;
-    s32 var_s6;
-    u8* textureCopy;
+// non-matching
+void render_texture_tile_rgba32_block(s16 x, s16 y, u8* texture, u32 width, u32 height) {
+    s32 remainingSize;
+    s32 currX;
+    s32 currY;
+    u32 size;
+    s32 tileHeight;
+    s32 numTiles;
+    s32 numTilesDup;
 
-    athing = arg0 - (width / 2);
-    var_s4 = arg1 - (arg4 / 2);
-    textureCopy = texture;
+    currX = x - (width / 2);
+    currY = y - (height / 2);
+
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    temp_t8 = width * arg4 * 4;
-    temp_t3 = temp_t8 / 4096;
-    if (temp_t8 % 4096) {
-        temp_t3++;
+   
+    size = width * height * 4;
+    numTiles = size / 4096;
+    if (size % 4096) {
+        numTiles++;
     }
-    heigth = arg4 / temp_t3;
-    var_s6 = temp_t3;
-    for (var_s3 = 0; var_s3 < var_s6; var_s3++) {
-        load_texture_tile_rgba32_nomirror(textureCopy, width, heigth);
-        func_8004B950(athing, var_s4, width, heigth, 1);
-        temp_v0_3 = temp_t8 - (width * heigth * 4);
-        textureCopy += (width * heigth * 4);
-        if (temp_v0_3 < 0) {
-            heigth = temp_t8 / width;
+   
+    tileHeight = height / numTiles;
+   
+    numTilesDup = numTiles;
+    for (size_t i = 0; i < numTilesDup; i++) {
+        load_texture_tile_rgba32_nomirror(texture, width, tileHeight);
+        render_texture_rectangle_wrap(currX, currY, width, tileHeight, 1);
+        
+        texture += (width * tileHeight * 4);
+        remainingSize = size - (width * tileHeight * 4);
+        if (remainingSize < 0) {
+            tileHeight = size / width;
         } else {
-            temp_t8 = temp_v0_3;
+            size -= (width * tileHeight * 4);
         }
         // Weird fakematch that is a HUGE improvement
-        athing += var_s4 * 0;
-        var_s4 += heigth;
+        currX += currY * 0;
+        currY += tileHeight;
     }
 
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
-#else
-GLOBAL_ASM("asm/non_matchings/render_objects/func_8004C6FC.s")
-#endif
 
-void func_8004C8D4(s16 arg0, s16 arg1) {
-    func_8004C6FC(arg0, arg1, D_8018D1E0, 0x100, 0x80);
+void render_game_logo(s16 x, s16 y) {
+    render_texture_tile_rgba32_block(x, y, LOAD_ASSET(gTextureLogoMarioKart64), ResourceGetTexWidthByName(gTextureLogoMarioKart64), ResourceGetTexHeightByName(gTextureLogoMarioKart64));
 }
 
 UNUSED void func_8004C91C(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4, s32 arg5) {
@@ -4242,7 +4241,7 @@ UNUSED void func_800573DC(void) {
 }
 
 void func_800573E4(s32 x, s32 y, s8 str) {
-    func_8004B7DC(x, y, 8, 8, (((str % 16) * 8) << 16) >> 16, (((unsigned short) (str / 16)) << 19) >> 16, 0);
+    render_texture_rectangle(x, y, 8, 8, (((str % 16) * 8) << 16) >> 16, (((unsigned short) (str / 16)) << 19) >> 16, 0);
 }
 
 void debug_wrap_text(s32* x, s32* y) {

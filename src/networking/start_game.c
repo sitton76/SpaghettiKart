@@ -6,7 +6,7 @@
 #include "code_800029B0.h"
 #include "menus.h"
 #include "audio/external.h"
-#include "code_80091750.h"
+#include "menu_items.h"
 #include "port/Game.h"
 
 // PLAYER_EXISTS | PLAYER_STAGING | PLAYER_START_SEQUENCE | PLAYER_HUMAN
@@ -129,7 +129,7 @@ void networking_start_session(const char* data) {
     gModeSelection = GRAND_PRIX;
     gPlayerCount = 1;
     // gCurrentCourseId = 8;
-    gDebugMenuSelection = DEBUG_MENU_EXITED;
+    gDebugMenuSelection = DEBUG_MENU_OPTION_SELECTED;
     func_8009E1C0();
     func_800CA330(0x19);
 }
