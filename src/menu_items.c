@@ -1292,19 +1292,19 @@ void func_80091FA4(void) {
     func_8009A344();
     clear_menus();
     func_80092258();
-    add_menu_item(MENU_ITEM_TYPE_096, 0x00000064, 0x00000024, MENU_ITEM_UI_PRIORITY_1);
-    add_menu_item(MENU_ITEM_TYPE_097, 0x00000064, 0x000000DD, MENU_ITEM_UI_PRIORITY_1);
-    add_menu_item(MENU_ITEM_TYPE_098, 0, 0, MENU_ITEM_UI_PRIORITY_0);
-    add_menu_item(MENU_ITEM_PAUSE, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+    add_menu_item(MENU_ITEM_TYPE_096, 0x00000064, 0x00000024, MENU_ITEM_PRIORITY_1);
+    add_menu_item(MENU_ITEM_TYPE_097, 0x00000064, 0x000000DD, MENU_ITEM_PRIORITY_1);
+    add_menu_item(MENU_ITEM_TYPE_098, 0, 0, MENU_ITEM_PRIORITY_0);
+    add_menu_item(MENU_ITEM_PAUSE, 0, 0, MENU_ITEM_PRIORITY_0);
     if (gModeSelection == TIME_TRIALS) {
-        add_menu_item(MENU_ITEM_TYPE_0BE, 0, 0, MENU_ITEM_UI_PRIORITY_0);
-        add_menu_item(MENU_ITEM_TYPE_10E, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+        add_menu_item(MENU_ITEM_TYPE_0BE, 0, 0, MENU_ITEM_PRIORITY_0);
+        add_menu_item(MENU_ITEM_TYPE_10E, 0, 0, MENU_ITEM_PRIORITY_0);
     }
     if ((D_8015F890 != 0) && (gModeSelection == TIME_TRIALS)) {
-        add_menu_item(MENU_ITEM_END_COURSE_OPTION, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+        add_menu_item(MENU_ITEM_END_COURSE_OPTION, 0, 0, MENU_ITEM_PRIORITY_0);
     }
     if (!(gControllerBits & 1) && (gDemoUseController != 0)) {
-        add_menu_item(MENU_ITEM_UI_NO_CONTROLLER, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+        add_menu_item(MENU_ITEM_UI_NO_CONTROLLER, 0, 0, MENU_ITEM_PRIORITY_2);
     }
     func_800B5F30();
 }
@@ -1415,22 +1415,22 @@ void func_80092500(void) {
 
     switch (gModeSelection) {
         case GRAND_PRIX:
-            add_menu_item(MENU_ITEM_TYPE_0AA, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+            add_menu_item(MENU_ITEM_TYPE_0AA, 0, 0, MENU_ITEM_PRIORITY_0);
             break;
         case TIME_TRIALS:
-            add_menu_item(MENU_ITEM_TYPE_0B9, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+            add_menu_item(MENU_ITEM_TYPE_0B9, 0, 0, MENU_ITEM_PRIORITY_0);
             break;
     }
 }
 
 void func_80092564(void) {
-    add_menu_item(MENU_ITEM_TYPE_0AC, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+    add_menu_item(MENU_ITEM_TYPE_0AC, 0, 0, MENU_ITEM_PRIORITY_0);
     func_8005D18C();
     func_8001968C();
 }
 
 void func_800925A0(void) {
-    add_menu_item(MENU_ITEM_TYPE_0AF, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+    add_menu_item(MENU_ITEM_TYPE_0AF, 0, 0, MENU_ITEM_PRIORITY_0);
 }
 
 void func_800925CC(void) {
@@ -1441,122 +1441,122 @@ void func_800925CC(void) {
 }
 
 void func_80092604(void) {
-    add_menu_item(MENU_ITEM_TYPE_0B0, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+    add_menu_item(MENU_ITEM_TYPE_0B0, 0, 0, MENU_ITEM_PRIORITY_0);
 }
 
 void func_80092630(void) {
-    add_menu_item(MENU_ITEM_ANNOUNCE_GHOST, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+    add_menu_item(MENU_ITEM_ANNOUNCE_GHOST, 0, 0, MENU_ITEM_PRIORITY_0);
 }
 
 void func_8009265C(void) {
-    add_menu_item(MENU_ITEM_TYPE_12B, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+    add_menu_item(MENU_ITEM_TYPE_12B, 0, 0, MENU_ITEM_PRIORITY_2);
 }
 
 void func_80092688(void) {
     switch (D_800DC5E4) {
         case 0:
-            add_menu_item(MENU_ITEM_TYPE_1CE, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1CE, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         default:
-            add_menu_item(MENU_ITEM_TYPE_190, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_191, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_190, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_191, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 2:
-            add_menu_item(MENU_ITEM_TYPE_192, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_193, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_192, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_193, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 3:
-            add_menu_item(MENU_ITEM_TYPE_194, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_195, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_194, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_195, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 4:
-            add_menu_item(MENU_ITEM_TYPE_196, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_197, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_196, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_197, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 5:
-            add_menu_item(MENU_ITEM_TYPE_198, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_199, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_19A, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_19B, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_198, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_199, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_19A, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_19B, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 6:
-            add_menu_item(MENU_ITEM_TYPE_198, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_19C, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_19D, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_19E, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_198, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_19C, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_19D, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_19E, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 7:
-            add_menu_item(MENU_ITEM_TYPE_19F, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A0, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A1, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A2, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_19F, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A0, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A1, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A2, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 8:
-            add_menu_item(MENU_ITEM_TYPE_1A3, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A4, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A3, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A4, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 9:
-            add_menu_item(MENU_ITEM_TYPE_1A5, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A6, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A7, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A8, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A9, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A5, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A6, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A7, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A8, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A9, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 10:
-            add_menu_item(MENU_ITEM_TYPE_1A5, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1A6, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1AA, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1AB, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1AC, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A5, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1A6, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1AA, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1AB, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1AC, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 11:
-            add_menu_item(MENU_ITEM_TYPE_1AD, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1AE, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1AF, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B0, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1AD, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1AE, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1AF, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B0, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 12:
-            add_menu_item(MENU_ITEM_TYPE_1B1, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B2, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B1, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B2, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 13:
-            add_menu_item(MENU_ITEM_TYPE_1B3, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B4, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B5, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B3, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B4, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B5, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 14:
-            add_menu_item(MENU_ITEM_TYPE_1B6, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B7, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B8, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1B9, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1BA, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1BB, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1BC, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B6, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B7, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B8, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1B9, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1BA, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1BB, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1BC, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 15:
-            add_menu_item(MENU_ITEM_TYPE_1BD, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1BE, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1BF, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C0, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1BD, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1BE, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1BF, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C0, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 16:
-            add_menu_item(MENU_ITEM_TYPE_1C1, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C2, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C3, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C1, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C2, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C3, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 17:
-            add_menu_item(MENU_ITEM_TYPE_1C4, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C5, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C6, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C7, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C8, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1C9, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1CA, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1CB, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-            add_menu_item(MENU_ITEM_TYPE_1CC, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C4, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C5, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C6, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C7, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C8, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1C9, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1CA, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1CB, 0, 0, MENU_ITEM_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1CC, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
         case 18:
-            add_menu_item(MENU_ITEM_TYPE_1CD, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+            add_menu_item(MENU_ITEM_TYPE_1CD, 0, 0, MENU_ITEM_PRIORITY_2);
             break;
     }
 }
@@ -2274,133 +2274,133 @@ void setup_menus(void) {
         load_menu_states(gMenuSelection);
         switch (gMenuSelection) {
             case OPTIONS_MENU:
-                add_menu_item(MAIN_MENU_BACKGROUND, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-                add_menu_item(MENU_ITEM_TYPE_0F1, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                add_menu_item(MENU_ITEM_TYPE_0F0, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+                add_menu_item(MAIN_MENU_BACKGROUND, 0, 0, MENU_ITEM_PRIORITY_2);
+                add_menu_item(MENU_ITEM_TYPE_0F1, 0, 0, MENU_ITEM_PRIORITY_4);
+                add_menu_item(MENU_ITEM_TYPE_0F0, 0, 0, MENU_ITEM_PRIORITY_2);
                 break;
             case DATA_MENU:
-                add_menu_item(MAIN_MENU_BACKGROUND, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-                add_menu_item(MENU_ITEM_TYPE_08C, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_07C, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_07D, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_07E, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_07F, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_080, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_081, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_082, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_083, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_084, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_085, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_086, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_087, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_088, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_089, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_08A, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_08B, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_08D, 0, 0, MENU_ITEM_UI_PRIORITY_8);
+                add_menu_item(MAIN_MENU_BACKGROUND, 0, 0, MENU_ITEM_PRIORITY_2);
+                add_menu_item(MENU_ITEM_TYPE_08C, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_07C, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_07D, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_07E, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_07F, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_080, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_081, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_082, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_083, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_084, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_085, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_086, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_087, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_088, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_089, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_08A, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_08B, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_08D, 0, 0, MENU_ITEM_PRIORITY_8);
                 break;
             case COURSE_DATA_MENU:
-                add_menu_item(MENU_ITEM_DATA_COURSE_IMAGE, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(MENU_ITEM_DATA_COURSE_INFO, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(MENU_ITEM_DATA_COURSE_SELECTABLE, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(MENU_ITEM_TYPE_0E9, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(MENU_ITEM_TYPE_0EA, 0, 0, MENU_ITEM_UI_PRIORITY_8);
+                add_menu_item(MENU_ITEM_DATA_COURSE_IMAGE, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(MENU_ITEM_DATA_COURSE_INFO, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(MENU_ITEM_DATA_COURSE_SELECTABLE, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(MENU_ITEM_TYPE_0E9, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(MENU_ITEM_TYPE_0EA, 0, 0, MENU_ITEM_PRIORITY_8);
                 break;
             case LOGO_INTRO_MENU:
-                add_menu_item(MENU_ITEM_UI_LOGO_INTRO, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+                add_menu_item(MENU_ITEM_UI_LOGO_INTRO, 0, 0, MENU_ITEM_PRIORITY_0);
                 break;
             case CONTROLLER_PAK_MENU:
-                add_menu_item(MENU_ITEM_TYPE_0DA, 0, 0, MENU_ITEM_UI_PRIORITY_0);
-                add_menu_item(MENU_ITEM_TYPE_0D2, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                add_menu_item(MENU_ITEM_TYPE_0D4, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_0D3, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(MENU_ITEM_TYPE_0D5, 0, 0, MENU_ITEM_UI_PRIORITY_A);
-                add_menu_item(MENU_ITEM_TYPE_0D6, 0, 0, MENU_ITEM_UI_PRIORITY_A);
-                add_menu_item(MENU_ITEM_TYPE_0D7, 0, 0, MENU_ITEM_UI_PRIORITY_A);
-                add_menu_item(MENU_ITEM_TYPE_0D8, 0, 0, MENU_ITEM_UI_PRIORITY_A);
-                add_menu_item(MENU_ITEM_TYPE_0D9, 0, 0, MENU_ITEM_UI_PRIORITY_A);
+                add_menu_item(MENU_ITEM_TYPE_0DA, 0, 0, MENU_ITEM_PRIORITY_0);
+                add_menu_item(MENU_ITEM_TYPE_0D2, 0, 0, MENU_ITEM_PRIORITY_4);
+                add_menu_item(MENU_ITEM_TYPE_0D4, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_0D3, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(MENU_ITEM_TYPE_0D5, 0, 0, MENU_ITEM_PRIORITY_A);
+                add_menu_item(MENU_ITEM_TYPE_0D6, 0, 0, MENU_ITEM_PRIORITY_A);
+                add_menu_item(MENU_ITEM_TYPE_0D7, 0, 0, MENU_ITEM_PRIORITY_A);
+                add_menu_item(MENU_ITEM_TYPE_0D8, 0, 0, MENU_ITEM_PRIORITY_A);
+                add_menu_item(MENU_ITEM_TYPE_0D9, 0, 0, MENU_ITEM_PRIORITY_A);
                 break;
             case START_MENU:
-                add_menu_item(MENU_ITEM_UI_LOGO_AND_COPYRIGHT, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                add_menu_item(MENU_ITEM_UI_START_BACKGROUND, 0, 0, MENU_ITEM_UI_PRIORITY_0);
-                add_menu_item(START_MENU_FLAG, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+                add_menu_item(MENU_ITEM_UI_LOGO_AND_COPYRIGHT, 0, 0, MENU_ITEM_PRIORITY_4);
+                add_menu_item(MENU_ITEM_UI_START_BACKGROUND, 0, 0, MENU_ITEM_PRIORITY_0);
+                add_menu_item(START_MENU_FLAG, 0, 0, MENU_ITEM_PRIORITY_0);
                 if (gControllerBits & 1) {
-                    add_menu_item(MENU_ITEM_UI_PUSH_START_BUTTON, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+                    add_menu_item(MENU_ITEM_UI_PUSH_START_BUTTON, 0, 0, MENU_ITEM_PRIORITY_2);
                 } else {
-                    add_menu_item(MENU_ITEM_UI_NO_CONTROLLER, 0, 0, MENU_ITEM_UI_PRIORITY_2);
+                    add_menu_item(MENU_ITEM_UI_NO_CONTROLLER, 0, 0, MENU_ITEM_PRIORITY_2);
                 }
-                add_menu_item(MENU_ITEM_UI_START_RECORD_TIME, 0, 0, MENU_ITEM_UI_PRIORITY_6);
+                add_menu_item(MENU_ITEM_UI_START_RECORD_TIME, 0, 0, MENU_ITEM_PRIORITY_6);
                 gDemoMode = 0;
                 gDemoUseController = 0;
                 break;
             case MAIN_MENU:
-                add_menu_item(MAIN_MENU_BACKGROUND, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-                add_menu_item(MENU_ITEM_UI_GAME_SELECT, 0x0000015E, 0x00000011, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_UI_4P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_UI_3P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_UI_2P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_UI_1P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_UI_OK, 0x0000015E, 0x000000C8, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MAIN_MENU_DATA_GFX, 0x0000015E, 0x000000C8, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MAIN_MENU_OPTION_GFX, 0x0000015E, 0x000000C8, MENU_ITEM_UI_PRIORITY_6);
+                add_menu_item(MAIN_MENU_BACKGROUND, 0, 0, MENU_ITEM_PRIORITY_2);
+                add_menu_item(MENU_ITEM_UI_GAME_SELECT, 0x0000015E, 0x00000011, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_UI_4P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_UI_3P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_UI_2P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_UI_1P_GAME, 0x0000015E, 0x0000003E, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_UI_OK, 0x0000015E, 0x000000C8, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MAIN_MENU_DATA_GFX, 0x0000015E, 0x000000C8, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MAIN_MENU_OPTION_GFX, 0x0000015E, 0x000000C8, MENU_ITEM_PRIORITY_6);
                 if (has_unlocked_extra_mode() != 0) {
-                    add_menu_item(MAIN_MENU_EXTRA_CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
+                    add_menu_item(MAIN_MENU_EXTRA_CC, 0, 0, MENU_ITEM_PRIORITY_6);
                 }
-                add_menu_item(MAIN_MENU_150CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MAIN_MENU_100CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MAIN_MENU_50CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MAIN_MENU_TIME_TRIALS_DATA, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MAIN_MENU_TIME_TRIALS_BEGIN, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_01B, 0, 0, MENU_ITEM_UI_PRIORITY_C);
+                add_menu_item(MAIN_MENU_150CC, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MAIN_MENU_100CC, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MAIN_MENU_50CC, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MAIN_MENU_TIME_TRIALS_DATA, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MAIN_MENU_TIME_TRIALS_BEGIN, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_01B, 0, 0, MENU_ITEM_PRIORITY_C);
                 break;
             case CHARACTER_SELECT_MENU:
-                add_menu_item(CHARACTER_SELECT_BACKGROUND, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-                add_menu_item(CHARACTER_SELECT_MENU_PLAYER_SELECT_BANNER, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_OK, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_MARIO, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(CHARACTER_SELECT_MENU_LUIGI, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(CHARACTER_SELECT_MENU_TOAD, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_PEACH, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_YOSHI, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_DK, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_WARIO, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(CHARACTER_SELECT_MENU_BOWSER, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                add_menu_item(CHARACTER_SELECT_MENU_1P_CURSOR, 0, 0, MENU_ITEM_UI_PRIORITY_C);
-                add_menu_item(CHARACTER_SELECT_MENU_2P_CURSOR, 0, 0, MENU_ITEM_UI_PRIORITY_C);
-                add_menu_item(CHARACTER_SELECT_MENU_3P_CURSOR, 0, 0, MENU_ITEM_UI_PRIORITY_C);
-                add_menu_item(CHARACTER_SELECT_MENU_4P_CURSOR, 0, 0, MENU_ITEM_UI_PRIORITY_C);
+                add_menu_item(CHARACTER_SELECT_BACKGROUND, 0, 0, MENU_ITEM_PRIORITY_2);
+                add_menu_item(CHARACTER_SELECT_MENU_PLAYER_SELECT_BANNER, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_OK, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_MARIO, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(CHARACTER_SELECT_MENU_LUIGI, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(CHARACTER_SELECT_MENU_TOAD, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_PEACH, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_YOSHI, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_DK, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_WARIO, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(CHARACTER_SELECT_MENU_BOWSER, 0, 0, MENU_ITEM_PRIORITY_8);
+                add_menu_item(CHARACTER_SELECT_MENU_1P_CURSOR, 0, 0, MENU_ITEM_PRIORITY_C);
+                add_menu_item(CHARACTER_SELECT_MENU_2P_CURSOR, 0, 0, MENU_ITEM_PRIORITY_C);
+                add_menu_item(CHARACTER_SELECT_MENU_3P_CURSOR, 0, 0, MENU_ITEM_PRIORITY_C);
+                add_menu_item(CHARACTER_SELECT_MENU_4P_CURSOR, 0, 0, MENU_ITEM_PRIORITY_C);
                 break;
             case COURSE_SELECT_MENU:
-                add_menu_item(COURSE_SELECT_BACKGROUND, 0, 0, MENU_ITEM_UI_PRIORITY_2);
-                add_menu_item(COURSE_SELECT_MAP_SELECT, 0, 0, MENU_ITEM_UI_PRIORITY_6);
+                add_menu_item(COURSE_SELECT_BACKGROUND, 0, 0, MENU_ITEM_PRIORITY_2);
+                add_menu_item(COURSE_SELECT_MAP_SELECT, 0, 0, MENU_ITEM_PRIORITY_6);
                 if (gModeSelection != BATTLE) {
-                    add_menu_item(COURSE_SELECT_MUSHROOM_CUP, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                    add_menu_item(COURSE_SELECT_FLOWER_CUP, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                    add_menu_item(COURSE_SELECT_STAR_CUP, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                    add_menu_item(COURSE_SELECT_SPECIAL_CUP, 0, 0, MENU_ITEM_UI_PRIORITY_4);
-                    add_menu_item(MENU_ITEM_TYPE_058, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                    add_menu_item(COURSE_SELECT_COURSE_NAMES, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                    add_menu_item(MENU_ITEM_TYPE_05A, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                    add_menu_item(MENU_ITEM_TYPE_05B, 0, 0, MENU_ITEM_UI_PRIORITY_6);
+                    add_menu_item(COURSE_SELECT_MUSHROOM_CUP, 0, 0, MENU_ITEM_PRIORITY_4);
+                    add_menu_item(COURSE_SELECT_FLOWER_CUP, 0, 0, MENU_ITEM_PRIORITY_4);
+                    add_menu_item(COURSE_SELECT_STAR_CUP, 0, 0, MENU_ITEM_PRIORITY_4);
+                    add_menu_item(COURSE_SELECT_SPECIAL_CUP, 0, 0, MENU_ITEM_PRIORITY_4);
+                    add_menu_item(MENU_ITEM_TYPE_058, 0, 0, MENU_ITEM_PRIORITY_6);
+                    add_menu_item(COURSE_SELECT_COURSE_NAMES, 0, 0, MENU_ITEM_PRIORITY_6);
+                    add_menu_item(MENU_ITEM_TYPE_05A, 0, 0, MENU_ITEM_PRIORITY_6);
+                    add_menu_item(MENU_ITEM_TYPE_05B, 0, 0, MENU_ITEM_PRIORITY_6);
                 } else {
-                    add_menu_item(COURSE_SELECT_BATTLE_NAMES, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                    add_menu_item(MENU_ITEM_TYPE_06E, 0, 0, MENU_ITEM_UI_PRIORITY_6);
+                    add_menu_item(COURSE_SELECT_BATTLE_NAMES, 0, 0, MENU_ITEM_PRIORITY_6);
+                    add_menu_item(MENU_ITEM_TYPE_06E, 0, 0, MENU_ITEM_PRIORITY_6);
                 }
-                add_menu_item(MENU_ITEM_TYPE_064, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_05F, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_060, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_061, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_062, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(COURSE_SELECT_OK, 0, 0, MENU_ITEM_UI_PRIORITY_6);
-                add_menu_item(MENU_ITEM_TYPE_05E, 0, 0, MENU_ITEM_UI_PRIORITY_8);
+                add_menu_item(MENU_ITEM_TYPE_064, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_05F, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_060, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_061, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_062, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(COURSE_SELECT_OK, 0, 0, MENU_ITEM_PRIORITY_6);
+                add_menu_item(MENU_ITEM_TYPE_05E, 0, 0, MENU_ITEM_PRIORITY_8);
                 if (gModeSelection == TIME_TRIALS) {
-                    add_menu_item(MENU_ITEM_TYPE_065, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                    add_menu_item(MENU_ITEM_TYPE_066, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                    add_menu_item(MENU_ITEM_TYPE_069, 0, 0, MENU_ITEM_UI_PRIORITY_8);
+                    add_menu_item(MENU_ITEM_TYPE_065, 0, 0, MENU_ITEM_PRIORITY_8);
+                    add_menu_item(MENU_ITEM_TYPE_066, 0, 0, MENU_ITEM_PRIORITY_8);
+                    add_menu_item(MENU_ITEM_TYPE_069, 0, 0, MENU_ITEM_PRIORITY_8);
                 }
                 if (gModeSelection == GRAND_PRIX) {
-                    add_menu_item(MENU_ITEM_TYPE_068, 0, 0, MENU_ITEM_UI_PRIORITY_8);
-                    add_menu_item(MENU_ITEM_TYPE_067, 0, 0, MENU_ITEM_UI_PRIORITY_5);
+                    add_menu_item(MENU_ITEM_TYPE_068, 0, 0, MENU_ITEM_PRIORITY_8);
+                    add_menu_item(MENU_ITEM_TYPE_067, 0, 0, MENU_ITEM_PRIORITY_5);
                 }
                 break;
             case 0:
@@ -7937,7 +7937,7 @@ void func_800A54EC(void) {
     }
 
     why = gModeSelection;
-    sp48 = find_menu_items(0x000000C7);
+    sp48 = find_menu_items(MENU_ITEM_PAUSE);
     if (why) {} // ?????
     gSPViewport(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(D_802B8880));
     // guOrtho(&gGfxPool->mtxEffect[gMatrixEffectCount], 0.0f, 319.0f, 239.0f, 0.0f, -100.0f, 100.0f, 1.0f);
@@ -8980,7 +8980,7 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
         }
     }
 
-    for (j = 0; j < MENU_ITEM_UI_PRIORITY_MAX; j++) {
+    for (j = 0; j < MENU_ITEM_PRIORITY_MAX; j++) {
         for (i = 0; i < MENU_ITEMS_MAX; i++) {
             isRendered = false;
             menuItem = &gMenuItems[i];
@@ -10235,13 +10235,13 @@ MenuItem* get_menu_item_character(s32 arg0) {
  * probably as much a matter of luck as it is good
  * reasoning on the original author(s) part.
  **/
-MenuItem* find_menu_items_dupe(s32 arg0) {
+MenuItem* find_menu_items_dupe(s32 type) {
     for (size_t i = 0; i < ARRAY_COUNT(gMenuItems); i++) {
-        if (gMenuItems[i].type == arg0) {
+        if (gMenuItems[i].type == type) {
             return &gMenuItems[i];
         }
     }
-    printf("Error: find_menu_items_dupe returned a null value when searching id 0x%X", arg0);
+    printf("Error: find_menu_items_dupe returned a null value when searching id 0x%X", type);
     return NULL;
 
     //	MenuItem *entry = gMenuItems;
@@ -10257,9 +10257,9 @@ MenuItem* find_menu_items_dupe(s32 arg0) {
     //    return entry;
 }
 
-MenuItem* find_menu_items(s32 arg0) {
+MenuItem* find_menu_items(s32 type) {
     for (size_t i = 0; i < ARRAY_COUNT(gMenuItems); i++) {
-        if (gMenuItems[i].type == arg0) {
+        if (gMenuItems[i].type == type) {
             return &gMenuItems[i];
         }
     }
@@ -11076,7 +11076,7 @@ void func_800ACC50(MenuItem* arg0) {
                 arg0->state = 1;
                 arg0->param1 = 0;
                 for (i = 0; i < gPlayerCount; i++) {
-                    add_menu_item(i + MENU_ITEM_TYPE_0B1, 0, 0, (s8) (MENU_ITEM_UI_PRIORITY_5 - i));
+                    add_menu_item(i + MENU_ITEM_TYPE_0B1, 0, 0, (s8) (MENU_ITEM_PRIORITY_5 - i));
                 }
             }
             break;
@@ -11209,7 +11209,7 @@ void func_800AD1A4(MenuItem* arg0) {
             arg0->column = 0x0000014A;
             arg0->state = 1;
             func_800921B4();
-            add_menu_item(MENU_ITEM_TYPE_0BB, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+            add_menu_item(MENU_ITEM_TYPE_0BB, 0, 0, MENU_ITEM_PRIORITY_0);
             break;
         case 1:
             func_800A9208(arg0, 0x000000A0);
@@ -11229,7 +11229,7 @@ void func_800AD1A4(MenuItem* arg0) {
                 func_800921B4();
                 arg0->state = 4;
                 arg0->param1 = arg0->column;
-                add_menu_item(MENU_ITEM_TYPE_0BA, 0, 0, MENU_ITEM_UI_PRIORITY_0);
+                add_menu_item(MENU_ITEM_TYPE_0BA, 0, 0, MENU_ITEM_PRIORITY_0);
             }
             break;
         case 4:
@@ -12068,7 +12068,7 @@ void func_800AF004(MenuItem* arg0) {
                 arg0->state = 1;
                 // gCupSelection %= 4;
                 // gCCSelection %= 4;
-                add_menu_item(MENU_ITEM_TYPE_12C, 0, 0, MENU_ITEM_UI_PRIORITY_4);
+                add_menu_item(MENU_ITEM_TYPE_12C, 0, 0, MENU_ITEM_PRIORITY_4);
             }
             break;
         case 1:
@@ -12079,7 +12079,7 @@ void func_800AF004(MenuItem* arg0) {
             if (arg0->param1 >= 9) {
                 arg0->param1 = 0;
                 arg0->state++;
-                add_menu_item(arg0->state + MENU_ITEM_TYPE_12B, 0, 0, MENU_ITEM_UI_PRIORITY_4);
+                add_menu_item(arg0->state + MENU_ITEM_TYPE_12B, 0, 0, MENU_ITEM_PRIORITY_4);
             }
             break;
         case 5:
