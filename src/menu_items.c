@@ -52,11 +52,12 @@ const char* GetCupName(void);
 
 void guMtxCatL(Mtx* m, Mtx* n, Mtx* res);
 
-u16* gMenuTextureBuffer;
+const char* sMenuTextureList[MENU_TEXTURE_BUFFER_MAX];
 u8* gMenuCompressedBuffer;
 u8* sTKMK00_LowResBuffer;
 u8* sGPPointsCopy;
 void* gSomeDLBuffer;
+
 /**
  * List of bytes indexed by character ID
  * Indicates number of Grand Prix points that character
@@ -70,8 +71,8 @@ MenuItem gMenuItems[MENU_ITEMS_MAX];
 struct_8018DEE0_entry D_8018DEE0[D_8018DEE0_SIZE];
 struct_8018E060_entry D_8018E060[D_8018E060_SIZE + 1];
 struct_8018E0E8_entry D_8018E0E8[D_8018E0E8_SIZE];
-s32 sMenuTextureBufferIndex;
-struct_8018E118_entry sMenuTextureMap[TEXTURE_MAP_MAX];
+s32 sMenuTextureListIndex;
+TextureMap sMenuTextureMap[TEXTURE_MAP_MAX];
 s32 sMenuTextureEntries;
 Gfx* sGfxPtr;
 s32 gNumD_8018E768Entries;
@@ -484,6 +485,9 @@ char* D_800E7890[] = {
 
     "UNABLE TO COPY GHOST ",
     "-- INSUFFICIENT FREE PAGES ",
+};
+
+char* D_800E78BC[] = {
     "IN CONTROLLER 1 ",
     "N64 CONTROLLER PAK",
 };
@@ -730,8 +734,8 @@ MkAnimation* D_800E7D34[] = {
 };
 
 MenuTexture* gMenuTexturesBackground[] = {
-    D_02004598,
-    D_020045C0,
+    seg2_blue_sky_background_texture,
+    seg2_sunset_background_texture,
 };
 
 MenuTexture* D_800E7D54[] = {
@@ -747,7 +751,11 @@ MenuTexture* D_800E7D74[] = {
 MenuTexture* D_800E7DC4[] = {
     seg2_mario_raceway_title_texture, seg2_choco_mountain_title_texture, D_02004EF8, D_02004F20, D_02004F48, D_02004F70, D_02004F98,
     D_02004FC0, D_02004FE8, D_02005010, D_02005038, D_02005060, D_02005088, D_020050B0,
-    D_020050D8, D_02005100, D_02005128, D_02005150, D_02005178, D_020051A0,
+    D_020050D8
+};
+
+MenuTexture* D_800E7E00[] = {
+D_02005100, D_02005128, D_02005150, D_02005178, D_020051A0,
 };
 
 // Unused?
@@ -823,7 +831,6 @@ MenuTexture* D_800E822C[] = {
     D_0200455C,
 };
 
-// In a perfect world this would be `MenuTexture *D_800E8234[][2]`
 MenuTexture* D_800E8234[] = {
     seg2_menu_1p_column, D_020047DC,
     seg2_menu_2p_column, D_02004804,
@@ -832,15 +839,37 @@ MenuTexture* D_800E8234[] = {
 };
 
 MenuTexture* D_800E8254[] = {
-    seg2_game_select_texture, seg2_menu_1p_column, seg2_menu_2p_column, seg2_menu_3p_column, seg2_menu_4p_column, D_0200487C, D_020048A4, D_020048CC,
+    seg2_game_select_texture,
+    seg2_menu_1p_column,
+    seg2_menu_2p_column,
+    seg2_menu_3p_column,
+    seg2_menu_4p_column,
+    D_0200487C,
+    D_020048A4,
+    D_020048CC,
 };
 
-MenuTexture* D_800E8274[] = {
-    seg2_50_CC_texture, seg2_100_CC_texture, seg2_150_CC_texture, seg2_extra_CC_texture, D_020049BC, seg2_menu_no_item_texture, D_020049E4, seg2_data_texture,
+MenuTexture* D_800E8274[] = { // CC textures
+    seg2_50_CC_texture, seg2_100_CC_texture, seg2_150_CC_texture, seg2_extra_CC_texture,
+};
+MenuTexture* D_800E8284[] = { // Versus and Battle textures
+    D_020049BC, seg2_menu_no_item_texture
+};
+MenuTexture* D_800E828C[] = { // Time Trials Begin & Data (probably)
+    D_020049E4, seg2_data_texture,
 };
 
+// Next three variables are duplicates of the above, for whatever reason...
 MenuTexture* D_800E8294[] = {
-    seg2_50_CC_texture, seg2_100_CC_texture, seg2_150_CC_texture, seg2_extra_CC_texture, D_020049BC, seg2_menu_no_item_texture, D_020049E4, seg2_data_texture,
+    seg2_50_CC_texture, seg2_100_CC_texture, seg2_150_CC_texture, seg2_extra_CC_texture
+};
+
+MenuTexture* D_800E82A4[] = {
+    D_020049BC, seg2_menu_no_item_texture
+};
+
+MenuTexture* D_800E82AC[] = {
+    D_020049E4, seg2_data_texture,
 };
 
 MenuTexture* gMenuTexturesBorderPlayer[] = {
@@ -1149,12 +1178,12 @@ void func_80091B78(void) {
     }
     gNextFreeMemoryAddress = gFreeMemoryResetAnchor;
     // Hypothetically, this should be a ptr... But only hypothetically.
-    gMenuTextureBuffer = get_next_available_memory_addr(0x000900B0);
+    //sMenuTextureList = get_next_available_memory_addr(0x000900B0);
     gMenuCompressedBuffer = (u8*) get_next_available_memory_addr(0x0000CE00);
     sTKMK00_LowResBuffer = (u8*) get_next_available_memory_addr(SCREEN_WIDTH * SCREEN_HEIGHT);
     gSomeDLBuffer = (struct_8018EE10_entry*) get_next_available_memory_addr(0x00001000);
     func_800AF9B0();
-    D_8018EE0C = 0;
+    unref_D_8018EE0C = 0;
 
     for (i = 0; i < 5; i++) {
         D_8018E7AC[i] = 0;
@@ -1179,7 +1208,7 @@ void func_80091B78(void) {
         func_800C9D0C((u8) i);
     }
 
-    func_800B44BC();
+    set_sound_mode();
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
 }
 
@@ -1229,7 +1258,7 @@ void func_80091EE4(void) {
     gControllerPak1State = BAD;
     tmp = func_800B5F30();
 
-    if ((D_8018EDFB != 0) && (tmp == 0)) {
+    if ((gGhostPlayerInit != 0) && (tmp == 0)) {
         temp_s2 = (GetCupIndex() * 4) + GetCupCursorPosition();
         func_800B6708();
 
@@ -1237,7 +1266,7 @@ void func_80091EE4(void) {
             if ((D_8018EE10[temp_s0].ghostDataSaved != 0) && (temp_s2 == D_8018EE10[temp_s0].courseIndex)) {
                 func_800B64EC(temp_s0);
                 temp_s0 = 2;
-                D_8018EDFB = 0;
+                gGhostPlayerInit = 0;
             }
         }
     }
@@ -1245,10 +1274,9 @@ void func_80091EE4(void) {
 
 void func_80091FA4(void) {
     s32 i;
-
     //! @todo These sizes need to be sizeof() for shiftability if possible
     gMenuCompressedBuffer = (u8*) get_next_available_memory_addr(0x00002800);
-    gMenuTextureBuffer = (u16*) get_next_available_memory_addr(0x000124F8);
+    //sMenuTextureList = (u16*) get_next_available_memory_addr(0x000124F8);
     sTKMK00_LowResBuffer = (u8*) get_next_available_memory_addr(0x00001000);
     sGPPointsCopy = get_next_available_memory_addr(4);
 
@@ -1260,7 +1288,7 @@ void func_80091FA4(void) {
         D_8018E838[i] = 0;
     }
 
-    func_80099110();
+    clear_menu_textures();
     func_8009A344();
     clear_menus();
     func_80092258();
@@ -1304,7 +1332,7 @@ void func_800921B4(void) {
 // if selected and detect kind menu
 void text_rainbow_effect(s32 test, s32 target, s32 alternative_color) {
     if (test == target) {
-        if (func_800B4520() != 0) {
+        if (is_screen_being_faded() != 0) {
             set_text_color(gGlobalTimer % 3);
         } else {
             set_text_color(TEXT_BLUE_GREEN_RED_CYCLE_2);
@@ -2060,7 +2088,7 @@ void func_80093E60(void) {
     s32 i;
 
     gMenuCompressedBuffer = get_next_available_memory_addr(0x00002800);
-    gMenuTextureBuffer = (u16*) get_next_available_memory_addr(0x000124F8);
+    //sMenuTextureList = (u16*) get_next_available_memory_addr(0x000124F8);
     sTKMK00_LowResBuffer = get_next_available_memory_addr(0x00001000);
     sGPPointsCopy = get_next_available_memory_addr(4U);
 
@@ -2072,7 +2100,7 @@ void func_80093E60(void) {
         D_8018E838[i] = 0;
     }
 
-    func_80099110();
+    clear_menu_textures();
     func_8009A344();
     clear_menus();
     func_80092258();
@@ -2236,7 +2264,7 @@ void func_80094A64(struct GfxPool* pool) {
 
 void setup_menus(void) {
     if (gFadeModeSelection != 0) {
-        func_80099110();
+        clear_menu_textures();
         func_8009A344();
         clear_menus();
         func_8009B938();
@@ -2316,7 +2344,7 @@ void setup_menus(void) {
                 add_menu_item(MAIN_MENU_DATA_GFX, 0x0000015E, 0x000000C8, MENU_ITEM_UI_PRIORITY_6);
                 add_menu_item(MAIN_MENU_OPTION_GFX, 0x0000015E, 0x000000C8, MENU_ITEM_UI_PRIORITY_6);
                 if (has_unlocked_extra_mode() != 0) {
-                    add_menu_item(MENU_ITEM_TYPE_015, 0, 0, MENU_ITEM_UI_PRIORITY_6);
+                    add_menu_item(MAIN_MENU_EXTRA_CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
                 }
                 add_menu_item(MAIN_MENU_150CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
                 add_menu_item(MAIN_MENU_100CC, 0, 0, MENU_ITEM_UI_PRIORITY_6);
@@ -2397,7 +2425,7 @@ CProperties* GetCoursePropsA(void);
 void func_80095574(void) {
     s32 var_v0;
 
-    if ((D_8018EE0C < 3) || (D_8018E7AC[4] != 0)) {
+    if ((unref_D_8018EE0C < 3) || (D_8018E7AC[4] != 0)) {
         handle_menus_default();
     }
     if (gDebugMenuSelection >= 2) {
@@ -2440,7 +2468,7 @@ void func_80095574(void) {
         }
         debug_print_str2(var_v0 + 0xB9, 0x0000006E, GetCoursePropsA()->DebugName);
         debug_print_str2(0x00000050, 0x00000078, "screen_mode");
-        debug_print_str2(0x000000AA, 0x00000078, gDebugScreenModeNames[D_8018EDF1]);
+        debug_print_str2(0x000000AA, 0x00000078, gDebugScreenModeNames[gScreenModeListIndex]);
         debug_print_str2(0x00000050, 0x00000082, "player");
         debug_print_str2(0x000000AA, 0x00000082, gDebugCharacterNames[gCharacterSelections[0]]);
         debug_print_str2(0x00000050, 0x0000008C, "sound mode");
@@ -3153,7 +3181,7 @@ Gfx* func_80098558(Gfx* displayListHead, u32 arg1, u32 arg2, u32 arg3, u32 arg4,
     arg5Copy = arg5;
     for (var_v0 = arg2; var_v0 < arg4; var_v0 += 0x20) {
         for (var_a3 = arg1; var_a3 < arg3; var_a3 += 0x20) {
-            gMKLoadTextureTile(displayListHead++, gMenuTextureBuffer, G_IM_FMT_RGBA, G_IM_SIZ_16b, arg8, 0, var_a3, var_v0,
+            gMKLoadTextureTile(displayListHead++, sMenuTextureList, G_IM_FMT_RGBA, G_IM_SIZ_16b, arg8, 0, var_a3, var_v0,
                                var_a3 + 0x20, var_v0 + 0x20, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5,
                                5, G_TX_NOLOD, G_TX_NOLOD);
             gSPTextureRectangle(displayListHead++, arg5 << 2, arg6 << 2, (arg5 + 0x20) << 2, (arg6 + 0x20) << 2, 0, 0,
@@ -3187,7 +3215,7 @@ Gfx* func_800987D0(Gfx* displayListHead, u32 arg1, u32 arg2, u32 width, u32 heig
     columnCopy = column;
     for (var_v0_2 = arg2; (u32) var_v0_2 < height; var_v0_2 += 0x20) {
         for (var_a2 = arg1; (u32) var_a2 < width; var_a2 += 0x20) {
-            gMKLoadTextureTile(displayListHead++, gMenuTextureBuffer, G_IM_FMT_RGBA, G_IM_SIZ_16b, textureWidth, 0, var_a2,
+            gMKLoadTextureTile(displayListHead++, sMenuTextureList, G_IM_FMT_RGBA, G_IM_SIZ_16b, textureWidth, 0, var_a2,
                                var_v0_2, var_a2 + 0x20, var_v0_2 + 0x20, 0, G_TX_NOMIRROR | G_TX_WRAP,
                                G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
             temp_f6 = (temp_f18 * ((temp_f0 * (column - 0xA0)) + (temp_f24 * (row - 0x78)))) + 160.0f;
@@ -3363,32 +3391,62 @@ Gfx* func_80098FC8_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry
     return draw_box_fill_wide(displayListHead, ulx, uly, lrx, lry, 0, 0, 0, 0xFF);
 }
 
+void load_texture(const char* texture) {
+    if (sMenuTextureListIndex >= 500) {
+        printf("\nload_texture: REACHED MAXIMUM MENU ITEMS\n\n");
+        return;
+    }
+
+    sMenuTextureList[sMenuTextureListIndex] = texture;
+
+    sMenuTextureMap[sMenuTextureEntries].textureData = texture;
+    sMenuTextureMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
+
+    sMenuTextureListIndex += 1;
+    sMenuTextureEntries += 1;
+}
+
+/**
+ * If you need to reset a texture cache after a modification,
+ * this will reload the texture.
+ */
+void load_texture_reset_cache(const char* texture) {
+    if (sMenuTextureListIndex >= 500) {
+        printf("\nload_texture: REACHED MAXIMUM MENU ITEMS\n\n");
+        return;
+    }
+
+    ResourceDirtyByName(texture);
+
+    sMenuTextureList[sMenuTextureListIndex] = texture;
+
+    sMenuTextureMap[sMenuTextureEntries].textureData = texture;
+    sMenuTextureMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
+
+    sMenuTextureListIndex += 1;
+    sMenuTextureEntries += 1;
+}
+
+void replace_texture(s32 index, const char* newTexture) {
+    sMenuTextureList[sMenuTextureMap[index].offset] = newTexture;
+    sMenuTextureMap[index].textureData = newTexture;
+    //printf("\nTEST %s %p %s idx %d\n\n", sMenuTextureList[index], sMenuTextureList[sMenuTextureListIndex], newTexture, sMenuTextureListIndex);
+}
+
+// strcpy the const char asset strings into sMenuTextureList. This replaces osPiDma.
 void dma_compressed_mio0_texture_segA(u64* data, size_t nbytes, void* vaddr) {
-#ifdef TARGET_N64
-    OSIoMesg mb;
-    OSMesg msg;
-
-    osInvalDCache(vaddr, nbytes);
-    osPiStartDma(&mb, OS_MESG_PRI_NORMAL, OS_READ, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(data)],
-                 vaddr, nbytes, &gDmaMesgQueue);
-    osRecvMesg(&gDmaMesgQueue, &msg, OS_MESG_BLOCK);
-#endif
 }
 
+// strcpy the const char asset strings into sMenuTextureList. This replaces osPiDma.
 void dma_tkmk00_textures(u64* data, size_t nbytes, void* vaddr) {
-#ifdef TARGET_N64
-    OSIoMesg mb;
-    OSMesg msg;
-
-    osInvalDCache(vaddr, nbytes);
-    osPiStartDma(&mb, OS_MESG_PRI_NORMAL, OS_READ, (uintptr_t) &_textures_0bSegmentRomStart[SEGMENT_OFFSET(data)],
-                 vaddr, nbytes, &gDmaMesgQueue);
-    osRecvMesg(&gDmaMesgQueue, &msg, OS_MESG_BLOCK);
-#endif
 }
 
-void func_80099110(void) {
-    sMenuTextureBufferIndex = 0;
+void clear_menu_textures(void) {
+    for (size_t i = 0; i < ARRAY_COUNT(sMenuTextureList); i++) {
+        sMenuTextureList[i] = NULL;
+    }
+
+    sMenuTextureListIndex = 0;
     sMenuTextureEntries = 0;
 }
 
@@ -3422,270 +3480,211 @@ void* segmented_to_virtual_dupe_2(const void* addr) {
 
 #include <assets/player_selection.h>
 
-#ifdef NON_MATCHING
-// https://decomp.me/scratch/NAZ12
-// Register allocation nonsense
-void load_menu_img(MenuTexture* arg0) {
-    u16 var_a1_2;
-    s32 var_v0;
-    s32 var_a1;
-    MenuTexture* var_s1;
-    struct_8018E118_entry* thing = &sMenuTextureMap[0];
-    var_s1 = segmented_to_virtual_dupe(arg0);
-    while (var_s1->textureData != NULL) {
-        var_a1 = 0;
-        for (var_v0 = 0; var_v0 < sMenuTextureEntries; var_v0++) {
-            if (var_s1->textureData == (thing + var_v0)->textureData) {
-                var_a1 = 1;
+void load_menu_img(MenuTexture* addr) {
+    u16 size;
+    s32 i;
+    s32 imgLoaded;
+    MenuTexture* texAddr;
+    TextureMap* texMap = &sMenuTextureMap[0];
+
+    texAddr = segmented_to_virtual_dupe(addr);
+    while (texAddr->textureData != NULL) {
+        imgLoaded = false;
+        for (i = 0; i < sMenuTextureEntries; i++) {
+            if (texAddr->textureData == (texMap + i)->textureData) {
+                imgLoaded = true;
                 break;
             }
         }
 
-        if (var_a1 == 0) {
-            if (var_s1->type == 3) {
-                if (var_s1->size != 0) {
-                    var_a1_2 = var_s1->size;
+        if (imgLoaded == false) {
+            if (texAddr->type == 3) {
+                if (texAddr->size != 0) {
+                    size = texAddr->size;
                 } else {
-                    var_a1_2 = 0x1000;
+                    size = 0x1000;
                 }
-                if (var_a1_2 % 8) {
-                    var_a1_2 = ((var_a1_2 / 8) * 8) + 8;
+                if (size % 8) {
+                    size = ((size / 8) * 8) + 8;
                 }
-// mio0decode(gMenuCompressedBuffer, &gMenuTextureBuffer[sMenuTextureBufferIndex]);
-// size_t texSize = ResourceGetTexSizeByName(var_s1->textureData);
-// memcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], var_s1->textureData, texSize);
-#ifdef TARGET_N64
-                dma_compressed_mio0_texture_segA(var_s1->textureData, var_a1_2, gMenuCompressedBuffer);
-                mio0decode(gMenuCompressedBuffer, (u8*) &gMenuTextureBuffer[sMenuTextureBufferIndex]);
-#else
-                strcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], var_s1->textureData);
-#endif
+                dma_compressed_mio0_texture_segA(texAddr->textureData, size, sMenuTextureList[sMenuTextureListIndex]);
+                mio0decode(gMenuCompressedBuffer, (u8*) &sMenuTextureList[sMenuTextureListIndex]);
+                load_texture(texAddr->textureData);
             } else {
-#ifdef TARGET_N64
-                dma_compressed_mio0_texture_segA(var_s1->textureData, var_s1->height * var_s1->width * 2,
-                                     &gMenuTextureBuffer[sMenuTextureBufferIndex]);
-#else
-                strcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], var_s1->textureData);
-#endif
+                dma_compressed_mio0_texture_segA(texAddr->textureData, (texAddr->height * texAddr->width) * 2,
+                                   &sMenuTextureList[sMenuTextureListIndex]);
+                load_texture(texAddr->textureData);
             }
-            thing[sMenuTextureEntries].textureData = var_s1->textureData;
-            thing[sMenuTextureEntries].offset = sMenuTextureBufferIndex;
-            sMenuTextureBufferIndex += var_s1->height * var_s1->width;
-            sMenuTextureBufferIndex = ((sMenuTextureBufferIndex / 8) * 8) + 8;
-            sMenuTextureEntries += 1;
+            //texMap[sMenuTextureEntries].textureData = texAddr->textureData;
+            //texMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
+            //sMenuTextureListIndex += 1;
+            //sMenuTextureListIndex = ((sMenuTextureListIndex / 8) * 8) + 8;
+            //sMenuTextureEntries += 1;
         }
-        var_s1++;
+        texAddr++;
     }
 }
-#else
-GLOBAL_ASM("asm/non_matchings/menu_items/load_menu_img.s")
-#endif
 
-#ifdef NON_MATCHING
-// https://decomp.me/scratch/O2tkD
-// Register allocation nonsense
-void func_80099394(MenuTexture* arg0) {
-    UNUSED u16 var_a1_2;
-    s32 var_v0;
-    s32 var_a1;
-    UNUSED s32 temp_s3;
-    MenuTexture* var_s1;
-    struct_8018E118_entry* thing;
+void func_80099394(MenuTexture* addr) {
+    s32 i;
+    s32 imgLoaded;
+    MenuTexture* texAddr;
+    TextureMap* texMap = &sMenuTextureMap[0];
 
-    var_s1 = segmented_to_virtual_dupe(arg0);
-    while (var_s1->textureData != NULL) {
-        var_a1 = 0;
-        for (var_v0 = 0; var_v0 < sMenuTextureEntries; var_v0++) {
-            // wtf is going on here?
-            if (sMenuTextureMap[var_v0 ^ 0].textureData == (*var_s1).textureData) {
-                var_a1 = 1;
+    texAddr = segmented_to_virtual_dupe(addr);
+    while (texAddr->textureData != NULL) {
+        imgLoaded = false;
+        for (i = 0; i < sMenuTextureEntries; i++) {
+            if (texAddr->textureData == (texMap + i)->textureData) {
+                imgLoaded = true;
                 break;
             }
         }
-        if (var_a1 == 0) {
-            if (var_s1->type == 5) {
-#ifdef TARGET_N64
-                dma_compressed_mio0_texture_segA(var_s1->textureData, (u32) ((s32) (var_s1->height * var_s1->width) / 2),
-                                     &gMenuTextureBuffer[sMenuTextureBufferIndex]);
-#else
-                u8* tex = LOAD_ASSET(var_s1->textureData);
-                size_t texSize = ResourceGetTexSizeByName(var_s1->textureData);
-                memcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], tex, texSize);
-#endif
+
+        if (imgLoaded == false) {
+            if (texAddr->type == 5) {
+                dma_compressed_mio0_texture_segA(texAddr->textureData, (u32) (((s32) (texAddr->height * texAddr->width)) / 2),
+                                   &sMenuTextureList[sMenuTextureListIndex]);
+                load_texture(texAddr->textureData);
             }
-
-            thing = &sMenuTextureMap[sMenuTextureEntries];
-            thing->textureData = var_s1->textureData;
-            thing = &sMenuTextureMap[sMenuTextureEntries];
-            thing->offset = sMenuTextureBufferIndex;
-
-            sMenuTextureBufferIndex += (var_s1->height * var_s1->width);
-            sMenuTextureBufferIndex = ((sMenuTextureBufferIndex / 8) * 8) + 8;
-            sMenuTextureEntries += 1;
+            //texMap[sMenuTextureEntries].textureData = texAddr->textureData;
+            //texMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
+            //sMenuTextureListIndex += 1;
+            //sMenuTextureListIndex = ((sMenuTextureListIndex / 8) * 8) + 8;
+            //sMenuTextureEntries += 1;
         }
-        var_s1++;
+        texAddr++;
     }
 }
-#else
-GLOBAL_ASM("asm/non_matchings/menu_items/func_80099394.s")
-#endif
 
-#ifdef NON_MATCHING
-// Register allocation nonsense
-// https://decomp.me/scratch/Wv2MX
-void func_8009952C(MenuTexture* arg0) {
-    UNUSED u16 var_a1_2;
-    s32 var_v0;
-    s32 var_a1;
-    UNUSED s32 temp_s3;
-    MenuTexture* var_s1;
-    struct_8018E118_entry* thing;
+void func_8009952C(MenuTexture* addr) {
+    s32 i;
+    s32 imgLoaded;
+    MenuTexture* texAddr;
+    TextureMap* texMap = &sMenuTextureMap[0];
 
-    var_s1 = segmented_to_virtual_dupe(arg0);
-    while (var_s1->textureData != NULL) {
-        var_a1 = 0;
-        for (var_v0 = 0; var_v0 < sMenuTextureEntries; var_v0++) {
-            // wtf is going on here?
-            if (sMenuTextureMap[var_v0 ^ 0].textureData == (*var_s1).textureData) {
-                var_a1 = 1;
+    texAddr = segmented_to_virtual_dupe(addr);
+    while (texAddr->textureData != NULL) {
+        imgLoaded = false;
+        for (i = 0; i < sMenuTextureEntries; i++) {
+            if (texAddr->textureData == (texMap + i)->textureData) {
+                imgLoaded = true;
                 break;
             }
         }
-        if (var_a1 == 0) {
-#ifdef TARGET_N64
-            dma_compressed_mio0_texture_segA(var_s1->textureData, 0x00008000U, gMenuCompressedBuffer);
-            mio0decode(gMenuCompressedBuffer, (u8*) &gMenuTextureBuffer[sMenuTextureBufferIndex]);
-#else
-            memcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], var_s1->textureData, var_s1->width * var_s1->height * 2);
-#endif
 
-            thing = &sMenuTextureMap[sMenuTextureEntries];
-            thing->textureData = var_s1->textureData;
-            thing = &sMenuTextureMap[sMenuTextureEntries];
-            thing->offset = sMenuTextureBufferIndex;
-
-            sMenuTextureBufferIndex += (var_s1->height * var_s1->width);
-            sMenuTextureBufferIndex = ((sMenuTextureBufferIndex / 8) * 8) + 8;
-            sMenuTextureEntries += 1;
+        if (imgLoaded == false) {
+            dma_compressed_mio0_texture_segA(texAddr->textureData, 0x00008000U, &sMenuTextureList[sMenuTextureListIndex]);
+            mio0decode(gMenuCompressedBuffer, (u8*) &sMenuTextureList[sMenuTextureListIndex]);
+            load_texture(texAddr->textureData);
+            //texMap[sMenuTextureEntries].textureData = texAddr->textureData;
+            //texMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
+            //sMenuTextureListIndex += 1;
+            //sMenuTextureListIndex = ((sMenuTextureListIndex / 8) * 8) + 8;
+            //sMenuTextureEntries += 1;
         }
-        var_s1++;
+        texAddr++;
     }
 }
-#else
-GLOBAL_ASM("asm/non_matchings/menu_items/func_8009952C.s")
-#endif
 
 void load_menu_img_mio0_forced(MenuTexture* addr) {
     load_menu_img_comp_type(addr, LOAD_MENU_IMG_MIO0_FORCE);
 }
 
-#ifdef NON_MATCHING
-// Register allocation nonsense
-// https://decomp.me/scratch/hwAAp
-void load_menu_img_comp_type(MenuTexture* arg0, s32 arg1) {
-    u16 var_a1_2;
-    s32 var_v0;
-    s32 var_a1;
-    u8 var_v0_2;
-    MenuTexture* texture;
-    struct_8018E118_entry* thing = &sMenuTextureMap[0];
+void load_menu_img_comp_type(MenuTexture* addr, s32 compType) {
+    u16 size;
+    s32 i;
+    s32 imgLoaded;
+    u8 clearBit;
+    MenuTexture* texAddr;
+    TextureMap* texMap = &sMenuTextureMap[0];
 
-    texture = segmented_to_virtual_dupe(arg0);
-
-    size_t siz = texture->width * texture->height;
-    // for (size_t i = 0; i < siz; i++) {
-    //     printf(" 0x%llX", texture->textureData[i]);
-    // }
-
-    // Because it's loading an mkTexture. The second element in the array is usually all zeros.
-    // Despite this loop, it's usually only ran once.
-    while (texture->textureData != NULL) {
-        var_a1 = 0;
-        for (var_v0 = 0; var_v0 < sMenuTextureEntries; var_v0++) {
-            if (texture->textureData == (thing + var_v0)->textureData) {
-                var_a1 = 1;
+    texAddr = segmented_to_virtual_dupe(addr);
+    while (texAddr->textureData != NULL) {
+        imgLoaded = false;
+        for (i = 0; i < sMenuTextureEntries; i++) {
+            if (texAddr->textureData == (texMap + i)->textureData) {
+                imgLoaded = true;
                 break;
             }
         }
-        if ((var_a1 == 0) || (arg1 > 0)) {
-            if (texture->size != 0) {
-                var_a1_2 = texture->size;
+
+        if ((imgLoaded == false) || (compType > LOAD_MENU_IMG_FORCE)) {
+            if (texAddr->size != 0) {
+                size = texAddr->size;
             } else {
-                var_a1_2 = 0x1000;
+                size = 0x1000;
             }
-            if ((var_a1_2 % 8)) {
-                var_a1_2 = (((var_a1_2 / 8) * 8) + 8);
+            if (size % 8) {
+                size = ((size / 8) * 8) + 8;
             }
-            switch (arg1) { /* irregular */
-                case -1:
-                case 1:
-                    // dma_compressed_mio0_texture_segA(texture->textureData, var_a1_2, gMenuCompressedBuffer);
+            
+            // dma a compressed texture to the compressed texture buffer
+            switch (compType) {
+                case LOAD_MENU_IMG_MIO0_ONCE:
+                case LOAD_MENU_IMG_MIO0_FORCE:
+                    //dma_compressed_mio0_texture_segA(texAddr->textureData, size, gMenuCompressedBuffer);
                     break;
-                case 0:
-                case 2:
-                    // dma_tkmk00_textures(texture->textureData, var_a1_2, gMenuCompressedBuffer);
+                case LOAD_MENU_IMG_TKMK00_ONCE:
+                case LOAD_MENU_IMG_TKMK00_FORCE:
+                    //dma_tkmk00_textures(texAddr->textureData, size, gMenuCompressedBuffer);
                     break;
             }
-            switch (arg1) { /* switch 1; irregular */
-                case -1:    /* switch 1 */
-                case 1: {
-                    // mio0decode(gMenuCompressedBuffer, (u8*)&gMenuTextureBuffer[sMenuTextureBufferIndex]);
-                    // printf("w: %d, h: %d", texture->width, texture->height);
-                    u8* tex = (u8*) LOAD_ASSET(texture->textureData);
-                    memcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], tex, texture->width * texture->height * 2);
+
+            // Extract compressed texture to the texture buffer
+            switch (compType) {
+                case LOAD_MENU_IMG_MIO0_ONCE:
+                case LOAD_MENU_IMG_MIO0_FORCE:
+                    mio0decode(gMenuCompressedBuffer, (u8*) &sMenuTextureList[sMenuTextureListIndex]);
+                    //strcpy(&sMenuTextureList[sMenuTextureListIndex], texAddr->textureData);
+                    load_texture(texAddr->textureData);
                     break;
-                }
-                case 0: /* switch 1 */
-                case 2: /* switch 1 */
-                    if (texture->type == 1) {
-                        var_v0_2 = 0x000000BE;
+                case LOAD_MENU_IMG_TKMK00_ONCE:
+                case LOAD_MENU_IMG_TKMK00_FORCE:
+                    if (texAddr->type == 1) {
+                        clearBit = 0xBE;
                     } else {
-                        var_v0_2 = 1;
+                        clearBit = 1;
                     }
                     if (1) {}
-                    // gMenuTextureBuffer[sMenuTextureBufferIndex] = &gTextureBackgroundBlueSky;
-                    // tkmk00decode(gMenuCompressedBuffer, texture->textureData, (u8*)&gMenuTextureBuffer[sMenuTextureBufferIndex],
-                    // var_v0_2);
-                    u8* tex2 = (u8*) LOAD_ASSET(texture->textureData);
-                    memcpy(&gMenuTextureBuffer[sMenuTextureBufferIndex], tex2, texture->width * texture->height * 2);
+                    tkmk00decode(gMenuCompressedBuffer, sTKMK00_LowResBuffer,
+                          (u8*) &sMenuTextureList[sMenuTextureListIndex], clearBit);
+                    load_texture(texAddr->textureData);
+
+                    //strcpy(&sMenuTextureList[sMenuTextureListIndex], texAddr->textureData);
                     break;
             }
 
-            thing[sMenuTextureEntries].textureData = texture->textureData;
-            thing[sMenuTextureEntries].offset = sMenuTextureBufferIndex;
-            sMenuTextureBufferIndex += texture->height * texture->width;
-            sMenuTextureBufferIndex = ((sMenuTextureBufferIndex / 8) * 8) + 8;
-            sMenuTextureEntries += 1;
+            //texMap[sMenuTextureEntries].textureData = texAddr->textureData;
+            //texMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
+            //sMenuTextureListIndex += 1;
+            //sMenuTextureListIndex = ((sMenuTextureListIndex / 8) * 8) + 8;
+            //sMenuTextureEntries += 1;
         }
-        texture++;
+        texAddr++;
     }
 }
-#else
-GLOBAL_ASM("asm/non_matchings/menu_items/load_menu_img_comp_type.s")
-#endif
 
-void func_80099958(MenuTexture* arg0, s32 arg1, s32 arg2) {
-    u16 var_a1;
-    UNUSED u8* thing;
-    MenuTexture* temp_v0;
+void func_80099958(MenuTexture* addr, s32 arg1, s32 arg2) {
+    u16 size;
+    MenuTexture* texAddr;
 
-    temp_v0 = segmented_to_virtual_dupe(arg0);
-    while (temp_v0->textureData != NULL) {
-        if (temp_v0->size != 0) {
-            var_a1 = temp_v0->size;
+    texAddr = segmented_to_virtual_dupe(addr);
+    while (texAddr->textureData != NULL) {
+        if (texAddr->size != 0) {
+            size = texAddr->size;
         } else {
-            var_a1 = 0x1400;
+            size = 0x1400;
         }
-        if (var_a1 % 8) {
+        if (size % 8) {
             // Round up to the next multiple of eight
-            var_a1 = ((var_a1 / 8) * 8) + 8;
+            size = ((size / 8) * 8) + 8;
         }
-        // dma_compressed_mio0_texture_segA(temp_v0->textureData, var_a1, gMenuCompressedBuffer);
-        // mio0decode(gMenuCompressedBuffer, D_802BFB80.arraySize4[arg2][arg1 / 2][(arg1 % 2) + 2].pixel_index_array);
-        u8* tex = LOAD_ASSET(temp_v0->textureData);
-        memcpy(D_802BFB80.arraySize4[arg2][arg1 / 2][(arg1 % 2) + 2].pixel_index_array, temp_v0->textureData,
-               temp_v0->width * temp_v0->height * 2);
-        temp_v0++;
+        //! @warning This function does not increment sMenuTextureListIndex
+        dma_compressed_mio0_texture_segA(texAddr->textureData, size, gMenuCompressedBuffer);
+        mio0decode(gMenuCompressedBuffer, D_802BFB80.arraySize4[arg2][arg1 / 2][(arg1 % 2) + 2].pixel_index_array);
+        load_texture(texAddr->textureData);
+        texAddr++;
     }
 }
 
@@ -3711,34 +3710,31 @@ void func_80099A94(MenuTexture* arg0, s32 arg1) {
 // https://decomp.me/scratch/rxEoi
 // Something's up with the handling of `_textures_0aSegmentRomStart`, I don't know how to fix it
 void func_80099AEC(void) {
-    s8 var_s4;
+    s8 texEnd;
     s32 size;
-    UNUSED s32 stackPadding0;
-    UNUSED s32 stackPadding1;
-    s32 huh;
-    OSIoMesg sp68;
-    OSMesg sp64;
-    UNUSED u8* test;
-    s32 sp60;
-    MenuTexture* temp_s2;
+    s32 texSize;
+    OSIoMesg mb;
+    OSMesg msg;
+    s32 bufSize;
+    MenuTexture* texAddr;
     struct_8018E060_entry* var_s1;
 
     if (gGamestate == RACING) {
-        sp60 = 0x00000500;
+        bufSize = 0x00000500;
     } else {
-        sp60 = 0x00001000;
+        bufSize = 0x00001000;
     }
 
-    var_s4 = 0;
-    var_s1 = &D_8018E060[0];
-    temp_s2 = var_s1->texture;
+    texEnd = 0;
+    var_s1 = D_8018E060;
+    texAddr = var_s1->texture;
 
-    if (temp_s2 == NULL)
+    if (texAddr == NULL)
         return;
 
-    huh = temp_s2->size;
-    if (huh != 0) {
-        size = huh;
+    texSize = texAddr->size;
+    if (texSize != 0) {
+        size = texSize;
     } else {
         size = 0x1400;
     }
@@ -3747,48 +3743,47 @@ void func_80099AEC(void) {
     }
     osInvalDCache(gMenuCompressedBuffer, size);
 #ifdef TARGET_N64
-    osPiStartDma(&sp68, 0, 0, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(temp_s2->textureData)],
+    osPiStartDma(&mb, 0, 0, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(texAddr->textureData)],
                  gMenuCompressedBuffer, size, &gDmaMesgQueue);
 #endif
-    osRecvMesg(&gDmaMesgQueue, &sp64, 1);
+    osRecvMesg(&gDmaMesgQueue, &msg, 1);
     while (1) {
         if ((var_s1 + 1)->texture == NULL) {
-            var_s4 += 1;
+            texEnd += 1;
         } else {
-            temp_s2 = (var_s1 + 1)->texture;
-            huh = (var_s1 + 1)->texture->size;
-            if (huh != 0) {
-                size = huh;
+            texAddr = (var_s1 + 1)->texture;
+            texSize = (var_s1 + 1)->texture->size;
+            if (texSize != 0) {
+                size = texSize;
             } else {
                 size = 0x1400;
             }
             if (size % 8) {
                 size = ((size / 8) * 8) + 8;
             }
-            osInvalDCache(gMenuCompressedBuffer + sp60 * 4, size);
+            osInvalDCache(gMenuCompressedBuffer + bufSize * 4, size);
 #ifdef TARGET_N64
-            osPiStartDma(&sp68, 0, 0, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(temp_s2->textureData)],
-                         gMenuCompressedBuffer + sp60 * 4, size, &gDmaMesgQueue);
+            osPiStartDma(&mb, 0, 0, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(texAddr->textureData)],
+                         gMenuCompressedBuffer + bufSize * 4, size, &gDmaMesgQueue);
 #endif
         }
-#ifdef TARGET_N64
-        mio0decode(gMenuCompressedBuffer, (u8*) &gMenuTextureBuffer[sMenuTextureMap[var_s1->texNum].offset]);
-#else
-        memcpy(&gMenuTextureBuffer[sMenuTextureMap[var_s1->texNum].offset], var_s1->texture->textureData,
-               var_s1->texture->width * var_s1->texture->height * 2);
-#endif
+        mio0decode(gMenuCompressedBuffer, (u8*) &sMenuTextureList[sMenuTextureMap[var_s1->texNum].offset]);
+        //strcpy(&sMenuTextureList[sMenuTextureMap[var_s1->texNum].offset], var_s1->texture->textureData);
+        //sMenuTextureList[sMenuTextureMap[var_s1->texNum].offset] = var_s1->texture->textureData;
+        replace_texture(var_s1->texNum, var_s1->texture->textureData);
+
         var_s1->texture = NULL;
         var_s1++;
-        if (var_s4 != 0)
+        if (texEnd != 0)
             break;
-        osRecvMesg(&gDmaMesgQueue, &sp64, 1);
+        osRecvMesg(&gDmaMesgQueue, &msg, 1);
         if ((var_s1 + 1)->texture == NULL) {
-            var_s4 += 1;
+            texEnd += 1;
         } else {
-            temp_s2 = (var_s1 + 1)->texture;
-            huh = (var_s1 + 1)->texture->size;
-            if (huh != 0) {
-                size = huh;
+            texAddr = (var_s1 + 1)->texture;
+            texSize = (var_s1 + 1)->texture->size;
+            if (texSize != 0) {
+                size = texSize;
             } else {
                 size = 0x1400;
             }
@@ -3797,21 +3792,18 @@ void func_80099AEC(void) {
             }
             osInvalDCache(gMenuCompressedBuffer, size);
 #ifdef TARGET_N64
-            osPiStartDma(&sp68, 0, 0, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(temp_s2->textureData)],
+            osPiStartDma(&mb, 0, 0, (uintptr_t) &_textures_0aSegmentRomStart[SEGMENT_OFFSET(texAddr->textureData)],
                          gMenuCompressedBuffer, size, &gDmaMesgQueue);
 #endif
         }
-#ifdef TARGET_N64
-        mio0decode(gMenuCompressedBuffer + sp60 * 4, (u8*) &gMenuTextureBuffer[sMenuTextureMap[var_s1->texNum].offset]);
-#else
-        memcpy(&gMenuTextureBuffer[sMenuTextureMap[var_s1->texNum].offset], var_s1->texture->textureData,
-               var_s1->texture->width * var_s1->texture->height * 2);
-#endif
+        mio0decode(gMenuCompressedBuffer + bufSize * 4,
+                   (u8*) &sMenuTextureList[sMenuTextureMap[var_s1->texNum].offset]);
+        replace_texture(var_s1->texNum, var_s1->texture->textureData);
         var_s1->texture = NULL;
         var_s1++;
-        if (var_s4 != 0)
+        if (texEnd != 0)
             break;
-        osRecvMesg(&gDmaMesgQueue, &sp64, 1);
+        osRecvMesg(&gDmaMesgQueue, &msg, 1);
     }
 }
 #else
@@ -3948,7 +3940,7 @@ void func_8009A238(MenuTexture* arg0, s32 arg1) {
     s32 var_a3;
     s32 temp_v1;
     u64* sp24;
-    UNUSED struct_8018E118_entry* temp_v0;
+    UNUSED TextureMap* temp_v0;
 
     temp_v1 = sMenuTextureMap[arg1].offset;
     sp24 = arg0->textureData;
@@ -3956,12 +3948,12 @@ void func_8009A238(MenuTexture* arg0, s32 arg1) {
     if (var_a3 % 8) {
         var_a3 = ((var_a3 / 8) * 8) + 8;
     }
-    // dma_tkmk00_textures(sp24, var_a3, gMenuCompressedBuffer);
-    // tkmk00decode(gMenuCompressedBuffer, sTKMK00_LowResBuffer, (u8*) &gMenuTextureBuffer[temp_v1], 1);
+    dma_tkmk00_textures(sp24, var_a3, gMenuCompressedBuffer);
+    // tkmk00decode(gMenuCompressedBuffer, sTKMK00_LowResBuffer, (u8*) &sMenuTextureList[temp_v1], 1);
     // u8 *tex = (u8 *) LOAD_ASSET(arg0->textureData);
-    size_t texSize = ResourceGetTexSizeByName(arg0->textureData);
-    memcpy(&gMenuTextureBuffer[temp_v1], arg0->textureData, texSize);
-    sMenuTextureMap[arg1].textureData = arg0->textureData;
+    //size_t texSize = ResourceGetTexSizeByName(arg0->textureData);
+    replace_texture(arg1, arg0->textureData);
+    //sMenuTextureMap[arg1].textureData = arg0->textureData;
 }
 
 void func_8009A2F0(struct_8018E0E8_entry* arg0) {
@@ -4188,13 +4180,12 @@ void func_8009A9FC(s32 arg0, s32 arg1, u32 arg2, s32 arg3) {
     s32 alpha;
     s32 temp_t9;
     u16 temp_a0;
-    s32 var_t1;
     u16* color0;
     u16* color1;
 
-    color0 = &gMenuTextureBuffer[sMenuTextureMap[arg0].offset];
-    color1 = &gMenuTextureBuffer[sMenuTextureMap[arg1].offset];
-    for (var_t1 = 0; (u32) var_t1 < arg2; var_t1++) {
+    color0 = LOAD_ASSET(sMenuTextureList[sMenuTextureMap[arg0].offset]);
+    color1 = LOAD_ASSET(sMenuTextureList[sMenuTextureMap[arg1].offset]);
+    for (size_t i = 0; i < arg2; i++) {
         temp_a0 = BSWAP16(*color0++);
         red = (temp_a0 & 0xF800) >> 0xB;
         green = (temp_a0 & 0x7C0) >> 6;
@@ -4224,7 +4215,7 @@ void func_8009AB7C(s32 arg0) {
     s32 var_v1;
     u16* color;
 
-    color = &gMenuTextureBuffer[sMenuTextureMap[arg0].offset];
+    color = LOAD_ASSET(sMenuTextureList[sMenuTextureMap[arg0].offset]);
     for (var_v1 = 0; var_v1 < 0x4B000; var_v1++) {
         u16 color_pixel = BSWAP16(*color);
         red = ((color_pixel & 0xF800) >> 0xB) * 0x4D;
@@ -4256,7 +4247,7 @@ void func_8009AD78(s32 arg0, s32 arg1) {
     UNUSED u16 temp_a0;
     u16* color;
 
-    color = &gMenuTextureBuffer[sMenuTextureMap[arg0].offset];
+    color = LOAD_ASSET(sMenuTextureList[sMenuTextureMap[arg0].offset]);
     size = sMenuTextureMap[arg0 + 1].offset - sMenuTextureMap[arg0].offset;
     for (var_v1 = 0; var_v1 != size; var_v1++) {
         u16 color_pixel = BSWAP16(*color);
@@ -4273,41 +4264,49 @@ void func_8009AD78(s32 arg0, s32 arg1) {
     gSPInvalidateTexCache(gDisplayListHead++, sMenuTextureMap[arg0].offset);
 }
 
-void convert_img_to_greyscale(s32 arg0, u32 arg1) {
-    u32 var_s0;
+void convert_img_to_greyscale(s32 index, u32 num) {
+    size_t width = ResourceGetTexWidthByName(sMenuTextureList[sMenuTextureMap[index].offset]);
+    size_t height = ResourceGetTexHeightByName(sMenuTextureList[sMenuTextureMap[index].offset]);
+    u32 i;
     s32 red;
     s32 green;
     s32 blue;
     s32 alpha;
-    u32 temp_t9;
-    s32 size;
+    u32 result;
     u16* color;
-    f32 sp48[0x20];
+    f32 sp48[32];
+    
+    size_t size = width * height;
 
-    for (var_s0 = 0; var_s0 < 0x20; var_s0++) {
-        sp48[var_s0] = func_800917B0(var_s0 * 0.03125, (arg1 * 1.5 * 0.00390625) + 0.25);
+    for (i = 0; i < ARRAY_COUNT(sp48); i++) {
+        sp48[i] = func_800917B0(i * 0.03125, (num * 1.5 * 0.00390625) + 0.25);
     }
-    color = &gMenuTextureBuffer[sMenuTextureMap[arg0].offset];
-    size = sMenuTextureMap[arg0 + 1].offset - sMenuTextureMap[arg0].offset;
-    for (var_s0 = 0; var_s0 < (u32) size; var_s0++) {
+
+    color = (u16*)LOAD_ASSET(sMenuTextureList[sMenuTextureMap[index].offset]);
+
+
+
+    for (i = 0; i < (u32) size; i++) {
         u16 color_pixel = BSWAP16(*color);
         red = ((color_pixel & 0xF800) >> 0xB) * 0x55;
         green = ((color_pixel & 0x7C0) >> 6) * 0x4B;
         blue = ((color_pixel & 0x3E) >> 1) * 0x5F;
         alpha = color_pixel & 0x1;
-        temp_t9 = red + green + blue;
-        temp_t9 >>= 8;
-        temp_t9 = sp48[temp_t9] * 32.0f;
-        if (temp_t9 >= 0x20) {
-            temp_t9 = 0x1F;
+        result = red + green + blue;
+        result >>= 8;
+        result = sp48[result] * 32.0f;
+        if (result >= 0x20) {
+            result = 0x1F;
         }
-        *color++ = BSWAP16((temp_t9 << 1) + (temp_t9 << 6) + (temp_t9 << 0xB) + alpha);
+        *color++ = BSWAP16((result << 1) + (result << 6) + (result << 0xB) + alpha);
     }
     // Invalidate texture to properly apply color manipulation
-    gSPInvalidateTexCache(gDisplayListHead++, sMenuTextureMap[arg0].offset);
+    gSPInvalidateTexCache(gDisplayListHead++, sMenuTextureMap[index].offset);
 }
 
-void adjust_img_colour(s32 arg0, s32 screen_size, s32 arg2, s32 arg3, s32 arg4) {
+void adjust_img_colour(s32 index, s32 screenSize, s32 r, s32 g, s32 b) {
+    size_t width = ResourceGetTexWidthByName(sMenuTextureList[sMenuTextureMap[index].offset]);
+    size_t height = ResourceGetTexHeightByName(sMenuTextureList[sMenuTextureMap[index].offset]);
     s32 red;
     s32 green;
     s32 blue;
@@ -4316,11 +4315,14 @@ void adjust_img_colour(s32 arg0, s32 screen_size, s32 arg2, s32 arg3, s32 arg4) 
     s32 newgreen;
     s32 newblue;
     u32 temp_t9;
-    s32 var_v1;
     u16* color;
+    // Overwrite the default screen size of 320 * 240 to allow widescreen textures.
+    screenSize = width * height;
 
-    color = &gMenuTextureBuffer[sMenuTextureMap[arg0].offset];
-    for (var_v1 = 0; var_v1 < screen_size; var_v1++) {
+    color = LOAD_ASSET(sMenuTextureList[sMenuTextureMap[index].offset]);
+
+
+    for (size_t i = 0; i < screenSize; i++) {
         u16 color_pixel = BSWAP16(*color);
         red = ((color_pixel & 0xF800) >> 0xB) * 0x4D;
         green = ((color_pixel & 0x7C0) >> 6) * 0x96;
@@ -4328,13 +4330,13 @@ void adjust_img_colour(s32 arg0, s32 screen_size, s32 arg2, s32 arg3, s32 arg4) 
         alpha = (color_pixel & 0x1);
         temp_t9 = red + green + blue;
         temp_t9 = temp_t9 >> 8;
-        newred = ((temp_t9 * arg2) >> 8) << 0xB;
-        newgreen = ((temp_t9 * arg3) >> 8) << 6;
-        newblue = ((temp_t9 * arg4) >> 8) << 1;
+        newred = ((temp_t9 * r) >> 8) << 0xB;
+        newgreen = ((temp_t9 * g) >> 8) << 6;
+        newblue = ((temp_t9 * b) >> 8) << 1;
         *color++ = BSWAP16(newred + newgreen + newblue + alpha);
     }
     // Invalidate texture to properly apply color manipulation
-    gSPInvalidateTexCache(gDisplayListHead++, sMenuTextureMap[arg0].offset);
+    gSPInvalidateTexCache(gDisplayListHead++, sMenuTextureMap[index].offset);
 }
 
 u16* func_8009B8C4(u64* arg0) {
@@ -4353,7 +4355,7 @@ u16* func_8009B8C4(u64* arg0) {
     }
 
     if (found != 0) {
-        return &gMenuTextureBuffer[offset];
+        return sMenuTextureList[offset];
     }
     return NULL;
 }
@@ -4612,21 +4614,22 @@ Gfx* func_8009C434(Gfx* arg0, struct_8018DEE0_entry* arg1, s32 arg2, s32 arg3, s
             if (1) {}
             if (1) {}
         }
+
         if (arg4 >= 0) {
             arg0 =
                 func_80097E58(arg0, var_t1, 0, 0U, var_s0->width, var_s0->height, var_s0->dX + arg2, var_s0->dY + arg3,
-                              (u8*) &gMenuTextureBuffer[var_t0], var_s0->width, var_s0->height, (u32) arg4);
+                              (u8*) sMenuTextureList[var_t0], var_s0->width, var_s0->height, (u32) arg4);
         } else {
             switch (arg4) {
                 case -1:
                     arg0 = func_80095E10(arg0, var_t1, 0x00000400, 0x00000400, 0, 0, var_s0->width, var_s0->height,
-                                         var_s0->dX + arg2, var_s0->dY + arg3, (u8*) &gMenuTextureBuffer[var_t0], var_s0->width,
+                                         var_s0->dX + arg2, var_s0->dY + arg3, (u8*) sMenuTextureList[var_t0], var_s0->width,
                                          var_s0->height);
                     break;
                 case -2:
                     arg0 = func_800963F0(arg0, var_t1, 0x00000400, 0x00000400, 0.5f, 0.5f, 0, 0, var_s0->width,
                                          var_s0->height, var_s0->dX + arg2, var_s0->dY + arg3,
-                                         (u8*) &gMenuTextureBuffer[var_t0], var_s0->width, var_s0->height);
+                                         (u8*) sMenuTextureList[var_t0], var_s0->width, var_s0->height);
                     break;
             }
         }
@@ -4776,7 +4779,7 @@ void func_8009CBE4(s32 arg0, s32 arg1, s32 arg2) {
             return;
         }
         D_8018E7AC[arg0] = 0;
-        D_8018EE0C = 0;
+        unref_D_8018EE0C = 0;
     }
 }
 
@@ -4935,7 +4938,7 @@ void func_8009CE64(s32 arg0) {
     } else {
         D_8018E7AC[arg0] = 0;
         if (gDebugMenuSelection != 0x40) {
-            switch (D_8018EDE0) { /* switch 3 */
+            switch (gMenuFadeType) { /* switch 3 */
                 case 0:           /* switch 3 */
                     if (gMenuSelection == 8) {
                         gMenuSelection = 0x0000000A;
@@ -5033,7 +5036,6 @@ void func_8009CE64(s32 arg0) {
                     if (gNextDemoId >= 6) {
                         gNextDemoId = 0;
                     }
-                    printf("\nSELECTED!!!!!\n");
                     
                     //gCupSelection = GetCupIndex(); // gCupSelectionByCourseId[gCurrentCourseId];
                     D_800DC540 = (s32) GetCupIndex();
@@ -5068,11 +5070,11 @@ void func_8009CE64(s32 arg0) {
             if (gMenuSelection >= 0xE) {
                 gGamestateNext = 4;
                 if (gModeSelection == 1) {
-                    D_8018EDFB = (s8) 1;
+                    gGhostPlayerInit = (s8) 1;
                 }
                 func_8009CE1C();
             }
-            D_8018EE0C = 0;
+            unref_D_8018EE0C = 0;
         } else {
             switch (gDebugGotoScene) { /* switch 5; irregular */
                 case 1:                /* switch 5 */
@@ -5086,7 +5088,7 @@ void func_8009CE64(s32 arg0) {
                 default: /* switch 5 */
                     gGamestateNext = 4;
                     if (gModeSelection == (s32) 1) {
-                        D_8018EDFB = 1;
+                        gGhostPlayerInit = 1;
                     }
                     break;
             }
@@ -5414,32 +5416,32 @@ void func_8009E17C(u32 arg0) {
 
 void func_8009E1C0(void) {
     func_8009DFE0(10);
-    D_8018EDE0 = 0;
+    gMenuFadeType = 0;
 }
 
 void func_8009E1E4(void) {
     func_8009E000(10);
-    D_8018EDE0 = 0;
+    gMenuFadeType = 0;
 }
 
 void func_8009E208(void) {
     func_8009DFE0(10);
-    D_8018EDE0 = 1;
+    gMenuFadeType = 1;
 }
 
 void func_8009E230(void) {
     func_8009DFE0(10);
-    D_8018EDE0 = 2;
+    gMenuFadeType = 2;
 }
 
 void func_8009E258(void) {
     func_8009DFE0(10);
-    D_8018EDE0 = 3;
+    gMenuFadeType = 3;
 }
 
 void func_8009E280(void) {
     func_8009DFE0(10);
-    D_8018EDE0 = 4;
+    gMenuFadeType = 4;
 }
 
 void func_8009E2A8(s32 arg0) {
@@ -5630,11 +5632,12 @@ void add_menu_item(s32 type, s32 column, s32 row, s8 priority) {
             load_menu_img(D_0200184C);
             break;
         case MENU_ITEM_UI_START_BACKGROUND:
-            load_menu_img_comp_type(gMenuTexturesBackground[has_unlocked_extra_mode()], LOAD_MENU_IMG_TKMK00_ONCE);
+            //load_menu_img_comp_type(gMenuTexturesBackground[has_unlocked_extra_mode()], LOAD_MENU_IMG_TKMK00_ONCE);
+            load_texture_reset_cache(gMenuTexturesBackground[has_unlocked_extra_mode()]->textureData);
             break;
         case MENU_ITEM_UI_LOGO_AND_COPYRIGHT:
             load_mario_kart_64_logo();
-            sMenuTextureBufferIndex += 0x10000;
+            //sMenuTextureListIndex += 1;
             load_menu_img(seg2_copyright_1996_texture);
             break;
         case MENU_ITEM_UI_PUSH_START_BUTTON:
@@ -5643,11 +5646,12 @@ void add_menu_item(s32 type, s32 column, s32 row, s8 priority) {
         case MAIN_MENU_BACKGROUND:
         case CHARACTER_SELECT_BACKGROUND:
         case COURSE_SELECT_BACKGROUND:
-            load_menu_img_comp_type(gMenuTexturesBackground[has_unlocked_extra_mode()], LOAD_MENU_IMG_TKMK00_ONCE);
+            load_texture_reset_cache(gMenuTexturesBackground[has_unlocked_extra_mode()]->textureData);
+            //load_menu_img_comp_type(gMenuTexturesBackground[has_unlocked_extra_mode()], LOAD_MENU_IMG_TKMK00_ONCE);
             load_menu_img_comp_type(D_02004B74, LOAD_MENU_IMG_TKMK00_ONCE);
             convert_img_to_greyscale(0, 0x00000019);
-            adjust_img_colour(0, SCREEN_WIDTH * SCREEN_HEIGHT, D_800E74E8[type - 0x23].red,
-                              D_800E74E8[type - 0x23].green, D_800E74E8[type - 0x23].blue);
+            adjust_img_colour(0, SCREEN_WIDTH * SCREEN_HEIGHT, D_800E74E8[type - MAIN_MENU_BACKGROUND].red,
+                              D_800E74E8[type - MAIN_MENU_BACKGROUND].green, D_800E74E8[type - MAIN_MENU_BACKGROUND].blue);
             break;
         case MENU_ITEM_UI_OK:
             var_ra->param1 = 0x00000020;
@@ -6091,7 +6095,7 @@ void render_menus(MenuItem* arg0) {
                 var_a1 = arg0->type - 0xF;
                 if (arg0->param1 < 0x20) {
                     temp_t9 = (arg0->param1 * 0x3A) / 64;
-                    if (var_a1 == gMainMenuSelectionDepth) {
+                    if (var_a1 == gMainMenuSelection) {
                         gDisplayListHead =
                             draw_flash_select_case_fast(gDisplayListHead, arg0->column + temp_t9, arg0->row,
                                                         (arg0->column - temp_t9) + 0x39, arg0->row + 0x12);
@@ -6108,7 +6112,7 @@ void render_menus(MenuItem* arg0) {
             case MAIN_MENU_50CC:
             case MAIN_MENU_100CC:
             case MAIN_MENU_150CC:
-            case MENU_ITEM_TYPE_015:
+            case MAIN_MENU_EXTRA_CC:
             case MENU_ITEM_TYPE_016:
             case MENU_ITEM_TYPE_017:
             case MAIN_MENU_TIME_TRIALS_BEGIN:
@@ -6119,20 +6123,25 @@ void render_menus(MenuItem* arg0) {
                     case MAIN_MENU_50CC:
                     case MAIN_MENU_100CC:
                     case MAIN_MENU_150CC:
-                    case MENU_ITEM_TYPE_015:
-                        if ((var_a1 != 0) && (var_a1 != 2)) {
-                            var_v1 = -1;
+                    case MAIN_MENU_EXTRA_CC:
+                        switch(var_a1) {
+                            case 0:
+                            case 2:
+                                break;
+                            default:
+                                var_v1 = -1;
+                                break;
                         }
-                        var_a1 = 18;
-                        sp9C = segmented_to_virtual_dupe(D_800E8234[arg0->type - MAIN_MENU_50CC]);
+                        var_a1 = MAIN_MENU_50CC;
+                        sp9C = segmented_to_virtual_dupe(D_800E8294[arg0->type - MAIN_MENU_50CC]);
                         break;
                     case MENU_ITEM_TYPE_016:
                     case MENU_ITEM_TYPE_017:
                         if (var_a1 != 2) {
                             var_v1 = -1;
                         } else {
-                            var_a1 = 22;
-                            sp9C = segmented_to_virtual_dupe(D_800E8234[arg0->type - MAIN_MENU_50CC]);
+                            var_a1 = MENU_ITEM_TYPE_016;
+                            sp9C = segmented_to_virtual_dupe(D_800E82A4[arg0->type - MENU_ITEM_TYPE_016]);
                         }
                         break;
                     case MAIN_MENU_TIME_TRIALS_BEGIN:
@@ -6140,28 +6149,29 @@ void render_menus(MenuItem* arg0) {
                         if (var_a1 != 1) {
                             var_v1 = -1;
                         } else {
-                            var_a1 = 24;
-                            sp9C = segmented_to_virtual_dupe(D_800E8234[arg0->type - MAIN_MENU_50CC]);
+                            var_a1 = MAIN_MENU_TIME_TRIALS_BEGIN;
+                            sp9C = segmented_to_virtual_dupe(D_800E82AC[arg0->type - MAIN_MENU_TIME_TRIALS_BEGIN]);
                         }
                         break;
+                } // End of switch
+                if (var_v1 == -1) {
+                    break;
                 }
-                if (var_v1 != -1) {
-                    if ((gMainMenuSelectionDepth >= 5) && (var_v1 == (arg0->type - var_a1))) {
-                        if (gMainMenuSelectionDepth >= 6) {
-                            gDisplayListHead =
-                                draw_box_fill(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x3F,
-                                              arg0->row + 0x11, 0x000000FF, 0x000000F9, 0x000000DC, 0x000000FF);
-                        } else {
-                            gDisplayListHead =
-                                draw_flash_select_case_slow(gDisplayListHead, arg0->column ^ 0, arg0->row ^ 0,
-                                                            arg0->column + 0x3F, arg0->row + 0x11);
-                        }
+                if ((gMainMenuSelection >= 5) && (var_v1 == (arg0->type - var_a1))) {
+                    if (gMainMenuSelection >= 6) {
+                        gDisplayListHead =
+                            draw_box_fill(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x3F,
+                                            arg0->row + 0x11, 0x000000FF, 0x000000F9, 0x000000DC, 0x000000FF);
                     } else {
-                        gDisplayListHead = draw_box_fill(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x3F,
-                                                         arg0->row + 0x11, 1, 1, 1, 0x000000FF);
+                        gDisplayListHead =
+                            draw_flash_select_case_slow(gDisplayListHead, arg0->column ^ 0, arg0->row ^ 0,
+                                                        arg0->column + 0x3F, arg0->row + 0x11);
                     }
-                    gDisplayListHead = render_menu_textures(gDisplayListHead, sp9C, arg0->column, arg0->row);
+                } else {
+                    gDisplayListHead = draw_box_fill(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x3F,
+                                                        arg0->row + 0x11, 1, 1, 1, 0x000000FF);
                 }
+                gDisplayListHead = render_menu_textures(gDisplayListHead, sp9C, arg0->column, arg0->row);
                 break;
             case MENU_ITEM_TYPE_01B:
                 func_800A10CC(arg0);
@@ -6175,7 +6185,7 @@ void render_menus(MenuItem* arg0) {
             case CHARACTER_SELECT_MENU_4P_CURSOR:
                 temp_a0 = arg0->type - CHARACTER_SELECT_MENU_1P_CURSOR;
                 if (gCharacterGridSelections[temp_a0]) {
-                    if (D_8018EDE8[temp_a0] == 0) {
+                    if (gCharacterGridIsSelected[temp_a0] == 0) {
                         temp_t2 = 0x000000FF;
                     } else {
                         temp_t2 = gGlobalTimer % 16;
@@ -6250,7 +6260,7 @@ void render_menus(MenuItem* arg0) {
                 }
                 func_800A86E8(arg0);
                 set_text_color(3);
-                print_text_mode_1(arg0->column + 8, arg0->row + 0x10, gBestTimeText[arg0->type - MENU_ITEM_TYPE_065], 0, scaleX, 0.8f);
+                 print_text_mode_1(arg0->column + 8, arg0->row + 0x10, gBestTimeText[arg0->type - MENU_ITEM_TYPE_065], 0, scaleX, 0.8f);
                 func_800A874C(arg0);
                 break;
             case MENU_ITEM_TYPE_06E:
@@ -6277,8 +6287,8 @@ void render_menus(MenuItem* arg0) {
                 func_800A143C(arg0, var_a1);
                 break;
             case MENU_ITEM_TYPE_08C:
-                if ((gMainMenuSelectionDepth >= MAIN_MENU_MODE_SUB_SELECT) && (var_a1 == (arg0->type - var_v1))) {
-                    if (gMainMenuSelectionDepth >= MAIN_MENU_MODE_SUB_SELECT) {
+                if ((gMainMenuSelection >= MAIN_MENU_MODE_SUB_SELECT) && (var_a1 == (arg0->type - var_v1))) {
+                    if (gMainMenuSelection >= MAIN_MENU_MODE_SUB_SELECT) {
                         gDisplayListHead =
                             draw_box_fill(gDisplayListHead, arg0->column, arg0->row, arg0->column + 0x3F,
                                           arg0->row + 0x11, 0x000000FF, 0x000000F9, 0x000000DC, 0x000000FF);
@@ -6527,7 +6537,7 @@ void func_800A09E0(MenuItem *item) {
 
 	gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 0, 0, 319, 194);
 	for (table_row = 0; table_row < 9; table_row++) {
-		if (gControllerPakScrollDirection[0] == CONTROLLER_PAK_SCROLL_DIR_NONE && (table_row == 0 || table_row == 8)) {
+		if (gControllerPakScrollDirection == CONTROLLER_PAK_SCROLL_DIR_NONE && (table_row == 0 || table_row == 8)) {
 			continue;
         }
 		gDisplayListHead = render_menu_textures(gDisplayListHead, D_0200157C, 0x20, (table_row * 0xA) + item->row);
@@ -6557,12 +6567,12 @@ void func_800A0B80(MenuItem* arg0) {
 
     gDPSetPrimColor(gDisplayListHead++, 0, 0, 0x00, 0x00, 0x32, 0xFF);
     for (var_s5 = 0; var_s5 < 9; var_s5++) {
-        if (D_800E86C4[var_s5] == 0) {
+        if (gControllerPakVisibleTableRows[var_s5] == 0) {
             continue;
         }
 
         temp_s1 = var_s5 * 0xA;
-        var_s0 = D_800E86C4[var_s5];
+        var_s0 = gControllerPakVisibleTableRows[var_s5];
         if (var_s0 < 0xA) {
             func_800A08D8(var_s0 + 0x10, 0x00000032, arg0->row + temp_s1 + 1);
         } else {
@@ -6571,8 +6581,8 @@ void func_800A0B80(MenuItem* arg0) {
             func_800A08D8(0x11U, 0x0000002F, arg0->row + temp_s1 + 1);
         }
         temp_s2 = arg0->row + temp_s1 + 1;
-        if (pfsError[D_800E86C4[var_s5] - 1] == 0) {
-            temp_s4 = &pfsState[D_800E86C4[var_s5] - 1];
+        if (pfsError[gControllerPakVisibleTableRows[var_s5] - 1] == 0) {
+            temp_s4 = &pfsState[gControllerPakVisibleTableRows[var_s5] - 1];
             var_s0 = func_800A095C(temp_s4->game_name, 0x00000010, 0x0000004F, temp_s2);
             if (temp_s4->ext_name[0] != 0) {
                 func_800A08D8(0x3CU, (var_s0 * 8) + 0x4F, temp_s2);
@@ -6919,7 +6929,7 @@ void func_800A1DE0(MenuItem* arg0) {
 
     for (var_s1 = 0; var_s1 < 2; var_s1++) {
         wut = D_800E7840[var_s1];
-        if (var_s1 == D_8018EDF9) {
+        if (var_s1 == gCourseRecordsSubMenuSelection) {
             var_a0 = 5;
         } else {
             var_a0 = 1;
@@ -6929,7 +6939,7 @@ void func_800A1DE0(MenuItem* arg0) {
     }
 
     sp58.column = 0x003B;
-    sp58.row = (D_8018EDF9 * 0xD) + 0x66;
+    sp58.row = (gCourseRecordsSubMenuSelection * 0xD) + 0x66;
     func_800A66A8(arg0, &sp58);
 }
 
@@ -8625,7 +8635,7 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
                 if (menuItem->param1 == 0x000000B4) {
                     func_8009E000(0x00000028);
                     func_800CA388(0x64U);
-                    D_8018EDE0 = 0;
+                    gMenuFadeType = 0;
                 }
                 if ((menuItem->param2 != 0) && (menuItem->param1 >= 3)) {
                     menuItem->param2 = 0;
@@ -8662,17 +8672,17 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
                 break;
             case MAIN_MENU_OPTION_GFX:
             case MAIN_MENU_DATA_GFX:
-                switch (gMainMenuSelectionDepth) {
-                    case OPTIONS_SELECTION:
-                    case DATA_SELECTION:
-                    case PLAYER_NUM_SELECTION:
+                switch (gMainMenuSelection) {
+                    case MAIN_MENU_OPTION:
+                    case MAIN_MENU_DATA:
+                    case MAIN_MENU_PLAYER_SELECT:
                         func_800A9B9C(menuItem);
                         break;
-                    case GAME_MODE_SELECTION:
-                    case GAME_MODE_CC_OR_TIME_TRIALS_OPTIONS_SELECTION:
-                    case CONFIRM_OK_SELECTION:
-                    case CONFIRM_OK_SELECTION_FROM_BACK_OUT:
-                    case TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT:
+                    case MAIN_MENU_MODE_SELECT:
+                    case MAIN_MENU_MODE_SUB_SELECT:
+                    case MAIN_MENU_OK_SELECT:
+                    case MAIN_MENU_OK_SELECT_GO_BACK:
+                    case MAIN_MENU_MODE_SUB_SELECT_GO_BACK:
                         func_800A9C40(menuItem);
                         break;
                 }
@@ -8685,17 +8695,17 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
             case MENU_ITEM_UI_2P_GAME:
             case MENU_ITEM_UI_3P_GAME:
             case MENU_ITEM_UI_4P_GAME:
-                switch (gMainMenuSelectionDepth) { /* switch 6 */
-                    case OPTIONS_SELECTION:        /* switch 6 */
-                    case DATA_SELECTION:           /* switch 6 */
-                    case PLAYER_NUM_SELECTION:     /* switch 6 */
+                switch (gMainMenuSelection) { /* switch 6 */
+                    case MAIN_MENU_OPTION:        /* switch 6 */
+                    case MAIN_MENU_DATA:           /* switch 6 */
+                    case MAIN_MENU_PLAYER_SELECT:     /* switch 6 */
                         func_800A9B9C(menuItem);
                         break;
-                    case GAME_MODE_SELECTION:                           /* switch 6 */
-                    case GAME_MODE_CC_OR_TIME_TRIALS_OPTIONS_SELECTION: /* switch 6 */
-                    case CONFIRM_OK_SELECTION:                          /* switch 6 */
-                    case CONFIRM_OK_SELECTION_FROM_BACK_OUT:            /* switch 6 */
-                    case TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT:      /* switch 6 */
+                    case MAIN_MENU_MODE_SELECT:                           /* switch 6 */
+                    case MAIN_MENU_MODE_SUB_SELECT: /* switch 6 */
+                    case MAIN_MENU_OK_SELECT:                          /* switch 6 */
+                    case MAIN_MENU_OK_SELECT_GO_BACK:            /* switch 6 */
+                    case MAIN_MENU_MODE_SUB_SELECT_GO_BACK:      /* switch 6 */
                         func_800A9C40(menuItem);
                         break;
                 }
@@ -8704,7 +8714,7 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
             case MAIN_MENU_50CC:
             case MAIN_MENU_100CC:
             case MAIN_MENU_150CC:
-            case MENU_ITEM_TYPE_015:
+            case MAIN_MENU_EXTRA_CC:
             case MENU_ITEM_TYPE_016:
             case MENU_ITEM_TYPE_017:
             case MAIN_MENU_TIME_TRIALS_BEGIN:
@@ -8741,7 +8751,7 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
                         func_800AA69C(menuItem);
                         break;
                 }
-                switch (D_8018EDEE) {
+                switch (gPlayerSelectMenuSelection) {
                     case PLAYER_SELECT_MENU_MAIN:
                         func_800AAB90(menuItem);
                         break;
@@ -9016,8 +9026,8 @@ void func_800A8270(s32 arg0, MenuItem* arg1) {
         gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
         gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
         if ((arg0 + 1) == gPlayerCount) {
-            if ((gMainMenuSelectionDepth == OPTIONS_SELECTION) || (gMainMenuSelectionDepth == DATA_SELECTION) ||
-                (gMainMenuSelectionDepth == PLAYER_NUM_SELECTION)) {
+            if ((gMainMenuSelection == MAIN_MENU_OPTION) || (gMainMenuSelection == MAIN_MENU_DATA) ||
+                (gMainMenuSelection == MAIN_MENU_PLAYER_SELECT)) {
                 gDisplayListHead = draw_flash_select_case_slow(gDisplayListHead, var_s3, var_s0, var_s4, var_s0 + 0x35);
             } else {
                 gDisplayListHead = draw_box_fill(gDisplayListHead, var_s3, var_s0, var_s4, var_s0 + 0x35, 0x000000FF,
@@ -9027,8 +9037,8 @@ void func_800A8270(s32 arg0, MenuItem* arg1) {
             gDisplayListHead = func_80098FC8(gDisplayListHead, var_s3, var_s0, var_s4, var_s0 + 0x35);
         }
         for (var_s0 += 0x41, var_s2 = 0; var_s2 <= gPlayerModeSelection[arg0]; var_s2++, var_s0 += 0x12) {
-            if ((var_s2 == gGameModeMenuColumn[arg0]) && ((arg0 + 1) == gPlayerCount) && (gMainMenuSelectionDepth >= 4)) {
-                if (gMainMenuSelectionDepth == GAME_MODE_SELECTION) {
+            if ((var_s2 == gGameModeMenuColumn[arg0]) && ((arg0 + 1) == gPlayerCount) && (gMainMenuSelection >= 4)) {
+                if (gMainMenuSelection == MAIN_MENU_MODE_SELECT) {
                     gDisplayListHead =
                         draw_flash_select_case_slow(gDisplayListHead, var_s3, var_s0, var_s4, var_s0 + 0x11);
                 } else {
@@ -9051,23 +9061,23 @@ void func_800A8564(MenuItem* arg0) {
     s32 temp_t0;
 
     var_a1 = 0;
-    switch (arg0->type) { /* irregular */
+    switch (arg0->type) {
         case 0xF:
             var_a0 = D_0200487C;
-            if ((gMainMenuSelectionDepth == CONFIRM_OK_SELECTION) ||
-                (gMainMenuSelectionDepth == CONFIRM_OK_SELECTION_FROM_BACK_OUT)) {
+            if ((gMainMenuSelection == MAIN_MENU_OK_SELECT) ||
+                (gMainMenuSelection == MAIN_MENU_OK_SELECT_GO_BACK)) {
                 var_a1 = 1;
             }
             break;
         case 0x33:
             var_a0 = D_02004B74;
-            if ((D_8018EDEE == 2) || (D_8018EDEE == 3)) {
+            if ((gPlayerSelectMenuSelection == PLAYER_SELECT_MENU_OK) || (gPlayerSelectMenuSelection == PLAYER_SELECT_MENU_OK_GO_BACK)) {
                 var_a1 = 1;
             }
             break;
         case 0x5D:
             var_a0 = D_02004E80;
-            if (gSubMenuSelection == 3) {
+            if (gSubMenuSelection == SUB_MENU_MAP_SELECT_OK) {
                 var_a1 = 1;
             }
             break;
@@ -9132,7 +9142,7 @@ void func_800A890C(s32 arg0, MenuItem* arg1) {
         gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
         gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
         if (arg0 == GetCupIndex()) {
-            if (gSubMenuSelection == 1) {
+            if (gSubMenuSelection == SUB_MENU_MAP_SELECT_CUP) {
                 gDisplayListHead = draw_flash_select_case_slow(gDisplayListHead, temp_t1 + temp_t7, temp_a2,
                                                                (temp_t1 - temp_t7) + 64, temp_a2 + 39);
             } else {
@@ -9157,8 +9167,8 @@ void func_800A8A98(MenuItem* arg0) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
     for (someIndex = 0; someIndex < GetCupSize(); someIndex++) {
-        if ((someIndex == GetCupCursorPosition()) && (gSubMenuSelection >= 2) && (gModeSelection != GRAND_PRIX)) {
-            if ((gSubMenuSelection == 2) || (gSubMenuSelection == 4)) {
+        if ((someIndex == GetCupCursorPosition()) && (gSubMenuSelection > SUB_MENU_MAP_SELECT_CUP) && (gModeSelection != GRAND_PRIX)) {
+            if ((gSubMenuSelection == SUB_MENU_MAP_SELECT_COURSE) || (gSubMenuSelection == SUB_MENU_MAP_SELECT_BATTLE_COURSE)) {
                 gDisplayListHead = draw_flash_select_case_slow(
                     gDisplayListHead, D_800E7208[someIndex][0].column + temp_s2, D_800E7208[someIndex][0].row + temp_s3,
                     D_800E7208[someIndex][1].column + temp_s2, D_800E7208[someIndex][1].row + temp_s3);
@@ -9189,7 +9199,7 @@ void func_800A8CA4(MenuItem* arg0) {
     gDPSetRenderMode(gDisplayListHead++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetCombineMode(gDisplayListHead++, G_CC_DECALRGBA, G_CC_DECALRGBA);
     if (gModeSelection == GRAND_PRIX) {
-        if (gSubMenuSelection != 3) {
+        if (gSubMenuSelection != SUB_MENU_MAP_SELECT_OK) {
             for (var_s0 = 0; var_s0 < 4; var_s0++) {
                 // Wut?
                 if ((var_s0 != (temp_v0->param1 % 4)) != 0) {
@@ -9227,7 +9237,7 @@ void func_800A8F48(UNUSED MenuItem* arg0) {
     s32 var_s1;
 
     switch (gSubMenuSelection) { /* irregular */
-        case 1:
+        case SUB_MENU_MAP_SELECT_CUP:
             for (var_s1 = 0; var_s1 < 4; var_s1++) {
                 if (func_800B639C((GetCupIndex() * 4) + var_s1) >= 0) {
                     temp_v0 = &D_800E7168[var_s1];
@@ -9241,7 +9251,7 @@ void func_800A8F48(UNUSED MenuItem* arg0) {
                 }
             }
             break;
-        case 2:
+        case SUB_MENU_MAP_SELECT_COURSE:
         default:
             if (func_800B639C((GetCupIndex() * 4) + GetCupCursorPosition()) >= 0) {
                 gDisplayListHead = func_80098FC8(gDisplayListHead, 0x00000057, 0x00000070, 0x00000096, 0x00000081);
@@ -9470,24 +9480,24 @@ void func_800A9710(MenuItem* arg0) {
 void func_800A97BC(MenuItem* arg0) {
     s32 i;
 
-    switch (*gControllerPakScrollDirection) {
+    switch (gControllerPakScrollDirection) {
         case 1:
             arg0->row -= 2;
             if (arg0->row < 0x60) {
                 arg0->row = 0x69;
-                *gControllerPakScrollDirection = 0;
+                gControllerPakScrollDirection = 0;
                 for (i = 0; i < 8; i++) {
                     if (i < 7) {
-                        D_800E86C4[i] = D_800E86C4[i + 1];
+                        gControllerPakVisibleTableRows[i] = gControllerPakVisibleTableRows[i + 1];
                     } else {
-                        if ((D_800E86C4[i - 1] == 0x10) || (D_800E86C4[i - 1] == 0)) {
-                            D_800E86C4[i] = 0;
+                        if ((gControllerPakVisibleTableRows[i - 1] == 0x10) || (gControllerPakVisibleTableRows[i - 1] == 0)) {
+                            gControllerPakVisibleTableRows[i] = 0;
                         } else {
-                            D_800E86C4[i] = D_800E86C4[i - 1] + 1;
+                            gControllerPakVisibleTableRows[i] = gControllerPakVisibleTableRows[i - 1] + 1;
                         }
                     }
                 }
-                D_800E86C4[0] = D_800E86C4[8] = 0;
+                gControllerPakVisibleTableRows[0] = gControllerPakVisibleTableRows[8] = 0;
             }
 
             break;
@@ -9495,22 +9505,22 @@ void func_800A97BC(MenuItem* arg0) {
             arg0->row += 2;
             if (arg0->row >= 0x73) {
                 arg0->row = 0x69;
-                *gControllerPakScrollDirection = 0;
+                gControllerPakScrollDirection = 0;
                 for (i = 8; i > 0; i--) {
                     if (i > 1) {
-                        D_800E86C4[i] = D_800E86C4[i - 1];
+                        gControllerPakVisibleTableRows[i] = gControllerPakVisibleTableRows[i - 1];
                     } else {
-                        if ((D_800E86C4[i + 1] == 1) || (D_800E86C4[i + 1] == 0)) {
-                            D_800E86C4[i] = 0;
+                        if ((gControllerPakVisibleTableRows[i + 1] == 1) || (gControllerPakVisibleTableRows[i + 1] == 0)) {
+                            gControllerPakVisibleTableRows[i] = 0;
                         } else {
-                            D_800E86C4[i] = D_800E86C4[i + 1] - 1;
+                            gControllerPakVisibleTableRows[i] = gControllerPakVisibleTableRows[i + 1] - 1;
                         }
                     }
                 }
-                D_800E86C4[0] = D_800E86C4[8] = 0;
+                gControllerPakVisibleTableRows[0] = gControllerPakVisibleTableRows[8] = 0;
                 break;
                 default:
-                    *gControllerPakScrollDirection = 0;
+                    gControllerPakScrollDirection = 0;
                     break;
             }
     }
@@ -9532,13 +9542,13 @@ void update_ok_menu_item(MenuItem* arg0) {
             var_v0 = sp4; // wut?
             break;
         case MENU_ITEM_UI_OK:
-            var_v0 = D_800F0CA0[gMainMenuSelectionDepth - 1];
+            var_v0 = D_800F0CA0[gMainMenuSelection - 1];
             break;
         case COURSE_SELECT_OK:
             var_v0 = D_800F0CA0[gSubMenuSelection + 11];
             break;
         case CHARACTER_SELECT_MENU_OK:
-            var_v0 = D_800F0CA0[D_8018EDEE + 7];
+            var_v0 = D_800F0CA0[gPlayerSelectMenuSelection + 7];
             break;
     }
     switch (var_v0) { /* switch 1; irregular */
@@ -9615,8 +9625,8 @@ void func_800A9C40(MenuItem* arg0) {
             arg0->state = 1;
         case 1:
             func_800AA280(arg0);
-            if ((gMainMenuSelectionDepth == CONFIRM_OK_SELECTION_FROM_BACK_OUT) ||
-                (gMainMenuSelectionDepth == TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT)) {
+            if ((gMainMenuSelection == MAIN_MENU_OK_SELECT_GO_BACK) ||
+                (gMainMenuSelection == MAIN_MENU_MODE_SUB_SELECT_GO_BACK)) {
                 arg0->param1 = 0x00000020;
             } else {
                 if (arg0->param1 < 0x20) {
@@ -9649,8 +9659,8 @@ void func_800A9D5C(MenuItem* arg0) {
 
     switch (arg0->state) {
         case 2:
-            if ((gMainMenuSelectionDepth == CONFIRM_OK_SELECTION_FROM_BACK_OUT) ||
-                (gMainMenuSelectionDepth == TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT)) {
+            if ((gMainMenuSelection == MAIN_MENU_OK_SELECT_GO_BACK) ||
+                (gMainMenuSelection == MAIN_MENU_MODE_SUB_SELECT_GO_BACK)) {
                 arg0->column = 0x00000080;
                 arg0->row = 0x0000003E;
             } else {
@@ -9710,10 +9720,10 @@ void func_800A9E58(MenuItem* arg0) {
                 arg0->visible = 0;
             } else {
                 arg0->param2 = gGameModeMenuColumn[gPlayerCount - 1];
-                switch (gMainMenuSelectionDepth) {                      /* switch 2 */
-                    case GAME_MODE_SELECTION:                           /* switch 2 */
-                    case GAME_MODE_CC_OR_TIME_TRIALS_OPTIONS_SELECTION: /* switch 2 */
-                    case CONFIRM_OK_SELECTION:                          /* switch 2 */
+                switch (gMainMenuSelection) {                      /* switch 2 */
+                    case MAIN_MENU_MODE_SELECT:                           /* switch 2 */
+                    case MAIN_MENU_MODE_SUB_SELECT: /* switch 2 */
+                    case MAIN_MENU_OK_SELECT:                          /* switch 2 */
                         arg0->visible = 1;
                         temp_v0 = get_menu_item_player_count();
                         arg0->column = temp_v0->column;
@@ -9721,8 +9731,8 @@ void func_800A9E58(MenuItem* arg0) {
                         arg0->param1 = 0;
                         arg0->state = 1;
                         break;
-                    case CONFIRM_OK_SELECTION_FROM_BACK_OUT:       /* switch 2 */
-                    case TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT: /* switch 2 */
+                    case MAIN_MENU_OK_SELECT_GO_BACK:       /* switch 2 */
+                    case MAIN_MENU_MODE_SUB_SELECT_GO_BACK: /* switch 2 */
                         temp_v0 = get_menu_item_player_count();
                         temp_v1_2 = &D_800E70E8[arg0->type - sp24];
                         arg0->column = temp_v0->column + temp_v1_2->column;
@@ -9738,12 +9748,12 @@ void func_800A9E58(MenuItem* arg0) {
             }
             break;
         case 1:                                                     /* switch 5 */
-            switch (gMainMenuSelectionDepth) {                      /* switch 3 */
-                case GAME_MODE_SELECTION:                           /* switch 3 */
-                case GAME_MODE_CC_OR_TIME_TRIALS_OPTIONS_SELECTION: /* switch 3 */
-                case CONFIRM_OK_SELECTION:                          /* switch 3 */
-                case CONFIRM_OK_SELECTION_FROM_BACK_OUT:            /* switch 3 */
-                case TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT:      /* switch 3 */
+            switch (gMainMenuSelection) {                      /* switch 3 */
+                case MAIN_MENU_MODE_SELECT:                           /* switch 3 */
+                case MAIN_MENU_MODE_SUB_SELECT: /* switch 3 */
+                case MAIN_MENU_OK_SELECT:                          /* switch 3 */
+                case MAIN_MENU_OK_SELECT_GO_BACK:            /* switch 3 */
+                case MAIN_MENU_MODE_SUB_SELECT_GO_BACK:      /* switch 3 */
                     if ((temp_a1 != sp20) && (temp_a1 != sp1C)) {
                         arg0->visible = 0;
                         arg0->state = 0;
@@ -9769,12 +9779,12 @@ void func_800A9E58(MenuItem* arg0) {
             }
             break;
         case 2:                                                     /* switch 5 */
-            switch (gMainMenuSelectionDepth) {                      /* switch 4 */
-                case GAME_MODE_SELECTION:                           /* switch 4 */
-                case GAME_MODE_CC_OR_TIME_TRIALS_OPTIONS_SELECTION: /* switch 4 */
-                case CONFIRM_OK_SELECTION:                          /* switch 4 */
-                case CONFIRM_OK_SELECTION_FROM_BACK_OUT:            /* switch 4 */
-                case TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT:      /* switch 4 */
+            switch (gMainMenuSelection) {                      /* switch 4 */
+                case MAIN_MENU_MODE_SELECT:                           /* switch 4 */
+                case MAIN_MENU_MODE_SUB_SELECT: /* switch 4 */
+                case MAIN_MENU_OK_SELECT:                          /* switch 4 */
+                case MAIN_MENU_OK_SELECT_GO_BACK:            /* switch 4 */
+                case MAIN_MENU_MODE_SUB_SELECT_GO_BACK:      /* switch 4 */
                     if ((temp_a1 != sp20) && (temp_a1 != sp1C)) {
                         arg0->visible = 0;
                         arg0->state = 0;
@@ -9804,8 +9814,8 @@ void func_800AA280(MenuItem* arg0) {
     Unk_D_800E70A0* temp_v0;
 
     temp_v0 = &D_800E70A0[arg0->type - 0xA];
-    if ((gMainMenuSelectionDepth == CONFIRM_OK_SELECTION_FROM_BACK_OUT) ||
-        (gMainMenuSelectionDepth == TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT)) {
+    if ((gMainMenuSelection == MAIN_MENU_OK_SELECT_GO_BACK) ||
+        (gMainMenuSelection == MAIN_MENU_MODE_SUB_SELECT_GO_BACK)) {
         arg0->column = temp_v0->column;
         arg0->row = temp_v0->row;
     } else {
@@ -9818,17 +9828,17 @@ void func_800AA2EC(MenuItem* arg0) {
     s32 var_t1;
 
     var_t1 = 0;
-    switch (gMainMenuSelectionDepth) {
-        case OPTIONS_SELECTION:
-        case DATA_SELECTION:
-        case PLAYER_NUM_SELECTION:
-        case GAME_MODE_SELECTION:
+    switch (gMainMenuSelection) {
+        case MAIN_MENU_OPTION:
+        case MAIN_MENU_DATA:
+        case MAIN_MENU_PLAYER_SELECT:
+        case MAIN_MENU_MODE_SELECT:
             arg0->state = 0;
             break;
-        case GAME_MODE_CC_OR_TIME_TRIALS_OPTIONS_SELECTION:
-        case CONFIRM_OK_SELECTION:
-        case CONFIRM_OK_SELECTION_FROM_BACK_OUT:
-        case TIME_TRIALS_DATA_SELECTION_FROM_BACK_OUT:
+        case MAIN_MENU_MODE_SUB_SELECT:
+        case MAIN_MENU_OK_SELECT:
+        case MAIN_MENU_OK_SELECT_GO_BACK:
+        case MAIN_MENU_MODE_SUB_SELECT_GO_BACK:
             if (arg0->state != 0) {
                 break;
             }
@@ -9950,7 +9960,7 @@ void func_800AA69C(MenuItem* arg0) {
     }
     switch (arg0->subState) {
         case 0:
-            if ((D_8018EDE8[temp_v0] != 0) && (var_a0 != 0)) {
+            if ((gCharacterGridIsSelected[temp_v0] != 0) && (var_a0 != 0)) {
                 arg0->subState = 1;
                 func_8009A594(arg0->D_8018DEE0_index, 0,
                               segmented_to_virtual_dupe_2(gCharacterCelebrateAnimation[temp_a0]));
@@ -9971,7 +9981,7 @@ void func_800AA69C(MenuItem* arg0) {
             if (D_8018DEE0[arg0->D_8018DEE0_index].sequenceIndex >= D_800E8440[temp_a0]) {
                 arg0->subState = 2;
                 func_8009A594(arg0->D_8018DEE0_index, 0, segmented_to_virtual_dupe_2(D_800E83A0[temp_a0]));
-            } else if ((D_8018EDE8[temp_v0] == 0) && (var_a0 != 0)) {
+            } else if ((gCharacterGridIsSelected[temp_v0] == 0) && (var_a0 != 0)) {
                 arg0->subState = 3;
                 func_8009A594(arg0->D_8018DEE0_index,
                               D_800E8460[temp_a0] - D_8018DEE0[arg0->D_8018DEE0_index].sequenceIndex,
@@ -9979,7 +9989,7 @@ void func_800AA69C(MenuItem* arg0) {
             }
             break;
         case 2:
-            if ((D_8018EDE8[temp_v0] == 0) && (var_a0 != 0)) {
+            if ((gCharacterGridIsSelected[temp_v0] == 0) && (var_a0 != 0)) {
                 arg0->subState = 3;
                 func_8009A594(arg0->D_8018DEE0_index, 0,
                               segmented_to_virtual_dupe_2(gCharacterDeselectAnimation[temp_a0]));
@@ -9989,7 +9999,7 @@ void func_800AA69C(MenuItem* arg0) {
             if (D_8018DEE0[arg0->D_8018DEE0_index].sequenceIndex >= D_800E8460[temp_a0]) {
                 arg0->subState = 0;
                 func_8009A594(arg0->D_8018DEE0_index, 0, segmented_to_virtual_dupe_2(D_800E8360[temp_a0]));
-            } else if ((D_8018EDE8[temp_v0] != 0) && (var_a0 != 0)) {
+            } else if ((gCharacterGridIsSelected[temp_v0] != 0) && (var_a0 != 0)) {
                 arg0->subState = 1;
                 func_8009A594(arg0->D_8018DEE0_index,
                               D_800E8460[temp_a0] - D_8018DEE0[arg0->D_8018DEE0_index].sequenceIndex,
@@ -9998,7 +10008,7 @@ void func_800AA69C(MenuItem* arg0) {
             break;
         case 4:
         case 5:
-            if ((D_8018EDE8[temp_v0] != 0) && (var_a0 != 0)) {
+            if ((gCharacterGridIsSelected[temp_v0] != 0) && (var_a0 != 0)) {
                 arg0->subState = 1;
                 func_8009A594(arg0->D_8018DEE0_index, 0,
                               segmented_to_virtual_dupe_2(gCharacterCelebrateAnimation[temp_a0]));
@@ -10025,7 +10035,7 @@ void func_800AAA9C(MenuItem* arg0) {
             arg0->state = 1;
             /* fallthrough */
         case 1:
-            if (D_8018EDEE == 3) {
+            if (gPlayerSelectMenuSelection == 3) {
                 arg0->param1 = 0x00000020;
             } else {
                 if (arg0->param1 < 0x20) {
@@ -10095,7 +10105,7 @@ void func_800AAC18(MenuItem* arg0) {
     temp_a1 = arg0->type - 0x2B;
     switch (arg0->state) {
         case 0:
-            if (D_8018EDEE == 3) {
+            if (gPlayerSelectMenuSelection == 3) {
                 temp_v0 = func_800AAFCC(temp_a1);
                 if (temp_v0 >= 0) {
                     var_t0 = &D_800E7188[(gScreenModeSelection * 4) + temp_v0];
@@ -11015,7 +11025,7 @@ void func_800ACA14(MenuItem* arg0) {
             break;
         case 11:
         case 12:
-            if (func_800B4520()) {
+            if (is_screen_being_faded()) {
                 break;
             }
 
@@ -11090,7 +11100,7 @@ void func_800ACC50(MenuItem* arg0) {
         case 11:
         case 12:
         case 13:
-            if (func_800B4520() == 0) {
+            if (is_screen_being_faded() == 0) {
                 if ((gControllerFive->buttonPressed | gControllerFive->stickPressed) & 0x800) {
                     if (arg0->state >= 0xB) {
                         arg0->state--;
@@ -11283,7 +11293,7 @@ void func_800AD2E8(MenuItem* arg0) {
         case 8:  /* switch 3 */
         case 9:  /* switch 3 */
         case 10: /* switch 3 */
-            if (func_800B4520() == 0) {
+            if (is_screen_being_faded() == 0) {
                 if ((gControllerOne->buttonPressed | gControllerOne->stickPressed) & 0x800) {
                     if (arg0->state >= 6) {
                         arg0->state--;
@@ -11609,7 +11619,7 @@ void func_800ADF48(MenuItem* arg0) {
             case 42:
             case 43:
             case 44:
-                if (func_800B4520() == 0) {
+                if (is_screen_being_faded() == 0) {
                     controller = &gControllers[gIsGamePaused - 1];
                     if ((controller->buttonPressed | controller->stickPressed) & 0x800) {
                         if (D_800F0B50[gModeSelection] < arg0->state) {
@@ -11697,7 +11707,7 @@ void func_800AE218(MenuItem* arg0) {
         case 14:
         case 15:
         case 16:
-            if (func_800B4520() == 0) {
+            if (is_screen_being_faded() == 0) {
                 if ((gControllerOne->buttonPressed | gControllerOne->stickPressed) & 0x800) {
                     if (arg0->state >= 0xC) {
                         arg0->state--;

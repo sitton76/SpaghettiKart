@@ -5339,7 +5339,7 @@ void func_80014DE4(s32 cameraIndex) {
     D_801646D0[cameraIndex].unk0 = 0;
     D_801646D0[cameraIndex].unk2 = 0;
     D_801646D0[cameraIndex].unk4 = 0;
-    if ((gModeSelection == 1) && (D_8018EDFC == 0)) {
+    if ((gModeSelection == 1) && (gCourseMapInit == 0)) {
         D_80164678[cameraIndex] = 0;
     }
 

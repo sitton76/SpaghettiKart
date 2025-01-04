@@ -60,8 +60,8 @@ u32 World::GetCupIndex() {
 u32 World::NextCup() {
     s32 hack = 1;
 
-    // Prevent battle mode
-    if (gModeSelection == GRAND_PRIX) {
+    // Do not display battle mode on GP, TT, or VS
+    if (gModeSelection != BATTLE) {
         hack = 2;
     }
 

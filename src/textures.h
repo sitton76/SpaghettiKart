@@ -13,15 +13,13 @@
  *
  */
 typedef struct {
-    /* 0x00 */ s16 type;
-    /* 0x02 */ s16 unused1;
+    /* 0x00 */ s32 type;
     /* 0x04 */ u64* textureData; // This should be interpreted as a segmented address
     /* 0x08 */ u16 width;
     /* 0x0A */ u16 height;
     /* 0x0C */ u16 dX;
     /* 0x0E */ u16 dY;
     /* 0x10 */ u16 size; // This size is NOT equal to width*height. Its likely the size of the compressed texture
-    /* 0x12 */ s16 unused2;
 } MenuTexture; // size = 0x14
 
 /**
@@ -493,8 +491,8 @@ extern MenuTexture D_0200450C[2];
 extern MenuTexture D_02004534[2];
 extern MenuTexture D_0200455C[2];
 extern MenuTexture D_02004584[1];
-extern MenuTexture D_02004598[2];
-extern MenuTexture D_020045C0[2];
+extern MenuTexture seg2_blue_sky_background_texture[2];
+extern MenuTexture seg2_sunset_background_texture[2];
 extern MenuTexture seg2_copyright_1996_texture[2];
 extern MenuTexture seg2_push_start_button_texture[2];
 extern MenuTexture D_02004638[2];

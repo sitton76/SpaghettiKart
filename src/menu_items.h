@@ -67,12 +67,12 @@ typedef struct {
     /* 0x00 */ u64* textureData; // This should be interpreted as a segmented address
                                  /**
                                   * Its hard to tell what exactly what this is meant to be,
-                                  * but it appears to be used as some sort of offset/index from the address stored in gMenuTextureBuffer.
+                                  * but it appears to be used as some sort of offset/index from the address stored in sMenuTextureList.
                                   * This value is (roughly) the sum of (width * height) of the
                                   * textures in all the previous entries in sMenuTextureMap
                                   */
     /* 0x04 */ s32 offset;
-} struct_8018E118_entry; // size = 0x08
+} TextureMap; // size = 0x08
 
 typedef struct {
     /* 0x00 */ MenuTexture* textures;
@@ -133,7 +133,7 @@ enum MENU_ITEM_TYPE {
     MAIN_MENU_50CC,
     MAIN_MENU_100CC,
     MAIN_MENU_150CC,
-    MENU_ITEM_TYPE_015,
+    MAIN_MENU_EXTRA_CC,
     MENU_ITEM_TYPE_016,
     MENU_ITEM_TYPE_017,
     MAIN_MENU_TIME_TRIALS_BEGIN,
@@ -416,7 +416,7 @@ Gfx* draw_box_wide(Gfx*, s32, s32, s32, s32, u32, u32, u32, u32);
 Gfx* func_80098FC8(Gfx*, s32, s32, s32, s32);
 void dma_compressed_mio0_texture_segA(u64*, size_t, void*);
 void dma_tkmk00_textures(u64*, size_t, void*);
-void func_80099110(void);
+void clear_menu_textures(void);
 void load_menu_img(MenuTexture*);
 void* segmented_to_virtual_dupe(const void*);
 void* segmented_to_virtual_dupe_2(const void*);
@@ -655,13 +655,20 @@ void tkmk00decode(u8*, u8*, u8*, s32);
 #define D_8018E768_SIZE 0x08
 #define D_8018E7E8_SIZE 0x05
 #define D_8018E810_SIZE 0x05
+#define MENU_TEXTURE_BUFFER_MAX 500
 
 /* This is where I'd put my static data, if I had any */
 
 extern s32 D_800DDB24;
 extern s16 D_80164478[];
 
-extern u16* gMenuTextureBuffer;
+/**
+ * Old name: sMenuTextureBuffer
+ * This array has been modified. Instead of holding a buffer of texture data
+ * It now holds a list of pointers to asset strings.
+ * use `load_texture()` and `replace_texture()` to add textures to the list for rendering.
+ */
+extern const char* sMenuTextureList[MENU_TEXTURE_BUFFER_MAX];
 extern u8* gMenuCompressedBuffer;
 extern u8* sTKMK00_LowResBuffer;
 extern u8* sGPPointsCopy;
@@ -674,8 +681,8 @@ extern MenuItem gMenuItems[MENU_ITEMS_MAX];
 extern struct_8018DEE0_entry D_8018DEE0[D_8018DEE0_SIZE];
 extern struct_8018E060_entry D_8018E060[];
 extern struct_8018E0E8_entry D_8018E0E8[D_8018E0E8_SIZE];
-extern s32 sMenuTextureBufferIndex;
-extern struct_8018E118_entry sMenuTextureMap[TEXTURE_MAP_MAX];
+extern s32 sMenuTextureListIndex; // Old name: sMenuTextureBufferIndex, index into sMenuTextureList
+extern TextureMap sMenuTextureMap[TEXTURE_MAP_MAX];
 extern s32 sMenuTextureEntries;
 extern Gfx* sGfxPtr;
 extern s32 gNumD_8018E768Entries;

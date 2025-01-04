@@ -204,15 +204,15 @@ void course_data_menu_act(struct Controller*, u16);
 void logo_intro_menu_act(struct Controller*, u16);
 void controller_pak_menu_act(struct Controller*, u16);
 void splash_menu_act(struct Controller*, u16);
-void func_800B28C8(void);
+void setup_game_mode_selected(void);
 void main_menu_act(struct Controller*, u16);
 bool is_character_spot_free(s32);
 void player_select_menu_act(struct Controller* controller, u16 arg1);
 void course_select_menu_act(struct Controller*, u16);
 void load_menu_states(s32);
-void func_800B44AC(void);
-void func_800B44BC(void);
-bool func_800B4520(void);
+void reset_cycle_flash_menu(void);
+void set_sound_mode(void);
+bool is_screen_being_faded(void);
 
 /* data */
 extern s32 gIntroModelZEye;
@@ -223,16 +223,16 @@ extern f32 gIntroModelRotZ;
 extern f32 gIntroModelPosX;
 extern f32 gIntroModelPosY;
 extern f32 gIntroModelPosZ;
-extern s32 D_8018EDE0;
+extern s32 gMenuFadeType;
 
 extern s8 gCharacterGridSelections[];
-extern s8 D_8018EDE8[];
+extern s8 gCharacterGridIsSelected[];
 extern s8 gSubMenuSelection;
-extern s8 gMainMenuSelectionDepth;
-extern s8 D_8018EDEE;
+extern s8 gMainMenuSelection;
+extern s8 gPlayerSelectMenuSelection;
 extern s8 gDebugMenuSelection;
 extern s8 gControllerPakMenuSelection;
-extern s8 D_8018EDF1;
+extern s8 gScreenModeListIndex;
 extern u8 gSoundMode;
 extern s8 gPlayerCount;
 extern s8 gVersusResultCursorSelection;
@@ -240,18 +240,17 @@ extern s8 gTimeTrialsResultCursorSelection;
 extern s8 gBattleResultCursorSelection;
 extern s8 gTimeTrialDataCourseIndex;
 extern s8 gCourseRecordsMenuSelection;
-extern s8 D_8018EDF9;
+extern s8 gCourseRecordsSubMenuSelection;
 extern s8 gDebugGotoScene;
-extern s8 D_8018EDFB;
-extern s8 D_8018EDFC;
+extern s8 gGhostPlayerInit;
+extern s8 gCourseMapInit;
 extern s32 gMenuTimingCounter;
 extern s32 gMenuDelayTimer;
 extern s8 gDemoUseController;
 extern s8 gCupSelection;
-extern s8 D_8018EE0A;
+extern s8 sTempCupSelection;
 extern s8 gCourseIndexInCup;
-extern s8 D_8018EE0C;
-extern struct_8018EE10_entry D_8018EE10[];
+extern s8 unref_D_8018EE0C;
 
 extern s32 gMenuSelection; // D_800E86A0
 extern s32 gFadeModeSelection;
@@ -261,21 +260,21 @@ extern s8 gGameModeMenuColumn[];
 extern s8 gGameModeSubMenuColumn[4][3];
 extern s8 gNextDemoId;
 extern s8 gControllerPakSelectedTableRow;
-extern s8 D_800E86C4[];
-extern s8 gControllerPakScrollDirection[];
-extern s8 unref_800E86E0[];
+extern s8 gControllerPakVisibleTableRows[];
+extern s8 gControllerPakScrollDirection;
+extern s8 unref_D_800E86D4[];
 extern u32 sVIGammaOffDitherOn;
 
-extern const s8 D_800F2B50[5];
-extern const s8 D_800F2B58[5];
+extern const s8 sScreenModePlayerTable[5];
+extern const s8 sScreenModePlayerCount[5];
 extern const s8 gPlayerModeSelection[];
-extern const s8 gGameModePlayerColumnDefault[][3];
-extern const s8 gGameModePlayerColumnExtra[][3];
+extern const s8 sGameModePlayerColumnDefault[][3];
+extern const s8 sGameModePlayerColumnExtra[][3];
 extern const s32 gGameModePlayerSelection[][3];
-extern const s8 D_800F2BAC[8];
+extern const s8 sCharacterGridOrder[8];
 extern const s16 gCupCourseOrder[NUM_CUPS][NUM_COURSES_PER_CUP];
 
-extern const union GameModePack gSoundMenuPack;
+extern const union GameModePack sSoundMenuPack;
 
 // end of menus.c variables
 

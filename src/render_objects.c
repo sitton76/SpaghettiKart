@@ -1882,56 +1882,52 @@ void func_8004C628(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
-#ifdef NON_MATCHING
-// https://decomp.me/scratch/TqXqn
-// There's a weird fakematch concerning `xPos`, don't know that to make of. Can't quite get it over the finish line
-// though
+// non-matching
 void render_texture_tile_rgba32_block(s16 x, s16 y, u8* texture, u32 width, u32 height) {
-    s32 texSizeLess;
-    s32 i;
-    s32 yPos;
-    s32 xPos;
-    s32 texBlockCount;
-    u32 texSize;
-    s32 heightDiv;
-    s32 realCount;
-    u8* textureCopy;
+    s32 remainingSize;
+    s32 currX;
+    s32 currY;
+    u32 size;
+    s32 tileHeight;
+    s32 numTiles;
+    s32 numTilesDup;
 
-    xPos = x - (width / 2);
-    yPos = y - (height / 2);
-    textureCopy = texture;
+    currX = x - (width / 2);
+    currY = y - (height / 2);
+
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    texSize = width * height * 4;
-    texBlockCount = texSize / 4096;
-    if (texSize % 4096) {
-        texBlockCount++;
+   
+    size = width * height * 4;
+    numTiles = size / 4096;
+    if (size % 4096) {
+        numTiles++;
     }
-    heightDiv = height / texBlockCount;
-    realCount = texBlockCount;
-    for (i = 0; i < realCount; i++) {
-        load_texture_tile_rgba32_nomirror(textureCopy, width, heightDiv);
-        render_texture_rectangle_wrap(xPos, yPos, width, heightDiv, 1);
-        texSizeLess = texSize - (width * heightDiv * 4);
-        textureCopy += (width * heightDiv * 4);
-        if (texSizeLess < 0) {
-            heightDiv = texSize / width;
+   
+    tileHeight = height / numTiles;
+   
+    numTilesDup = numTiles;
+    for (size_t i = 0; i < numTilesDup; i++) {
+        load_texture_tile_rgba32_nomirror(texture, width, tileHeight);
+        render_texture_rectangle_wrap(currX, currY, width, tileHeight, 1);
+        
+        texture += (width * tileHeight * 4);
+        remainingSize = size - (width * tileHeight * 4);
+        if (remainingSize < 0) {
+            tileHeight = size / width;
         } else {
-            texSize = texSizeLess;
+            size -= (width * tileHeight * 4);
         }
         // Weird fakematch that is a HUGE improvement
-        xPos += yPos * 0;
-        yPos += heightDiv;
+        currX += currY * 0;
+        currY += tileHeight;
     }
 
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
-#else
-GLOBAL_ASM("asm/non_matchings/render_objects/render_texture_tile_rgba32_block.s")
-#endif
 
-void render_game_logo(s16 arg0, s16 arg1) {
-    render_texture_tile_rgba32_block(arg0, arg1, gTextureLogoMarioKart64, 0x100, 0x80);
+void render_game_logo(s16 x, s16 y) {
+    render_texture_tile_rgba32_block(x, y, LOAD_ASSET(gTextureLogoMarioKart64), ResourceGetTexWidthByName(gTextureLogoMarioKart64), ResourceGetTexHeightByName(gTextureLogoMarioKart64));
 }
 
 UNUSED void func_8004C91C(s32 arg0, s32 arg1, u8* texture, s32 arg3, s32 arg4, s32 arg5) {
