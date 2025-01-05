@@ -5043,7 +5043,6 @@ void func_8009CE64(s32 arg0) {
             // gCupSelection = gCupSelectionByCourseId[gCurrentCourseId];
             D_800DC540 = GetCupIndex();
             gCourseIndexInCup = GetCupCursorPosition();
-            ;
 
             switch (gDebugGotoScene) { /* switch 6; irregular */
                 case 1:                /* switch 6 */
