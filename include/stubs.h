@@ -16,7 +16,6 @@ void func_80040174(void*, s32, s32);
 s32 osAiSetFrequency(u32 freq);
 void mio0decode(u8* arg0, u8* arg1);
 s32 mio0encode(s32 input, s32, s32);
-void tkmk00decode(u8*, u8*, u8*, s32);
 void osStartThread(OSThread* thread);
 void osCreateThread(OSThread* thread, OSId id, void (*entry)(void*), void* arg, void* sp, OSPri pri);
 void osInitialize(void);

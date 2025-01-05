@@ -760,7 +760,7 @@ void render_screens(s32 mode, s32 cameraId, s32 playerId) {
     s32 screenId = 0;
     s32 screenMode = SCREEN_MODE_1P;
 
-    switch(mode) {
+    switch (mode) {
         case RENDER_SCREEN_MODE_1P_PLAYER_ONE:
             func_802A53A4();
             screenId = 0;
@@ -816,8 +816,8 @@ void render_screens(s32 mode, s32 cameraId, s32 playerId) {
             break;
     }
 
-    struct UnkStruct_800DC5EC *screen = &D_8015F480[screenId];
-    Camera *camera = &cameras[cameraId];
+    struct UnkStruct_800DC5EC* screen = &D_8015F480[screenId];
+    Camera* camera = &cameras[cameraId];
 
     if (screenMode == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) {
         gSPSetGeometryMode(gDisplayListHead++, G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
@@ -828,30 +828,34 @@ void render_screens(s32 mode, s32 cameraId, s32 playerId) {
     gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_CULL_BACK | G_LIGHTING | G_SHADING_SMOOTH);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
-    guPerspective(&gGfxPool->mtxPersp[cameraId], &perspNorm, gCameraZoom[cameraId], gScreenAspect, CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
+    guPerspective(&gGfxPool->mtxPersp[cameraId], &perspNorm, gCameraZoom[cameraId], gScreenAspect,
+                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
 
     gSPPerspNormalize(gDisplayListHead++, perspNorm);
-    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[cameraId]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
+    gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxPersp[cameraId]),
+              G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
 
-    guLookAt(&gGfxPool->mtxLookAt[cameraId], camera->pos[0], camera->pos[1], camera->pos[2],
-             camera->lookAt[0], camera->lookAt[1], camera->lookAt[2], camera->up[0],
-             camera->up[1], camera->up[2]);
+    guLookAt(&gGfxPool->mtxLookAt[cameraId], camera->pos[0], camera->pos[1], camera->pos[2], camera->lookAt[0],
+             camera->lookAt[1], camera->lookAt[2], camera->up[0], camera->up[1], camera->up[2]);
     if (D_800DC5C8 == 0) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]), G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
         mtxf_identity(matrix);
         render_set_position(matrix, 0);
     } else {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]),
+                  G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     }
     render_course(screen);
     if (D_800DC5C8 == 1) {
-        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]), G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
+        gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[cameraId]),
+                  G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
         mtxf_identity(matrix);
         render_set_position(matrix, 0);
     }
     render_course_actors(screen);
     render_object(mode);
-    switch(screenId) {
+    switch (screenId) {
         case 0:
             render_players_on_screen_one();
             break;
@@ -867,7 +871,7 @@ void render_screens(s32 mode, s32 cameraId, s32 playerId) {
     }
     func_8029122C(screen, playerId);
 
-    switch(playerId) {
+    switch (playerId) {
         case 0:
             func_80021B0C();
             break;
