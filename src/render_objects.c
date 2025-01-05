@@ -510,14 +510,43 @@ void func_800462A8(u8* texture, Vtx* arg1, s32 width, s32 arg3, s32 height) {
 
 void func_800463B0(s32 arg0, s32 arg1, u16 arg2, f32 arg3, u8* texture, Vtx* arg5, s32 arg6, s32 arg7, UNUSED s32 arg8,
                    s32 arg9) {
-    func_80042330(arg0, arg1, arg2, arg3);
+
+    switch(gScreenModeSelection) {
+        case SCREEN_MODE_1P:
+        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+            func_80042330(arg0, arg1, arg2, arg3);
+            break;
+        case SCREEN_MODE_3P_4P_SPLITSCREEN:
+            if (gPlayerCount == 3) {
+                func_80042330_3P(arg0, arg1, arg2, arg3);
+            } else {
+                func_80042330_default(arg0, arg1, arg2, arg3);
+            }
+            break;
+    }
+
     gSPDisplayList(gDisplayListHead++, D_0D007928);
     func_80045D0C(texture, arg5, arg6, arg7, arg9);
 }
 
 void func_80046424(s32 arg0, s32 arg1, u16 arg2, f32 arg3, u8* texture, Vtx* arg5, s32 arg6, s32 arg7, UNUSED s32 arg8,
                    s32 arg9) {
-    func_80042330(arg0, arg1, arg2, arg3);
+    switch(gScreenModeSelection) {
+        case SCREEN_MODE_1P:
+        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+            func_80042330(arg0, arg1, arg2, arg3);
+            break;
+        case SCREEN_MODE_3P_4P_SPLITSCREEN:
+            if (gPlayerCount == 3) {
+                func_80042330_3P(arg0, arg1, arg2, arg3);
+            } else {
+                func_80042330_default(arg0, arg1, arg2, arg3);
+            }
+            break;
+    }
+
     gSPDisplayList(gDisplayListHead++, D_0D007968);
     func_8004B614(D_801656C0, D_801656D0, D_801656E0, 128, 128, 128, 255);
     func_80045D0C(texture, arg5, arg6, arg7, arg9);
@@ -1611,9 +1640,6 @@ void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4
                 gSPTextureRectangle(gDisplayListHead++, xl << 2, yl, xh << 2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
                                     1 << 10);
                 break;
-            case 999:
-                gSPTextureRectangle(gDisplayListHead++, xl << 2, yl, xh << 2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
-                                    1 << 10);
                 break;
         }
 //OTRGetDimensionFromLeftEdge
