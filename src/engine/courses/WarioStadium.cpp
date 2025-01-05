@@ -237,7 +237,7 @@ void WarioStadium::MinimapFinishlinePosition() {
                             (u8*) common_texture_minimap_finish_line);
 }
 
-void render_WarioStadium_jumbotron() {
+void WarioStadium::Jumbotron() {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gDPTileSync(gDisplayListHead++);
     gDPSetTile(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0x0000, G_TX_RENDERTILE, 0,
@@ -329,7 +329,7 @@ void WarioStadium::Render(struct UnkStruct_800DC5EC* arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATERGBA, G_CC_MODULATERGBA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
-    render_WarioStadium_jumbotron();
+    WarioStadium::Jumbotron();
     render_course_segments(wario_stadium_dls, arg0);
 
     // d_course_wario_stadium_packed_dl_A228

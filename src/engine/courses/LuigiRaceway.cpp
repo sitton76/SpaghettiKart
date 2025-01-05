@@ -276,7 +276,7 @@ void LuigiRaceway::SetStaffGhost() {
     D_80162DE4 = 1;
 }
 
-void render_LuigiRaceway_jumbotron() {
+void LuigiRaceway::Jumbotron() {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gDPTileSync(gDisplayListHead++);
     gDPSetTile(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 8, 0x0000, G_TX_RENDERTILE, 0,
@@ -407,7 +407,7 @@ void LuigiRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_OPA_SURF, G_RM_AA_ZB_OPA_SURF2);
 
-    render_LuigiRaceway_jumbotron();
+    LuigiRaceway::Jumbotron();
     render_course_segments(luigi_raceway_dls, arg0);
 
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
