@@ -55,11 +55,7 @@ class GameEngine {
     uint32_t OTRCalculateCenterOfAreaFromRightEdge(int32_t center);
     uint32_t OTRCalculateCenterOfAreaFromLeftEdge(int32_t center);
 };
-#endif
-
-#ifdef __cplusplus
-extern "C" {
-#endif
+#else
 void GameEngine_ProcessGfxCommands(Gfx* commands);
 uint32_t GameEngine_GetSampleRate();
 uint32_t GameEngine_GetSamplesPerFrame();
@@ -81,4 +77,4 @@ uint32_t OTRGetGameRenderWidth(void);
 uint32_t OTRGetGameRenderHeight(void);
 uint32_t OTRCalculateCenterOfAreaFromRightEdge(int32_t center);
 uint32_t OTRCalculateCenterOfAreaFromLeftEdge(int32_t center);
-#endif
+#endif // __cplusplus

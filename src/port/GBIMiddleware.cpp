@@ -13,7 +13,7 @@ extern "C" void gSPDisplayList(Gfx* pkt, Gfx* dl) {
 
     if (GameEngine_OTRSigCheck(imgData)) {
         auto resource = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(imgData);
-        auto res = std::static_pointer_cast<LUS::DisplayList>(resource);
+        auto res = std::static_pointer_cast<Fast::DisplayList>(resource);
         dl = &res->Instructions[0];
     }
 
@@ -34,10 +34,10 @@ extern "C" void gSPInvalidateTexCache(Gfx* pkt, uintptr_t texAddr) {
 
     if (texAddr != 0 && GameEngine_OTRSigCheck(data)) {
         const auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(data);
-        const auto type = static_cast<LUS::ResourceType>(res->GetInitData()->Type);
+        const auto type = static_cast<Fast::ResourceType>(res->GetInitData()->Type);
 
-        if (res->GetInitData()->Type == static_cast<uint32_t>(LUS::ResourceType::DisplayList)) {
-            texAddr = reinterpret_cast<uintptr_t>(&std::static_pointer_cast<LUS::DisplayList>(res)->Instructions[0]);
+        if (res->GetInitData()->Type == static_cast<uint32_t>(Fast::ResourceType::DisplayList)) {
+            texAddr = reinterpret_cast<uintptr_t>(&std::static_pointer_cast<Fast::DisplayList>(res)->Instructions[0]);
         } else if (res->GetInitData()->Type == static_cast<uint32_t>(MK64::ResourceType::MK_Array)) {
             texAddr = reinterpret_cast<uintptr_t>(std::static_pointer_cast<MK64::Array>(res)->Vertices.data());
         } else {
