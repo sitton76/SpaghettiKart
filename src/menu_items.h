@@ -669,7 +669,6 @@ extern s16 D_80164478[];
  * use `load_texture()` and `replace_texture()` to add textures to the list for rendering.
  */
 extern const char* sMenuTextureList[MENU_TEXTURE_BUFFER_MAX];
-extern u8* gMenuCompressedBuffer;
 extern u8* sTKMK00_LowResBuffer;
 extern u8* sGPPointsCopy;
 extern void* gSomeDLBuffer;
