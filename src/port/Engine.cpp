@@ -371,8 +371,7 @@ extern "C" uint32_t GameEngine_GetGameVersion() {
 
 static const char* sOtrSignature = "__OTR__";
 
-extern "C" uint8_t GameEngine_OTRSigCheck(const char* data) {
-    static const char* sOtrSignaturea = "__OTR__";
+extern "C" bool GameEngine_OTRSigCheck(const char* data) {
     return strncmp(data, sOtrSignature, strlen(sOtrSignature)) == 0;
 }
 
