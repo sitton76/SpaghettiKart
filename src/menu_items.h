@@ -26,9 +26,9 @@ it last longer See `func_80096CD8` for the actual drawing of the static
 */
 
 typedef struct {
-    /* 0x00 */ s32 type;   // id maybe?
-    /* 0x04 */ s32 state; // sound mode, maybe some other stuff
-    /* 0x08 */ s32 subState;   // This is used but I can't tell what for
+    /* 0x00 */ s32 type;     // id maybe?
+    /* 0x04 */ s32 state;    // sound mode, maybe some other stuff
+    /* 0x08 */ s32 subState; // This is used but I can't tell what for
     /* 0x0C */ s32 column;
     /* 0x10 */ s32 row;
     /* 0x14 */ u8 priority; // priority/depth/z-level. Higher values are drawn on top of lower values
@@ -37,11 +37,11 @@ typedef struct {
     // These seem to be generic space available for use by the struct, no 1 purpose for any given member
     /* 0x16 */ s16 unk16;            // Potentially unused
     /* 0x18 */ s32 D_8018DEE0_index; // Index in D_8018DEE0, an array of some other struct type
-    /* 0x1C */ s32 param1;            // Multi use. Sometimes cup selection, sometimes course index.
+    /* 0x1C */ s32 param1;           // Multi use. Sometimes cup selection, sometimes course index.
     /* 0x20 */ s32 param2; // Multi use, hard to tell what for though. Sometimes a random number, sometimes GP points
     /* 0x24 */ f32 paramf; // Multi use, x scaling for some things, rotation multiplier for the question box in some
-                          // menus, probably some other things
-} MenuItem;  // size = 0x28
+                           // menus, probably some other things
+} MenuItem;                // size = 0x28
 
 typedef struct {
     /* 0x00 */ MkAnimation* textureSequence;

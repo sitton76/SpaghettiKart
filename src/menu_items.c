@@ -3628,7 +3628,6 @@ void load_menu_img_mio0_forced(MenuTexture* addr) {
 }
 
 void load_menu_img_comp_type(MenuTexture* addr, s32 compType) {
-    u16 size;
     s32 i;
     s32 imgLoaded;
     u8 clearBit;
@@ -3646,56 +3645,10 @@ void load_menu_img_comp_type(MenuTexture* addr, s32 compType) {
         }
 
         if ((imgLoaded == false) || (compType > LOAD_MENU_IMG_FORCE)) {
-            if (texAddr->size != 0) {
-                size = texAddr->size;
-            } else {
-                size = 0x1000;
-            }
-            if (size % 8) {
-                size = ((size / 8) * 8) + 8;
-            }
-
-            // dma a compressed texture to the compressed texture buffer
-            switch (compType) {
-                case LOAD_MENU_IMG_MIO0_ONCE:
-                case LOAD_MENU_IMG_MIO0_FORCE:
-                    // dma_compressed_mio0_texture_segA(texAddr->textureData, size, gMenuCompressedBuffer);
-                    break;
-                case LOAD_MENU_IMG_TKMK00_ONCE:
-                case LOAD_MENU_IMG_TKMK00_FORCE:
-                    // dma_tkmk00_textures(texAddr->textureData, size, gMenuCompressedBuffer);
-                    break;
-            }
-
             // Extract compressed texture to the texture buffer
-            switch (compType) {
-                case LOAD_MENU_IMG_MIO0_ONCE:
-                case LOAD_MENU_IMG_MIO0_FORCE:
-                    mio0decode(gMenuCompressedBuffer, (u8*) &sMenuTextureList[sMenuTextureListIndex]);
-                    // strcpy(&sMenuTextureList[sMenuTextureListIndex], texAddr->textureData);
-                    load_texture(texAddr->textureData);
-                    break;
-                case LOAD_MENU_IMG_TKMK00_ONCE:
-                case LOAD_MENU_IMG_TKMK00_FORCE:
-                    if (texAddr->type == 1) {
-                        clearBit = 0xBE;
-                    } else {
-                        clearBit = 1;
-                    }
-                    if (1) {}
-                    tkmk00decode(gMenuCompressedBuffer, sTKMK00_LowResBuffer,
-                                 (u8*) &sMenuTextureList[sMenuTextureListIndex], clearBit);
-                    load_texture(texAddr->textureData);
+            sMenuTextureList[sMenuTextureListIndex] = gMenuCompressedBuffer;
 
-                    // strcpy(&sMenuTextureList[sMenuTextureListIndex], texAddr->textureData);
-                    break;
-            }
-
-            // texMap[sMenuTextureEntries].textureData = texAddr->textureData;
-            // texMap[sMenuTextureEntries].offset = sMenuTextureListIndex;
-            // sMenuTextureListIndex += 1;
-            // sMenuTextureListIndex = ((sMenuTextureListIndex / 8) * 8) + 8;
-            // sMenuTextureEntries += 1;
+            load_texture(texAddr->textureData);
         }
         texAddr++;
     }
