@@ -1640,7 +1640,6 @@ void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4
                 gSPTextureRectangle(gDisplayListHead++, xl << 2, yl, xh << 2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
                                     1 << 10);
                 break;
-                break;
         }
 //OTRGetDimensionFromLeftEdge
         //gSPTextureRectangle(gDisplayListHead++, xl, yl, xh, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
