@@ -9,6 +9,7 @@
 #include <actor_types.h>
 #include <defines.h>
 #include <macros.h>
+#include <stdio.h>
 
 #include "code_800029B0.h"
 #include "main.h"
@@ -1387,16 +1388,16 @@ s16 add_actor_to_empty_slot(Vec3f pos, Vec3s rot, Vec3f velocity, s16 actorType)
 
     // Cleanup unused actors
     for (index = 0; index < m_GetActorSize(); index++) {
-        //if (m_GetActor(index)->flags == 0) {
-            //! @todo Commented out because deletes too soon.
-            //m_DeleteActor(index);
-            //gNumActors--;
+        // if (m_GetActor(index)->flags == 0) {
+        //! @todo Commented out because deletes too soon.
+        // m_DeleteActor(index);
+        // gNumActors--;
         //}
     }
     gNumActors++;
     struct Actor* actor = m_AddBaseActor();
     actor_init(actor, pos, rot, velocity, actorType);
-    return (s16)m_GetActorSize() - 1; // Return current index;
+    return (s16) m_GetActorSize() - 1; // Return current index;
 }
 
 UNUSED s16 spawn_actor_at_pos(Vec3f pos, s16 actorType) {
@@ -2414,9 +2415,8 @@ void render_course_actors(struct UnkStruct_800DC5EC* arg0) {
     gSPSetLights1(gDisplayListHead++, D_800DC610[1]);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
 
-
     if (gModeSelection != BATTLE) {
-        //func_80297340(camera);
+        // func_80297340(camera);
     }
     D_8015F8E0 = 0;
 

@@ -31,7 +31,7 @@ extern "C" void gSPVertex(Gfx* pkt, uintptr_t v, int n, int v0) {
 extern "C" void gSPInvalidateTexCache(Gfx* pkt, uintptr_t texAddr) {
     auto data = reinterpret_cast<char*>(texAddr);
 
-    if (texAddr != 0 && GameEngine_OTRSigCheck(data)) {
+    if (texAddr != 0 && GameEngine_OTRSigCheck(data) == 1) {
         const auto res = Ship::Context::GetInstance()->GetResourceManager()->LoadResource(data);
         const auto type = static_cast<LUS::ResourceType>(res->GetInitData()->Type);
 

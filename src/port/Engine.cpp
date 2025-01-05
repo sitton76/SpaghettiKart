@@ -62,7 +62,8 @@ GameEngine::GameEngine() {
         }
     }
 
-    this->context = Ship::Context::CreateInstance("Spaghettify", "skart64", "spaghettify.cfg.json", OTRFiles, {}, 3, { 26800, 512, 1100 });
+    this->context = Ship::Context::CreateInstance("Spaghettify", "skart64", "spaghettify.cfg.json", OTRFiles, {}, 3,
+                                                  { 26800, 512, 1100 });
 
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
@@ -70,18 +71,19 @@ GameEngine::GameEngine() {
     this->context->InitGfxDebugger();
 
     auto loader = context->GetResourceManager()->GetResourceLoader();
-    loader->RegisterResourceFactory(std::make_shared<SM64::AudioBankFactoryV0>(), RESOURCE_FORMAT_BINARY, 
-                                    "AudioBank", static_cast<uint32_t>(SF64::ResourceType::Bank), 0);
-    loader->RegisterResourceFactory(std::make_shared<SM64::AudioSampleFactoryV0>(), RESOURCE_FORMAT_BINARY, 
+    loader->RegisterResourceFactory(std::make_shared<SM64::AudioBankFactoryV0>(), RESOURCE_FORMAT_BINARY, "AudioBank",
+                                    static_cast<uint32_t>(SF64::ResourceType::Bank), 0);
+    loader->RegisterResourceFactory(std::make_shared<SM64::AudioSampleFactoryV0>(), RESOURCE_FORMAT_BINARY,
                                     "AudioSample", static_cast<uint32_t>(SF64::ResourceType::Sample), 0);
-    loader->RegisterResourceFactory(std::make_shared<SM64::AudioSequenceFactoryV0>(), RESOURCE_FORMAT_BINARY, 
+    loader->RegisterResourceFactory(std::make_shared<SM64::AudioSequenceFactoryV0>(), RESOURCE_FORMAT_BINARY,
                                     "AudioSequence", static_cast<uint32_t>(SF64::ResourceType::Sequence), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3fV0>(), RESOURCE_FORMAT_BINARY,
                                     "Vec3f", static_cast<uint32_t>(SF64::ResourceType::Vec3f), 0);
     loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryVec3sV0>(), RESOURCE_FORMAT_BINARY,
                                     "Vec3s", static_cast<uint32_t>(SF64::ResourceType::Vec3s), 0);
-    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryGenericArrayV0>(), RESOURCE_FORMAT_BINARY, 
-                                    "GenericArray", static_cast<uint32_t>(SF64::ResourceType::GenericArray), 0);
+    loader->RegisterResourceFactory(std::make_shared<SF64::ResourceFactoryBinaryGenericArrayV0>(),
+                                    RESOURCE_FORMAT_BINARY, "GenericArray",
+                                    static_cast<uint32_t>(SF64::ResourceType::GenericArray), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryTextureV0>(), RESOURCE_FORMAT_BINARY,
                                     "Texture", static_cast<uint32_t>(LUS::ResourceType::Texture), 0);
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryTextureV1>(), RESOURCE_FORMAT_BINARY,
@@ -89,8 +91,8 @@ GameEngine::GameEngine() {
 
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryVertexV0>(), RESOURCE_FORMAT_BINARY,
                                     "Vertex", static_cast<uint32_t>(LUS::ResourceType::Vertex), 0);
-    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryXMLVertexV0>(), RESOURCE_FORMAT_XML,
-                                    "Vertex", static_cast<uint32_t>(LUS::ResourceType::Vertex), 0);
+    loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryXMLVertexV0>(), RESOURCE_FORMAT_XML, "Vertex",
+                                    static_cast<uint32_t>(LUS::ResourceType::Vertex), 0);
 
     loader->RegisterResourceFactory(std::make_shared<LUS::ResourceFactoryBinaryDisplayListV0>(), RESOURCE_FORMAT_BINARY,
                                     "DisplayList", static_cast<uint32_t>(LUS::ResourceType::DisplayList), 0);
@@ -109,14 +111,18 @@ GameEngine::GameEngine() {
                                     "KartAI", static_cast<uint32_t>(MK64::ResourceType::KartAI), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryCourseVtxV0>(), RESOURCE_FORMAT_BINARY,
                                     "CourseVtx", static_cast<uint32_t>(MK64::ResourceType::CourseVertex), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackSectionsV0>(), RESOURCE_FORMAT_BINARY,
-                                    "TrackSections", static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackWaypointsV0>(), RESOURCE_FORMAT_BINARY,
-                                    "Waypoints", static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryActorSpawnDataV0>(), RESOURCE_FORMAT_BINARY,
-                                    "SpawnData", static_cast<uint32_t>(MK64::ResourceType::SpawnData), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryUnkActorSpawnDataV0>(), RESOURCE_FORMAT_BINARY,
-                                    "UnkSpawnData", static_cast<uint32_t>(MK64::ResourceType::UnkSpawnData), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackSectionsV0>(),
+                                    RESOURCE_FORMAT_BINARY, "TrackSections",
+                                    static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackWaypointsV0>(),
+                                    RESOURCE_FORMAT_BINARY, "Waypoints",
+                                    static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryActorSpawnDataV0>(),
+                                    RESOURCE_FORMAT_BINARY, "SpawnData",
+                                    static_cast<uint32_t>(MK64::ResourceType::SpawnData), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryUnkActorSpawnDataV0>(),
+                                    RESOURCE_FORMAT_BINARY, "UnkSpawnData",
+                                    static_cast<uint32_t>(MK64::ResourceType::UnkSpawnData), 0);
 }
 
 void GameEngine::Create() {
@@ -128,7 +134,7 @@ void GameEngine::Create() {
 #endif
 }
 
-void GameEngine::Destroy(){
+void GameEngine::Destroy() {
     AudioExit();
 }
 
@@ -178,7 +184,7 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
 
 // Audio
 
-void GameEngine::HandleAudioThread(){
+void GameEngine::HandleAudioThread() {
     while (audio.running) {
         {
             std::unique_lock<std::mutex> Lock(audio.mutex);
@@ -200,14 +206,14 @@ void GameEngine::HandleAudioThread(){
             create_next_audio_buffer(audio_buffer + i * (num_audio_samples * 2), num_audio_samples);
         }
 
-        AudioPlayerPlayFrame((u8 *) audio_buffer, 2 * num_audio_samples * 4);
+        AudioPlayerPlayFrame((u8*) audio_buffer, 2 * num_audio_samples * 4);
 
         audio.processing = false;
         audio.cv_from_thread.notify_one();
     }
 }
 
-void GameEngine::StartAudioFrame(){
+void GameEngine::StartAudioFrame() {
     {
         std::unique_lock<std::mutex> Lock(audio.mutex);
         audio.processing = true;
@@ -216,7 +222,7 @@ void GameEngine::StartAudioFrame(){
     audio.cv_to_thread.notify_one();
 }
 
-void GameEngine::EndAudioFrame(){
+void GameEngine::EndAudioFrame() {
     {
         std::unique_lock<std::mutex> Lock(audio.mutex);
         while (audio.processing) {
@@ -235,16 +241,16 @@ void GameEngine::AudioInit() {
     Instance->audioSequenceTable.resize(512);
     Instance->banksTable.resize(512);
 
-    for(auto& bank : *banksFiles){
+    for (auto& bank : *banksFiles) {
         auto path = "__OTR__" + bank;
-        const auto ctl = static_cast<CtlEntry *>(ResourceGetDataByName(path.c_str()));
+        const auto ctl = static_cast<CtlEntry*>(ResourceGetDataByName(path.c_str()));
         this->bankMapTable[bank] = ctl->bankId;
         SPDLOG_INFO("Loaded bank: {}", bank);
     }
 
-    for(auto& sequence : *sequences_files){
+    for (auto& sequence : *sequences_files) {
         auto path = "__OTR__" + sequence;
-        auto seq = static_cast<AudioSequenceData *>(ResourceGetDataByName(path.c_str()));
+        auto seq = static_cast<AudioSequenceData*>(ResourceGetDataByName(path.c_str()));
         Instance->sequenceTable[seq->id] = path;
         SPDLOG_INFO("Loaded sequence: {}", sequence);
     }
@@ -268,7 +274,7 @@ void GameEngine::AudioExit() {
 }
 
 uint8_t GameEngine::GetBankIdByName(const std::string& name) {
-    if(Instance->bankMapTable.contains(name)){
+    if (Instance->bankMapTable.contains(name)) {
         return Instance->bankMapTable[name];
     }
     return 0;
@@ -296,17 +302,17 @@ extern "C" uint32_t GameEngine_GetSamplesPerFrame() {
 extern "C" CtlEntry* GameEngine_LoadBank(const uint8_t bankId) {
     const auto engine = GameEngine::Instance;
 
-    if(bankId >= engine->bankMapTable.size()){
+    if (bankId >= engine->bankMapTable.size()) {
         return nullptr;
     }
 
-    if(engine->banksTable[bankId] != nullptr){
+    if (engine->banksTable[bankId] != nullptr) {
         return engine->banksTable[bankId];
     }
 
-    for(auto& bank : engine->bankMapTable){
-        if(bank.second == bankId){
-            const auto ctl = static_cast<CtlEntry *>(ResourceGetDataByName(("__OTR__" + bank.first).c_str()));
+    for (auto& bank : engine->bankMapTable) {
+        if (bank.second == bankId) {
+            const auto ctl = static_cast<CtlEntry*>(ResourceGetDataByName(("__OTR__" + bank.first).c_str()));
             engine->banksTable[bankId] = ctl;
             return ctl;
         }
@@ -328,20 +334,20 @@ extern "C" void GameEngine_UnloadBank(const uint8_t bankId) {
 extern "C" AudioSequenceData* GameEngine_LoadSequence(const uint8_t seqId) {
     auto engine = GameEngine::Instance;
 
-    if(engine->sequenceTable[seqId].empty()){
+    if (engine->sequenceTable[seqId].empty()) {
         return nullptr;
     }
 
-    if(engine->audioSequenceTable[seqId] != nullptr){
+    if (engine->audioSequenceTable[seqId] != nullptr) {
         return engine->audioSequenceTable[seqId];
     }
 
-    auto sequences = static_cast<AudioSequenceData *>(ResourceGetDataByName(engine->sequenceTable[seqId].c_str()));
+    auto sequences = static_cast<AudioSequenceData*>(ResourceGetDataByName(engine->sequenceTable[seqId].c_str()));
     engine->audioSequenceTable[seqId] = sequences;
     return sequences;
 }
 
-extern "C" uint32_t GameEngine_GetSequenceCount(){
+extern "C" uint32_t GameEngine_GetSequenceCount() {
     auto engine = GameEngine::Instance;
     return engine->sequenceTable.size();
 }
@@ -367,7 +373,7 @@ static const char* sOtrSignature = "__OTR__";
 
 extern "C" uint8_t GameEngine_OTRSigCheck(const char* data) {
     static const char* sOtrSignaturea = "__OTR__";
-    return strncmp(data, sOtrSignaturea, strlen(sOtrSignaturea)) == 0;
+    return strncmp(data, sOtrSignature, strlen(sOtrSignature)) == 0;
 }
 
 // struct TimedEntry {

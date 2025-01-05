@@ -55,7 +55,7 @@ u16 D_800DC5E4 = 0;
 //! @todo gPlayerWinningIndex (D_800DC5E8) accessed as word, D_800DC5EB as u8
 s32 gPlayerWinningIndex = 0;
 
-ALIGNED16 struct UnkStruct_800DC5EC D_8015F480[4];
+ALIGNED16 struct UnkStruct_800DC5EC D_8015F480[4] = { 0 };
 struct UnkStruct_800DC5EC* D_800DC5EC = &D_8015F480[0];
 struct UnkStruct_800DC5EC* D_800DC5F0 = &D_8015F480[1];
 struct UnkStruct_800DC5EC* D_800DC5F4 = &D_8015F480[2];
@@ -124,8 +124,8 @@ Vec3f D_8015F768;
 Vec3f D_8015F778;
 
 f32 gCourseDirection; // Extra mode, flips vertices.
-s32 gNumScreens; // Set to zero in single player mode
-s32 D_8015F790[64]; // Unknown data, potentially not used.
+s32 gNumScreens;      // Set to zero in single player mode
+s32 D_8015F790[64];   // Unknown data, potentially not used.
 u16 D_8015F890;
 u16 D_8015F892;
 u16 D_8015F894;
