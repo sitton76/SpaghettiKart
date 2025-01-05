@@ -718,7 +718,7 @@ void func_80042330(s32 x, s32 y, u16 angle, f32 scale) {
     AddHudMatrix(matrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 }
 
-void func_80042330_default(s32 x, s32 y, u16 angle, f32 scale) {
+void func_80042330_unchanged(s32 x, s32 y, u16 angle, f32 scale) {
     Mat4 matrix;
     //printf("panel %d %d %d\n", x, (s32)OTRGetDimensionFromLeftEdge(x), (s32)OTRGetDimensionFromLeftEdge(0));
 
@@ -730,6 +730,7 @@ void func_80042330_default(s32 x, s32 y, u16 angle, f32 scale) {
     AddHudMatrix(matrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 }
 
+// Allows a different way of lining up the portraits at the end of race sequence
 void func_80042330_portrait(s32 x, s32 y, u16 angle, f32 scale, s16 lapCount) {
     Mat4 matrix;
     //printf("panel %d %d %d\n", x, (s32)OTRGetDimensionFromLeftEdge(x), (s32)OTRGetDimensionFromLeftEdge(0));

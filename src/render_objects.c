@@ -518,7 +518,7 @@ void func_800463B0(s32 arg0, s32 arg1, u16 arg2, f32 arg3, u8* texture, Vtx* arg
             func_80042330(arg0, arg1, arg2, arg3);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
-            func_80042330_default(arg0, arg1, arg2, arg3);
+            func_80042330_unchanged(arg0, arg1, arg2, arg3);
             break;
     }
 
@@ -535,7 +535,7 @@ void func_80046424(s32 arg0, s32 arg1, u16 arg2, f32 arg3, u8* texture, Vtx* arg
             func_80042330(arg0, arg1, arg2, arg3);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
-            func_80042330_default(arg0, arg1, arg2, arg3);
+            func_80042330_unchanged(arg0, arg1, arg2, arg3);
             break;
     }
 
@@ -3265,9 +3265,9 @@ void func_80050E34(s32 playerId, s32 arg1) {
         gDPLoadTLUT_pal256(gDisplayListHead++, common_tlut_hud_type_C_rank_tiny_font);
         rsp_load_texture(common_texture_hud_type_C_rank_tiny_font[arg1 + 1], 8, 8);
         if (spB8 != 0) {
-            func_80042330_default(spD0 + 0x26, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
+            func_80042330_unchanged(spD0 + 0x26, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
         } else {
-            func_80042330_default(spD0 + 0x1B, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
+            func_80042330_unchanged(spD0 + 0x1B, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
         }
         gSPDisplayList(gDisplayListHead++, D_0D006950);
         if ((player == gPlayerOne) && (gScreenModeSelection == SCREEN_MODE_1P)) {
