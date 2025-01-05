@@ -217,7 +217,7 @@ void func_8004C024(s16, s16, s16, u16, u16, u16, u16);
 void func_8004C148(s16, s16, s16, u16, u16, u16, u16);
 void func_8004C354(void);
 void func_8004C35C(void);
-void draw_hud_2d_texture(s32, s32, u32, u32, u8*);
+void draw_hud_2d_texture_wide(s32, s32, u32, u32, u8*);
 void func_8004C450(s32, s32, u32, u32, u8*);
 void func_8004C53C(s32, s32, u32, u32, u8*);
 void func_8004C628(s32, s32, u32, u32, u8*);

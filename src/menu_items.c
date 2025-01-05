@@ -3230,7 +3230,15 @@ Gfx* func_800987D0(Gfx* displayListHead, u32 arg1, u32 arg2, u32 width, u32 heig
     return displayListHead;
 }
 
-// draw a box filled with a solid color
+/**
+ * Draw a box filled with a solid color
+ * 
+ * Renders
+ * 
+ * Menus: Black box behind textures such as: "1P Game, 2P Game, Mario GP, 50CC, OK, etc."
+ * 
+ * 
+ */
 Gfx* draw_box_fill(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32 red, s32 green, s32 blue, s32 alpha) {
     red &= 0xFF;
     green &= 0xFF;
@@ -3269,6 +3277,17 @@ Gfx* draw_box_fill(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32
 }
 
 // draw a box filled with a solid color
+
+/**
+ * Draw a box filled with a solid color
+ * 
+ * Renders
+ * 
+ * All game modes:
+ * Cinematic borders
+ * 
+ * 
+ */
 Gfx* draw_box_fill_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32 red, s32 green, s32 blue,
                         s32 alpha) {
     red &= 0xFF;
@@ -3309,7 +3328,12 @@ Gfx* draw_box_fill_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry
     return displayListHead;
 }
 
-// draw a box with a solid outline
+/**
+ * Draw a box with a solid outline
+ * 
+ * Menus best lap time at start menu
+ * 
+ */
 Gfx* draw_box(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
     red &= 0xFF;
     green &= 0xFF;
@@ -3346,6 +3370,15 @@ Gfx* draw_box(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red,
     return displayListHead;
 }
 
+/**
+ * Renders
+ * 
+ * Menus: Menu transition swipes, course label highlight
+ * 
+ * All game modes: Background cover at pause screen
+ * 
+ * 
+ */
 Gfx* draw_box_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
     red &= 0xFF;
     green &= 0xFF;
@@ -3379,6 +3412,46 @@ Gfx* draw_box_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32
     gDPSetPrimColor(displayListHead++, 0, 0, red, green, blue, alpha);
     gDPFillWideRectangle(displayListHead++, OTRGetRectDimensionFromLeftEdge(ulx), uly,
        OTRGetRectDimensionFromRightEdge(lrx), lry);
+    gDPPipeSync(displayListHead++);
+    return displayListHead;
+}
+
+// Renders pause background
+Gfx* draw_box_wide_pause_background(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
+    red &= 0xFF;
+    green &= 0xFF;
+    blue &= 0xFF;
+    alpha &= 0xFF;
+    if (lrx < ulx) {
+        swap_values(&ulx, &lrx);
+    }
+    if (lry < uly) {
+        swap_values(&uly, &lry);
+    }
+    // if ((ulx >= SCREEN_WIDTH) || (uly >= SCREEN_HEIGHT)) {
+    //     return displayListHead;
+    // }
+
+    // if (ulx < 0) {
+    //     ulx = 0;
+    // }
+    // if (uly < 0) {
+    //     uly = 0;
+    // }
+
+    // if ((lrx < 0) || (lry < 0)) {
+    //     return displayListHead;
+    // }
+    // if (lrx > SCREEN_WIDTH) {
+    //     lrx = SCREEN_WIDTH;
+    // }
+    // if (lry > SCREEN_HEIGHT) {
+    //     lry = SCREEN_HEIGHT;
+    // }
+    gSPDisplayList(displayListHead++, D_02008008);
+    gDPSetPrimColor(displayListHead++, 0, 0, red, green, blue, alpha);
+    gDPFillWideRectangle(displayListHead++, ulx, uly,
+       lrx, lry);
     gDPPipeSync(displayListHead++);
     return displayListHead;
 }
@@ -7838,6 +7911,8 @@ void render_pause_menu_versus(MenuItem* arg0) {
     s32 temp_t4;
     s32 var_s0;
     s32 var_s1;
+    s32 leftEdge;
+    s32 rightEdge;
     Unk_D_800E70A0* temp_s3;
     struct UnkStruct_800DC5EC* temp_v0;
 
@@ -7846,8 +7921,41 @@ void render_pause_menu_versus(MenuItem* arg0) {
     temp_t0 = temp_v0->screenStartY;
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
-    gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                temp_t0 + temp_t4, 0, 0, 0, 0x0000008C);
+
+    switch(gScreenModeSelection) {
+        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+            leftEdge = OTRGetDimensionFromLeftEdge(0);
+            rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, rightEdge,
+                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+            leftEdge = OTRGetDimensionFromLeftEdge(0);
+            rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, leftEdge + rightEdge,
+                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+        case SCREEN_MODE_3P_4P_SPLITSCREEN:
+            // Left side players
+            if ((temp_v0->player == gPlayerOne) || (temp_v0->player == gPlayerThree)) {
+                leftEdge = OTRGetDimensionFromLeftEdge(0);
+                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
+
+            // Right side players
+            } else if ((temp_v0->player == gPlayerTwo) || (temp_v0->player == gPlayerFour)) {
+                rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + rightEdge,
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
+
+            }
+            break;
+        default:
+            gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+                                            temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+    }
+
     temp_s3 = &D_800E8540[(gScreenModeSelection * 4) + (gIsGamePaused - 1)];
     for (var_s0 = 0; var_s0 < 4; var_s0++) {
         if (var_s0 > 0) {
@@ -7877,8 +7985,25 @@ void render_pause_grand_prix(MenuItem* arg0) {
     temp_t0 = temp_v0->screenStartY;
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
-    gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                temp_t0 + temp_t4, 0, 0, 0, 140);
+
+    switch(gScreenModeSelection) {
+        case SCREEN_MODE_1P:
+        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+            gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+            s32 leftEdge = OTRGetDimensionFromLeftEdge(0);
+            s32 rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+            gDisplayListHead = draw_box_wide(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, leftEdge + rightEdge,
+                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+                                    break;
+        default:
+            gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+                                            temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+    }
+
     temp_s3 = &D_800E85C0[(gScreenModeSelection * 4) + (gIsGamePaused - 1)];
     temp_s0 = ((get_string_width(gCupNames[GetCupIndex()]) * one) + 10.0f) / 2;
     temp_s1 = ((get_string_width(D_800E76CC[gCCSelection]) * one) + 10.0f) / 2;
@@ -7903,6 +8028,8 @@ void render_pause_battle(MenuItem* arg0) {
     s32 temp_t4;
     s32 var_a1;
     s32 var_s1;
+    s32 leftEdge;
+    s32 rightEdge;
     Unk_D_800E70A0* temp_s3;
 
     temp_v0 = &D_8015F480[gIsGamePaused - 1];
@@ -7910,8 +8037,41 @@ void render_pause_battle(MenuItem* arg0) {
     temp_t0 = temp_v0->screenStartY;
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
-    gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                temp_t0 + temp_t4, 0, 0, 0, 0x0000008C);
+
+    switch(gScreenModeSelection) {
+        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+            leftEdge = OTRGetDimensionFromLeftEdge(0);
+            rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, rightEdge,
+                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+            leftEdge = OTRGetDimensionFromLeftEdge(0);
+            rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, rightEdge,
+                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+        case SCREEN_MODE_3P_4P_SPLITSCREEN:
+            // Left side players
+            if ((temp_v0->player == gPlayerOne) || (temp_v0->player == gPlayerThree)) {
+                leftEdge = OTRGetDimensionFromLeftEdge(0);
+                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
+
+            // Right side players
+            } else if ((temp_v0->player == gPlayerTwo) || (temp_v0->player == gPlayerFour)) {
+                rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
+                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + rightEdge,
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
+
+            }
+            break;
+        default:
+            gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
+                                            temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
+    }
+
     temp_s3 = &D_800E8600[(gScreenModeSelection * 4) + (gIsGamePaused - 1)];
     for (var_a1 = 0; var_a1 < 4; var_a1++) {
         if (var_a1 > 0) {
@@ -7919,7 +8079,7 @@ void render_pause_battle(MenuItem* arg0) {
         } else {
             var_s1 = var_a1;
         }
-        text_rainbow_effect(arg0->state - 0x29, var_a1, TEXT_YELLOW);
+        text_rainbow_effect(arg0->state - 41, var_a1, TEXT_YELLOW);
         print_text_mode_1(temp_s3->column - 2, temp_s3->row + 13 * var_a1, gTextPauseButton[var_s1], 0, 0.75f, 0.75f);
     }
 }

@@ -1535,6 +1535,15 @@ void func_8004B72C(s32 primRed, s32 primGreen, s32 primBlue, s32 envRed, s32 env
                       PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
 }
 
+/**
+ * Renders
+ * 
+ * Menus: Mario Kart 64 Logo, Debug text
+ * 
+ * 1P: Coloured square in third hud mode that players go around.
+ * 
+ * 
+ */
 void render_texture_rectangle(s32 x, s32 y, s32 width, s32 height, s32 s, s32 w, s32 mode) {
 
     s32 xh = (((x + width) - 1) << 2);
@@ -1557,12 +1566,21 @@ void render_texture_rectangle(s32 x, s32 y, s32 width, s32 height, s32 s, s32 w,
                        1 << 10);
 }
 
+/**
+ * Renders
+ * 
+ * For all game modes
+ * 
+ * Minimap, CurrLap, Lap time
+ * 
+ * 
+ */
 void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
 
     s32 xh = (((x + width) - 1));
     s32 yh = (((y + height) - 1) << 2);
     s32 xl = ((x));
-    s32 yl = y * 4;
+    s32 yl = y << 2;
 
     s32 xh2 = (((x + width)));
     s32 yh2 = ((y + height) << 2);
@@ -1574,33 +1592,68 @@ void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4
     s32 coordX2 = 0;
 
     if (arg6 == 0) {
-        if ((xl - (width / 2)) < (SCREEN_WIDTH / 2)) {
-            coordX = (s32)OTRGetDimensionFromLeftEdge(xl) << 2;
-            coordX2 = (s32)(xh) << 2;
-        } else {
-            coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
-            coordX2 = (s32)OTRGetDimensionFromRightEdge(xh) << 2;
+        switch(gScreenModeSelection) {
+            case SCREEN_MODE_1P:
+            case SCREEN_MODE_3P_4P_SPLITSCREEN:
+            case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+                if ((xl - (width / 2)) < (SCREEN_WIDTH / 2)) {
+                    coordX = (s32)OTRGetDimensionFromLeftEdge(xl) << 2;
+                    coordX2 = (s32)(xh) << 2;
+                } else {
+                    coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
+                    coordX2 = (s32)OTRGetDimensionFromRightEdge(xh) << 2;
+                }
+                //! @todo Update to F3DEX. Uses OLD definition for gspTextureRectangle.
+                gSPWideTextureRectangle(gDisplayListHead++, coordX, yl, coordX2, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
+                                    1 << 10);
+                break;
+            case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+                gSPTextureRectangle(gDisplayListHead++, xl << 2, yl, xh << 2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                                    1 << 10);
+                break;
+            case 999:
+                gSPTextureRectangle(gDisplayListHead++, xl << 2, yl, xh << 2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                                    1 << 10);
+                break;
         }
-        //! @todo Update to F3DEX. Uses OLD definition for gspTextureRectangle.
-        gSPWideTextureRectangle(gDisplayListHead++, coordX, yl, coordX2, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
-                              1 << 10);
 //OTRGetDimensionFromLeftEdge
         //gSPTextureRectangle(gDisplayListHead++, xl, yl, xh, yh, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 4 << 10,
         //                    1 << 10);
-    } else {
-
-        if ((xl - (width / 2)) < (SCREEN_WIDTH / 2)) {
-            coordX = (s32)OTRGetDimensionFromLeftEdge(xl) << 2;
-            coordX2 = (s32)(xh2) << 2;
-        } else {
-            coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
-            coordX2 = (s32)OTRGetDimensionFromRightEdge(xh2) << 2;
+    } else { // minimap
+        switch(gScreenModeSelection) {
+            case SCREEN_MODE_3P_4P_SPLITSCREEN:
+                if (gPlayerCount == 3) {
+                    s32 renderWidth = SCREEN_WIDTH;
+                    // Center item in area of screen
+                    s32 center = (s32)((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + ((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
+                    s32 coordX = (s32)(center - (width / 2)) << 2;
+                    s32 coordX2 = (s32)(center + (width / 2)) << 2;
+                    gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
+                                            coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                                        1 << 10);
+                } else { // 4 players
+                    s32 renderWidth = SCREEN_WIDTH;
+                    s32 center = (renderWidth / 2);
+                    coordX = (s32)(center - (width / 2)) << 2;
+                    coordX2 = (s32)(center + (width / 2)) << 2;
+                    gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
+                                            coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                                        1 << 10);
+                }
+                break;
+            default:
+                if ((xl - (width / 2)) < (SCREEN_WIDTH / 2)) {
+                    coordX = (s32)OTRGetDimensionFromLeftEdge(xl) << 2;
+                    coordX2 = (s32)(xh2) << 2;
+                } else {
+                    coordX = (s32)OTRGetDimensionFromRightEdge(xl) << 2;
+                    coordX2 = (s32)OTRGetDimensionFromRightEdge(xh2) << 2;
+                }
+                gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
+                                        coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                                    1 << 10);
+                break;
         }
-        gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
-                                coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
-                            1 << 10);
-
-
     }
     //gSPTextureRectangle(gDisplayListHead++, xl, yl, xh2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
     //                    1 << 10);
@@ -1636,6 +1689,7 @@ void func_8004B97C(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     }
 }
 
+// Positions item window, the Lap 1/2/3, TIME texture, and minimap on the screen.
 void func_8004B97C_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
     UNUSED s32 pad[2];
     s32 sp2C;
@@ -1715,6 +1769,7 @@ void func_8004BA98(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s
     }
 }
 
+// Display lap count (but not the texture that says lap)
 void func_8004BA98_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6) {
     UNUSED s32 pad[2];
     s32 sp34;
@@ -1741,7 +1796,16 @@ void func_8004BA98_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4, s32 ar
             sp30 = 0;
             phi_a3 = arg3 + arg1;
         }
-        render_texture_rectangle_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+
+        switch(gScreenModeSelection) {
+            case SCREEN_MODE_1P:
+            case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+                render_texture_rectangle_wide(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+                break;
+            default:
+                render_texture_rectangle(sp34, sp30, sp2C, phi_a3, phi_v0, phi_v1, arg6);
+                break;
+        }
     }
 }
 
@@ -1850,6 +1914,15 @@ void draw_hud_2d_texture(s32 x, s32 y, u32 width, u32 height, u8* texture) {
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
     load_texture_block_rgba16_mirror(texture, width, height);
+    func_8004B97C(x - (width >> 1), y - (height >> 1), width, height, 0);
+    gSPDisplayList(gDisplayListHead++, D_0D007EB8);
+}
+
+void draw_hud_2d_texture_wide(s32 x, s32 y, u32 width, u32 height, u8* texture) {
+    gSPDisplayList(gDisplayListHead++, D_0D008108);
+    gSPDisplayList(gDisplayListHead++, D_0D007EF8);
+    gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
+    load_texture_block_rgba16_mirror(texture, width, height);
     func_8004B97C_wide(x - (width >> 1), y - (height >> 1), width, height, 0);
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
@@ -1951,23 +2024,23 @@ void func_8004CA58(s32 arg0, s32 arg1, f32 arg2, u8* texture, s32 arg4, s32 arg5
 }
 
 void draw_hud_2d_texture_8x8(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 8, 8, texture);
+    draw_hud_2d_texture_wide(x, y, 8, 8, texture);
 }
 
 UNUSED void draw_hud_2d_texture_8x16(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 8, 16, texture);
+    draw_hud_2d_texture_wide(x, y, 8, 16, texture);
 }
 
 UNUSED void draw_hud_2d_texture_16x16(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 16, 16, texture);
+    draw_hud_2d_texture_wide(x, y, 16, 16, texture);
 }
 
 void draw_hud_2d_texture_32x8(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 32, 8, texture);
+    draw_hud_2d_texture_wide(x, y, 32, 8, texture);
 }
 
 void draw_hud_2d_texture_32x16(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 32, 16, texture);
+    draw_hud_2d_texture_wide(x, y, 32, 16, texture);
 }
 
 UNUSED void func_8004CBC0(s32 arg0, s32 arg1, f32 arg2, u8* texture) {
@@ -1975,7 +2048,7 @@ UNUSED void func_8004CBC0(s32 arg0, s32 arg1, f32 arg2, u8* texture) {
 }
 
 UNUSED void draw_hud_2d_texture_32x32(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 32, 32, texture);
+    draw_hud_2d_texture_wide(x, y, 32, 32, texture);
 }
 
 UNUSED void func_8004CC24(s32 arg0, s32 arg1, u8* texture) {
@@ -1983,7 +2056,7 @@ UNUSED void func_8004CC24(s32 arg0, s32 arg1, u8* texture) {
 }
 
 UNUSED void draw_hud_2d_texture_40x32(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 40, 32, texture);
+    draw_hud_2d_texture_wide(x, y, 40, 32, texture);
 }
 
 UNUSED void func_8004CC84(s32 x, s32 y, u8* texture) {
@@ -1991,7 +2064,7 @@ UNUSED void func_8004CC84(s32 x, s32 y, u8* texture) {
 }
 
 UNUSED void func_8004CCB4(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture(x, y, 64, 32, texture);
+    draw_hud_2d_texture_wide(x, y, 64, 32, texture);
 }
 
 UNUSED void func_8004CCE4(s32 arg0, s32 arg1, f32 arg2, u8* texture) {
@@ -2460,7 +2533,8 @@ void draw_simplified_lap_count(s32 playerId) {
     draw_hud_2d_texture_32x8((s32) playerHUD[playerId].lapX, playerHUD[playerId].lapY + 3,
                              (u8*) common_texture_hud_lap);
     draw_hud_2d_texture_32x16(playerHUD[playerId].lapX + 0x1C, (s32) playerHUD[playerId].lapY,
-                              (u8*) gHudLapTextures[playerHUD[playerId].alsoLapCount]);
+                            (u8*) gHudLapTextures[playerHUD[playerId].alsoLapCount]);
+
 }
 
 void func_8004E800(s32 playerId) {
@@ -2565,7 +2639,6 @@ void func_8004F020(s32 arg0) {
     f32 var_f2;
 
     //! @todo: Hardcode these x and y values. Because why not?
-    CourseManager_MinimapFinishlinePosition();
 
     var_f2 = ((D_8018D2C0[arg0] + D_8018D2F0) - (D_8018D2B0 / 2)) + D_8018D2E0;
     var_f0 = ((D_8018D2D8[arg0] + D_8018D2F8) - (D_8018D2B8 / 2)) + D_8018D2E8;
@@ -2577,6 +2650,8 @@ void func_8004F020(s32 arg0) {
         var_f0 = var_f0 + 4.0;
     }
 
+    //! @todo Get course minimap props from course.
+    CourseManager_MinimapFinishlinePosition();
     draw_hud_2d_texture_8x8(var_f2, var_f0, (u8*) common_texture_minimap_finish_line);
 }
 
@@ -2624,7 +2699,7 @@ void func_8004F168(s32 arg0, s32 playerId, s32 characterId) {
             if (gGPCurrentRaceRankByPlayerId[playerId] == 0) {
                 func_8004C450(temp_a0, temp_a1, 8, 8, (u8*) common_texture_minimap_progress_dot);
             } else {
-                draw_hud_2d_texture(temp_a0, temp_a1, 8, 8, (u8*) common_texture_minimap_progress_dot);
+                draw_hud_2d_texture_wide(temp_a0, temp_a1, 8, 8, (u8*) common_texture_minimap_progress_dot);
             }
         }
     }
