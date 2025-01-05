@@ -577,7 +577,7 @@ void render_object_p2(void) {
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[1]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
     CourseManager_DrawBombKarts(PLAYER_TWO);
-    //render_bomb_karts_wrap(PLAYER_TWO);
+    // render_bomb_karts_wrap(PLAYER_TWO);
     render_object_for_player(PLAYER_TWO);
 }
 
@@ -588,7 +588,7 @@ void render_object_p3(void) {
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[2]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
     CourseManager_DrawBombKarts(PLAYER_THREE);
-    //render_bomb_karts_wrap(PLAYER_THREE);
+    // render_bomb_karts_wrap(PLAYER_THREE);
     render_object_for_player(PLAYER_THREE);
 }
 
@@ -600,9 +600,9 @@ void render_object_p4(void) {
     gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxLookAt[3]),
               G_MTX_NOPUSH | G_MTX_MUL | G_MTX_PROJECTION);
     CourseManager_DrawBombKarts(PLAYER_FOUR);
-    //render_bomb_karts_wrap(PLAYER_FOUR);
+    // render_bomb_karts_wrap(PLAYER_FOUR);
     if ((!gDemoMode) && (gPlayerCountSelection1 == 4)) {
-        //render_lakitu(PLAYER_FOUR);
+        // render_lakitu(PLAYER_FOUR);
     }
     render_object_for_player(PLAYER_FOUR);
 }
@@ -785,7 +785,7 @@ void render_object_for_player(s32 cameraId) {
     }
     if (gModeSelection == BATTLE) {
         CourseManager_DrawBattleBombKarts(cameraId);
-        //render_battle_bomb_karts(cameraId);
+        // render_battle_bomb_karts(cameraId);
     }
 }
 
@@ -1122,7 +1122,8 @@ void render_hud_2p_vertical_player_two(void) {
 void render_hud_lap_3p_4p(s32 playerId) {
     if (gModeSelection != BATTLE) {
         if (D_801657F8 && gIsHUDVisible) {
-            //draw_hud_2d_texture_32x8(playerHUD[playerId].lapX, playerHUD[playerId].lapY, (u8*) common_texture_hud_lap);
+            // draw_hud_2d_texture_32x8(playerHUD[playerId].lapX, playerHUD[playerId].lapY, (u8*)
+            // common_texture_hud_lap);
             draw_hud_2d_texture(playerHUD[playerId].lapX, playerHUD[playerId].lapY, 32, 8, common_texture_hud_lap);
             draw_lap_count(playerHUD[playerId].lapX - 12, playerHUD[playerId].lapY + 4,
                            playerHUD[playerId].alsoLapCount);
@@ -1239,7 +1240,7 @@ void func_8005995C(void) {
 void func_80059A88(s32 playerId) {
     func_80059820(playerId);
     if (!gDemoMode) {
-        //update_object_lakitu(playerId); // Moved to CourseManager_TickObjects60fps
+        // update_object_lakitu(playerId); // Moved to CourseManager_TickObjects60fps
         func_8007BB9C(playerId);
     }
 }
@@ -1314,7 +1315,7 @@ void func_80059D00(void) {
                     func_80059820(PLAYER_ONE);
                     func_8005B914();
                     if (!gDemoMode) {
-                        //func_8007AA44(0);
+                        // func_8007AA44(0);
                     }
                     func_80078C70(0);
                     if (playerHUD[PLAYER_ONE].raceCompleteBool == 0) {
@@ -1334,14 +1335,14 @@ void func_80059D00(void) {
                 func_80059820(PLAYER_ONE);
                 func_8005D0FC(PLAYER_ONE);
                 if (!gDemoMode) {
-                    //func_8007AA44(0);
+                    // func_8007AA44(0);
                 }
                 func_80078C70(1);
                 func_8005D1F4(0);
                 func_80059820(PLAYER_TWO);
                 func_8005D0FC(PLAYER_TWO);
                 if (!gDemoMode) {
-                    //func_8007AA44(1);
+                    // func_8007AA44(1);
                 }
                 func_80078C70(2);
                 func_8005D1F4(1);
@@ -1352,14 +1353,14 @@ void func_80059D00(void) {
                 func_80059820(PLAYER_ONE);
                 func_8005D0FC(PLAYER_ONE);
                 if (!gDemoMode) {
-                    //func_8007AA44(0);
+                    // func_8007AA44(0);
                 }
                 func_80078C70(3);
                 func_8005D1F4(0);
                 func_80059820(PLAYER_TWO);
                 func_8005D0FC(PLAYER_TWO);
                 if (!gDemoMode) {
-                    //func_8007AA44(1);
+                    // func_8007AA44(1);
                 }
                 func_80078C70(4);
                 func_8005D1F4(1);
@@ -1372,26 +1373,26 @@ void func_80059D00(void) {
                 func_80059820(PLAYER_ONE);
                 func_8005D0FC(PLAYER_ONE);
                 if (!gDemoMode) {
-                    //func_8007AA44(0);
+                    // func_8007AA44(0);
                 }
                 func_8005D1F4(0);
                 func_80059820(PLAYER_TWO);
                 func_8005D0FC(PLAYER_TWO);
                 if (!gDemoMode) {
-                    //func_8007AA44(1);
+                    // func_8007AA44(1);
                 }
                 func_8005D1F4(1);
                 func_80059820(PLAYER_THREE);
                 func_8005D0FC(PLAYER_THREE);
                 if (!gDemoMode) {
-                    //func_8007AA44(2);
+                    // func_8007AA44(2);
                 }
                 func_8005D1F4(2);
                 if (gPlayerCountSelection1 == 4) {
                     func_80059820(PLAYER_FOUR);
                     func_8005D0FC(PLAYER_FOUR);
                     if ((!gDemoMode) && (gPlayerCountSelection1 == 4)) {
-                        //func_8007AA44(3);
+                        // func_8007AA44(3);
                     }
                     func_8005D1F4(3);
                 }
@@ -1412,10 +1413,10 @@ void func_8005A070(void) {
     if (gIsGamePaused == false) {
         func_8005C728();
         if (gGamestate == ENDING) {
-            //func_80086604();
-            //func_80086D80();
-            //update_cheep_cheep(1);
-            //func_80077640();
+            // func_80086604();
+            // func_80086D80();
+            // update_cheep_cheep(1);
+            // func_80077640();
             CourseManager_TickObjects();
             CM_TickParticles();
         } else if (gGamestate == CREDITS_SEQUENCE) {
@@ -1563,8 +1564,8 @@ void func_8005A3C0(void) {
 }
 
 void func_8005A71C(void) {
-    //if (GetCourse() == GetBowsersCastle()) {
-        //func_80081210();
+    // if (GetCourse() == GetBowsersCastle()) {
+    // func_80081210();
     //}
 }
 
@@ -2591,7 +2592,7 @@ void func_8005CB60(s32 playerId, s32 lapCount) {
             switch (*huhthedeuce) { /* switch 1; irregular */
                 case 0:             /* switch 1 */
                     break;
-                case 1: /* switch 1 */
+                case 1:                                   /* switch 1 */
                     CM_ActivateSecondLapLakitu(playerId); // func_80079084(playerId);
                     func_800C9060(playerId, SOUND_ARG_LOAD(0x19, 0x00, 0xF0, 0x15));
                     if ((GetCourse() == GetLuigiRaceway()) && (D_80165898 == 0) &&
@@ -2599,7 +2600,7 @@ void func_8005CB60(s32 playerId, s32 lapCount) {
                         D_80165898 = 1;
                     }
                     break;
-                case 2: /* switch 1 */
+                case 2:                                  /* switch 1 */
                     CM_ActivateFinalLapLakitu(playerId); // func_800790B4(playerId);
                     break;
                 case 3: /* switch 1 */
@@ -5603,16 +5604,16 @@ void func_80068AA4(Player* player, UNUSED s8 arg1, UNUSED f32 arg2, s8 arg3, s8 
     Vec3f sp64;
     Vec3s sp5C;
 
-        sp64[1] = player->pos[1];
-        sp64[2] = player->pos[2];
-        sp64[0] = player->pos[0];
+    sp64[1] = player->pos[1];
+    sp64[2] = player->pos[2];
+    sp64[0] = player->pos[0];
 
     if ((player->unk_258[20 + arg4].unk_01C == 1) && (player->animFrameSelector[arg3] < 0xD)) {
-if (gTickVisuals) {
-        sp64[1] = player->pos[1] - 3.0f;
-        sp64[2] = player->pos[2] + ((-2.5 * player->unk_258[20 + arg4].unk_01E) * coss(player->unk_048[arg3]));
-        sp64[0] = player->pos[0] + ((-2.5 * player->unk_258[20 + arg4].unk_01E) * sins(player->unk_048[arg3]));
-}
+        if (gTickVisuals) {
+            sp64[1] = player->pos[1] - 3.0f;
+            sp64[2] = player->pos[2] + ((-2.5 * player->unk_258[20 + arg4].unk_01E) * coss(player->unk_048[arg3]));
+            sp64[0] = player->pos[0] + ((-2.5 * player->unk_258[20 + arg4].unk_01E) * sins(player->unk_048[arg3]));
+        }
         sp5C[0] = 0;
         sp5C[1] = player->unk_048[arg3];
         sp5C[2] = 0;
@@ -6077,13 +6078,14 @@ void render_battle_balloon(Player* player, s8 arg1, s16 arg2, s8 arg3) {
 
     func_8004B614(primRed, primGreen, primBlue, envRed, envGreen, envBlue, 0x000000D8);
     gDPSetRenderMode(gDisplayListHead++,
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
 
-    gDPLoadTextureBlock(gDisplayListHead++, gTextureBalloon1, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    gDPLoadTextureBlock(gDisplayListHead++, gTextureBalloon1, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
+                        G_TX_NOLOD);
     gSPVertex(gDisplayListHead++, gBalloonVertexPlane1, 4, 0);
     gSPDisplayList(gDisplayListHead++, common_square_plain_render);
     gDPLoadTextureBlock(gDisplayListHead++, gTextureBalloon2, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0,
@@ -6199,13 +6201,14 @@ void render_balloon(Vec3f arg0, f32 arg1, s16 arg2, s16 arg3) {
     gDPSetTextureLUT(gDisplayListHead++, G_TT_RGBA16);
     func_8004B614(primRed, primGreen, primBlue, envRed, envGreen, envBlue, 0x000000D8);
     gDPSetRenderMode(gDisplayListHead++,
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
 
-    gDPLoadTextureBlock(gDisplayListHead++, gTextureBalloon1, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0, G_TX_NOMIRROR | G_TX_CLAMP,
-                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
+    gDPLoadTextureBlock(gDisplayListHead++, gTextureBalloon1, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0,
+                        G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
+                        G_TX_NOLOD);
     gSPVertex(gDisplayListHead++, gBalloonVertexPlane1, 4, 0);
     gSPDisplayList(gDisplayListHead++, common_square_plain_render);
     // D_8018D4C0 is correct. But interestingly, IDO seems to set "-0x40" to a different register so the texture still
