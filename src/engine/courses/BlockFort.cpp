@@ -46,8 +46,8 @@ BlockFort::BlockFort() {
     this->gfxSize = 699;
     Props.textures = block_fort_textures;
     Props.MinimapTexture = gTextureCourseOutlineBlockFort;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+
 
     Props.Name = "block fort";
     Props.DebugName = "block";

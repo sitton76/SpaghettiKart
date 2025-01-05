@@ -5,6 +5,7 @@
 
 #include "FrappeSnowland.h"
 #include "World.h"
+#include "CoreMath.h"
 #include "engine/actors/AFinishline.h"
 #include "engine/objects/BombKart.h"
 #include "engine/objects/Snowman.h"
@@ -51,8 +52,7 @@ FrappeSnowland::FrappeSnowland() {
     this->gfxSize = 4140;
     Props.textures = frappe_snowland_textures;
     Props.MinimapTexture = gTextureCourseOutlineFrappeSnowland;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "frappe snowland";
     Props.DebugName = "snow";

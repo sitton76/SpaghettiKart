@@ -64,8 +64,7 @@ ChocoMountain::ChocoMountain() {
     this->gfxSize = 2910;
     Props.textures = choco_mountain_textures;
     Props.MinimapTexture = gTextureCourseOutlineChocoMountain;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Id = "mk:choco_mountain";
     Props.Name = "choco mountain";

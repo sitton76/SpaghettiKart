@@ -165,10 +165,10 @@ void init_item_window(s32 objectIndex) {
 
 void func_8006EEE8(s32 courseId) {
     D_8018D240 = (uintptr_t) CourseManager_GetProps()->MinimapTexture;
-    // This is incredibly dumb. D_800E5548 ought to be something more like
-    // `u16 D_800E5548[][2]` but that doesn't match for some insane reason
-    D_8018D2B0 = CourseManager_GetProps()->D_800E5548[0]; // D_800E5548[courseId * 2];
-    D_8018D2B8 = CourseManager_GetProps()->D_800E5548[1]; // D_800E5548[courseId * 2 + 1];
+    // This is incredibly dumb. MinimapDimensions ought to be something more like
+    // `u16 MinimapDimensions[][2]` but that doesn't match for some insane reason
+    gMinimapWidth = CourseManager_GetProps()->MinimapDimensions.X; // MinimapDimensions[courseId * 2];
+    gMinimapHeight = CourseManager_GetProps()->MinimapDimensions.Z; // MinimapDimensions[courseId * 2 + 1];
 }
 
 void func_8006EF60(void) {
@@ -344,7 +344,7 @@ void func_8006F008(void) {
             //     D_8018D2E8 = 31;
     }
     if (gIsMirrorMode != 0) {
-        D_8018D2E0 = D_8018D2B0 - D_8018D2E0;
+        D_8018D2E0 = gMinimapWidth - D_8018D2E0;
     }
     if (gPlayerCount == 4) {
         D_8018D2C0[0] = 160;
@@ -571,8 +571,6 @@ void func_8006FA94(void) {
     gHUDDisable = D_8018D214;
     D_801657AE = gHUDDisable;
     D_8018D20C = 0;
-    D_8018D2F8 = 0;
-    D_8018D2F0 = D_8018D2F8;
     D_8018D320 = 3;
     D_8018D2AC = 0;
     D_8018D2BC = 0;

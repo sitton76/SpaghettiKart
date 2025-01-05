@@ -32,7 +32,6 @@ void init_hud_three_four_player(void);
 void init_hud_two_player_horizontal(void);
 
 extern s16 D_800E5520[];
-extern s16 D_800E5548[];
 extern u8* gCourseOutlineTextures[0x14]; // 800e54d0
 
 #endif

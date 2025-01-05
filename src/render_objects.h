@@ -217,7 +217,7 @@ void func_8004C024(s16, s16, s16, u16, u16, u16, u16);
 void func_8004C148(s16, s16, s16, u16, u16, u16, u16);
 void func_8004C354(void);
 void func_8004C35C(void);
-void draw_hud_2d_texture(s32, s32, u32, u32, u8*);
+void draw_hud_2d_texture_wide(s32, s32, u32, u32, u8*);
 void func_8004C450(s32, s32, u32, u32, u8*);
 void func_8004C53C(s32, s32, u32, u32, u8*);
 void func_8004C628(s32, s32, u32, u32, u8*);
@@ -296,7 +296,7 @@ void func_8004ED40(s32);
 void func_8004EE54(s32);
 
 void func_8004EF9C(s32);
-void func_8004F020(s32);
+void set_minimap_finishline_position(s32);
 void func_8004F168(s32, s32, s32);
 void func_8004F3E4(s32);
 s32 func_8004F674(s32*, s32);

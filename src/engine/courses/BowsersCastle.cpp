@@ -72,8 +72,7 @@ BowsersCastle::BowsersCastle() {
     this->gfxSize = 4900;
     Props.textures = bowsers_castle_textures;
     Props.MinimapTexture = gTextureCourseOutlineBowsersCastle;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Id = "mk:bowsers_castle";
     Props.Name = "bowser's castle";

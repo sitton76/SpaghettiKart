@@ -21,6 +21,11 @@ typedef struct {
 } SkyboxColours;
 
 typedef struct {
+    int32_t X;
+    int32_t Z;
+} IVector2D_C;
+
+typedef struct {
     const char* Id;
     const char* Name;
     const char* DebugName;
@@ -28,7 +33,7 @@ typedef struct {
     const char* AIBehaviour;
     const char* MinimapTexture;
     s32 LakituTowType;
-    s16 D_800E5548[2];
+    IVector2D_C MinimapDimensions;
     float AIMaximumSeparation;
     float AIMinimumSeparation;
     float NearPersp;

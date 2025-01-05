@@ -58,8 +58,7 @@ KalimariDesert::KalimariDesert() {
     this->gfxSize = 5328;
     Props.textures = kalimari_desert_textures;
     Props.MinimapTexture = gTextureCourseOutlineKalimariDesert;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 96;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "kalimari desert";
     Props.DebugName = "desert";

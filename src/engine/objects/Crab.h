@@ -3,6 +3,7 @@
 #include <libultraship.h>
 #include <vector>
 #include "engine/objects/Object.h"
+#include "CoreMath.h"
 #include "World.h"
 
 extern "C" {

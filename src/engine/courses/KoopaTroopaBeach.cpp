@@ -1,5 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
+#include "../CoreMath.h"
 #include <vector>
 #include <memory>
 
@@ -61,8 +62,7 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     this->gfxSize = 5720;
     Props.textures = koopa_troopa_beach_textures;
     Props.MinimapTexture = gTextureCourseOutlineKoopaTroopaBeach;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Id = "mk:koopa_beach";
     Props.Name = "koopa troopa beach";

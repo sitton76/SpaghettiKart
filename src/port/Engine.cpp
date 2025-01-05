@@ -454,6 +454,28 @@ extern "C" int16_t OTRGetRectDimensionFromRightEdge(float v) {
     return ((int) ceilf(OTRGetDimensionFromRightEdge(v)));
 }
 
+/**
+ * Centers an item in a given area.
+ * 
+ * Adds the number of extended screen pixels to the location to center.
+ * This allows stretching the game window really wide, and the item will stay in-place.
+ * 
+ * This is not for centering in the direct center of the screen.
+ * 
+ * How to use:
+ * 
+ * s32 center = OTRCalculateCenterOfAreaFromRightEdge((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
+ * x = center - (texWidth / 2)
+ * x2 = center + (texWidth / 2)
+ */
+extern "C" uint32_t OTRCalculateCenterOfAreaFromRightEdge(int32_t center) {
+    return ((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + center;
+}
+
+extern "C" uint32_t OTRCalculateCenterOfAreaFromLeftEdge(int32_t center) {
+    return ((OTRGetDimensionFromLeftEdge(0) - SCREEN_WIDTH) / 2) + center;
+}
+
 // Gets the width of the current render target area
 extern "C" uint32_t OTRGetGameRenderWidth() {
     return gfx_current_dimensions.width;

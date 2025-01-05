@@ -26,8 +26,8 @@ glabel func_8004F168
 /* 04FDC8 8004F1C8 46002082 */  mul.s $f2, $f4, $f0
 /* 04FDCC 8004F1CC 01284821 */  addu  $t1, $t1, $t0
 /* 04FDD0 8004F1D0 3C0A8019 */  lui   $t2, %hi(D_8018D2F0) # $t2, 0x8019
-/* 04FDD4 8004F1D4 3C0C8019 */  lui   $t4, %hi(D_8018D2B0) # $t4, 0x8019
-/* 04FDD8 8004F1D8 858CD2B0 */  lh    $t4, %lo(D_8018D2B0)($t4)
+/* 04FDD4 8004F1D4 3C0C8019 */  lui   $t4, %hi(gMinimapWidth) # $t4, 0x8019
+/* 04FDD8 8004F1D8 858CD2B0 */  lh    $t4, %lo(gMinimapWidth)($t4)
 /* 04FDDC 8004F1DC 854AD2F0 */  lh    $t2, %lo(D_8018D2F0)($t2)
 /* 04FDE0 8004F1E0 8529D2C0 */  lh    $t1, %lo(D_8018D2C0)($t1) # -0x2d40($t1)
 /* 04FDE4 8004F1E4 4600120D */  trunc.w.s $f8, $f2
@@ -50,9 +50,9 @@ glabel func_8004F168
 /* 04FE24 8004F224 00084C00 */  sll   $t1, $t0, 0x10
 /* 04FE28 8004F228 85ADD2D8 */  lh    $t5, %lo(D_8018D2D8)($t5) # -0x2d28($t5)
 /* 04FE2C 8004F22C 85CED2F8 */  lh    $t6, %lo(D_8018D2F8)($t6)
-/* 04FE30 8004F230 3C198019 */  lui   $t9, %hi(D_8018D2B8) # $t9, 0x8019
+/* 04FE30 8004F230 3C198019 */  lui   $t9, %hi(gMinimapHeight) # $t9, 0x8019
 /* 04FE34 8004F234 4600628D */  trunc.w.s $f10, $f12
-/* 04FE38 8004F238 8739D2B8 */  lh    $t9, %lo(D_8018D2B8)($t9)
+/* 04FE38 8004F238 8739D2B8 */  lh    $t9, %lo(gMinimapHeight)($t9)
 /* 04FE3C 8004F23C 00095403 */  sra   $t2, $t1, 0x10
 /* 04FE40 8004F240 030A2021 */  addu  $a0, $t8, $t2
 /* 04FE44 8004F244 3C188019 */  lui   $t8, %hi(D_8018D2E8) # $t8, 0x8019

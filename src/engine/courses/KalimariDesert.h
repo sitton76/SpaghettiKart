@@ -1,6 +1,7 @@
 #pragma once
 
 #include <libultraship.h>
+#include "CoreMath.h"
 #include "Course.h"
 #include "engine/vehicles/Train.h"
 

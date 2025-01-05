@@ -65,8 +65,7 @@ Skyscraper::Skyscraper() {
     this->gfxSize = 548;
     Props.textures = skyscraper_textures;
     Props.MinimapTexture = gTextureCourseOutlineSkyscraper;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "skyscraper";
     Props.DebugName = "skyscraper";

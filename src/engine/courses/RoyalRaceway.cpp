@@ -86,8 +86,7 @@ RoyalRaceway::RoyalRaceway() {
     this->gfxSize = 5670;
     Props.textures = royal_raceway_textures;
     Props.MinimapTexture = gTextureCourseOutlineRoyalRaceway;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "royal raceway";
     Props.DebugName = "p circuit";

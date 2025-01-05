@@ -72,8 +72,7 @@ DKJungle::DKJungle() {
     this->gfxSize = 4997;
     Props.textures = dks_jungle_parkway_textures;
     Props.MinimapTexture = gTextureCourseOutlineDksJungleParkway;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "d.k.'s jungle parkway";
     Props.DebugName = "jungle";

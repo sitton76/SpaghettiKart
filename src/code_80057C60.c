@@ -1037,14 +1037,14 @@ void func_800591B4(void) {
                     if (D_80165800[0] != 0) {
                         func_8004EE54(0);
                         if (gModeSelection != BATTLE) {
-                            func_8004F020(0);
+                            set_minimap_finishline_position(0);
                         }
                         func_8004F3E4(0);
                     }
                     if ((gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) && (D_80165800[1] != 0)) {
                         func_8004EE54(1);
                         if (gModeSelection != BATTLE) {
-                            func_8004F020(1);
+                            set_minimap_finishline_position(1);
                         }
                         func_8004F3E4(1);
                     }
@@ -1122,7 +1122,8 @@ void render_hud_2p_vertical_player_two(void) {
 void render_hud_lap_3p_4p(s32 playerId) {
     if (gModeSelection != BATTLE) {
         if (D_801657F8 && gIsHUDVisible) {
-            draw_hud_2d_texture_32x8(playerHUD[playerId].lapX, playerHUD[playerId].lapY, (u8*) common_texture_hud_lap);
+            //draw_hud_2d_texture_32x8(playerHUD[playerId].lapX, playerHUD[playerId].lapY, (u8*) common_texture_hud_lap);
+            draw_hud_2d_texture(playerHUD[playerId].lapX, playerHUD[playerId].lapY, 32, 8, common_texture_hud_lap);
             draw_lap_count(playerHUD[playerId].lapX - 12, playerHUD[playerId].lapY + 4,
                            playerHUD[playerId].alsoLapCount);
         }

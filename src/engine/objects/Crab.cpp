@@ -2,6 +2,8 @@
 #include <libultra/gbi.h>
 #include "Crab.h"
 #include <vector>
+#include "CoreMath.h"
+
 
 #include "port/Game.h"
 

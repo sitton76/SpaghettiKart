@@ -303,11 +303,11 @@ void func_802A4300(void) {
             gDPFillRectangle(gDisplayListHead++, 157, 0, 159, 239);
             break;
         case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
-            gDPFillRectangle(gDisplayListHead++, 0, 119, 319, 121);
+            gDPFillWideRectangle(gDisplayListHead++, OTRGetDimensionFromLeftEdge(0), 119, OTRGetGameRenderWidth(), 121);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
             gDPFillRectangle(gDisplayListHead++, 157, 0, 159, 239);
-            gDPFillRectangle(gDisplayListHead++, 0, 119, 319, 121);
+            gDPFillWideRectangle(gDisplayListHead++, OTRGetDimensionFromLeftEdge(0), 119, OTRGetGameRenderWidth(), 121);
             break;
     }
     gDPPipeSync(gDisplayListHead++);
@@ -731,7 +731,7 @@ void func_802A5760(void) {
         gDPSetFillColor(gDisplayListHead++, 0x00010001);
         gDPPipeSync(gDisplayListHead++);
         gDPSetScissor(gDisplayListHead++, G_SC_NON_INTERLACE, 160, 120, SCREEN_WIDTH, SCREEN_HEIGHT);
-        gDPFillRectangle(gDisplayListHead++, 160, 120, SCREEN_WIDTH - 1, SCREEN_HEIGHT - 1);
+        gDPFillRectangle(gDisplayListHead++, 160, 120, OTRGetDimensionFromRightEdge(320), SCREEN_HEIGHT - 1);
         gDPPipeSync(gDisplayListHead++);
         gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
 
