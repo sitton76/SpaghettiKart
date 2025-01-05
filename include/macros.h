@@ -110,10 +110,12 @@
 
 // Envelopes are always stored as big endian, to match sequence files which are
 // byte blobs and can embed envelopes. Hence this byteswapping macro.
+#ifndef BSWAP16
 #if IS_BIG_ENDIAN
 #define BSWAP16(x) (x)
 #else
 #define BSWAP16(x) (((x) & 0xff) << 8 | (((x) >> 8) & 0xff))
+#endif
 #endif
 
 /**
