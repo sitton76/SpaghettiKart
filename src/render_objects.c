@@ -1648,7 +1648,6 @@ void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4
         switch(gScreenModeSelection) {
             case SCREEN_MODE_3P_4P_SPLITSCREEN:
                 if (gPlayerCount == 3) {
-                    s32 renderWidth = SCREEN_WIDTH;
                     // Center item in area of screen
                     s32 center = (s32)((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + ((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
                     s32 coordX = (s32)(center - (width / 2)) << 2;
@@ -1682,6 +1681,27 @@ void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4
     }
     //gSPTextureRectangle(gDisplayListHead++, xl, yl, xh2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
     //                    1 << 10);
+}
+
+// Renders the finishline in 3P mode.
+void render_texture_rectangle_3P(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
+
+    s32 xh = (((x + width) - 1));
+    s32 yh = (((y + height) - 1) << 2);
+    s32 xl = ((x));
+    s32 yl = y << 2;
+
+    s32 xh2 = (((x + width)));
+    s32 yh2 = ((y + height) << 2);
+
+    // Center item in area of screen
+    s32 center = (s32)((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + ((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
+    s32 coordX = (s32)(center - (width / 2)) << 2;
+    s32 coordX2 = (s32)(center + (width / 2)) << 2;
+    printf("center %d, width %d, coordX %d\n", center, width, coordX >> 2);
+    gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
+                            coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
+                        1 << 10);
 }
 
 void render_texture_rectangle_wrap(s32 x, s32 y, s32 width, s32 height, s32 mode) {
@@ -1736,6 +1756,30 @@ void func_8004B97C_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             var_a1 = 0;
         }
         render_texture_rectangle_wide(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
+    }
+}
+
+void func_8004B97C_3P(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
+    UNUSED s32 pad[2];
+    s32 sp2C;
+    s32 var_a1;
+    s32 var_v0;
+    s32 var_v1;
+
+    if ((-arg2 < arg0) && (-arg3 < arg1)) {
+        var_v0 = 0;
+        var_v1 = 0;
+        sp2C = arg0;
+        var_a1 = arg1;
+        if (arg0 < 0) {
+            var_v1 = -arg0;
+            sp2C = 0;
+        }
+        if (arg1 < 0) {
+            var_v0 = -arg1;
+            var_a1 = 0;
+        }
+        render_texture_rectangle_3P(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
     }
 }
 
@@ -1952,6 +1996,15 @@ void draw_hud_2d_texture_wide(s32 x, s32 y, u32 width, u32 height, u8* texture) 
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
+void draw_hud_2d_texture_3P(s32 x, s32 y, u32 width, u32 height, u8* texture) {
+    gSPDisplayList(gDisplayListHead++, D_0D008108);
+    gSPDisplayList(gDisplayListHead++, D_0D007EF8);
+    gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
+    load_texture_block_rgba16_mirror(texture, width, height);
+    func_8004B97C_3P(x - (width >> 1), y - (height >> 1), width, height, 0);
+    gSPDisplayList(gDisplayListHead++, D_0D007EB8);
+}
+
 void func_8004C450(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
 
     gSPDisplayList(gDisplayListHead++, D_0D007F38);
@@ -2049,7 +2102,20 @@ void func_8004CA58(s32 arg0, s32 arg1, f32 arg2, u8* texture, s32 arg4, s32 arg5
 }
 
 void draw_hud_2d_texture_8x8(s32 x, s32 y, u8* texture) {
-    draw_hud_2d_texture_wide(x, y, 8, 8, texture);
+    switch(gScreenModeSelection) {
+        case SCREEN_MODE_1P:
+        case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
+        case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
+            draw_hud_2d_texture_wide(x, y, 8, 8, texture);
+            break;
+        case SCREEN_MODE_3P_4P_SPLITSCREEN:
+            if (gPlayerCount == 3) {
+                draw_hud_2d_texture_3P(x, y, 8, 8, texture);
+            } else {
+                draw_hud_2d_texture(x, y, 8, 8, texture);
+            }
+            break;
+    }
 }
 
 UNUSED void draw_hud_2d_texture_8x16(s32 x, s32 y, u8* texture) {
