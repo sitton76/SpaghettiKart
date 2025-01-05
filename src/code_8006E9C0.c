@@ -177,7 +177,6 @@ void func_8006EF60(void) {
     s16 huh;
     u8* wut;
 
-    wut = gMenuCompressedBuffer + 0xFFFF0000;
     // clang-format off
     // God forgive me for my sins...
     huh = 0x14; if (0) {} for (i = 0; i < huh; i++) { D_8018D248[i] = CourseManager_GetProps()->MinimapTexture; wut += ResourceGetTexSizeByName(CourseManager_GetProps()->MinimapTexture); }

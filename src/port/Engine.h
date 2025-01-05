@@ -55,7 +55,11 @@ class GameEngine {
     uint32_t OTRCalculateCenterOfAreaFromRightEdge(int32_t center);
     uint32_t OTRCalculateCenterOfAreaFromLeftEdge(int32_t center);
 };
-#else
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 void GameEngine_ProcessGfxCommands(Gfx* commands);
 uint32_t GameEngine_GetSampleRate();
 uint32_t GameEngine_GetSamplesPerFrame();
@@ -67,7 +71,7 @@ struct AudioSequenceData* GameEngine_LoadSequence(uint8_t seqId);
 uint32_t GameEngine_GetSequenceCount();
 uint8_t GameEngine_IsSequenceLoaded(uint8_t seqId);
 void GameEngine_UnloadSequence(uint8_t seqId);
-uint8_t GameEngine_OTRSigCheck(char* imgData);
+// bool GameEngine_OTRSigCheck(char* imgData); -> align_asset_macro.h
 float OTRGetAspectRatio(void);
 float OTRGetDimensionFromLeftEdge(float v);
 float OTRGetDimensionFromRightEdge(float v);
