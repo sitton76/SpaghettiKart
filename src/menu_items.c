@@ -3463,14 +3463,6 @@ void replace_texture(s32 index, const char* newTexture) {
     // newTexture, sMenuTextureListIndex);
 }
 
-// strcpy the const char asset strings into sMenuTextureList. This replaces osPiDma.
-void dma_compressed_mio0_texture_segA(u64* data, size_t nbytes, void* vaddr) {
-}
-
-// strcpy the const char asset strings into sMenuTextureList. This replaces osPiDma.
-void dma_tkmk00_textures(u64* data, size_t nbytes, void* vaddr) {
-}
-
 void clear_menu_textures(void) {
     for (size_t i = 0; i < ARRAY_COUNT(sMenuTextureList); i++) {
         sMenuTextureList[i] = NULL;

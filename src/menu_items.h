@@ -414,8 +414,6 @@ Gfx* draw_box_fill(Gfx*, s32, s32, s32, s32, s32, s32, s32, s32);
 Gfx* draw_box(Gfx*, s32, s32, s32, s32, u32, u32, u32, u32);
 Gfx* draw_box_wide(Gfx*, s32, s32, s32, s32, u32, u32, u32, u32);
 Gfx* func_80098FC8(Gfx*, s32, s32, s32, s32);
-void dma_compressed_mio0_texture_segA(u64*, size_t, void*);
-void dma_tkmk00_textures(u64*, size_t, void*);
 void clear_menu_textures(void);
 void load_menu_img(MenuTexture*);
 void* segmented_to_virtual_dupe(const void*);
@@ -643,7 +641,6 @@ void func_800AF740(MenuItem*);
 
 // This really, really shouldn't be in this header file, but I don't know where else to put it
 void rmonPrintf(const char*, ...);
-void tkmk00decode(u8*, u8*, u8*, s32);
 
 /* File specific defines */
 
