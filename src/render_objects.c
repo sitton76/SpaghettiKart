@@ -518,11 +518,7 @@ void func_800463B0(s32 arg0, s32 arg1, u16 arg2, f32 arg3, u8* texture, Vtx* arg
             func_80042330(arg0, arg1, arg2, arg3);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
-            if (gPlayerCount == 3) {
-                func_80042330_3P(arg0, arg1, arg2, arg3);
-            } else {
-                func_80042330_default(arg0, arg1, arg2, arg3);
-            }
+            func_80042330_default(arg0, arg1, arg2, arg3);
             break;
     }
 
@@ -539,11 +535,7 @@ void func_80046424(s32 arg0, s32 arg1, u16 arg2, f32 arg3, u8* texture, Vtx* arg
             func_80042330(arg0, arg1, arg2, arg3);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
-            if (gPlayerCount == 3) {
-                func_80042330_3P(arg0, arg1, arg2, arg3);
-            } else {
-                func_80042330_default(arg0, arg1, arg2, arg3);
-            }
+            func_80042330_default(arg0, arg1, arg2, arg3);
             break;
     }
 
@@ -1683,27 +1675,6 @@ void render_texture_rectangle_wide(s32 x, s32 y, s32 width, s32 height, s32 arg4
     //                    1 << 10);
 }
 
-// Renders the finishline in 3P mode.
-void render_texture_rectangle_3P(s32 x, s32 y, s32 width, s32 height, s32 arg4, s32 arg5, s32 arg6) {
-
-    s32 xh = (((x + width) - 1));
-    s32 yh = (((y + height) - 1) << 2);
-    s32 xl = ((x));
-    s32 yl = y << 2;
-
-    s32 xh2 = (((x + width)));
-    s32 yh2 = ((y + height) << 2);
-
-    // Center item in area of screen
-    s32 center = (s32)((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + ((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
-    s32 coordX = (s32)(center - (width / 2)) << 2;
-    s32 coordX2 = (s32)(center + (width / 2)) << 2;
-    printf("center %d, width %d, coordX %d\n", center, width, coordX >> 2);
-    gSPWideTextureRectangle(gDisplayListHead++, coordX, yl,
-                            coordX2, yh2, G_TX_RENDERTILE, arg4 << 5, (arg5 << 5), 1 << 10,
-                        1 << 10);
-}
-
 void render_texture_rectangle_wrap(s32 x, s32 y, s32 width, s32 height, s32 mode) {
     // (0, 0) means texture coordinates will be rendered from the top left corner
     render_texture_rectangle(x, y, width, height, 0, 0, mode);
@@ -1756,30 +1727,6 @@ void func_8004B97C_wide(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
             var_a1 = 0;
         }
         render_texture_rectangle_wide(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
-    }
-}
-
-void func_8004B97C_3P(s32 arg0, s32 arg1, s32 arg2, s32 arg3, s32 arg4) {
-    UNUSED s32 pad[2];
-    s32 sp2C;
-    s32 var_a1;
-    s32 var_v0;
-    s32 var_v1;
-
-    if ((-arg2 < arg0) && (-arg3 < arg1)) {
-        var_v0 = 0;
-        var_v1 = 0;
-        sp2C = arg0;
-        var_a1 = arg1;
-        if (arg0 < 0) {
-            var_v1 = -arg0;
-            sp2C = 0;
-        }
-        if (arg1 < 0) {
-            var_v0 = -arg1;
-            var_a1 = 0;
-        }
-        render_texture_rectangle_3P(sp2C, var_a1, arg2 - var_v1, arg3 - var_v0, var_v1, var_v0, arg4);
     }
 }
 
@@ -1996,15 +1943,6 @@ void draw_hud_2d_texture_wide(s32 x, s32 y, u32 width, u32 height, u8* texture) 
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
 
-void draw_hud_2d_texture_3P(s32 x, s32 y, u32 width, u32 height, u8* texture) {
-    gSPDisplayList(gDisplayListHead++, D_0D008108);
-    gSPDisplayList(gDisplayListHead++, D_0D007EF8);
-    gDPSetAlphaCompare(gDisplayListHead++, G_AC_THRESHOLD);
-    load_texture_block_rgba16_mirror(texture, width, height);
-    func_8004B97C_3P(x - (width >> 1), y - (height >> 1), width, height, 0);
-    gSPDisplayList(gDisplayListHead++, D_0D007EB8);
-}
-
 void func_8004C450(s32 arg0, s32 arg1, u32 arg2, u32 arg3, u8* texture) {
 
     gSPDisplayList(gDisplayListHead++, D_0D007F38);
@@ -2109,11 +2047,7 @@ void draw_hud_2d_texture_8x8(s32 x, s32 y, u8* texture) {
             draw_hud_2d_texture_wide(x, y, 8, 8, texture);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
-            if (gPlayerCount == 3) {
-                draw_hud_2d_texture_3P(x, y, 8, 8, texture);
-            } else {
-                draw_hud_2d_texture(x, y, 8, 8, texture);
-            }
+            draw_hud_2d_texture(x, y, 8, 8, texture);
             break;
     }
 }
@@ -2705,13 +2639,13 @@ void func_8004ED40(s32 arg0) {
 
 void func_8004EE54(s32 arg0) {
     if (gIsMirrorMode != 0) {
-        func_8004D4E8(D_8018D2C0[arg0] + D_8018D2F0, D_8018D2D8[arg0] + D_8018D2F8, (u8*) D_8018D240, (s32) D_8018D300,
-                      (s32) D_8018D308, (s32) D_8018D310, 0x000000FF, (s32) D_8018D2B0, (s32) D_8018D2B8,
-                      (s32) D_8018D2B0, (s32) D_8018D2B8);
+        func_8004D4E8(D_8018D2C0[arg0], D_8018D2D8[arg0], (u8*) D_8018D240, (s32) D_8018D300,
+                      (s32) D_8018D308, (s32) D_8018D310, 0x000000FF, (s32) gMinimapWidth, (s32) gMinimapHeight,
+                      (s32) gMinimapWidth, (s32) gMinimapHeight);
     } else {
-        func_8004D37C(D_8018D2C0[arg0] + D_8018D2F0, D_8018D2D8[arg0] + D_8018D2F8, (u8*) D_8018D240, (s32) D_8018D300,
-                      (s32) D_8018D308, (s32) D_8018D310, 0x000000FF, (s32) D_8018D2B0, (s32) D_8018D2B8,
-                      (s32) D_8018D2B0, (s32) D_8018D2B8);
+        func_8004D37C(D_8018D2C0[arg0], D_8018D2D8[arg0], (u8*) D_8018D240, (s32) D_8018D300,
+                      (s32) D_8018D308, (s32) D_8018D310, 0x000000FF, (s32) gMinimapWidth, (s32) gMinimapHeight,
+                      (s32) gMinimapWidth, (s32) gMinimapHeight);
     }
 }
 
@@ -2719,20 +2653,28 @@ void func_8004EF9C(s32 arg0) {
     s16 temp_t0;
     s16 temp_v0;
 
-    temp_v0 = CourseManager_GetProps()->D_800E5548[0]; // D_800E5548[arg0 * 2];
-    temp_t0 = CourseManager_GetProps()->D_800E5548[1]; // D_800E5548[arg0 * 2 + 1];
+    temp_v0 = CourseManager_GetProps()->MinimapDimensions.X;
+    temp_t0 = CourseManager_GetProps()->MinimapDimensions.Z;
     func_8004D37C(0x00000104, 0x0000003C, CourseManager_GetProps()->MinimapTexture, 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF, temp_v0,
                   temp_t0, temp_v0, temp_t0);
 }
 
-void func_8004F020(s32 arg0) {
+void set_minimap_finishline_position(s32 arg0) {
     f32 var_f0;
     f32 var_f2;
+    s32 center = 0;
 
-    //! @todo: Hardcode these x and y values. Because why not?
+//! @todo: Hardcode these x and y values. Because why not?
 
-    var_f2 = ((D_8018D2C0[arg0] + D_8018D2F0) - (D_8018D2B0 / 2)) + D_8018D2E0;
-    var_f0 = ((D_8018D2D8[arg0] + D_8018D2F8) - (D_8018D2B8 / 2)) + D_8018D2E8;
+    if (gPlayerCount == 3) {
+        center = ((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + ((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
+    } else {
+        center = D_8018D2C0[arg0];
+    }
+
+//minimap center pos -  minimap left edge  +  offset
+    var_f2 = (center - (gMinimapWidth / 2)) + D_8018D2E0;
+    var_f0 = (D_8018D2D8[arg0] - (gMinimapHeight / 2)) + D_8018D2E8;
     if (GetCourse() == GetMarioRaceway()) {
         var_f0 = var_f0 - 2.0;
     } else if (GetCourse() == GetChocoMountain()) {
@@ -2757,13 +2699,21 @@ void func_8004F168(s32 arg0, s32 playerId, s32 characterId) {
     f32 thing1;
     s16 temp_a0;
     s16 temp_a1;
+    s32 center = 0;
     Player* player = &gPlayerOne[playerId];
 
     if (player->type & (1 << 15)) {
         thing0 = player->pos[0] * D_8018D2A0;
         thing1 = player->pos[2] * D_8018D2A0;
-        temp_a0 = ((D_8018D2C0[arg0] + D_8018D2F0) - (D_8018D2B0 / 2)) + D_8018D2E0 + (s16) (thing0);
-        temp_a1 = ((D_8018D2D8[arg0] + D_8018D2F8) - (D_8018D2B8 / 2)) + D_8018D2E8 + (s16) (thing1);
+
+    if (gPlayerCount == 3) {
+        center = ((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2) + ((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
+    } else {
+        center = D_8018D2C0[arg0];
+    }
+
+        temp_a0 = (center - (gMinimapWidth / 2)) + D_8018D2E0 + (s16) (thing0);
+        temp_a1 = (D_8018D2D8[arg0] - (gMinimapHeight / 2)) + D_8018D2E8 + (s16) (thing1);
         if (characterId != 8) {
             if ((gGPCurrentRaceRankByPlayerId[playerId] == 0) && (gModeSelection != 3) && (gModeSelection != 1)) {
 #if EXPLICIT_AND == 1

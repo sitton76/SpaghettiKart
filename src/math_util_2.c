@@ -730,22 +730,6 @@ void func_80042330_default(s32 x, s32 y, u16 angle, f32 scale) {
     AddHudMatrix(matrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 }
 
-// Centers in an area of the screen for 3P mode
-void func_80042330_3P(s32 x, s32 y, u16 angle, f32 scale) {
-    Mat4 matrix;
-    
-    s32 offset = ((OTRGetDimensionFromRightEdge(SCREEN_WIDTH) - SCREEN_WIDTH) / 2);
-    // + 5 is just an alignment guess.
-    x += offset + 5;
-
-    mtxf_translation_x_y_rotate_z_scale_x_y(matrix, x, y, angle, scale);
-    // convert_to_fixed_point_matrix(&gGfxPool->mtxHud[gMatrixHudCount], matrix);
-    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxHud[gMatrixHudCount++]),
-    //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-
-    AddHudMatrix(matrix, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
-}
-
 void func_80042330_portrait(s32 x, s32 y, u16 angle, f32 scale, s16 lapCount) {
     Mat4 matrix;
     //printf("panel %d %d %d\n", x, (s32)OTRGetDimensionFromLeftEdge(x), (s32)OTRGetDimensionFromLeftEdge(0));

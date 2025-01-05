@@ -73,8 +73,7 @@ MarioRaceway::MarioRaceway() {
     this->gfxSize = 3367;
     Props.textures = mario_raceway_textures;
     Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Id = "mk:mario_raceway";
     Props.Name = "Mario Raceway";

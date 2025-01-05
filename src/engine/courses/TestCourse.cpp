@@ -1,5 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
+#include "CoreMath.h"
 #include <vector>
 #include <memory>
 
@@ -61,8 +62,7 @@ TestCourse::TestCourse() {
     this->gfxSize = 100;
     this->textures = NULL;
     Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Id = "mk:test_course";
     Props.Name = "Test Course";

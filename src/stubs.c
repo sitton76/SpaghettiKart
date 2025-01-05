@@ -30,7 +30,7 @@ s32 mio0encode(s32 input, s32 arg1, s32 arg2) {
 }
 
 void tkmk00decode(u8* src, u8* arg1, u8* dest, s32 n) {
-    memcpy(dest, src, 0x1000);
+    //memcpy(dest, src, 0x1000);
 }
 
 void osStartThread(OSThread* thread) {

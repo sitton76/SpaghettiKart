@@ -74,8 +74,7 @@ MooMooFarm::MooMooFarm() {
     this->gfxSize = 3304;
     Props.textures = moo_moo_farm_textures;
     Props.MinimapTexture = gTextureCourseOutlineMooMooFarm;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "moo moo farm";
     Props.DebugName = "farm";

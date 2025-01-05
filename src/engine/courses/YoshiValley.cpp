@@ -1,5 +1,6 @@
 #include <libultraship.h>
 #include <libultra/gbi.h>
+#include "CoreMath.h"
 #include <vector>
 #include <memory>
 
@@ -60,8 +61,7 @@ YoshiValley::YoshiValley() {
     Props.textures = yoshi_valley_textures;
 
     Props.MinimapTexture = gTextureCourseOutlineYoshiValley;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "yoshi valley";
     Props.DebugName = "maze";

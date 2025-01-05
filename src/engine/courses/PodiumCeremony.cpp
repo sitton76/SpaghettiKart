@@ -89,8 +89,7 @@ PodiumCeremony::PodiumCeremony() {
     this->gfx = d_course_royal_raceway_packed_dls;
     this->gfxSize = 5670;
     Props.textures = podium_ceremony_textures;
-    Props.D_800E5548[0] = 0;
-    Props.D_800E5548[1] = 0;
+    Props.MinimapDimensions = IVector2D(0, 0);
 
     Props.Name = "royal raceway";
     Props.DebugName = "p circuit";

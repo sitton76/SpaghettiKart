@@ -49,8 +49,7 @@ SherbetLand::SherbetLand() {
     this->gfxSize = 1803;
     Props.textures = sherbet_land_textures;
     Props.MinimapTexture = gTextureCourseOutlineSherbetLand;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "sherbet land";
     Props.DebugName = "sherbet";

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <libultraship.h>
+#include "CoreMath.h"
 #include "objects/Object.h"
 #include "Cup.h"
 #include "vehicles/Vehicle.h"
@@ -23,80 +24,6 @@ extern "C" {
 #include "objects.h"
 #include "engine/Engine.h"
 };
-
-struct FVector {
-    float x, y, z;
-
-    FVector& operator=(const FVector& other) {
-        x = other.x;
-        y = other.y;
-        z = other.z;
-        return *this;
-    }
-};
-
-/**
- * For providing X and Z when you do not need Y
- * Some actors set themselves on the surface automatically
- * which means it does not use a Y coordinate
- * The train follows a set Y value. The hedgehog's patrolPoint only uses X and Z.
- */
-struct FVector2D {
-    float x, z;
-
-    FVector2D& operator=(const FVector2D& other) {
-        x = other.x;
-        z = other.z;
-        return *this;
-    }
-};
-
-struct FRotation {
-    float pitch, yaw, roll;
-
-    FRotation& operator=(const FRotation& other) {
-        pitch = other.pitch;
-        yaw = other.yaw;
-        roll = other.roll;
-        return *this;
-    }
-};
-
-/**
- * For selecting a section of a course path
- * Usage: IPathSpan(point1, point2) --> IPathSpan(40, 65)
- */
-struct IPathSpan {
-    int Start, End;
-
-    // Default Constructor
-    IPathSpan() : Start(0), End(0) {}
-
-    // Parameterized Constructor
-    IPathSpan(int InStart, int InEnd)
-        : Start(InStart), End(InEnd) {}
-
-    // Copy Assignment Operator
-    IPathSpan& operator=(const IPathSpan& Other) {
-        if (this != &Other) { // Avoid self-assignment
-            Start = Other.Start;
-            End = Other.End;
-        }
-        return *this;
-    }
-
-    // Equality Operator
-    bool operator==(const IPathSpan& Other) const {
-        return Start == Other.Start && End == Other.End;
-    }
-
-    // Inequality Operator
-    bool operator!=(const IPathSpan& Other) const {
-        return !(*this == Other);
-    }
-};
-
-
 
 class OObject;
 class Cup; // <-- Forward declaration

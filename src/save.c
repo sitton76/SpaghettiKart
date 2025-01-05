@@ -567,7 +567,7 @@ s32 validate_save_data_checksum_backup(void) {
 // Check if controller has a Controller Pak connected.
 // Return PAK if it does, otherwise return NO_PAK.
 s32 check_for_controller_pak(s32 controller) {
-    u8 controllerBitpattern;
+    u8 controllerBitpattern = 0;
     UNUSED s32 phi_v0;
 
     if ((controller >= MAXCONTROLLERS) || (controller < 0)) {

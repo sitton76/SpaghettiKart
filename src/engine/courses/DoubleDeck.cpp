@@ -44,8 +44,7 @@ DoubleDeck::DoubleDeck() {
     this->gfxSize = 699;
     Props.textures = double_deck_textures;
     Props.MinimapTexture = gTextureCourseOutlineDoubleDeck;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "double deck";
     Props.DebugName = "deck";

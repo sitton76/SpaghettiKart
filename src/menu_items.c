@@ -3480,7 +3480,7 @@ void load_texture(const char* texture) {
 }
 
 /**
- * If you need to reset a texture cache after a modification,
+ * If you need to reset a texture after a modification,
  * this will reload the texture.
  */
 void load_texture_reset_cache(const char* texture) {
@@ -3500,6 +3500,7 @@ void load_texture_reset_cache(const char* texture) {
     sMenuTextureEntries += 1;
 }
 
+// Provide an index for sMenuTextureMap
 void replace_texture(s32 index, const char* newTexture) {
     sMenuTextureList[sMenuTextureMap[index].offset] = newTexture;
     sMenuTextureMap[index].textureData = newTexture;

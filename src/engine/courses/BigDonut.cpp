@@ -44,8 +44,7 @@ BigDonut::BigDonut() {
     this->gfxSize = 528;
     Props.textures = big_donut_textures;
     Props.MinimapTexture = gTextureCourseOutlineBigDonut;
-    Props.D_800E5548[0] = 64;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "big donut";
     Props.DebugName = "doughnut";

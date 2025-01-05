@@ -1037,14 +1037,14 @@ void func_800591B4(void) {
                     if (D_80165800[0] != 0) {
                         func_8004EE54(0);
                         if (gModeSelection != BATTLE) {
-                            func_8004F020(0);
+                            set_minimap_finishline_position(0);
                         }
                         func_8004F3E4(0);
                     }
                     if ((gScreenModeSelection == SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL) && (D_80165800[1] != 0)) {
                         func_8004EE54(1);
                         if (gModeSelection != BATTLE) {
-                            func_8004F020(1);
+                            set_minimap_finishline_position(1);
                         }
                         func_8004F3E4(1);
                     }

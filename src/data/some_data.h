@@ -25,7 +25,7 @@ extern Vtx gBalloonVertexPlane1[];
 extern Vtx gBalloonVertexPlane2[];
 extern u8* gCourseOutlineTextures[];
 extern s16 D_800E5520[];
-extern s16 D_800E5548[];
+extern s16 minimapDimensions[];
 extern u16 D_800E55A0[];
 extern u16 D_800E55B0[];
 extern u8 D_800E55D0[][3];

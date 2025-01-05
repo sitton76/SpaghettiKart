@@ -3,9 +3,9 @@
 
 #include <libultraship.h>
 
-
 // C-compatible function declaration
 #ifdef __cplusplus
+#include "CoreMath.h"
 #include "engine/objects/Lakitu.h"
 extern "C" {
 #endif
@@ -57,7 +57,7 @@ public:
         const char* AIBehaviour;
         const char* MinimapTexture;
         s32 LakituTowType;
-        s16 D_800E5548[2];
+        IVector2D MinimapDimensions;
         float AIMaximumSeparation;
         float AIMinimumSeparation;
         float NearPersp;

@@ -70,8 +70,7 @@ ToadsTurnpike::ToadsTurnpike() {
     this->gfxSize = 3427;
     Props.textures = toads_turnpike_textures;
     Props.MinimapTexture = gTextureCourseOutlineToadsTurnpike;
-    Props.D_800E5548[0] = 128;
-    Props.D_800E5548[1] = 64;
+    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
     Props.Name = "toad's turnpike";
     Props.DebugName = "highway";
