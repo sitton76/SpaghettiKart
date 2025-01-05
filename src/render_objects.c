@@ -3224,9 +3224,9 @@ void func_80050E34(s32 playerId, s32 arg1) {
         gDPLoadTLUT_pal256(gDisplayListHead++, common_tlut_hud_type_C_rank_tiny_font);
         rsp_load_texture(common_texture_hud_type_C_rank_tiny_font[arg1 + 1], 8, 8);
         if (spB8 != 0) {
-            func_80042330_portrait(spD0 + 0x26, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
+            func_80042330_default(spD0 + 0x26, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
         } else {
-            func_80042330_portrait(spD0 + 0x1B, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
+            func_80042330_default(spD0 + 0x1B, (spC4 + spCC) + 4, 0U, 1.0f, lapCount);
         }
         gSPDisplayList(gDisplayListHead++, D_0D006950);
         if ((player == gPlayerOne) && (gScreenModeSelection == SCREEN_MODE_1P)) {
