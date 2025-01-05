@@ -536,7 +536,7 @@ void render_players_on_screen_one(void) {
 
     // This call moved here to sync kart texture and wheel texture tlut loading/rendering
     if (gPlayersToRenderCount != 0) {
-       load_kart_texture_and_render_kart_particle_on_screen_one();
+        load_kart_texture_and_render_kart_particle_on_screen_one();
     }
 
     try_rendering_player(gPlayerOne, PLAYER_ONE, PLAYER_ONE);
@@ -1637,12 +1637,14 @@ void render_kart(Player* player, s8 playerId, s8 screenId, s8 arg3) {
         sp14C[1] = player->unk_048[screenId];
         sp14C[2] = player->unk_050[screenId];
         if (((s32) player->effects & HIT_EFFECT) == HIT_EFFECT) {
-            func_80062B18(&sp148, &sp144, &sp140, 0.0f, 8.0f, 0.0f, -player->unk_048[screenId], player->unk_050[screenId]);
+            func_80062B18(&sp148, &sp144, &sp140, 0.0f, 8.0f, 0.0f, -player->unk_048[screenId],
+                          player->unk_050[screenId]);
             sp154[1] = (player->pos[1] - player->boundingBoxSize) + player->unk_108;
             sp154[0] = player->pos[0] + sp148;
             sp154[2] = player->pos[2] + sp140;
         } else {
-            func_80062B18(&sp148, &sp144, &sp140, 0.0f, 1.5f, 0.0f, -player->unk_048[screenId], player->unk_050[screenId]);
+            func_80062B18(&sp148, &sp144, &sp140, 0.0f, 1.5f, 0.0f, -player->unk_048[screenId],
+                          player->unk_050[screenId]);
             sp154[1] = (player->pos[1] - player->boundingBoxSize) + player->unk_108 + (sp144 - 2.0);
             sp154[0] = player->pos[0] + sp148;
             sp154[2] = player->pos[2] + sp140;
@@ -1651,16 +1653,17 @@ void render_kart(Player* player, s8 playerId, s8 screenId, s8 arg3) {
 #ifdef AVOID_UB
     gPlayerPalette = &gPlayerPalettesList[D_801651D0[screenId][playerId]][screenId][playerId];
 #else
-    gPlayerPalette = (struct_D_802F1F80*) &gPlayerPalettesList[D_801651D0[screenId][playerId]][screenId][playerId * 0x100];
+    gPlayerPalette =
+        (struct_D_802F1F80*) &gPlayerPalettesList[D_801651D0[screenId][playerId]][screenId][playerId * 0x100];
 #endif
     if ((screenId == 0) || (screenId == 1)) {
-        sKartUpperTexture = &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId][playerId].pixel_index_array[0];
+        sKartUpperTexture = gEncodedKartTexture[D_801651D0[screenId][playerId]][screenId][playerId].unk_00;
 #ifdef TARGET_N64
-        sKartLowerTexture = &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId][playerId].pixel_index_array[0x7C0];
+        sKartLowerTexture =
+            &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId][playerId].pixel_index_array[0x7C0];
 #endif
     } else {
-        sKartUpperTexture =
-            &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId - 1][playerId - 4].pixel_index_array[0];
+        sKartUpperTexture = gEncodedKartTexture[D_801651D0[screenId][playerId]][screenId - 1][playerId - 4].unk_00;
 #ifdef TARGET_N64
         sKartLowerTexture =
             &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId - 1][playerId - 4].pixel_index_array[0x7C0];
@@ -1668,7 +1671,7 @@ void render_kart(Player* player, s8 playerId, s8 screenId, s8 arg3) {
     }
     mtxf_translate_rotate(mtx, sp154, sp14C);
     mtxf_scale2(mtx, gCharacterSize[player->characterId] * player->size);
-    //convert_to_fixed_point_matrix(&gGfxPool->mtxKart[playerId + (screenId * 8)], mtx);
+    // convert_to_fixed_point_matrix(&gGfxPool->mtxKart[playerId + (screenId * 8)], mtx);
 
     if ((player->effects & BOO_EFFECT) == BOO_EFFECT) {
         if (screenId == playerId) {
@@ -1680,10 +1683,10 @@ void render_kart(Player* player, s8 playerId, s8 screenId, s8 arg3) {
                           gPlayerCyanEffect[playerId], gPlayerMagentaEffect[playerId], gPlayerYellowEffect[playerId],
                           (s32) player->unk_0C6);
             gDPSetRenderMode(gDisplayListHead++,
-                            AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                                GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                            AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                                GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                             AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                                 GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                             AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                                 GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
         } else {
             // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxKart[playerId + (screenId * 8)]),
             //           G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
@@ -1695,10 +1698,10 @@ void render_kart(Player* player, s8 playerId, s8 screenId, s8 arg3) {
                           gPlayerCyanEffect[playerId], gPlayerMagentaEffect[playerId], gPlayerYellowEffect[playerId],
                           D_8018D970[playerId]);
             gDPSetRenderMode(gDisplayListHead++,
-                            AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                                GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                            AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                                GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                             AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                                 GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                             AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                                 GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
         }
     } else if (((player->unk_0CA & 4) == 4) || (player->soundEffects & 0x08000000) ||
                (player->soundEffects & 0x04000000)) {
@@ -1778,13 +1781,11 @@ void render_ghost(Player* player, s8 playerId, s8 screenId, s8 arg3) {
         (struct_D_802F1F80*) &gPlayerPalettesList[D_801651D0[screenId][playerId]][screenId][playerId * 0x100];
 #endif
     if ((screenId == 0) || (screenId == 1)) {
-        sKartUpperTexture =
-            &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId][playerId].pixel_index_array[0];
+        sKartUpperTexture = gEncodedKartTexture[D_801651D0[screenId][playerId]][screenId][playerId].unk_00;
         // sKartLowerTexture =
         // &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId][playerId].pixel_index_array[0x7C0];
     } else {
-        sKartUpperTexture =
-            &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId - 1][playerId - 4].pixel_index_array[0];
+        sKartUpperTexture = gEncodedKartTexture[D_801651D0[screenId][playerId]][screenId - 1][playerId - 4].unk_00;
         // sKartLowerTexture = &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId - 1][playerId -
         // 4].pixel_index_array[0x7C0];
     }
@@ -1803,10 +1804,10 @@ void render_ghost(Player* player, s8 playerId, s8 screenId, s8 arg3) {
     func_8004B614(gPlayerRedEffect[playerId], gPlayerGreenEffect[playerId], gPlayerBlueEffect[playerId],
                   gPlayerCyanEffect[playerId], gPlayerMagentaEffect[playerId], gPlayerYellowEffect[playerId], spC2);
     gDPSetRenderMode(gDisplayListHead++,
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
     gDPLoadTextureBlock(gDisplayListHead++, sKartUpperTexture, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
@@ -1848,10 +1849,10 @@ void func_80025DE8(Player* player, s8 playerId, s8 screenId, s8 arg3) {
                   gPlayerCyanEffect[playerId], gPlayerMagentaEffect[playerId], gPlayerYellowEffect[playerId],
                   0x00000040);
     gDPSetRenderMode(gDisplayListHead++,
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                    AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
-                        GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
+                     AA_EN | Z_CMP | Z_UPD | IM_RD | CVG_DST_WRAP | ZMODE_XLU | CVG_X_ALPHA | FORCE_BL |
+                         GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
     gDPLoadTextureBlock(gDisplayListHead++, sKartUpperTexture, G_IM_FMT_CI, G_IM_SIZ_8b, 64, 32, 0,
                         G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD,
                         G_TX_NOLOD);
@@ -2002,21 +2003,21 @@ void update_wheel_palette(Player* player, s8 playerId, s8 screenId, s8 arg3) {
             if (frameId <= 20) {
                 int32_t offset = (((frameId * temp_num * 4) + ((temp_t2 >> 8) * 0x40)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel0 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             } else {
                 int32_t offset = (((((frameId - 21) * (temp_num * 4) + ((temp_t2 >> 8) * 0x40)) + 0x600)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel1 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             }
         } else {
             if (frameId == 0) {
                 int32_t offset = (((frameId * temp_num * 4) + ((temp_t2 >> 8) * 0x40)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel0 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             } else {
                 int32_t offset = (((frameId * temp_num * 4) + ((temp_t2 >> 8) * 0x40)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel1 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             }
         }
     } else {
@@ -2027,22 +2028,22 @@ void update_wheel_palette(Player* player, s8 playerId, s8 screenId, s8 arg3) {
             if (frameId <= 20) {
                 int32_t offset = (((frameId * temp_num * 4) + ((temp_t2 >> 8) * 0x40)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel0 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             } else {
 
                 int32_t offset = (((((frameId - 21) * (temp_num * 4) + ((temp_t2 >> 8) * 0x40)) + 0x600)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel1 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             }
         } else {
             if (frameId == 0) {
                 int32_t offset = (((frameId * temp_num * 4) + ((temp_t2 >> 8) * 0x40)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel0 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             } else {
                 int32_t offset = (((frameId * temp_num * 4) + ((temp_t2 >> 8) * 0x40)) * 2) / 0x80;
                 load_wheel_palette_non_blocking(player, wheelPtr[character][wheel1 + offset],
-                                              D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
+                                                D_802F1F80_WHEEL(arg3, screenId, playerId), 0x80);
             }
         }
     }
