@@ -3323,7 +3323,7 @@ Gfx* draw_box_fill_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry
                                         GPACK_RGBA5551(red, green, (u32) blue, alpha)));
     gDPFillWideRectangle(displayListHead++, OTRGetDimensionFromLeftEdge(ulx), uly, OTRGetDimensionFromRightEdge(lrx),
                          lry);
-    // gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
+    gDPFillRectangle(displayListHead++, ulx, uly, lrx, lry);
     gSPDisplayList(displayListHead++, D_02008058);
     return displayListHead;
 }
