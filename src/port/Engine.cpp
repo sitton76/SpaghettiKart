@@ -77,7 +77,7 @@ GameEngine::GameEngine() {
     //auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
     // Turn off texture filtering because menus are borked with it on
-    CVarSetInteger("gTextureFilter", 2);
+    CVarRegisterInteger("gTextureFilter", 2);
 
     this->context->Init(OTRFiles, {}, 3, { 26800, 512, 1100 }, wnd, controlDeck);
 
