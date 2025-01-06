@@ -863,11 +863,14 @@ MenuTexture* D_800E8234[] = {
 };
 
 MenuTexture* D_800E8254[] = {
-    seg2_game_select_texture, seg2_menu_1p_column, seg2_menu_2p_column, seg2_menu_3p_column,
-    seg2_menu_4p_column,      D_0200487C,          D_020048A4,          D_020048CC,
-};
-
-MenuTexture* D_800E8274[] = {
+    seg2_game_select_texture,
+    seg2_menu_1p_column,
+    seg2_menu_2p_column,
+    seg2_menu_3p_column,
+    seg2_menu_4p_column,
+    D_0200487C,
+    D_020048A4,
+    D_020048CC,
     // CC textures
     seg2_50_CC_texture,
     seg2_100_CC_texture,
@@ -4175,14 +4178,12 @@ Gfx* func_8009B9D0(Gfx* displayListHead, MenuTexture* textures) {
 }
 
 Gfx* render_menu_textures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
-    MenuTexture* temp_v0;
     u8* temp_v0_3;
     s8 var_s4;
 
-    temp_v0 = segmented_to_virtual_dupe(arg1);
-    while (temp_v0->textureData != NULL) {
+    while (arg1->textureData != NULL) {
         var_s4 = 0;
-        switch (temp_v0->type) {
+        switch (arg1->type) {
             case 0:
                 gSPDisplayList(arg0++, D_02007708);
                 break;
@@ -4203,18 +4204,17 @@ Gfx* render_menu_textures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
                 gSPDisplayList(arg0++, D_02007728);
                 break;
         }
-        temp_v0_3 = (u8*) func_8009B8C4(temp_v0->textureData);
+        temp_v0_3 = (u8*) func_8009B8C4(arg1->textureData);
         if (temp_v0_3 != 0) {
             if (D_8018E7AC[4] != 4) {
-                arg0 =
-                    func_80095E10(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, temp_v0->width, temp_v0->height,
-                                  temp_v0->dX + column, temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+                arg0 = func_80095E10(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, arg1->width, arg1->height,
+                                     arg1->dX + column, arg1->dY + row, temp_v0_3, arg1->width, arg1->height);
             } else {
-                arg0 = func_800987D0(arg0, 0U, 0U, temp_v0->width, temp_v0->height, temp_v0->dX + column,
-                                     temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+                arg0 = func_800987D0(arg0, 0U, 0U, arg1->width, arg1->height, arg1->dX + column, arg1->dY + row,
+                                     temp_v0_3, arg1->width, arg1->height);
             }
         }
-        temp_v0++;
+        arg1++;
     }
     return arg0;
 }
@@ -5441,7 +5441,8 @@ void add_menu_item(s32 type, s32 column, s32 row, s8 priority) {
         case 0x17:
         case MAIN_MENU_TIME_TRIALS_BEGIN:
         case MAIN_MENU_TIME_TRIALS_DATA:
-            load_menu_img_comp_type(segmented_to_virtual_dupe(D_800E8274[type - 0x12]), LOAD_MENU_IMG_TKMK00_ONCE);
+            load_menu_img_comp_type(segmented_to_virtual_dupe(D_800E8254[type - MENU_ITEM_UI_GAME_SELECT]),
+                                    LOAD_MENU_IMG_TKMK00_ONCE);
             break;
         case MENU_ITEM_UI_1P_GAME:
         case MENU_ITEM_UI_2P_GAME:
