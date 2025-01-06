@@ -1983,30 +1983,11 @@ void render_texture_tile_rgba32_block(s16 x, s16 y, u8* texture, u32 width, u32 
     gSPDisplayList(gDisplayListHead++, D_0D007EF8);
     gDPSetRenderMode(gDisplayListHead++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
 
-    size = width * height * 4;
-    numTiles = size / 4096;
-    if (size % 4096) {
-        numTiles++;
-    }
-
-    tileHeight = height / numTiles;
-
-    numTilesDup = numTiles;
-    for (size_t i = 0; i < numTilesDup; i++) {
-        load_texture_tile_rgba32_nomirror(texture, width, tileHeight);
-        render_texture_rectangle_wrap(currX, currY, width, tileHeight, 1);
-
-        texture += (width * tileHeight * 4);
-        remainingSize = size - (width * tileHeight * 4);
-        if (remainingSize < 0) {
-            tileHeight = size / width;
-        } else {
-            size -= (width * tileHeight * 4);
-        }
-        // Weird fakematch that is a HUGE improvement
-        currX += currY * 0;
-        currY += tileHeight;
-    }
+    gMKLoadTextureTile(gDisplayListHead++, texture, G_IM_FMT_RGBA, G_IM_SIZ_32b, width, height, 0, 0, width - 1,
+                       height - 1, 0, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
+                       G_TX_NOLOD, G_TX_NOLOD);
+    gSPWideTextureRectangle(gDisplayListHead++, currX * 4, currY * 4, ((x + width) << 2), ((y + height) << 2),
+                            G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
 
     gSPDisplayList(gDisplayListHead++, D_0D007EB8);
 }
