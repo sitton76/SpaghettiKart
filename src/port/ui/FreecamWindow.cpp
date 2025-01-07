@@ -61,8 +61,7 @@ void FreecamWindow::DrawElement() {
         gFreecamControllerType = current_item;
     }
 
-    ImGui::Text("Move: W,A,S,D\nUp: Space, Down: Shift\nFaster: Ctrl\nLook: Right-mouse button\nTarget previous "
-                "player: N, Target next player: M");
+    ImGui::Text("Move: W,A,S,D\nUp: Space, Down: Shift\nFaster: Ctrl\nLook: Right-mouse button\nTarget Player Mode: F, Next: M, Previous: N");
     ImGui::Spacing();
     UIWidgets::CVarCheckbox("Enable Flycam", "gFreecam", { .tooltip = "Allows you to fly around the course" });
 

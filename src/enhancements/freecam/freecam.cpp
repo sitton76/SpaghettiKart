@@ -44,16 +44,6 @@ int rightMouseButtonDown = 0; // Track if right mouse button is held down
 
 u32 gFreecamControllerType = 0;
 
-// void freecam_n64_calculate_forward_vector(Camera* camera, Vec3f forwardVector);
-// void freecam_n64_move_camera_forward(Camera* camera, struct Controller *controller, f32 distance);
-// void freecam_calculate_forward_vector(Camera* camera, Vec3f forwardVector);
-// void freecam_move_camera_forward(Camera* camera, f32 distance);
-
-// void freecam_tick(Camera* camera, struct Controller *controller);
-// void freecam_n64_controller_manager(Camera *camera, struct Controller *controller, Player *player);
-// void freecam_target_player(Camera *camera, u32 playerIndex);
-// void freecam_move_camera_up(Camera* camera, struct Controller *controller, f32 distance);
-
 /**
  * Controls
  *
@@ -77,7 +67,6 @@ u32 gFreecamControllerType = 0;
  * Camera mode 2: Enter freecam at previous freecam spot
  *
  */
-
 void freecam(Camera* camera, Player* player, s8 index) {
     struct Controller* controller = &gControllers[0];
     f32 dirX;
@@ -98,22 +87,6 @@ void freecam(Camera* camera, Player* player, s8 index) {
         }
 
         gIsHUDVisible = !CVarGetInteger("gFreecam", 0);
-
-        if (CVarGetInteger("gFreecam", 0) == 1) {
-
-            if (fMode && fModeInit) {
-                freecam_load_state(camera);
-            } else {
-                // !fMode or fMode not initialized
-                //freecam_target_player(camera, get_player_index_for_player(player));
-            }
-
-            return;
-        } else {
-            if (fMode) {
-                freecam_save_state(camera);
-            }
-        }
     }
 
     // Driving mode
@@ -123,51 +96,22 @@ void freecam(Camera* camera, Player* player, s8 index) {
         return;
     }
 
-    // if (player == gPlayerOne) { return; }
-
-    // player->type &= ~PLAYER_HUMAN;
-    // player->type |= PLAYER_HUMAN;
-
-    // if ((player->type & PLAYER_START_SEQUENCE)) { return; }
-
+    // Calculate forward direction
     freecam_calculate_forward_vector_allow_rotation(camera, freeCam.forwardVector);
-    freecam_mouse_manager(camera, freeCam.forwardVector);
+    
+    // Adjust camera rotation
+    if (fTargetPlayer) {
+        freecam_target_player(camera, freeCam.forwardVector);
+    } else {
+        freecam_mouse_manager(camera, freeCam.forwardVector);
+    }
+
+    // Adjust camera position
     freecam_keyboard_manager(camera, freeCam.forwardVector);
 
-    if (fTargetPlayer) {
-        freecam_target_player(camera, D_800DC5EC->player);
-    } else {
-        freecam_tick(camera, freeCam.forwardVector);
-    }
-}
+    // Apply final position, velocity, and lookAt
+    freecam_tick(camera, freeCam.forwardVector);
 
-void freecam_save_state(Camera* camera) {
-    fState.pos[0] = camera->pos[0];
-    fState.pos[1] = camera->pos[1];
-    fState.pos[2] = camera->pos[2];
-
-    fState.lookAt[0] = camera->lookAt[0];
-    fState.lookAt[1] = camera->lookAt[1];
-    fState.lookAt[2] = camera->lookAt[2];
-
-    fState.rot[0] = camera->rot[0];
-    fState.rot[1] = camera->rot[1];
-    fState.rot[2] = camera->rot[2];
-    fModeInit = true;
-}
-
-void freecam_load_state(Camera* camera) {
-    camera->pos[0] = fState.pos[0];
-    camera->pos[1] = fState.pos[1];
-    camera->pos[2] = fState.pos[2];
-
-    camera->lookAt[0] = fState.lookAt[0];
-    camera->lookAt[1] = fState.lookAt[1];
-    camera->lookAt[2] = fState.lookAt[2];
-
-    camera->rot[0] = fState.rot[0];
-    camera->rot[1] = fState.rot[1];
-    camera->rot[2] = fState.rot[2];
 }
 
 f32 gFreecamRotateSmoothingFactor = 0.85f;
@@ -203,9 +147,6 @@ void freecam_mouse_manager(Camera* camera, Vec3f forwardVector) {
             camera->rot[2] = -15999;
         }
 
-        // Calculate the forward vector based on the new yaw and pitch
-        // freecam_calculate_forward_vector_allow_rotation(camera, forwardVector);
-
         // Smoothly interpolate the lookAt position
         Vec3f targetLookAt = { camera->pos[0] + forwardVector[0], camera->pos[1] + forwardVector[1],
                                camera->pos[2] + forwardVector[2] };
@@ -219,6 +160,36 @@ void freecam_mouse_manager(Camera* camera, Vec3f forwardVector) {
 
 f32 gFreecamSpeed = 3.0f;
 f32 gFreecamSpeedMultiplier = 2.0f;
+bool prevPrev = false;
+
+#define MAX_KEYS 256
+static bool prevKeyState[MAX_KEYS] = { false };
+
+// KeyDown function
+bool FreecamKeyDown(int virtualKey) {
+    auto wnd = GameEngine::Instance->context->GetWindow();
+    static bool prevKeyState[256] = { false }; // Store previous key states
+    bool isDownNow = false;
+
+    if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
+        // Use SDL to check key states
+        const uint8_t* keystate = SDL_GetKeyboardState(NULL);
+        isDownNow = keystate[virtualKey] != 0;
+    } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
+        // Use Windows GetKeyState for DirectX
+        SHORT keyState = GetKeyState(virtualKey);
+        isDownNow = (keyState & 0x8000) != 0;
+    }
+
+    // Determine if this is a new key press
+    bool isKeyDownEvent = isDownNow && !prevKeyState[virtualKey];
+
+    // Update the previous state for this key
+    prevKeyState[virtualKey] = isDownNow;
+
+    return isKeyDownEvent;
+}
+
 
 void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     auto wnd = GameEngine::Instance->context->GetWindow();
@@ -236,7 +207,6 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     // if (keystate[SDL_SCANCODE_G]) {
     //     fTargetPlayer = false;
     // }
-    static bool prevPrev;
     bool TargetNextPlayer = false, TargetPreviousPlayer = false; bool prevNext;
     bool Forward = false, PanLeft = false, Backward = false, PanRight = false;
     bool Up = false, Down = false;
@@ -253,7 +223,6 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         if (controller->buttonPressed & R_TRIG) {
              fTargetPlayer = !fTargetPlayer;
         }
-
         if (controller->buttonPressed & L_CBUTTONS) {
             TargetPreviousPlayer = true;
         }
@@ -283,16 +252,13 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         // }
     // Keyboard and mouse DX
     } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
-        if (GetKeyState('F') & 0x8000) {
+        if (FreecamKeyDown('F')) {
              fTargetPlayer = !fTargetPlayer;
         }
-        if (GetKeyState('N') & 0x8000) {
-            if (!prevPrev) {
-                prevPrev = true;
-                TargetPreviousPlayer = true;
-            }
+        if (FreecamKeyDown('N')) {
+            TargetPreviousPlayer = true;
         }
-        if (GetKeyState('M') & 0x8000) {
+        if (FreecamKeyDown('M')) {
             TargetNextPlayer = true;
         }
         if (GetKeyState('W') & 0x8000) {
@@ -320,13 +286,13 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     // Keyboard/mouse OpenGL/SDL
     } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
-        if (keystate[SDL_SCANCODE_F]) {
-            fTargetPlayer != fTargetPlayer;
+        if (FreecamKeyDown(SDL_SCANCODE_F)) {
+            fTargetPlayer = !fTargetPlayer;
         }
-        if (keystate[SDL_SCANCODE_N]) {
+        if (FreecamKeyDown(SDL_SCANCODE_N)) {
             TargetPreviousPlayer = true;
         }
-        if (keystate[SDL_SCANCODE_M]) {
+        if (FreecamKeyDown(SDL_SCANCODE_M)) {
             TargetNextPlayer = true;
         }
         if (keystate[SDL_SCANCODE_W]) {
@@ -370,13 +336,6 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
        }
     }
 
-    // Target camera at chosen player
-    if (fRankIndex != -1) {
-       //freecam_target_player(camera, gGPCurrentRacePlayerIdByRank[fRankIndex]);
-       // Don't run the other camera code.
-       //return;
-    }
-
     if (FastMove) {
         moveSpeed *= gFreecamSpeedMultiplier;
     }
@@ -406,10 +365,6 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     freeCam.velocity[0] += totalMove[0];
     freeCam.velocity[1] += totalMove[1];
     freeCam.velocity[2] += totalMove[2];
-
-    // Update camera's lookAt position
-    camera->lookAt[0] = camera->pos[0] + forwardVector[0];
-    camera->lookAt[2] = camera->pos[2] + forwardVector[2];
 }
 
 void freecam_render_setup(void) {
