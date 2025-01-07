@@ -53,7 +53,7 @@ void network_cup_vote(uint32_t course) {
 
 void set_course(const char* data) {
     if (data != NULL) {
-        //SetCup(data[0]);
+        // SetCup(data[0]);
         gCupSelection = data[0];
         // gCurrentCourseId = gCupCourseOrder[gCupSelection][COURSE_ONE];
         //! @todo SetCourse();
@@ -135,7 +135,7 @@ void networking_start_session(const char* data) {
 }
 
 // Wait for all players to load
-s32 network_all_players_loaded() {
+void network_all_players_loaded() {
     if (gNetwork.gameStarted) {
         return;
     }

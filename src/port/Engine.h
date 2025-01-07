@@ -84,3 +84,4 @@ uint32_t OTRCalculateCenterOfAreaFromLeftEdge(int32_t center);
 #ifdef __cplusplus
 }
 #endif
+

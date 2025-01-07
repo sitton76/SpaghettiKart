@@ -67,7 +67,7 @@ void networking_disconnect(void);
 
 /* Start Game */
 void spawn_network_players(f32*, f32*, f32);
-s32 network_all_players_loaded(void);
+void network_all_players_loaded(void);
 void set_course(const char* data);
 void networking_start_session(const char* data);
 
