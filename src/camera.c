@@ -17,7 +17,7 @@
 #include "main.h"
 #include "spawn_players.h"
 #include "enhancements/freecam/freecam_engine.h"
-#include "freecam.h"
+#include "enhancements/freecam/freecam.h"
 
 #include "engine/GameAPI.h"
 #include "port/Game.h"
