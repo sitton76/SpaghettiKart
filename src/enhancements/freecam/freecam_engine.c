@@ -17,7 +17,7 @@ FreeCam freeCam;
 
 f32 gDampValue = 0.99f;
 
-void freecam_update(Camera* camera, Vec3f forwardVector) {
+void freecam_tick(Camera* camera, Vec3f forwardVector) {
     // Update FreeCam state
     camera->pos[0] += freeCam.velocity[0] * gDeltaTime;
     camera->pos[1] += freeCam.velocity[1] * gDeltaTime;
@@ -119,9 +119,18 @@ void freecam_move_camera_down(Camera* camera, f32 distance) {
     camera->lookAt[1] += distance;
 }
 
-void freecam_target_player(Camera* camera, u32 playerIndex) {
+void freecam_target_player(Camera* camera, Player* player) {
     Vec3f forwardVector; // = 2.0f;
-    Player* player = &gPlayers[playerIndex];
+
+    // Update position
+    camera->pos[0] += freeCam.velocity[0] * gDeltaTime;
+    camera->pos[1] += freeCam.velocity[1] * gDeltaTime;
+    camera->pos[2] += freeCam.velocity[2] * gDeltaTime;
+
+    // Apply damping to velocity
+    freeCam.velocity[0] *= gDampValue;
+    freeCam.velocity[1] *= gDampValue;
+    freeCam.velocity[2] *= gDampValue;
 
     // Calculate the direction from the player to the camera
     f32 dirX = player->pos[0] - camera->pos[0];

@@ -25,8 +25,8 @@ void freecam_pan_camera(Camera* camera, f32 moveSpeed);
 void freecam_calculate_forward_vector_allow_rotation(Camera* camera, Vec3f forwardVector);
 void freecam_calculate_forward_vector(Camera* camera, Vec3f forwardVector);
 void freecam_move_camera_forward(Camera* camera, f32 distance, Vec3f forwardVector);
-void freecam_target_player(Camera* camera, u32 playerIndex);
-void freecam_update(Camera* camera, Vec3f forwardVector);
+void freecam_target_player(Camera* camera, Player* player);
+void freecam_tick(Camera* camera, Vec3f forwardVector);
 void freecam_move_camera_up(Camera* camera, f32);
 void freecam_move_camera_down(Camera* camera, f32);
 

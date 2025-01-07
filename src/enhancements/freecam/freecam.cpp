@@ -35,8 +35,8 @@ typedef struct {
 
 freecamSaveState fState;
 
-u32 fRankIndex = -1;
-u32 fTargetPlayer = false;
+u32 fRankIndex = 0;
+u32 fTargetPlayer = true;
 u32 fMode; // freecam mode should probably be an enum
 u32 fModeInit = false;
 
@@ -49,7 +49,7 @@ u32 gFreecamControllerType = 0;
 // void freecam_calculate_forward_vector(Camera* camera, Vec3f forwardVector);
 // void freecam_move_camera_forward(Camera* camera, f32 distance);
 
-// void freecam_update(Camera* camera, struct Controller *controller);
+// void freecam_tick(Camera* camera, struct Controller *controller);
 // void freecam_n64_controller_manager(Camera *camera, struct Controller *controller, Player *player);
 // void freecam_target_player(Camera *camera, u32 playerIndex);
 // void freecam_move_camera_up(Camera* camera, struct Controller *controller, f32 distance);
@@ -135,9 +135,9 @@ void freecam(Camera* camera, Player* player, s8 index) {
     freecam_keyboard_manager(camera, freeCam.forwardVector);
 
     if (fTargetPlayer) {
-        freecam_target_player(camera, get_player_index_for_player(player));
+        freecam_target_player(camera, D_800DC5EC->player);
     } else {
-        freecam_update(camera, freeCam.forwardVector);
+        freecam_tick(camera, freeCam.forwardVector);
     }
 }
 
@@ -236,8 +236,8 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     // if (keystate[SDL_SCANCODE_G]) {
     //     fTargetPlayer = false;
     // }
-
-    bool TargetNextPlayer = false, TargetPreviousPlayer = false;
+    static bool prevPrev;
+    bool TargetNextPlayer = false, TargetPreviousPlayer = false; bool prevNext;
     bool Forward = false, PanLeft = false, Backward = false, PanRight = false;
     bool Up = false, Down = false;
     bool FastMove = false;
@@ -250,15 +250,15 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         //     fMode = !fMode;
         // }
         // Target a player
-        // if (controller->buttonPressed & R_TRIG) {
-        //     fTargetPlayer = !fTargetPlayer;
-        // }
+        if (controller->buttonPressed & R_TRIG) {
+             fTargetPlayer = !fTargetPlayer;
+        }
 
         if (controller->buttonPressed & L_CBUTTONS) {
-            TargetNextPlayer = true;
+            TargetPreviousPlayer = true;
         }
         if (controller->buttonPressed & R_CBUTTONS) {
-            TargetPreviousPlayer = true;
+            TargetNextPlayer = true;
         }
         if (controller->button & A_BUTTON) {
             Forward = true;
@@ -283,11 +283,17 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         // }
     // Keyboard and mouse DX
     } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
+        if (GetKeyState('F') & 0x8000) {
+             fTargetPlayer = !fTargetPlayer;
+        }
         if (GetKeyState('N') & 0x8000) {
-            TargetNextPlayer = true;
+            if (!prevPrev) {
+                prevPrev = true;
+                TargetPreviousPlayer = true;
+            }
         }
         if (GetKeyState('M') & 0x8000) {
-            TargetPreviousPlayer = true;
+            TargetNextPlayer = true;
         }
         if (GetKeyState('W') & 0x8000) {
             Forward = true;
@@ -314,11 +320,14 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     // Keyboard/mouse OpenGL/SDL
     } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
+        if (keystate[SDL_SCANCODE_F]) {
+            fTargetPlayer != fTargetPlayer;
+        }
         if (keystate[SDL_SCANCODE_N]) {
-            TargetNextPlayer = true;
+            TargetPreviousPlayer = true;
         }
         if (keystate[SDL_SCANCODE_M]) {
-            TargetPreviousPlayer = true;
+            TargetNextPlayer = true;
         }
         if (keystate[SDL_SCANCODE_W]) {
             Forward = true;
@@ -343,8 +352,8 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         }
     }
 
-    // Target next player
-    if (TargetNextPlayer) {
+    // Target previous player
+    if (TargetPreviousPlayer) {
        if (fRankIndex > 0) {
            fRankIndex--;
            camera->playerId = fRankIndex;
@@ -352,8 +361,8 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
        }
     }
 
-    // Target previous player
-    if (TargetPreviousPlayer) {
+    // Target next player
+    if (TargetNextPlayer) {
        if (fRankIndex < 7) {
            fRankIndex++;
            camera->playerId = fRankIndex;
@@ -363,9 +372,9 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
 
     // Target camera at chosen player
     if (fRankIndex != -1) {
-       freecam_target_player(camera, gGPCurrentRacePlayerIdByRank[fRankIndex]);
+       //freecam_target_player(camera, gGPCurrentRacePlayerIdByRank[fRankIndex]);
        // Don't run the other camera code.
-       return;
+       //return;
     }
 
     if (FastMove) {
