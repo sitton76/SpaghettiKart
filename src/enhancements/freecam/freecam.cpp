@@ -1,4 +1,11 @@
 #include <libultraship.h>
+#include <window/Window.h>
+#include "port/Engine.h"
+#include "port/Game.h"
+#include <controller/controldevice/controller/mapping/keyboard/KeyboardScancodes.h>
+#include <window/Window.h>
+
+extern "C" {
 #include <macros.h>
 #include <defines.h>
 #include <camera.h>
@@ -12,10 +19,10 @@
 #include "code_80005FD0.h"
 #include <SDL2/SDL.h>
 #include "freecam_engine.h"
-#include "n64_freecam.h"
 #include "math_util.h"
 #include "skybox_and_splitscreen.h"
 #include "freecam.h"
+}
 
 #include "engine/Engine.h"
 #include "engine/courses/Course.h"
@@ -123,14 +130,10 @@ void freecam(Camera* camera, Player* player, s8 index) {
 
     // if ((player->type & PLAYER_START_SEQUENCE)) { return; }
 
-    // Mouse/Keyboard
-    if (gFreecamControllerType == 0) {
-        freecam_calculate_forward_vector_allow_rotation(camera, freeCam.forwardVector);
-        freecam_mouse_manager(camera, freeCam.forwardVector);
-        freecam_keyboard_manager(camera, freeCam.forwardVector);
-    } else { // Stock N64 controller
-        freecam_n64_controller_manager(camera, controller, player);
-    }
+    freecam_calculate_forward_vector_allow_rotation(camera, freeCam.forwardVector);
+    freecam_mouse_manager(camera, freeCam.forwardVector);
+    freecam_keyboard_manager(camera, freeCam.forwardVector);
+
     if (!fTargetPlayer) {
         freecam_update(camera, freeCam.forwardVector);
     }
@@ -168,19 +171,23 @@ void freecam_load_state(Camera* camera) {
 f32 gFreecamRotateSmoothingFactor = 0.85f;
 
 void freecam_mouse_manager(Camera* camera, Vec3f forwardVector) {
-    int mouseX, mouseY;
     static int prevMouseX = 0, prevMouseY = 0;
-    Uint32 mouseState = SDL_GetRelativeMouseState(&mouseX, &mouseY);
+    auto wnd = GameEngine::Instance->context->GetWindow();
+    Ship::Coords mouse = wnd->GetMouseDelta();
 
-    mouseX = (mouseX + prevMouseX) / 2;
-    mouseY = (mouseY + prevMouseY) / 2;
-    prevMouseX = mouseX;
-    prevMouseY = mouseY;
+    //Uint32 mouseState = SDL_GetRelativeMouseState(&mouse.x, &mouse.y);
 
-    if (mouseState & SDL_BUTTON(SDL_BUTTON_RIGHT)) {
+    //printf("MOUSE %d %d\n", mouse.x, mouse.y);
+
+    mouse.x = (mouse.x + prevMouseX) / 2;
+    mouse.y = (mouse.y + prevMouseY) / 2;
+    prevMouseX = mouse.x;
+    prevMouseY = mouse.y;
+
+    if (wnd->GetMouseState(Ship::LUS_MOUSE_BTN_RIGHT)) {
         // Calculate yaw (left/right) and pitch (up/down) changes
-        f32 yawChange = mouseX * MOUSE_SENSITIVITY_X;
-        f32 pitchChange = mouseY * MOUSE_SENSITIVITY_Y;
+        f32 yawChange = mouse.x * MOUSE_SENSITIVITY_X;
+        f32 pitchChange = mouse.y * MOUSE_SENSITIVITY_Y;
 
         // Smoothly update yaw and pitch
         camera->rot[1] += (short) (yawChange * 65535.0f / (2 * M_PI));   // Yaw (left/right)
@@ -212,13 +219,14 @@ f32 gFreecamSpeed = 3.0f;
 f32 gFreecamSpeedMultiplier = 2.0f;
 
 void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
-    const uint8_t* keystate = SDL_GetKeyboardState(NULL);
+    auto wnd = GameEngine::Instance->context->GetWindow();
     float moveSpeed = gFreecamSpeed;
+    Controller* controller = &gControllers[0];
 
     // Fast movement with Ctrl
-    if (keystate[SDL_SCANCODE_LCTRL] || keystate[SDL_SCANCODE_RCTRL]) {
-        moveSpeed *= gFreecamSpeedMultiplier;
-    }
+    //if (wnd->KeyDown(SDL_SCANCODE_LCTRL) || wnd->KeyDown(SDL_SCANCODE_RCTRL)) {
+    //    moveSpeed *= gFreecamSpeedMultiplier;
+    //}
 
     // Determine movement direction based on keys pressed
     Vec3f totalMove = { 0.0f, 0.0f, 0.0f };
@@ -232,52 +240,153 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     //     fTargetPlayer = false;
     // }
 
-    // Target next player
-    if (keystate[SDL_SCANCODE_N]) {
-        if (fRankIndex > 0) {
-            fRankIndex--;
-            camera->playerId = fRankIndex;
-            D_800DC5EC->player = &gPlayers[fRankIndex];
+    bool TargetNextPlayer = false, TargetPreviousPlayer = false;
+    bool Forward = false, PanLeft = false, Backward = false, PanRight = false;
+    bool Up = false, Down = false, RSHIFT_Down = false;
+
+    // Use n64 controls for use with a controller
+    //! @todo configure this properly
+    if (gFreecamControllerType == 1) {
+        // Targeting /fMode is broken
+        // if (controller->buttonPressed & U_JPAD) {
+        //     fMode = !fMode;
+        // }
+        // Target a player
+        // if (controller->buttonPressed & R_TRIG) {
+        //     fTargetPlayer = !fTargetPlayer;
+        // }
+
+        if (controller->buttonPressed & L_CBUTTONS) {
+            TargetNextPlayer = true;
+        }
+        if (controller->buttonPressed & R_CBUTTONS) {
+            TargetPreviousPlayer = true;
+        }
+        if (controller->button & A_BUTTON) {
+            Forward = true;
+        }
+        if (controller->button & B_BUTTON) {
+            Backward = true;
+        }
+        if (controller->button & L_JPAD) {
+            PanLeft = true;
+        }
+        if (controller->button & R_JPAD) {
+            PanLeft = true;
+        }
+        if (controller->button & U_CBUTTONS) {
+            Down = true;
+        }
+        if (controller->button & U_CBUTTONS) {
+            Up = true;
+        }
+    // Keyboard and mouse DX
+    } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
+        if (GetKeyState('N') & 0x8000) {
+            TargetNextPlayer = true;
+        }
+        if (GetKeyState('M') & 0x8000) {
+            TargetPreviousPlayer = true;
+        }
+        if (GetKeyState('W') & 0x8000) {
+            Forward = true;
+        }
+        if (GetKeyState('S') & 0x8000) {
+            Backward = true;
+        }
+        if (GetKeyState('D') & 0x8000) {
+            PanRight = true;
+        }
+        if (GetKeyState('A') & 0x8000) {
+            PanLeft = true;
+        }
+        if (GetKeyState(VK_SPACE) & 0x8000) {
+            Up = true;
+        }
+        if (GetKeyState(VK_LSHIFT) & 0x8000) {
+            Down = true;
+        }
+        if (GetKeyState(VK_RSHIFT) & 0x8000) {
+            RSHIFT_Down = true;
+        }
+    // Keyboard/mouse OpenGL/SDL
+    } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
+        const uint8_t* keystate = SDL_GetKeyboardState(NULL);
+        if (keystate[SDL_SCANCODE_N]) {
+            TargetNextPlayer = true;
+        }
+        if (keystate[SDL_SCANCODE_M]) {
+            TargetPreviousPlayer = true;
+        }
+        if (keystate[SDL_SCANCODE_W]) {
+            Forward = true;
+        }
+        if (keystate[SDL_SCANCODE_S]) {
+            Backward = true;
+        }
+        if (keystate[SDL_SCANCODE_D]) {
+            PanRight = true;
+        }
+        if (keystate[SDL_SCANCODE_A]) {
+            PanLeft = true;
+        }
+        if (keystate[SDL_SCANCODE_SPACE]) {
+            Up = true;
+        }
+        if (keystate[SDL_SCANCODE_LSHIFT]) {
+            Down = true;
+        }
+        if (keystate[SDL_SCANCODE_RSHIFT]) {
+            RSHIFT_Down = true;
         }
     }
 
+    // Target next player
+    if (TargetNextPlayer) {
+       if (fRankIndex > 0) {
+           fRankIndex--;
+           camera->playerId = fRankIndex;
+           D_800DC5EC->player = &gPlayers[fRankIndex];
+       }
+    }
+
     // Target previous player
-    if (keystate[SDL_SCANCODE_M]) {
-        if (fRankIndex < 7) {
-            fRankIndex++;
-            camera->playerId = fRankIndex;
-            D_800DC5EC->player = &gPlayers[fRankIndex];
-        }
+    if (TargetPreviousPlayer) {
+       if (fRankIndex < 7) {
+           fRankIndex++;
+           camera->playerId = fRankIndex;
+           D_800DC5EC->player = &gPlayers[fRankIndex];
+       }
     }
 
     // Target camera at chosen player
     if (fRankIndex != -1) {
-        freecam_target_player(camera, gGPCurrentRacePlayerIdByRank[fRankIndex]);
-        // Don't run the other camera code.
-        return;
+       freecam_target_player(camera, gGPCurrentRacePlayerIdByRank[fRankIndex]);
+       // Don't run the other camera code.
+       return;
     }
 
-    if (keystate[SDL_SCANCODE_W]) {
-        totalMove[0] += forwardVector[0] * moveSpeed;
-        totalMove[2] += forwardVector[2] * moveSpeed;
+    if (Forward) {
+       totalMove[0] += forwardVector[0] * moveSpeed;
+       totalMove[2] += forwardVector[2] * moveSpeed;
     }
-    if (keystate[SDL_SCANCODE_S]) {
-        totalMove[0] -= forwardVector[0] * moveSpeed;
-        totalMove[2] -= forwardVector[2] * moveSpeed;
+    if (Backward) {
+       totalMove[0] -= forwardVector[0] * moveSpeed;
+       totalMove[2] -= forwardVector[2] * moveSpeed;
     }
-    if (keystate[SDL_SCANCODE_D]) {
-        totalMove[0] -= forwardVector[2] * moveSpeed; // Pan right
-        totalMove[2] += forwardVector[0] * moveSpeed;
+    if (PanRight) {
+       totalMove[0] -= forwardVector[2] * moveSpeed; // Pan right
+       totalMove[2] += forwardVector[0] * moveSpeed;
     }
-    if (keystate[SDL_SCANCODE_A]) {
-        totalMove[0] += forwardVector[2] * moveSpeed; // Pan left
-        totalMove[2] -= forwardVector[0] * moveSpeed;
+    if (PanLeft) {
+       totalMove[0] += forwardVector[2] * moveSpeed; // Pan left
+       totalMove[2] -= forwardVector[0] * moveSpeed;
     }
-    if (keystate[SDL_SCANCODE_SPACE]) {
-        totalMove[1] += moveSpeed; // Move up
+    if (Up) {
+       totalMove[1] += moveSpeed; // Move up
     }
-    if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT]) {
-        totalMove[1] -= moveSpeed; // Move down
+    if (Down || RSHIFT_Down) {
+       totalMove[1] -= moveSpeed; // Move down
     }
     freeCam.velocity[0] += totalMove[0];
     freeCam.velocity[1] += totalMove[1];
@@ -286,70 +395,6 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     // Update camera's lookAt position
     camera->lookAt[0] = camera->pos[0] + forwardVector[0];
     camera->lookAt[2] = camera->pos[2] + forwardVector[2];
-}
-
-// Control the camera using the n64 controller
-void freecam_n64_controller_manager(Camera* camera, struct Controller* controller, Player* player) {
-
-    if (controller->buttonPressed & U_JPAD) {
-        fMode = !fMode;
-    }
-
-    // Target a player
-    if (controller->buttonPressed & R_TRIG) {
-        fTargetPlayer = !fTargetPlayer;
-    }
-
-    // Target next player
-    if (controller->buttonPressed & L_CBUTTONS) {
-        if (fRankIndex > 0) {
-            fRankIndex--;
-            camera->playerId = fRankIndex;
-            D_800DC5EC->player = &gPlayers[fRankIndex];
-        }
-    }
-
-    // Target previous player
-    if (controller->buttonPressed & R_CBUTTONS) {
-        if (fRankIndex < 7) {
-            fRankIndex++;
-            camera->playerId = fRankIndex;
-            D_800DC5EC->player = &gPlayers[fRankIndex];
-        }
-    }
-
-    // Target camera at chosen player
-    if (fTargetPlayer) {
-        freecam_target_player(camera, gGPCurrentRacePlayerIdByRank[fRankIndex]);
-        // Don't run the other camera code.
-        return;
-    }
-
-    // Rotation
-    if (!fTargetPlayer) {
-        if (controller->stickDirection != 0) {
-            freecam_n64_update(camera, controller);
-        }
-    }
-
-    // Forward
-    if (controller->button & A_BUTTON) {
-        freecam_n64_move_camera_forward(camera, controller, 3.0f);
-    }
-
-    // Backward     B button but not A button.
-    if (controller->button & B_BUTTON && !(controller->button & A_BUTTON)) {
-        freecam_n64_move_camera_forward(camera, controller, -3.0f);
-    }
-
-    // Up
-    if (controller->button & U_CBUTTONS) {
-        freecam_n64_move_camera_up(camera, controller, 2.0f);
-    }
-    // Up
-    if (controller->button & D_CBUTTONS) {
-        freecam_n64_move_camera_up(camera, controller, -2.0f);
-    }
 }
 
 void freecam_render_setup(void) {

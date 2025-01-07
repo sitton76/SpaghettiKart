@@ -53,9 +53,9 @@ void FreecamWindow::DrawElement() {
     const float deltatime = ImGui::GetIO().DeltaTime;
     ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
 
-    ImGui::Text("Freecam: Mouse/Keyboard Requires OpenGL. DX is not supported");
+    ImGui::Text("Controller mode is not configured yet.");
 
-    const char* items[] = { "Mouse/Keyboard", "N64 Controls" };
+    const char* items[] = { "Mouse/Keyboard", "Controller" };
     static int current_item = 0;
     if (ImGui::Combo("Dropdown", &current_item, items, IM_ARRAYSIZE(items))) {
         gFreecamControllerType = current_item;
