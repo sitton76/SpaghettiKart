@@ -105,7 +105,7 @@ void freecam(Camera* camera, Player* player, s8 index) {
                 freecam_load_state(camera);
             } else {
                 // !fMode or fMode not initialized
-                freecam_target_player(camera, get_player_index_for_player(player));
+                //freecam_target_player(camera, get_player_index_for_player(player));
             }
 
             return;
@@ -134,7 +134,9 @@ void freecam(Camera* camera, Player* player, s8 index) {
     freecam_mouse_manager(camera, freeCam.forwardVector);
     freecam_keyboard_manager(camera, freeCam.forwardVector);
 
-    if (!fTargetPlayer) {
+    if (fTargetPlayer) {
+        freecam_target_player(camera, get_player_index_for_player(player));
+    } else {
         freecam_update(camera, freeCam.forwardVector);
     }
 }
