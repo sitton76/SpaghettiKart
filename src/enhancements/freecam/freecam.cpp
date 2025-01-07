@@ -223,11 +223,6 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     float moveSpeed = gFreecamSpeed;
     Controller* controller = &gControllers[0];
 
-    // Fast movement with Ctrl
-    //if (wnd->KeyDown(SDL_SCANCODE_LCTRL) || wnd->KeyDown(SDL_SCANCODE_RCTRL)) {
-    //    moveSpeed *= gFreecamSpeedMultiplier;
-    //}
-
     // Determine movement direction based on keys pressed
     Vec3f totalMove = { 0.0f, 0.0f, 0.0f };
 
@@ -242,7 +237,8 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
 
     bool TargetNextPlayer = false, TargetPreviousPlayer = false;
     bool Forward = false, PanLeft = false, Backward = false, PanRight = false;
-    bool Up = false, Down = false, RSHIFT_Down = false;
+    bool Up = false, Down = false;
+    bool FastMove = false;
 
     // Use n64 controls for use with a controller
     //! @todo configure this properly
@@ -280,6 +276,9 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         if (controller->button & U_CBUTTONS) {
             Up = true;
         }
+        // if (controller->button ??) {
+        //    FastMove = true;
+        // }
     // Keyboard and mouse DX
     } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
         if (GetKeyState('N') & 0x8000) {
@@ -303,11 +302,12 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         if (GetKeyState(VK_SPACE) & 0x8000) {
             Up = true;
         }
-        if (GetKeyState(VK_LSHIFT) & 0x8000) {
+        if (GetKeyState(VK_LSHIFT) & 0x8000 || GetKeyState(VK_RSHIFT) & 0x8000) {
             Down = true;
         }
-        if (GetKeyState(VK_RSHIFT) & 0x8000) {
-            RSHIFT_Down = true;
+        // Fast movement with Ctrl
+        if (GetKeyState(VK_LCONTROL) || GetKeyState(VK_RCONTROL)) {
+           FastMove = true;
         }
     // Keyboard/mouse OpenGL/SDL
     } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
@@ -333,11 +333,11 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         if (keystate[SDL_SCANCODE_SPACE]) {
             Up = true;
         }
-        if (keystate[SDL_SCANCODE_LSHIFT]) {
+        if (keystate[SDL_SCANCODE_LSHIFT] || keystate[SDL_SCANCODE_RSHIFT]) {
             Down = true;
         }
-        if (keystate[SDL_SCANCODE_RSHIFT]) {
-            RSHIFT_Down = true;
+        if (keystate[SDL_SCANCODE_LCTRL] || keystate[SDL_SCANCODE_RCTRL]) {
+           FastMove = true;
         }
     }
 
@@ -366,6 +366,10 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
        return;
     }
 
+    if (FastMove) {
+        moveSpeed *= gFreecamSpeedMultiplier;
+    }
+
     if (Forward) {
        totalMove[0] += forwardVector[0] * moveSpeed;
        totalMove[2] += forwardVector[2] * moveSpeed;
@@ -385,7 +389,7 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     if (Up) {
        totalMove[1] += moveSpeed; // Move up
     }
-    if (Down || RSHIFT_Down) {
+    if (Down) {
        totalMove[1] -= moveSpeed; // Move down
     }
     freeCam.velocity[0] += totalMove[0];
