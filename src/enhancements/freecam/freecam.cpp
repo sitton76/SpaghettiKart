@@ -90,7 +90,7 @@ void freecam(Camera* camera, Player* player, s8 index) {
 
     // Calculate forward direction
     freecam_calculate_forward_vector_allow_rotation(camera, freeCam.forwardVector);
-    
+
     // Adjust camera rotation
     if (fTargetPlayer) {
         freecam_target_player(camera, freeCam.forwardVector);
@@ -103,7 +103,6 @@ void freecam(Camera* camera, Player* player, s8 index) {
 
     // Apply final position, velocity, and lookAt
     freecam_tick(camera, freeCam.forwardVector);
-
 }
 
 f32 gFreecamRotateSmoothingFactor = 0.85f;
@@ -113,9 +112,9 @@ void freecam_mouse_manager(Camera* camera, Vec3f forwardVector) {
     auto wnd = GameEngine::Instance->context->GetWindow();
     Ship::Coords mouse = wnd->GetMouseDelta();
 
-    //Uint32 mouseState = SDL_GetRelativeMouseState(&mouse.x, &mouse.y);
+    // Uint32 mouseState = SDL_GetRelativeMouseState(&mouse.x, &mouse.y);
 
-    //printf("MOUSE %d %d\n", mouse.x, mouse.y);
+    // printf("MOUSE %d %d\n", mouse.x, mouse.y);
 
     mouse.x = (mouse.x + prevMouseX) / 2;
     mouse.y = (mouse.y + prevMouseY) / 2;
@@ -167,11 +166,14 @@ bool FreecamKeyDown(int virtualKey) {
         // Use SDL to check key states
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
         isDownNow = keystate[virtualKey] != 0;
-    } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
+    }
+#ifdef _WIN32
+    else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
         // Use Windows GetKeyState for DirectX
         SHORT keyState = GetKeyState(virtualKey);
         isDownNow = (keyState & 0x8000) != 0;
     }
+#endif
 
     // Determine if this is a new key press
     bool isKeyDownEvent = isDownNow && !prevKeyState[virtualKey];
@@ -181,7 +183,6 @@ bool FreecamKeyDown(int virtualKey) {
 
     return isKeyDownEvent;
 }
-
 
 void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     auto wnd = GameEngine::Instance->context->GetWindow();
@@ -199,7 +200,8 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     // if (keystate[SDL_SCANCODE_G]) {
     //     fTargetPlayer = false;
     // }
-    bool TargetNextPlayer = false, TargetPreviousPlayer = false; bool prevNext;
+    bool TargetNextPlayer = false, TargetPreviousPlayer = false;
+    bool prevNext;
     bool Forward = false, PanLeft = false, Backward = false, PanRight = false;
     bool Up = false, Down = false;
     bool FastMove = false;
@@ -213,7 +215,7 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         // }
         // Target a player
         if (controller->buttonPressed & R_TRIG) {
-             fTargetPlayer = !fTargetPlayer;
+            fTargetPlayer = !fTargetPlayer;
         }
         if (controller->buttonPressed & L_CBUTTONS) {
             TargetPreviousPlayer = true;
@@ -242,10 +244,12 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         // if (controller->button ??) {
         //    FastMove = true;
         // }
-    // Keyboard and mouse DX
-    } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
+        // Keyboard and mouse DX
+    }
+#ifdef _WIN32
+    else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_DXGI_DX11) {
         if (FreecamKeyDown('F')) {
-             fTargetPlayer = !fTargetPlayer;
+            fTargetPlayer = !fTargetPlayer;
         }
         if (FreecamKeyDown('N')) {
             TargetPreviousPlayer = true;
@@ -273,10 +277,12 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
         }
         // Fast movement with Ctrl
         if (GetKeyState(VK_LCONTROL) || GetKeyState(VK_RCONTROL)) {
-           FastMove = true;
+            FastMove = true;
         }
-    // Keyboard/mouse OpenGL/SDL
-    } else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
+        // Keyboard/mouse OpenGL/SDL
+    }
+#endif
+    else if (wnd->GetWindowBackend() == Ship::WindowBackend::FAST3D_SDL_OPENGL) {
         const uint8_t* keystate = SDL_GetKeyboardState(NULL);
         if (FreecamKeyDown(SDL_SCANCODE_F)) {
             fTargetPlayer = !fTargetPlayer;
@@ -306,26 +312,26 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
             Down = true;
         }
         if (keystate[SDL_SCANCODE_LCTRL] || keystate[SDL_SCANCODE_RCTRL]) {
-           FastMove = true;
+            FastMove = true;
         }
     }
 
     // Target previous player
     if (TargetPreviousPlayer) {
-       if (fRankIndex > 0) {
-           fRankIndex--;
-           camera->playerId = fRankIndex;
-           D_800DC5EC->player = &gPlayers[fRankIndex];
-       }
+        if (fRankIndex > 0) {
+            fRankIndex--;
+            camera->playerId = fRankIndex;
+            D_800DC5EC->player = &gPlayers[fRankIndex];
+        }
     }
 
     // Target next player
     if (TargetNextPlayer) {
-       if (fRankIndex < 7) {
-           fRankIndex++;
-           camera->playerId = fRankIndex;
-           D_800DC5EC->player = &gPlayers[fRankIndex];
-       }
+        if (fRankIndex < 7) {
+            fRankIndex++;
+            camera->playerId = fRankIndex;
+            D_800DC5EC->player = &gPlayers[fRankIndex];
+        }
     }
 
     if (FastMove) {
@@ -333,26 +339,26 @@ void freecam_keyboard_manager(Camera* camera, Vec3f forwardVector) {
     }
 
     if (Forward) {
-       totalMove[0] += forwardVector[0] * moveSpeed;
-       totalMove[2] += forwardVector[2] * moveSpeed;
+        totalMove[0] += forwardVector[0] * moveSpeed;
+        totalMove[2] += forwardVector[2] * moveSpeed;
     }
     if (Backward) {
-       totalMove[0] -= forwardVector[0] * moveSpeed;
-       totalMove[2] -= forwardVector[2] * moveSpeed;
+        totalMove[0] -= forwardVector[0] * moveSpeed;
+        totalMove[2] -= forwardVector[2] * moveSpeed;
     }
     if (PanRight) {
-       totalMove[0] -= forwardVector[2] * moveSpeed; // Pan right
-       totalMove[2] += forwardVector[0] * moveSpeed;
+        totalMove[0] -= forwardVector[2] * moveSpeed; // Pan right
+        totalMove[2] += forwardVector[0] * moveSpeed;
     }
     if (PanLeft) {
-       totalMove[0] += forwardVector[2] * moveSpeed; // Pan left
-       totalMove[2] -= forwardVector[0] * moveSpeed;
+        totalMove[0] += forwardVector[2] * moveSpeed; // Pan left
+        totalMove[2] -= forwardVector[0] * moveSpeed;
     }
     if (Up) {
-       totalMove[1] += moveSpeed; // Move up
+        totalMove[1] += moveSpeed; // Move up
     }
     if (Down) {
-       totalMove[1] -= moveSpeed; // Move down
+        totalMove[1] -= moveSpeed; // Move down
     }
     freeCam.velocity[0] += totalMove[0];
     freeCam.velocity[1] += totalMove[1];
@@ -368,7 +374,8 @@ void freecam_render_setup(void) {
     func_80057FC4(0);
     gSPSetGeometryMode(gDisplayListHead++, G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK | G_CULL_BOTH | G_CULL_FRONT);
-    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect, CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
+    guPerspective(&gGfxPool->mtxPersp[0], &perspNorm, gCameraZoom[0], gScreenAspect,
+                  CourseManager_GetProps()->NearPersp, CourseManager_GetProps()->FarPersp, 1.0f);
     gSPPerspNormalize(gDisplayListHead++, perspNorm);
     gSPMatrix(gDisplayListHead++, (&gGfxPool->mtxPersp[0]), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_PROJECTION);
     guLookAt(&gGfxPool->mtxLookAt[0], camera1->pos[0], camera1->pos[1], camera1->pos[2], camera1->lookAt[0],

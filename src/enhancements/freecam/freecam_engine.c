@@ -78,8 +78,7 @@ void freecam_target_player(Camera* camera, Vec3f forwardVector) {
     forwardVector[2] = camera->lookAt[2] - camera->pos[2];
 
     // Normalize the forward vector
-    f32 forwardLength = sqrtf(forwardVector[0] * forwardVector[0] +
-                              forwardVector[1] * forwardVector[1] +
+    f32 forwardLength = sqrtf(forwardVector[0] * forwardVector[0] + forwardVector[1] * forwardVector[1] +
                               forwardVector[2] * forwardVector[2]);
     if (forwardLength > 0.0f) {
         forwardVector[0] /= forwardLength;
