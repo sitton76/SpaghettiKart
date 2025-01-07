@@ -863,11 +863,14 @@ MenuTexture* D_800E8234[] = {
 };
 
 MenuTexture* D_800E8254[] = {
-    seg2_game_select_texture, seg2_menu_1p_column, seg2_menu_2p_column, seg2_menu_3p_column,
-    seg2_menu_4p_column,      D_0200487C,          D_020048A4,          D_020048CC,
-};
-
-MenuTexture* D_800E8274[] = {
+    seg2_game_select_texture,
+    seg2_menu_1p_column,
+    seg2_menu_2p_column,
+    seg2_menu_3p_column,
+    seg2_menu_4p_column,
+    D_0200487C,
+    D_020048A4,
+    D_020048CC,
     // CC textures
     seg2_50_CC_texture,
     seg2_100_CC_texture,
@@ -2694,194 +2697,31 @@ func_80095BD0_label2:
 }
 
 // Player select menu character border
-Gfx* func_80095E10(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8,
-                   s32 arg9, u8* argA, u32 argB, u32 argC) {
-    u32 var_a1_2 = arg4;
-    u32 var_s3 = arg5;
-    s32 sp7C;
-    u32 var_s2;
-    u32 var_s4;
-    s32 var_t0 = 1;
-    s32 temp_lo;
-    s32 sp68 = 0;
-    s32 sp64 = 0;
-    s32 var_v0_2;
-
-    while ((u32) var_t0 < argB) {
-        var_t0 *= 2;
-    }
-
-    temp_lo = 0x400 / var_t0;
-
-    while ((u32) (temp_lo / 2) > argC) {
-        temp_lo /= 2;
-    }
-
-    var_v0_2 = var_t0;
-    while (var_v0_2 > 1) {
-        var_v0_2 /= 2;
-        sp68 += 1;
-    }
-    var_v0_2 = temp_lo;
-
-    while (var_v0_2 > 1) {
-        var_v0_2 /= 2;
-        sp64 += 1;
-    }
-
-    if (arg8 < 0) {
-        arg4 -= arg8;
-        arg8 = 0;
-    } else if (((arg6 - arg4) + arg8) > SCREEN_WIDTH) {
-        arg6 = (arg4 - arg8) + SCREEN_WIDTH;
-    }
-
-    if (arg9 < 0) {
-        arg5 -= arg9;
-        arg9 = 0;
-    } else if (((arg7 - arg5) + arg9) > SCREEN_HEIGHT) {
-        arg7 = (arg5 - arg9) + SCREEN_HEIGHT;
-    }
-
-    if (arg6 < arg4) {
-        return displayListHead;
-    }
-    if (arg7 < arg5) {
-        return displayListHead;
-    }
-    sp7C = arg8;
-    for (var_s3 = arg5; var_s3 < arg7; var_s3 += temp_lo) {
-
-        if (arg7 < temp_lo + var_s3) {
-            var_s4 = arg7 - var_s3;
-            if (!var_s4) {
-                break;
-            }
-        } else {
-            var_s4 = temp_lo;
-        }
-
-        for (var_a1_2 = arg4; var_a1_2 < (u32) arg6; var_a1_2 += var_t0) {
-
-            if ((u32) arg6 < var_t0 + var_a1_2) {
-                var_s2 = arg6 - var_a1_2;
-                if (!var_s2) {
-                    break;
-                }
-            } else {
-                var_s2 = var_t0;
-            }
-            gMKLoadTextureTile(displayListHead++, argA, arg1, G_IM_SIZ_16b, argB, 0, var_a1_2, var_s3,
-                               var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                               G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(displayListHead++, arg8 * 4, arg9 * 4, (arg8 + var_s2) * 4, (arg9 + var_s4) * 4, 0,
-                                (var_a1_2 * 32) & 0xFFFF, (var_s3 * 32) & 0xFFFF, arg2, arg3);
-
-            arg8 += var_t0;
-        }
-
-        arg8 = sp7C;
-        arg9 += temp_lo;
-    }
+Gfx* func_80095E10(Gfx* displayListHead, s8 textureFormat, s32 texScaleS, s32 texScaleT, s32 srcX, s32 srcY,
+                   s32 srcWidth, s32 srcHeight, s32 screenX, s32 screenY, u8* textureData, u32 texWidth,
+                   u32 texHeight) {
+    s32 textureWidth = srcWidth;
+    s32 textureHeight = srcHeight;
+    gMKLoadTextureTile(displayListHead++, textureData, textureFormat, G_IM_SIZ_16b, texWidth, 0, srcX, srcY,
+                       srcX + textureWidth, srcY + textureHeight, 0, G_TX_NOMIRROR | G_TX_WRAP,
+                       G_TX_NOMIRROR | G_TX_WRAP, 0, 0, G_TX_NOLOD, G_TX_NOLOD);
+    gSPWideTextureRectangle(displayListHead++, screenX << 2, screenY << 2, (screenX + textureWidth) << 2,
+                            (screenY + textureHeight) << 2, G_TX_RENDERTILE, 0, 0, texScaleS, texScaleT);
     return displayListHead;
 }
 
-Gfx* func_800963F0(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, f32 arg4, f32 arg5, s32 arg6, s32 arg7, s32 arg8,
-                   s32 arg9, s32 argA, s32 argB, u8* argC, u32 argD, u32 argE) {
-    u32 var_a1_2 = arg6;
-    u32 var_s3 = arg7;
-    s32 sp7C;
-    u32 var_s2;
-    u32 var_s4;
-    u32 a;
-    u32 b;
-    s32 var_t0 = 1;
-    s32 temp_lo;
-    s32 sp68 = 0;
-    s32 sp64 = 0;
-    s32 var_v0_2;
-
-    while ((u32) var_t0 < argD) {
-        var_t0 *= 2;
-    }
-
-    temp_lo = 0x400 / var_t0;
-
-    while ((u32) (temp_lo / 2) > argE) {
-        temp_lo /= 2;
-    }
-
-    var_v0_2 = var_t0;
-    while (var_v0_2 > 1) {
-        var_v0_2 /= 2;
-        sp68 += 1;
-    }
-    var_v0_2 = temp_lo;
-
-    while (var_v0_2 > 1) {
-        var_v0_2 /= 2;
-        sp64 += 1;
-    }
-
-    if (argA < 0) {
-        arg6 -= argA;
-        argA = 0;
-    } else if ((argA + (arg8 - arg6) * arg4) > SCREEN_WIDTH) {
-        arg8 -= argA + (arg8 - arg6) * arg4 - SCREEN_WIDTH;
-    }
-
-    if (argB < 0) {
-        arg7 -= argB;
-        argB = 0;
-    } else if ((argB + (arg9 - arg7) * arg5) > SCREEN_HEIGHT) {
-        arg9 -= argB + (arg9 - arg7) * arg5 - SCREEN_HEIGHT;
-    }
-
-    if (arg8 < arg6) {
-        return displayListHead;
-    }
-    if (arg9 < arg7) {
-        return displayListHead;
-    }
-    arg2 /= arg4;
-    arg3 /= arg5;
-
-    sp7C = argA;
-    for (var_s3 = arg7; var_s3 < (u32) arg9; var_s3 += temp_lo) {
-
-        if ((u32) arg9 < temp_lo + var_s3) {
-            var_s4 = arg9 - var_s3;
-            if (!var_s4) {
-                break;
-            }
-        } else {
-            var_s4 = temp_lo;
-        }
-        b = var_s4 * arg5;
-        for (var_a1_2 = arg6; var_a1_2 < (u32) arg8; var_a1_2 += var_t0) {
-
-            if ((u32) arg8 < var_t0 + var_a1_2) {
-                var_s2 = arg8 - var_a1_2;
-                if (!var_s2) {
-                    break;
-                }
-            } else {
-                var_s2 = var_t0;
-            }
-            a = var_s2 * arg4;
-
-            gMKLoadTextureTile(displayListHead++, argC, arg1, G_IM_SIZ_16b, argD, argE, var_a1_2, var_s3,
-                               var_a1_2 + var_s2, var_s3 + var_s4, 0, G_TX_NOMIRROR | G_TX_WRAP,
-                               G_TX_NOMIRROR | G_TX_WRAP, sp68, sp64, G_TX_NOLOD, G_TX_NOLOD);
-            gSPTextureRectangle(displayListHead++, argA * 4, argB * 4, (argA + a) * 4, (argB + b) * 4, 0,
-                                (var_a1_2 * 32) & 0xFFFF, (var_s3 * 32) & 0xFFFF, arg2, arg3);
-
-            argA += var_t0 * arg4;
-        }
-
-        argA = sp7C;
-        argB += temp_lo * arg5;
-    }
+Gfx* func_800963F0(Gfx* displayListHead, s8 textureFormat, s32 texScaleS, s32 texScaleT, f32 scaleX, f32 scaleY,
+                   s32 srcX, s32 srcY, s32 srcHeight, s32 srcWidth, s32 screenX, s32 screenY, u8* textureData,
+                   u32 height, u32 width) {
+    gMKLoadTextureTile(displayListHead++, textureData, textureFormat, G_IM_SIZ_16b, height, width, srcX, srcY,
+                       srcX + srcHeight, srcY + srcWidth, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0,
+                       G_TX_NOLOD, G_TX_NOLOD);
+    f32 percentScaleX = 1.0f / ((f32) texScaleS / 1024.0f);
+    f32 percentScaleY = 1.0f / ((f32) texScaleT / 1024.0f);
+    gSPWideTextureRectangle(displayListHead++, screenX << 2, screenY << 2,
+                            (screenX + (s32) ((f32) height * scaleX)) << 2,
+                            (screenY + (s32) ((f32) width * scaleY)) << 2, 0, 0, 0,
+                            (1.0f / (scaleX * percentScaleX) * 1024.0f), (1.0f / (scaleY * percentScaleY) * 1024.0f));
     return displayListHead;
 }
 
@@ -3116,88 +2956,28 @@ Gfx* func_80097A14(Gfx* displayListHead, s8 arg1, s32 arg2, s32 arg3, s32 arg4, 
     return displayListHead;
 }
 
-Gfx* func_80097AE4(Gfx* displayListHead, s8 fmt, s32 arg2, s32 arg3, u8* arg4, s32 width) {
-    s32 i;
-    s32 temp;
-    s32 arg2Copy;
-    s32 dsdx;
-
-    if (width >= 32) {
-        return displayListHead;
-    }
-
-    arg2Copy = arg2;
-
-    for (i = 0; i < 64; i += 32) {
-        temp = 0;
-        dsdx = 0x8000 / (32 - width);
-        gMKLoadTextureTile(displayListHead++, arg4, fmt, G_IM_SIZ_16b, 64, 64, temp, i, temp + 32, i + 32, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-        gSPTextureRectangle(displayListHead++, (arg2 + width) << 2, arg3 << 2, (arg2 + 32) << 2, (arg3 + 32) << 2, 0, 0,
-                            0, dsdx, 1024);
-
-        arg2 += 32;
-
-        gMKLoadTextureTile(displayListHead++, arg4, fmt, G_IM_SIZ_16b, 64, 64, temp + 32, i, temp + 64, i + 32, 0,
-                           G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
-        gSPTextureRectangle(displayListHead++, arg2 << 2, arg3 << 2, ((arg2 - width) + 32) << 2, (arg3 + 32) << 2, 0, 0,
-                            0, dsdx, 1024);
-
-        arg2 = arg2Copy;
-        arg3 += 32;
-    }
+Gfx* func_80097AE4(Gfx* displayListHead, s8 textureFormat, s32 destX, s32 destY, u8* textureData, s32 sourceWidth) {
+    gMKLoadTextureTile(displayListHead++, textureData, textureFormat, G_IM_SIZ_16b, 64, 64, 0, 0, sourceWidth, 32, 0,
+                       G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD, G_TX_NOLOD);
+    gSPWideTextureRectangle(displayListHead++, destX << 2, destY << 2, (destX + sourceWidth) << 2, (destY + 64) << 2, 0,
+                            0, 0, 1024, 1024);
     return displayListHead;
 }
 
 // Render player characters at player select menu
-Gfx* func_80097E58(Gfx* displayListHead, s8 fmt, u32 arg2, u32 arg3, u32 arg4, u32 arg5, s32 arg6, s32 arg7,
-                   u8* someTexture, u32 arg9, u32 argA, s32 width) {
-    u32 ult;
-    u32 temp;
-    s32 arg6Copy;
-    s32 temp_v1;
-    s32 var_s2;
-    s32 lrs;
-    s32 spDC;
-    s32 temp2 = 32;
-
+Gfx* func_80097E58(Gfx* displayListHead, s8 textureFormat, u32 uls, u32 ult, u32 lrs, u32 lrt, s32 screenX, s32 screenY,
+                   u8* textureData, u32 textureWidth, u32 textureHeight, s32 width) {
     if (width >= 32) {
         return displayListHead;
     }
-
-    arg6Copy = arg6;
-
-    lrs = arg9 / 2;
-    spDC = arg9 - lrs;
-    for (ult = arg3; ult < arg5; ult += 32) {
-        temp = 0;
-        if ((ult + temp2) > arg5) {
-            var_s2 = arg5 - ult;
-            if (!var_s2) {
-                break;
-            }
-        } else {
-            var_s2 = temp2;
-        }
-        temp_v1 = ((32 * lrs) << 10) / (lrs * (32 - width));
-
-        // Renders the left side
-        gMKLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp, ult, temp + lrs,
-                           ult + var_s2, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
-                           G_TX_NOLOD);
-        gSPTextureRectangle(displayListHead++, (arg6 + lrs * (width) / 32) << 2, arg7 << 2, (((arg6) + lrs) << 2),
-                            (((arg7) + var_s2) << 2), 0, 0, (ult << 5) & 0xFFFF, temp_v1, 1024);
-        arg6 += lrs;
-        temp_v1 = ((32 * spDC) << 10) / (spDC * (32 - width));
-        // Renders the right side
-        gMKLoadTextureTile(displayListHead++, someTexture, fmt, G_IM_SIZ_16b, arg9, argA, temp + lrs, ult, temp + arg9,
-                           ult + var_s2, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
-                           G_TX_NOLOD);
-        gSPTextureRectangle(displayListHead++, arg6 << 2, arg7 << 2, ((arg6 + spDC * (32 - (width)) / 32) << 2),
-                            (((arg7) + var_s2) << 2), 0, (1 + lrs << 5) & 0xFFFF, (ult << 5) & 0xFFFF, temp_v1, 1024);
-        arg6 = arg6Copy;
-        arg7 += temp2;
-    }
+    f32 percent = (f32) (32 - width) / 32.0f;
+    gMKLoadTextureTile(displayListHead++, textureData, textureFormat, G_IM_SIZ_16b, textureWidth, textureHeight, uls,
+                       ult, lrs, lrt, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 5, 5, G_TX_NOLOD,
+                       G_TX_NOLOD);
+    screenX += (s32) ((f32) (textureWidth / 2) * (1.0f - percent));
+    gSPWideTextureRectangle(displayListHead++, (screenX) << 2, screenY << 2,
+                            (screenX + (s32) ((f32) textureWidth * percent)) << 2, (screenY + textureHeight) << 2, 0, 0,
+                            (ult << 5) & 0xFFFF, (s32) (1.0f / percent * 1024.0f), 1024);
     return displayListHead;
 }
 
@@ -3261,12 +3041,12 @@ Gfx* func_800987D0(Gfx* displayListHead, u32 arg1, u32 arg2, u32 width, u32 heig
 
 /**
  * Draw a box filled with a solid color
- * 
+ *
  * Renders
- * 
+ *
  * Menus: Black box behind textures such as: "1P Game, 2P Game, Mario GP, 50CC, OK, etc."
- * 
- * 
+ *
+ *
  */
 Gfx* draw_box_fill(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32 red, s32 green, s32 blue, s32 alpha) {
     red &= 0xFF;
@@ -3309,13 +3089,13 @@ Gfx* draw_box_fill(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32
 
 /**
  * Draw a box filled with a solid color
- * 
+ *
  * Renders
- * 
+ *
  * All game modes:
  * Cinematic borders
- * 
- * 
+ *
+ *
  */
 Gfx* draw_box_fill_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, s32 red, s32 green, s32 blue,
                         s32 alpha) {
@@ -3359,9 +3139,9 @@ Gfx* draw_box_fill_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry
 
 /**
  * Draw a box with a solid outline
- * 
+ *
  * Menus best lap time at start menu
- * 
+ *
  */
 Gfx* draw_box(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
     red &= 0xFF;
@@ -3401,12 +3181,12 @@ Gfx* draw_box(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red,
 
 /**
  * Renders
- * 
+ *
  * Menus: Menu transition swipes, course label highlight
- * 
+ *
  * All game modes: Background cover at pause screen
- * 
- * 
+ *
+ *
  */
 Gfx* draw_box_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
     red &= 0xFF;
@@ -3446,7 +3226,8 @@ Gfx* draw_box_wide(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32
 }
 
 // Renders pause background
-Gfx* draw_box_wide_pause_background(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green, u32 blue, u32 alpha) {
+Gfx* draw_box_wide_pause_background(Gfx* displayListHead, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 red, u32 green,
+                                    u32 blue, u32 alpha) {
     red &= 0xFF;
     green &= 0xFF;
     blue &= 0xFF;
@@ -3479,8 +3260,7 @@ Gfx* draw_box_wide_pause_background(Gfx* displayListHead, s32 ulx, s32 uly, s32 
     // }
     gSPDisplayList(displayListHead++, D_02008008);
     gDPSetPrimColor(displayListHead++, 0, 0, red, green, blue, alpha);
-    gDPFillWideRectangle(displayListHead++, ulx, uly,
-       lrx, lry);
+    gDPFillWideRectangle(displayListHead++, ulx, uly, lrx, lry);
     gDPPipeSync(displayListHead++);
     return displayListHead;
 }
@@ -4398,14 +4178,12 @@ Gfx* func_8009B9D0(Gfx* displayListHead, MenuTexture* textures) {
 }
 
 Gfx* render_menu_textures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
-    MenuTexture* temp_v0;
     u8* temp_v0_3;
     s8 var_s4;
 
-    temp_v0 = segmented_to_virtual_dupe(arg1);
-    while (temp_v0->textureData != NULL) {
+    while (arg1->textureData != NULL) {
         var_s4 = 0;
-        switch (temp_v0->type) {
+        switch (arg1->type) {
             case 0:
                 gSPDisplayList(arg0++, D_02007708);
                 break;
@@ -4426,18 +4204,17 @@ Gfx* render_menu_textures(Gfx* arg0, MenuTexture* arg1, s32 column, s32 row) {
                 gSPDisplayList(arg0++, D_02007728);
                 break;
         }
-        temp_v0_3 = (u8*) func_8009B8C4(temp_v0->textureData);
+        temp_v0_3 = (u8*) func_8009B8C4(arg1->textureData);
         if (temp_v0_3 != 0) {
             if (D_8018E7AC[4] != 4) {
-                arg0 =
-                    func_80095E10(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, temp_v0->width, temp_v0->height,
-                                  temp_v0->dX + column, temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+                arg0 = func_80095E10(arg0, var_s4, 0x00000400, 0x00000400, 0, 0, arg1->width, arg1->height,
+                                     arg1->dX + column, arg1->dY + row, temp_v0_3, arg1->width, arg1->height);
             } else {
-                arg0 = func_800987D0(arg0, 0U, 0U, temp_v0->width, temp_v0->height, temp_v0->dX + column,
-                                     temp_v0->dY + row, temp_v0_3, temp_v0->width, temp_v0->height);
+                arg0 = func_800987D0(arg0, 0U, 0U, arg1->width, arg1->height, arg1->dX + column, arg1->dY + row,
+                                     temp_v0_3, arg1->width, arg1->height);
             }
         }
-        temp_v0++;
+        arg1++;
     }
     return arg0;
 }
@@ -5664,7 +5441,8 @@ void add_menu_item(s32 type, s32 column, s32 row, s8 priority) {
         case 0x17:
         case MAIN_MENU_TIME_TRIALS_BEGIN:
         case MAIN_MENU_TIME_TRIALS_DATA:
-            load_menu_img_comp_type(segmented_to_virtual_dupe(D_800E8274[type - 0x12]), LOAD_MENU_IMG_TKMK00_ONCE);
+            load_menu_img_comp_type(segmented_to_virtual_dupe(D_800E8254[type - MENU_ITEM_UI_GAME_SELECT]),
+                                    LOAD_MENU_IMG_TKMK00_ONCE);
             break;
         case MENU_ITEM_UI_1P_GAME:
         case MENU_ITEM_UI_2P_GAME:
@@ -7857,37 +7635,38 @@ void render_pause_menu_versus(MenuItem* arg0) {
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
 
-    switch(gScreenModeSelection) {
+    switch (gScreenModeSelection) {
         case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
             leftEdge = OTRGetDimensionFromLeftEdge(0);
             rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, rightEdge,
-                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4,
+                                                              rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
         case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
             leftEdge = OTRGetDimensionFromLeftEdge(0);
             rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, leftEdge + rightEdge,
-                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4,
+                                                              leftEdge + rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
             // Left side players
             if ((temp_v0->player == gPlayerOne) || (temp_v0->player == gPlayerThree)) {
                 leftEdge = OTRGetDimensionFromLeftEdge(0);
-                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                        temp_t0 + temp_t4, 0, 0, 0, 140);
+                gDisplayListHead =
+                    draw_box_wide_pause_background(gDisplayListHead, leftEdge - temp_t3, temp_t0 - temp_t4,
+                                                   temp_v1 + temp_t3, temp_t0 + temp_t4, 0, 0, 0, 140);
 
-            // Right side players
+                // Right side players
             } else if ((temp_v0->player == gPlayerTwo) || (temp_v0->player == gPlayerFour)) {
                 rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + rightEdge,
-                                        temp_t0 + temp_t4, 0, 0, 0, 140);
-
+                gDisplayListHead =
+                    draw_box_wide_pause_background(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4,
+                                                   temp_v1 + rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
             }
             break;
         default:
             gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                            temp_t0 + temp_t4, 0, 0, 0, 140);
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
     }
 
@@ -7921,21 +7700,21 @@ void render_pause_grand_prix(MenuItem* arg0) {
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
 
-    switch(gScreenModeSelection) {
+    switch (gScreenModeSelection) {
         case SCREEN_MODE_1P:
         case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
             gDisplayListHead = draw_box_wide(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+                                             temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
         case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
             s32 leftEdge = OTRGetDimensionFromLeftEdge(0);
             s32 rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-            gDisplayListHead = draw_box_wide(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, leftEdge + rightEdge,
-                                    temp_t0 + temp_t4, 0, 0, 0, 140);
-                                    break;
+            gDisplayListHead = draw_box_wide(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4,
+                                             leftEdge + rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
+            break;
         default:
             gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                            temp_t0 + temp_t4, 0, 0, 0, 140);
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
     }
 
@@ -7972,37 +7751,38 @@ void render_pause_battle(MenuItem* arg0) {
     temp_t3 = temp_v0->screenWidth / 2;
     temp_t4 = temp_v0->screenHeight / 2;
 
-    switch(gScreenModeSelection) {
+    switch (gScreenModeSelection) {
         case SCREEN_MODE_2P_SPLITSCREEN_HORIZONTAL:
             leftEdge = OTRGetDimensionFromLeftEdge(0);
             rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, rightEdge,
-                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4,
+                                                              rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
         case SCREEN_MODE_2P_SPLITSCREEN_VERTICAL:
             leftEdge = OTRGetDimensionFromLeftEdge(0);
             rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4, rightEdge,
-                                    temp_t0 + temp_t4, 0, 0, 0, 140);
+            gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - rightEdge, temp_t0 - temp_t4,
+                                                              rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
         case SCREEN_MODE_3P_4P_SPLITSCREEN:
             // Left side players
             if ((temp_v0->player == gPlayerOne) || (temp_v0->player == gPlayerThree)) {
                 leftEdge = OTRGetDimensionFromLeftEdge(0);
-                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, leftEdge - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                        temp_t0 + temp_t4, 0, 0, 0, 140);
+                gDisplayListHead =
+                    draw_box_wide_pause_background(gDisplayListHead, leftEdge - temp_t3, temp_t0 - temp_t4,
+                                                   temp_v1 + temp_t3, temp_t0 + temp_t4, 0, 0, 0, 140);
 
-            // Right side players
+                // Right side players
             } else if ((temp_v0->player == gPlayerTwo) || (temp_v0->player == gPlayerFour)) {
                 rightEdge = OTRGetDimensionFromRightEdge(SCREEN_WIDTH);
-                gDisplayListHead = draw_box_wide_pause_background(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + rightEdge,
-                                        temp_t0 + temp_t4, 0, 0, 0, 140);
-
+                gDisplayListHead =
+                    draw_box_wide_pause_background(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4,
+                                                   temp_v1 + rightEdge, temp_t0 + temp_t4, 0, 0, 0, 140);
             }
             break;
         default:
             gDisplayListHead = draw_box(gDisplayListHead, temp_v1 - temp_t3, temp_t0 - temp_t4, temp_v1 + temp_t3,
-                                            temp_t0 + temp_t4, 0, 0, 0, 140);
+                                        temp_t0 + temp_t4, 0, 0, 0, 140);
             break;
     }
 
