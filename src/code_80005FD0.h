@@ -154,7 +154,8 @@ void func_80011EC0(s32, Player*, s32, u16);
 
 void generate_train_waypoints(void);
 void generate_ferry_waypoints(void);
-void spawn_vehicle_on_road(Vec3f position, Vec3s rotation, Vec3f velocity, s32 waypointIndex, s32 someMultiplierTheSequel, f32 speed);
+void spawn_vehicle_on_road(Vec3f position, Vec3s rotation, Vec3f velocity, s32 waypointIndex,
+                           s32 someMultiplierTheSequel, f32 speed);
 void spawn_course_vehicles(void);
 void set_vehicle_pos_waypoint(TrainCarStuff*, Path2D*, u16);
 void init_vehicles_trains(size_t, size_t, f32);
@@ -271,7 +272,6 @@ extern s16 D_80162FF8[];
 extern s16 D_80163010[];
 extern f32 D_80163028[];
 extern s16 D_80163050[];
-extern f32 D_80163068[];
 extern f32 D_80163090[];
 extern s32 D_801630B8[];
 extern u16 D_801630E0;
@@ -285,9 +285,6 @@ extern f32 D_80163178[];
 extern f32 D_801631A0[];
 extern s16 D_801631C8;
 extern s32 D_801631CC;
-extern TrackWaypoint* D_801631D0;
-extern TrackWaypoint* D_801631D4;
-extern s16* D_801631D8;
 extern u16 D_801631E0[];
 extern u16 D_801631F8[];
 extern f32 D_8016320C;
@@ -305,7 +302,6 @@ extern u16 gKartAIBehaviourState[];
 enum { KART_AI_BEHAVIOUR_STATE_NONE, KART_AI_BEHAVIOUR_STATE_START, KART_AI_BEHAVIOUR_STATE_RUNNING };
 
 extern s16 D_80163300[];
-extern u16 D_80163318[];
 extern u16 D_80163330[];
 extern u16 D_80163344[];
 extern u16 D_80163348[];
@@ -319,7 +315,6 @@ enum {
     SPEED_KART_AI_BEHAVIOUR_MAX
 };
 
-extern s32 D_80163368[];
 extern s32 D_80163378;
 extern s32 D_8016337C;
 extern s16 D_80163380[];
@@ -332,8 +327,6 @@ extern s16 D_80163410[];
 extern f32 D_80163418[];
 extern f32 D_80163428[];
 extern f32 D_80163438[];
-extern s32 D_80163448;
-extern f32 D_8016344C;
 extern f32 D_80163450[];
 extern s16 D_80163478;
 // 0 or 1, only 1 when when in extra (mirror) mode
@@ -344,8 +337,6 @@ extern s32 D_80163480;
 extern s32 D_80163484;
 extern s32 D_80163488;
 extern s16 D_8016348C;
-extern s16 D_80163490[];
-extern s16 D_801634A8[];
 extern s16 D_801634C0[];
 extern s16 bStopAICrossing[];
 extern s16 D_801634EC;
@@ -368,15 +359,11 @@ extern s32 gLapCountByPlayerId[];          // D_80164390
 extern s32 gGPCurrentRaceRankByPlayerId[]; // D_801643B8
 extern s32 D_801643E0[];
 extern s32 D_80164408[];
-extern u16 D_80164430;
-extern u16 gNearestWaypointByPlayerId[];
-extern s32 D_80164450[];
 extern s16 D_80164478[];
 extern s32 D_8016448C;
 extern f32 D_80164498[];
 extern f32 gLapCompletionPercentByPlayerId[];    // D_801644A8
 extern f32 gCourseCompletionPercentByPlayerId[]; // D_801644D0
-extern s16 D_801644F8[];
 extern f32 D_80164510[];
 extern s16 D_80164538[];
 extern s32 D_801645D0[];
