@@ -48,6 +48,8 @@ void freecam_calculate_forward_vector_allow_rotation(Camera* camera, Vec3f forwa
     forwardVector[2] = cosf(yaw);
 }
 
+f32 gFreecamFollowFactor = 0.7;
+
 void freecam_target_player(Camera* camera, Vec3f forwardVector) {
     // Apply damping to velocity
     freeCam.velocity[0] *= gDampValue;
@@ -90,4 +92,18 @@ void freecam_target_player(Camera* camera, Vec3f forwardVector) {
     freeCam.forwardVector[0] = forwardVector[0];
     freeCam.forwardVector[1] = forwardVector[1];
     freeCam.forwardVector[2] = forwardVector[2];
+
+
+    // Movement
+    freeCam.velocity[0] += gPlayers[fRankIndex].velocity[0] * gFreecamFollowFactor;
+    freeCam.velocity[1] += gPlayers[fRankIndex].velocity[1] * gFreecamFollowFactor;
+    freeCam.velocity[2] += gPlayers[fRankIndex].velocity[2] * gFreecamFollowFactor;
+}
+
+void freecam_get_player_from_character(s32 characterId) {
+    for (size_t i = 0; i < NUM_PLAYERS; i++) {
+        if (gPlayers[i].characterId == characterId) {
+            fRankIndex = i;
+        }
+    }
 }

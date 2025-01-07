@@ -71,6 +71,7 @@ u32 World::NextCup() {
         CurrentCup->CursorPosition = 0;
         return CupIndex;
     }
+    return Cups.size() - hack;
 }
 
 u32 World::PreviousCup() {
@@ -80,6 +81,7 @@ u32 World::PreviousCup() {
         CurrentCup->CursorPosition = 0;
         return CupIndex;
     }
+    return 0;
 }
 
 void World::SetCup(Cup* cup) {

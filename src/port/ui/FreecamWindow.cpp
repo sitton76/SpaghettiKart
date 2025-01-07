@@ -22,9 +22,12 @@ extern f32 gDampValue;
 extern f32 gFreecamSpeed;
 extern f32 gFreecamSpeedMultiplier;
 extern f32 gFreecamRotateSmoothingFactor;
+extern f32 gFreecamFollowFactor;
 extern char* D_800E76A8[];
 extern u32 fRankIndex;
+extern u32 fTargetPlayer;
 extern u32 gFreecamControllerType;
+void freecam_get_player_from_character(s32 characterId);
 }
 
 namespace Freecam {
@@ -45,6 +48,8 @@ float minSpeedMultiplier = 1.5f;
 float maxSpeedMultiplier = 15.0f;
 float minFreecamRotateFactor = 0.0f;
 float maxFreecamRotateFactor = 1.0f;
+float minFreecamFollowFactor = 0.0f;
+float maxFreecamFollowFactor = 1.0f;
 
 uint32_t focusPlayer;
 
@@ -73,13 +78,15 @@ void FreecamWindow::DrawElement() {
                             &minSpeedMultiplier, &maxSpeedMultiplier, "%f")) {};
     if (ImGui::SliderScalar("Camera Rotation Smoothing", ImGuiDataType_Float, &gFreecamRotateSmoothingFactor,
                             &minFreecamRotateFactor, &maxFreecamRotateFactor, "%f")) {};
+    if (ImGui::SliderScalar("Follow Factor", ImGuiDataType_Float, &gFreecamFollowFactor,
+                            &minFreecamFollowFactor, &maxFreecamFollowFactor, "%f")) {};
 
     ImGui::Spacing();
 
     ImGui::Text("Target Player");
 
     if (ImGui::Button("None")) {
-        fRankIndex = -1;
+        fTargetPlayer = false;
     }
 
     for (size_t i = 0; i < NUM_PLAYERS; i++) {
@@ -88,7 +95,8 @@ void FreecamWindow::DrawElement() {
         }
         ImGui::SameLine();
         if (ImGui::Button(D_800E76A8[i])) {
-            fRankIndex = i;
+            freecam_get_player_from_character(i);
+            fTargetPlayer = true;
         }
     }
 
