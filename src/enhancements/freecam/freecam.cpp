@@ -8,7 +8,6 @@
 extern "C" {
 #include <macros.h>
 #include <defines.h>
-#include <camera.h>
 #include "main.h"
 #include <libc/math.h>
 #include <common_structs.h>
@@ -87,13 +86,6 @@ void freecam(Camera* camera, Player* player, s8 index) {
         }
 
         gIsHUDVisible = !CVarGetInteger("gFreecam", 0);
-    }
-
-    // Driving mode
-    if (CVarGetInteger("gFreecam", 0) == 0) {
-        // Use normal camera code
-        func_8001E45C(camera, &gPlayers[fRankIndex], index);
-        return;
     }
 
     // Calculate forward direction
