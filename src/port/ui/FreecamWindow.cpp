@@ -40,7 +40,7 @@ void FreecamWindow::InitElement() {
 
 static s32 sReadyUpBool = false;
 
-float dampMin = 0.990;
+float dampMin = 0.970;
 float dampMax = 1.0f;
 float minSpeed = 1.0;
 float maxSpeed = 30.0f;

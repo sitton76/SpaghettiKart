@@ -93,7 +93,6 @@ void freecam_target_player(Camera* camera, Vec3f forwardVector) {
     freeCam.forwardVector[1] = forwardVector[1];
     freeCam.forwardVector[2] = forwardVector[2];
 
-
     // Movement
     freeCam.velocity[0] += gPlayers[fRankIndex].velocity[0] * gFreecamFollowFactor;
     freeCam.velocity[1] += gPlayers[fRankIndex].velocity[1] * gFreecamFollowFactor;
