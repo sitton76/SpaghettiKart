@@ -5752,8 +5752,8 @@ GLOBAL_ASM("asm/non_matchings/menu_items/add_menu_item.s")
 // Biggest diff left is in the case 0x12 though 0x19 handling. Not really sure what's going on there
 // There's also a diff in the handling of gTextNoController in case 0x4. Not sure what's going on there either
 void render_menus(MenuItem* arg0) {
-    s32 var_a1;
-    s32 var_v1;
+    s32 var_a1 = 0;
+    s32 var_v1 = 0;
     UNUSED s32 stackPadding0;
     UNUSED s32 stackPadding1;
     MenuTexture* sp9C;
