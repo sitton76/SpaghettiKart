@@ -521,12 +521,6 @@ void DrawDebugMenu() {
 
         UIWidgets::CVarCheckbox("Debug mode", "gEnableDebugMode", { .tooltip = "Enable debug mode" });
 
-        UIWidgets::CVarCheckbox("Level Selector", "gLevelSelector",
-                                { .tooltip = "Allows you to select any level from the main menu" });
-
-        UIWidgets::CVarCheckbox("SFX Jukebox", "gSfxJukebox",
-                                { .tooltip = "Allows you to play sound effects from the game" });
-
         UIWidgets::CVarCheckbox("Render Collision", "gRenderCollisionMesh",
                                 { .tooltip = "Renders the collision mesh instead of the course mesh" });
 
