@@ -6780,7 +6780,7 @@ void func_800A1F30(UNUSED MenuItem* unused) {
 #ifdef NON_MATCHING
 // Register allocation stuff, minor stack diffs
 void func_800A1FB0(MenuItem* arg0) {
-    Unk_D_800E70A0 spE0;
+    Unk_D_800E70A0 spE0 = { 0 };
     s32 i;
     s32 var_s5;
     s32 var_s4;
