@@ -883,11 +883,9 @@ MenuTexture* D_800E8254[] = {
     seg2_100_CC_texture,
     seg2_150_CC_texture,
     seg2_extra_CC_texture,
-};
-MenuTexture* D_800E8284[] = { // Versus and Battle textures
-    D_020049BC, seg2_menu_no_item_texture
-};
-MenuTexture* D_800E828C[] = {
+    // Versus and Battle textures
+    D_020049BC,
+    seg2_menu_no_item_texture,
     // Time Trials Begin & Data (probably)
     D_020049E4,
     seg2_data_texture,
