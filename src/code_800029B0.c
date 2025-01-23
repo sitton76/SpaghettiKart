@@ -212,7 +212,7 @@ void setup_race(void) {
     func_80005310();
     func_8003D080();
     init_hud();
-    D_800DC510 = 0;
+    gRaceState = RACE_INIT;
     gNumSpawnedShells = 0;
     D_800DC5B8 = 0;
     D_80152308 = 0;
@@ -254,7 +254,7 @@ void setup_race(void) {
 
 void func_80002DAC(void) {
 
-    CourseManager_SomeSounds();
+    CM_SomeSounds();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -324,7 +324,7 @@ void credits_spawn_actors(void) {
     destroy_all_actors();
     CM_CleanWorld();
 
-    CourseManager_CreditsSpawnActors();
+    CM_CreditsSpawnActors();
 
     gNumPermanentActors = gNumActors;
 }

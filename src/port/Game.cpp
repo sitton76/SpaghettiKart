@@ -1,9 +1,9 @@
 #include <libultraship.h>
 
 #include "Game.h"
+#include "port/Engine.h"
 
 #include <Fast3D/gfx_pc.h>
-#include "Engine.h"
 #include "engine/World.h"
 #include "engine/courses/Course.h"
 #include "engine/courses/MarioRaceway.h"
@@ -49,6 +49,7 @@ extern "C" {
 #include "networking/networking.h"
 #include "render_courses.h"
 #include "menus.h"
+#include "update_objects.h"
 //#include "engine/wasm.h"
 }
 
@@ -159,19 +160,21 @@ void CustomEngineInit() {
     gWorldInstance.CurrentCup->CursorPosition = 3;
     gWorldInstance.CupIndex = 0;
 
-    ModelLoader::LoadModelList bowserStatueList = {
-        .course = gBowsersCastle,
-        .gfxBuffer = &gBowserStatueGfx[0],
-        .gfxBufferSize = 162,
-        .gfxStart = (0x2BB8 / 8), // 0x2BB8 / sizeof(OldGfx)
-        .vtxBuffer = &gBowserStatueVtx[0],
-        .vtxBufferSize = 717,
-        .vtxStart = 1942,
-    };
+    // ModelLoader::LoadModelList bowserStatueList = {
+    //     .course = gBowsersCastle,
+    //     .gfxBuffer = &gBowserStatueGfx[0],
+    //     .gfxBufferSize = 162,
+    //     .gfxStart = (0x2BB8 / 8), // 0x2BB8 / sizeof(OldGfx)
+    //     .vtxBuffer = &gBowserStatueVtx[0],
+    //     .vtxBufferSize = 717,
+    //     .vtxStart = 1942,
+    // };
 
-    gModelLoader.Add(bowserStatueList);
+    // Model loader systems allows cutting pieces out of courses and making them actors.
+    // Commented out due to alleged stability issues.
+    //gModelLoader.Add(bowserStatueList);
 
-    gModelLoader.Load();
+    //gModelLoader.Load();
 }
 
 extern "C" {
@@ -188,7 +191,7 @@ extern "C" {
         return gWorldInstance.PreviousCup();
     }
 
-    void CourseManager_SetCup(void* cup) {
+    void CM_SetCup(void* cup) {
         gWorldInstance.SetCup((Cup*)cup);
     }
 
@@ -210,9 +213,6 @@ extern "C" {
         }
     }
 
-    CProperties* GetCoursePropsA() {
-        return (CProperties*) gWorldInstance.GetCourseProps();
-    }
 
     size_t GetCourseIndex() {
         return gWorldInstance.CourseIndex;
@@ -239,91 +239,50 @@ extern "C" {
         gWorldInstance.CurrentCourse = gWorldInstance.Courses[gWorldInstance.CourseIndex];
     }
 
-    void CourseManager_SpawnVehicles() {
-        if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.CurrentCourse->SpawnVehicles();
-        }
-    }
-
-    void CourseManager_VehiclesSpawn() {
-        for (auto& vehicle : gWorldInstance.Vehicles) {
-            if (vehicle) {
-                vehicle->Spawn();
+    void CM_VehicleCollision(s32 playerId, Player* player) {
+        for (auto& actor : gWorldInstance.Actors) {
+            if (actor) {
+                actor->VehicleCollision(playerId, player);
             }
         }
     }
 
-    void CourseManager_VehiclesTick() {
-        for (auto& vehicle : gWorldInstance.Vehicles) {
-            if (vehicle) {
-                vehicle->Tick();
+    void CM_BombKartsWaypoint(s32 cameraId) {
+        for (auto& object : gWorldInstance.Objects) {
+            if (auto kart = dynamic_cast<OBombKart*>(object)) {;
+                if (kart) {
+                    kart->Waypoint(cameraId);
+                }
             }
         }
     }
 
-    void CourseManager_VehiclesCollision(s32 playerId, Player* player) {
-        for (auto& vehicle : gWorldInstance.Vehicles) {
-            if (vehicle) {
-                vehicle->Collision(playerId, player);
-            }
+    void CM_DisplayBattleBombKart(s32 playerId, s32 primAlpha) {
+
+        if ((playerId < 0) || (playerId > 4)) {
+            return;
+        }
+
+        if (primAlpha == 0) {
+            gWorldInstance.playerBombKart[playerId].state = PlayerBombKart::PlayerBombKartState::DISABLED;
+            gWorldInstance.playerBombKart[playerId]._primAlpha = primAlpha;
+        } else {
+            gWorldInstance.playerBombKart[playerId].state = PlayerBombKart::PlayerBombKartState::ACTIVE;
+            gWorldInstance.playerBombKart[playerId]._primAlpha = primAlpha;
         }
     }
 
-    void CourseManager_SpawnBombKarts() {
-        for (auto& kart : gWorldInstance.BombKarts) {
-            if (kart) {
-                kart->Spawn();
-            }
+    void CM_DrawBattleBombKarts(s32 cameraId) {
+        for (size_t i = 0; i < gPlayerCount; i++) {
+            gWorldInstance.playerBombKart[i].Draw(i, cameraId);
         }
     }
 
-    void CourseManager_TickBombKarts() {
-        for (auto& kart : gWorldInstance.BombKarts) {
-            if (kart) {
-                kart->Tick();
-            }
-        }
-    }
-
-    void CourseManager_DrawBombKarts(s32 cameraId) {
-        for (auto& kart : gWorldInstance.BombKarts) {
-            if (kart) {
-                kart->Draw(cameraId);
-            }
-        }
-    }
-
-    void CourseManager_DrawBattleBombKarts(s32 cameraId) {
-        for (auto& kart : gWorldInstance.BombKarts) {
-            if (kart) {
-                kart->DrawBattle(cameraId);
-            }
-        }
-    }
-
-    void CourseManager_BombKartsWaypoint(s32 cameraId) {
-        for (auto& kart : gWorldInstance.BombKarts) {
-            if (kart) {
-                kart->Waypoint(cameraId);
-            }
-        }
-    }
-
-    void CourseManager_DrawVehicles(s32 playerId) {
-        for (auto& vehicle : gWorldInstance.Vehicles) {
-            if (vehicle) {
-                vehicle->Draw(playerId);
-            }
-        }
-    }
-
-    void CourseManager_ClearVehicles(void) {
-        gWorldInstance.ClearVehicles();
+    void CM_ClearVehicles(void) {
         gWorldInstance.Crossings.clear();
-        gWorldInstance.BombKarts.clear();
     }
 
-    void CourseManager_CrossingTrigger() {
+    void CM_CrossingTrigger() {
         for (auto& crossing : gWorldInstance.Crossings) {
             if (crossing) {
                 crossing->CrossingTrigger();
@@ -331,7 +290,7 @@ extern "C" {
         }
     }
 
-    void CourseManager_AICrossingBehaviour(s32 playerId) {
+    void CM_AICrossingBehaviour(s32 playerId) {
         for (auto& crossing : gWorldInstance.Crossings) {
             if (crossing) {
                 crossing->AICrossingBehaviour(playerId);
@@ -339,28 +298,20 @@ extern "C" {
         }
     }
 
-    s32 CourseManager_GetCrossingOnTriggered(uintptr_t* crossing) {
+    s32 CM_GetCrossingOnTriggered(uintptr_t* crossing) {
         TrainCrossing* ptr = (TrainCrossing*) crossing;
         if (ptr) {
             return ptr->OnTriggered;
         }
     }
 
-    void CourseManager_TrainSmokeTick(void) {
-        TrainSmokeTick();
-    }
-
-    void CourseManager_TrainSmokeDraw(s32 cameraId) {
-        TrainSmokeDraw(cameraId);
-    }
-
-    void CourseManager_LoadTextures() {
+    void CM_LoadTextures() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->LoadTextures();
         }
     }
 
-    void CourseManager_RenderCourse(struct UnkStruct_800DC5EC* arg0) {
+    void CM_RenderCourse(struct UnkStruct_800DC5EC* arg0) {
         if (gWorldInstance.CurrentCourse->IsMod() == false) {
             if ((CVarGetInteger("gFreecam", 0) == true)) {
                 // Render credits courses
@@ -374,32 +325,32 @@ extern "C" {
         }
     }
 
-    void CourseManager_RenderCredits() {
+    void CM_RenderCredits() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->RenderCredits();
         }
     }
 
-    void CourseManager_TickActors() {
+    void CM_TickActors() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.TickActors();
         }
     }
 
-    void CourseManager_DrawActors(Camera* camera, struct Actor* actor) {
+    void CM_DrawActors(Camera* camera, struct Actor* actor) {
         AActor* a = gWorldInstance.ConvertActorToAActor(actor);
         if (a->IsMod()) {
             a->Draw(camera);
         }
     }
 
-    void CourseManager_SpawnActors() {
+    void CM_BeginPlay() {
         if (gWorldInstance.CurrentCourse) {
-            gWorldInstance.CurrentCourse->SpawnActors();
+            gWorldInstance.CurrentCourse->BeginPlay();
         }
     }
 
-    void CourseManager_TickObjects() {
+    void CM_TickObjects() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.TickObjects();
         }
@@ -407,13 +358,13 @@ extern "C" {
 
     // A couple objects such as lakitu are ticked inside of process_game_tick which support 60fps.
     // This is a fallback to support that.
-    void CourseManager_TickObjects60fps() {
+    void CM_TickObjects60fps() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.TickObjects60fps();
         }
     }
 
-    void CourseManager_DrawObjects(s32 cameraId) {
+    void CM_DrawObjects(s32 cameraId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.DrawObjects(cameraId);
         }
@@ -432,7 +383,7 @@ extern "C" {
     }
 
     // Helps prevents users from forgetting to add a finishline to their course
-    bool cm_DoesFinishlineExist() {
+    bool CM_DoesFinishlineExist() {
         for (AActor* actor : gWorldInstance.Actors) {
             if (dynamic_cast<AFinishline*>(actor))  {
                 return true;
@@ -441,104 +392,108 @@ extern "C" {
         return false;
     }
 
-    void CourseManager_InitClouds() {
+    void CM_InitClouds() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->InitClouds();
         }
     }
 
-    void CourseManager_UpdateClouds(s32 arg0, Camera* camera) {
+    void CM_UpdateClouds(s32 arg0, Camera* camera) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->UpdateClouds(arg0, camera);
         }
     }
 
-    void CourseManager_Waypoints(Player* player, int8_t playerId) {
+    void CM_Waypoints(Player* player, int8_t playerId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->Waypoints(player, playerId);
         }
     }
 
-    void CourseManager_SomeCollisionThing(Player* player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5,
+    void CM_SomeCollisionThing(Player* player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5,
                                         f32* arg6, f32* arg7) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->SomeCollisionThing(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
         }
     }
 
-    void CourseManager_MinimapSettings() {
+    void CM_MinimapSettings() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->MinimapSettings();
         }
     }
 
-    void CourseManager_InitCourseObjects() {
+    void CM_InitCourseObjects() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->InitCourseObjects();
         }
     }
 
-    void CourseManager_UpdateCourseObjects() {
+    void CM_UpdateCourseObjects() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->UpdateCourseObjects();
         }
+        TrainSmokeTick();
     }
 
-    void CourseManager_RenderCourseObjects(s32 cameraId) {
+    void CM_RenderCourseObjects(s32 cameraId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->RenderCourseObjects(cameraId);
         }
+
+        TrainSmokeDraw(cameraId);
     }
 
-    void CourseManager_SomeSounds() {
+    void CM_SomeSounds() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->SomeSounds();
         }
     }
 
-    void CourseManager_CreditsSpawnActors() {
+    void CM_CreditsSpawnActors() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->CreditsSpawnActors();
         }
     }
 
-    void CourseManager_WhatDoesThisDo(Player* player, int8_t playerId) {
+    void CM_WhatDoesThisDo(Player* player, int8_t playerId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->WhatDoesThisDo(player, playerId);
         }
     }
 
-    void CourseManager_WhatDoesThisDoAI(Player* player, int8_t playerId) {
+    void CM_WhatDoesThisDoAI(Player* player, int8_t playerId) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->WhatDoesThisDoAI(player, playerId);
         }
     }
 
-    void CourseManager_MinimapFinishlinePosition() {
+    void CM_MinimapFinishlinePosition() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->MinimapFinishlinePosition();
         }
     }
 
-    void CourseManager_SetStaffGhost() {
+    void CM_SetStaffGhost() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->SetStaffGhost();
         }
     }
 
-    CProperties* CourseManager_GetProps() {
+    Properties* CM_GetProps() {
         if (gWorldInstance.CurrentCourse) {
-            return (CProperties*) &gWorldInstance.CurrentCourse->Props;
+            return &gWorldInstance.CurrentCourse->Props;
         }
+        return NULL;
     }
 
-    void CourseManager_ScrollingTextures() {
+    void CM_ScrollingTextures() {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->ScrollingTextures();
         }
     }
 
-    void CourseManager_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
+    void CM_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection) {
         if (gWorldInstance.CurrentCourse) {
             gWorldInstance.CurrentCourse->DrawWater(screen, pathCounter, cameraRot, playerDirection);
         }
@@ -613,7 +568,7 @@ extern "C" {
         gWorldInstance.CurrentCourse = (Course*) course;
     }
 
-    struct Actor* m_GetActor(size_t index) {
+    struct Actor* CM_GetActor(size_t index) {
         if (index < gWorldInstance.Actors.size()) {
             AActor* actor = gWorldInstance.Actors[index];
             return reinterpret_cast<struct Actor*>(reinterpret_cast<char*>(actor) + sizeof(void*));
@@ -623,7 +578,7 @@ extern "C" {
         }
     }
 
-    size_t m_FindActorIndex(Actor* actor) {
+    size_t CM_FindActorIndex(Actor* actor) {
         // Move the ptr back to look at the vtable.
         // This gets us the proper C++ class instead of just the variables used in C.
         AActor* a = reinterpret_cast<AActor*>((char*)actor - sizeof(void*));
@@ -637,7 +592,7 @@ extern "C" {
         return 0;
     }
 
-    void m_DeleteActor(size_t index) {
+    void CM_DeleteActor(size_t index) {
         std::vector<AActor*> actors = gWorldInstance.Actors;
         if (index < actors.size()) {
             actors.erase(actors.begin() + index);
@@ -654,15 +609,15 @@ extern "C" {
         gWorldInstance.Lakitus.clear();
     }
 
-    struct Actor* m_AddBaseActor(void) {
+    struct Actor* CM_AddBaseActor(void) {
         return (struct Actor*) gWorldInstance.AddBaseActor();
     }
 
-    size_t m_GetActorSize() {
+    size_t CM_GetActorSize() {
         return gWorldInstance.Actors.size();
     }
 
-    void m_ActorCollision(Player* player, Actor* actor) {
+    void CM_ActorCollision(Player* player, Actor* actor) {
         AActor* a = gWorldInstance.ConvertActorToAActor(actor);
 
         if (a->IsMod()) {

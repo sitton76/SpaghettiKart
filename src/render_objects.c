@@ -43,7 +43,6 @@
 #include "port/Game.h"
 #include "port/Engine.h"
 
-#include "engine/Engine.h"
 #include "engine/courses/Course.h"
 #include "engine/Matrix.h"
 
@@ -2621,9 +2620,9 @@ void func_8004EF9C(s32 arg0) {
     s16 temp_t0;
     s16 temp_v0;
 
-    temp_v0 = CourseManager_GetProps()->MinimapDimensions.X;
-    temp_t0 = CourseManager_GetProps()->MinimapDimensions.Z;
-    func_8004D37C(0x00000104, 0x0000003C, CourseManager_GetProps()->MinimapTexture, 0x000000FF, 0x000000FF, 0x000000FF,
+    temp_v0 = CM_GetProps()->MinimapDimensions.X;
+    temp_t0 = CM_GetProps()->MinimapDimensions.Z;
+    func_8004D37C(0x00000104, 0x0000003C, CM_GetProps()->MinimapTexture, 0x000000FF, 0x000000FF, 0x000000FF,
                   0x000000FF, temp_v0, temp_t0, temp_v0, temp_t0);
 }
 
@@ -2653,7 +2652,7 @@ void set_minimap_finishline_position(s32 arg0) {
     }
 
     //! @todo Get course minimap props from course.
-    CourseManager_MinimapFinishlinePosition();
+    CM_MinimapFinishlinePosition();
     draw_hud_2d_texture_8x8(var_f2, var_f0, (u8*) common_texture_minimap_finish_line);
 }
 
@@ -4032,23 +4031,17 @@ void func_800568A0(s32 objectIndex, s32 playerId) {
 }
 
 void func_800569F4(s32 playerIndex) {
-    s32 objectIndex;
-
-    objectIndex = gIndexObjectBombKart[playerIndex];
-    init_object(objectIndex, 0);
-    gObjectList[objectIndex].primAlpha = 0;
+    CM_DisplayBattleBombKart(playerIndex, 0);
 }
 
-void func_80056A40(s32 playerIndex, s32 arg1) {
-    s32 objectIndex;
 
-    objectIndex = gIndexObjectBombKart[playerIndex];
-    init_object(objectIndex, 0);
-    gObjectList[objectIndex].primAlpha = (s16) arg1;
+void func_80056A40(s32 playerIndex, s32 arg1) {
+    CM_DisplayBattleBombKart(playerIndex, arg1);
 }
 
 void func_80056A94(s32 playerIndex) {
-    func_80072428(gIndexObjectBombKart[playerIndex]);
+    //func_80072428(gIndexObjectBombKart[playerIndex]);
+    CM_DisplayBattleBombKart(playerIndex, 0);
 }
 
 void render_battle_bomb_karts(s32 cameraId) {

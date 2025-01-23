@@ -2,12 +2,13 @@
 
 #include <libultraship.h>
 #include "CoreMath.h"
+#include "engine/courses/Course.h"
 #include "objects/Object.h"
 #include "Cup.h"
-#include "vehicles/Vehicle.h"
 #include "vehicles/Train.h"
 #include "vehicles/Car.h"
 #include "objects/BombKart.h"
+#include "PlayerBombKart.h"
 #include "vehicles/Train.h"
 #include "TrainCrossing.h"
 #include "objects/Thwomp.h"
@@ -22,7 +23,6 @@
 extern "C" {
 #include "camera.h"
 #include "objects.h"
-#include "engine/Engine.h"
 };
 
 class OObject;
@@ -34,47 +34,6 @@ class TrainCrossing;
 class OLakitu;
 
 class World {
-
-    typedef struct {
-        uint8_t r, g, b;
-    } RGB8;
-
-    typedef struct {
-        RGB8 TopRight;
-        RGB8 BottomRight;
-        RGB8 BottomLeft;
-        RGB8 TopLeft;
-        RGB8 FloorTopRight;
-        RGB8 FloorBottomRight;
-        RGB8 FloorBottomLeft;
-        RGB8 FloorTopLeft;
-    } SkyboxColours;
-
-
-    typedef struct {
-        const char* Name;
-        const char* DebugName;
-        const char* CourseLength;
-        const char* AIBehaviour;
-        float AIMaximumSeparation;
-        float AIMinimumSeparation;
-        int16_t *SomePtr;
-        uint32_t AISteeringSensitivity;
-        _struct_gCoursePathSizes_0x10 PathSizes;
-        Vec4f D_0D009418;
-        Vec4f D_0D009568;
-        Vec4f D_0D0096B8;
-        Vec4f D_0D009808;
-        const char* PathTable[4];
-        const char* PathTable2[4];
-        CloudData *Clouds;
-        CloudData *CloudList;
-        int32_t MinimapFinishlineX;
-        int32_t MinimapFinishlineY;
-        SkyboxColours Skybox;
-        MusicSeq Sequence;
-    } Properties;
-
     typedef struct {
         std::vector<Mtx> Hud;
         std::vector<Mtx> Objects;
@@ -98,7 +57,6 @@ public:
 
     OObject* AddObject(OObject* object);
 
-    CProperties* GetCourseProps();
     void TickObjects();
     void TickObjects60fps();
     void DrawObjects(s32 cameraId);
@@ -136,18 +94,12 @@ public:
 
     std::vector<AActor*> Actors;
     std::vector<OObject*> Objects;
-    std::vector<AVehicle*> Vehicles;
-    std::vector<OBombKart*> BombKarts;
     std::vector<ParticleEmitter*> Emitters;
 
     std::unordered_map<s32, OLakitu*> Lakitus;
 
-    AVehicle* AddVehicle(AVehicle* vehicle);
-
-    void ClearVehicles(void);
-
     /** Objects **/
-    void AddBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
+    PlayerBombKart playerBombKart[4]; // Used in battle mode
 
     TrainCrossing* AddCrossing(Vec3f position, u32 waypointMin, u32 waypointMax, f32 approachRadius, f32 exitRadius);
     std::vector<std::shared_ptr<TrainCrossing>> Crossings;

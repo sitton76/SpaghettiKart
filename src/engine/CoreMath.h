@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CORE_MATH_H
+#define CORE_MATH_H
 
 #include <libultraship.h>
 
@@ -13,6 +14,7 @@
 struct FVector {
     float x, y, z;
 
+#ifdef __cplusplus
     FVector& operator=(const FVector& other) {
         x = other.x;
         y = other.y;
@@ -22,6 +24,7 @@ struct FVector {
 
     FVector() : x(0), y(0), z(0) {}
     FVector(float x, float y, float z) : x(x), y(y), z(z) {}
+#endif // __cplusplus
 };
 
 /**
@@ -33,6 +36,7 @@ struct FVector {
 struct FVector2D {
     float x, z;
 
+#ifdef __cplusplus
     FVector2D& operator=(const FVector2D& other) {
         x = other.x;
         z = other.z;
@@ -41,12 +45,14 @@ struct FVector2D {
 
     FVector2D() : x(0), z(0) {}
     FVector2D(float x, float z) : x(x), z(z) {}
+#endif // __cplusplus
 };
 
 // Sets integer X Z coordinates
-struct IVector2D {
+typedef struct IVector2D {
     int32_t X, Z;
 
+#ifdef __cplusplus
     IVector2D() : X(0), Z(0) {}  // Default constructor
 
     IVector2D(int32_t x, int32_t z) : X(x), Z(z) {}  // Constructor to initialize with values
@@ -57,11 +63,13 @@ struct IVector2D {
         Z = other.Z;
         return *this;
     }
-};
+#endif // __cplusplus
+} IVector2D;
 
 struct FRotation {
     float pitch, yaw, roll;
 
+#ifdef __cplusplus
     FRotation& operator=(const FRotation& other) {
         pitch = other.pitch;
         yaw = other.yaw;
@@ -71,6 +79,7 @@ struct FRotation {
 
     FRotation() : pitch(0), yaw(0), roll(0) {}
     FRotation(float p, float y, float r) : pitch(p), yaw(y), roll(r) {}
+#endif // __cplusplus
 };
 
 /**
@@ -80,6 +89,7 @@ struct FRotation {
 struct IPathSpan {
     int Start, End;
 
+#ifdef __cplusplus
     // Default Constructor
     IPathSpan() : Start(0), End(0) {}
 
@@ -105,4 +115,7 @@ struct IPathSpan {
     bool operator!=(const IPathSpan& Other) const {
         return !(*this == Other);
     }
+#endif // __cplusplus
 };
+
+#endif // CORE_MATH_H

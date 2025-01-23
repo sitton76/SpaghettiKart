@@ -2,13 +2,19 @@
 #define _GAME_H
 
 #include <libultraship.h>
-#include "engine/Engine.h"
+#include "engine/courses/Course.h"
 
 #ifdef __cplusplus
+class Course;
 extern "C" {
-#include "camera.h"
 #endif
+#include "camera.h"
 #include "actor_types.h"
+
+Properties* CM_GetProps();
+
+void CM_DisplayBattleBombKart(s32 playerId, s32 primAlpha);
+void CM_DrawBattleBombKarts(s32 cameraId);
 
 u32 WorldNextCup(void);
 
@@ -20,8 +26,6 @@ const char* GetCupName(void);
 
 void LoadCourse();
 
-CProperties* GetCoursePropsA();
-
 size_t GetCourseIndex();
 
 void SetCourse(const char* name);
@@ -29,19 +33,13 @@ void SetCourse(const char* name);
 void NextCourse();
 void PreviousCourse();
 
-void CourseManager_SetCup(void*);
+void CM_SetCup(void*);
 
-void CourseManager_SpawnVehicles();
+void CM_LoadTextures();
 
-void CourseManager_UpdateVehicles();
+void CM_RenderCourse(struct UnkStruct_800DC5EC* arg0);
 
-void CourseManager_LoadTextures();
-
-void CourseManager_RenderCourse(struct UnkStruct_800DC5EC* arg0);
-
-void CourseManager_RenderCredits();
-
-void CourseManager_SpawnActors();
+void CM_RenderCredits();
 
 void CM_SpawnStarterLakitu();
 void CM_ActivateFinishLakitu(s32 playerId);
@@ -49,83 +47,67 @@ void CM_ActivateSecondLapLakitu(s32 playerId);
 void CM_ActivateFinalLapLakitu(s32 playerId);
 void CM_ActivateReverseLakitu(s32 playerId);
 
-bool cm_DoesFinishlineExist();
+bool CM_DoesFinishlineExist();
 
-void CourseManager_InitClouds();
+void CM_InitClouds();
 
-void CourseManager_DrawActors(Camera* camera, struct Actor* actor);
+void CM_DrawActors(Camera* camera, struct Actor* actor);
 
-void CourseManager_TickObjects();
-void CourseManager_TickObjects60fps();
-void CourseManager_DrawObjects(s32 cameraId);
+void CM_TickObjects();
+void CM_TickObjects60fps();
+void CM_DrawObjects(s32 cameraId);
 
 void CM_TickParticles(void);
 void CM_DrawParticles(s32 cameraId);
 
-void CourseManager_UpdateClouds(s32 arg0, Camera* camera);
+void CM_UpdateClouds(s32 arg0, Camera* camera);
 
-void CourseManager_Waypoints(Player* player, int8_t playerId);
+void CM_Waypoints(Player* player, int8_t playerId);
 
-void CourseManager_SomeCollisionThing(Player* player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5,
+void CM_SomeCollisionThing(Player* player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5,
                                       f32* arg6, f32* arg7);
 
-void CourseManager_MinimapSettings();
+void CM_MinimapSettings();
 
-void CourseManager_InitCourseObjects();
+void CM_InitCourseObjects();
 
-void CourseManager_UpdateCourseObjects();
+void CM_UpdateCourseObjects();
 
-void CourseManager_RenderCourseObjects(s32 cameraId);
+void CM_RenderCourseObjects(s32 cameraId);
 
-void CourseManager_SomeSounds();
+void CM_SomeSounds();
 
-void CourseManager_CreditsSpawnActors();
+void CM_CreditsSpawnActors();
 
-void CourseManager_WhatDoesThisDo(Player* player, int8_t playerId);
+void CM_WhatDoesThisDo(Player* player, int8_t playerId);
 
-void CourseManager_WhatDoesThisDoAI(Player* player, int8_t playerId);
+void CM_WhatDoesThisDoAI(Player* player, int8_t playerId);
 
-void CourseManager_MinimapFinishlinePosition();
+void CM_MinimapFinishlinePosition();
 
-void CourseManager_SetStaffGhost();
+void CM_SetStaffGhost();
 
-CProperties* CourseManager_GetProps();
+void CM_BombKartsWaypoint(s32 cameraId);
 
-void CourseManager_SpawnBombKarts();
+void CM_ScrollingTextures();
 
-void CourseManager_BombKartsWaypoint(s32 cameraId);
+s32 CM_GetCrossingOnTriggered(uintptr_t* crossing);
 
-void CourseManager_ScrollingTextures();
+void CM_BeginPlay();
 
-s32 CourseManager_GetCrossingOnTriggered(uintptr_t* crossing);
+void CM_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection);
 
-void CourseManager_VehiclesSpawn();
+void CM_AICrossingBehaviour(s32 playerId);
 
-void CourseManager_DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pathCounter, uint16_t cameraRot, uint16_t playerDirection);
+void CM_ClearVehicles(void);
 
-void CourseManager_AICrossingBehaviour(s32 playerId);
+void CM_CrossingTrigger();
 
-void CourseManager_ClearVehicles(void);
+void CM_VehicleCollision(s32 playerId, Player* player);
 
-void CourseManager_DrawVehicles(s32 playerId);
+void CM_TickActors();
 
-void CourseManager_CrossingTrigger();
-
-void CourseManager_VehiclesCollision(s32 playerId, Player* player);
-
-void CourseManager_VehiclesTick();
-
-void CourseManager_TickBombKarts();
-
-void CourseManager_TickActors();
-
-void CourseManager_TrainSmokeTick(void);
-
-void CourseManager_DrawBattleBombKarts(s32 cameraId);
-
-void CourseManager_DrawBombKarts(s32 cameraId);
-
-void CourseManager_TrainSmokeDraw(s32 cameraId);
+void CM_DrawBombKarts(s32 cameraId);
 
 size_t GetCupCursorPosition();
 
@@ -141,12 +123,12 @@ void SetCourseById(s32 course);
 
 void SetCourseByClass(void* course);
 
-struct Actor* m_GetActor(size_t index);
-void m_DeleteActor(size_t index);
-struct Actor* m_AddBaseActor(void);
-size_t m_GetActorSize();
-size_t m_FindActorIndex(struct Actor* actor);
-void m_ActorCollision(Player* player, struct Actor* actor);
+struct Actor* CM_GetActor(size_t index);
+void CM_DeleteActor(size_t index);
+struct Actor* CM_AddBaseActor(void);
+size_t CM_GetActorSize();
+size_t CM_FindActorIndex(struct Actor* actor);
+void CM_ActorCollision(Player* player, struct Actor* actor);
 void CM_CleanWorld(void);
 
 void* GetMarioRaceway(void);

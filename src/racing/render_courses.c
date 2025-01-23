@@ -21,6 +21,7 @@
 #include "courses/all_course_packed.h"
 #include "courses/all_course_offsets.h"
 #include "port/Game.h"
+#include "engine/courses/Course.h"
 
 #include "enhancements/collision_viewer.h"
 
@@ -241,7 +242,7 @@ void func_8029122C(struct UnkStruct_800DC5EC* arg0, s32 playerId) {
     }
     mtxf_identity(matrix);
     render_set_position(matrix, 0);
-    CourseManager_DrawWater(arg0, pathCounter, cameraRot, playerDirection);
+    CM_DrawWater(arg0, pathCounter, cameraRot, playerDirection);
     // switch (gCurrentCourseId) {
     //     case COURSE_BOWSER_CASTLE:
     //         if (gActiveScreenMode != SCREEN_MODE_1P) {
@@ -624,9 +625,7 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
     gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x07003240)));
     // d_course_mario_raceway_packed_dl_14A0
     gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070014A0)));
-    // printf("LOADING SURFACE MAP\n");
     render_course_segments(mario_raceway_dls, arg0);
-    // printf("SURFACE MAP LOADED\n");
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIDECALA, G_CC_MODULATEIDECALA);
     gDPSetRenderMode(gDisplayListHead++, G_RM_AA_ZB_TEX_EDGE, G_RM_AA_ZB_TEX_EDGE2);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK);
@@ -639,7 +638,6 @@ void render_mario_raceway(struct UnkStruct_800DC5EC* arg0) {
     gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x070000E0)));
     // d_course_mario_raceway_packed_dl_160
     gSPDisplayList(gDisplayListHead++, ((uintptr_t) segmented_gfx_to_virtual(0x07000160)));
-    // printf("RENDERED COURSE\n");
 }
 
 void render_choco_mountain(struct UnkStruct_800DC5EC* arg0) {
@@ -1324,7 +1322,7 @@ void render_big_donut(struct UnkStruct_800DC5EC* arg0) {
 
 void func_8029569C(void) {
 
-    CourseManager_RenderCredits();
+    CM_RenderCredits();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -1404,7 +1402,7 @@ void render_course(struct UnkStruct_800DC5EC* arg0) {
         return;
     }
 
-    CourseManager_RenderCourse(arg0);
+    CM_RenderCourse(arg0);
 
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
@@ -1716,7 +1714,7 @@ void course_init(void) {
 
 void func_802966A0(void) {
 
-    CourseManager_ScrollingTextures();
+    CM_ScrollingTextures();
 
     // switch (gCurrentCourseId) {
     //     case COURSE_KOOPA_BEACH:
