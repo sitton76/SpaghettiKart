@@ -8250,6 +8250,7 @@ void func_800A638C(MenuItem* arg0) {
 
 void func_800A66A8(MenuItem* arg0, Unk_D_800E70A0* arg1) {
     Mtx* mtx;
+    Mtx* mtx2;
     f32 tmp;
     static float x2, y2, z2;
     static float x1, y1, z1;
