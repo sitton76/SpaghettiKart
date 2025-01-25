@@ -2832,37 +2832,9 @@ Gfx* func_800963F0(Gfx* displayListHead, s8 textureFormat, s32 texScaleS, s32 te
 // Try locking the word at `8018DC80` to see something like 0x20 just before confirming character selection to make it
 // last longer
 Gfx* func_80096CD8(Gfx* displayListHead, s32 xPos, s32 yPos, u32 width, u32 height) {
-    u32 x;
-    u32 y;
-    s32 pad;
-    u32 rectXoffset;
-    u32 rectYoffset;
-    s32 tileWidth = 1;
-    s32 tileHeight;
-    s32 masks = 0;
-    s32 maskt = 0;
     s32 rnd;
 
-    while (tileWidth < width) {
-        tileWidth *= 2;
-    }
-
-    tileHeight = 1024 / tileWidth;
-    while ((tileHeight / 2) > height) {
-        tileHeight /= 2;
-    }
-
-    rnd = tileWidth;
-    while (rnd > 1) {
-        rnd /= 2;
-        masks += 1;
-    }
-    rnd = tileHeight;
-    while (rnd > 1) {
-        rnd /= 2;
-        maskt += 1;
-    }
-
+    // Ensure position and dimensions are within valid bounds
     if (xPos < 0) {
         width -= xPos;
         xPos = 0;
@@ -2876,10 +2848,7 @@ Gfx* func_80096CD8(Gfx* displayListHead, s32 xPos, s32 yPos, u32 width, u32 heig
         height = 240 - yPos;
     }
 
-    if (width == 0) {
-        return displayListHead;
-    }
-    if (height == 0) {
+    if (width == 0 || height == 0) {
         return displayListHead;
     }
 
@@ -2892,34 +2861,19 @@ Gfx* func_80096CD8(Gfx* displayListHead, s32 xPos, s32 yPos, u32 width, u32 heig
     gDPSetPrimColor(displayListHead++, 0, 0, rnd, rnd, rnd, rnd);
     gDPSetCombineMode(displayListHead++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
 
-    for (y = yPos; y < (yPos + height); y += tileHeight) {
-        if ((y + tileHeight) > (yPos + height)) {
-            rectYoffset = yPos + height - y;
-            if (rectYoffset == 0) {
-                break;
-            }
-        } else {
-            rectYoffset = tileHeight;
-        }
-        for (x = xPos; x < xPos + width; x += tileWidth) {
-            if (x + tileWidth > xPos + width) {
-                rectXoffset = xPos + width - x;
-                if (rectXoffset == 0) {
-                    break;
-                }
-            } else
-                rectXoffset = tileWidth;
+    // Directly load and draw the entire texture
+    gDPLoadTextureBlock(
+        displayListHead++,  ((u8*)LOAD_ASSET(D_0B002A00)) + (random_int(128) * 2), G_IM_FMT_IA, G_IM_SIZ_16b, width, height, 0, 
+        G_TX_WRAP, G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD
+    );
+    // Clamp positions to valid range
+    s32 xStart = CLAMP(xPos << 2, -32768, 32767); // Ensure no overflow in fixed-point
+    s32 yStart = CLAMP(yPos << 2, -32768, 32767);
+    s32 xEnd = CLAMP((xPos + width) << 2, -32768, 32767);
+    s32 yEnd = CLAMP((yPos + height) << 2, -32768, 32767);
 
-            gDPLoadTextureTile(
-                displayListHead++, (D_0B002A00 + random_int(128) * 2), G_IM_FMT_IA, G_IM_SIZ_16b, width, height, x, y,
-                x + rectXoffset, y + rectYoffset, 0, G_TX_WRAP, G_TX_WRAP, masks, maskt, G_TX_NOLOD, G_TX_NOLOD
-            );
-            gSPTextureRectangle(
-                displayListHead++, x << 2, y << 2, (x + rectXoffset) << 2, (y + rectYoffset) << 2, G_TX_RENDERTILE,
-                (x * 32) & 0xFFFF, (y * 32) & 0xFFFF, 1024, 1024
-            );
-        }
-    }
+    // Updated call with clamped values
+    gSPWideTextureRectangle(displayListHead++, xStart, yStart, xEnd, yEnd, G_TX_RENDERTILE, 0, 0, 1024, 1024);
 
     return displayListHead;
 }
