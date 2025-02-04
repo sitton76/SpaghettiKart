@@ -4514,18 +4514,18 @@ Gfx* func_8009C434(Gfx* arg0, struct_8018DEE0_entry* arg1, s32 arg2, s32 arg3, s
         if (arg4 >= 0) {
             arg0 =
                 func_80097E58(arg0, var_t1, 0, 0U, var_s0->width, var_s0->height, var_s0->dX + arg2, var_s0->dY + arg3,
-                              (u8*) sMenuTextureList[var_t0], var_s0->width, var_s0->height, (u32) arg4);
+                              (u8*) var_s0->textureData, var_s0->width, var_s0->height, (u32) arg4);
         } else {
             switch (arg4) {
                 case -1:
                     arg0 = func_80095E10(arg0, var_t1, 0x00000400, 0x00000400, 0, 0, var_s0->width, var_s0->height,
-                                         var_s0->dX + arg2, var_s0->dY + arg3, (u8*) sMenuTextureList[var_t0],
+                                         var_s0->dX + arg2, var_s0->dY + arg3, (u8*) var_s0->textureData,
                                          var_s0->width, var_s0->height);
                     break;
                 case -2:
                     arg0 = func_800963F0(arg0, var_t1, 0x00000400, 0x00000400, 0.5f, 0.5f, 0, 0, var_s0->width,
                                          var_s0->height, var_s0->dX + arg2, var_s0->dY + arg3,
-                                         (u8*) sMenuTextureList[var_t0], var_s0->width, var_s0->height);
+                                         (u8*) var_s0->textureData, var_s0->width, var_s0->height);
                     break;
             }
         }
