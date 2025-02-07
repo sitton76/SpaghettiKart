@@ -78,6 +78,8 @@ public:
     const char* gfx = nullptr;
     size_t gfxSize = 0;
     const course_texture* textures = nullptr;
+    bool bSpawnFinishline = true;
+    std::optional<FVector> FinishlineSpawnPoint;
 
     virtual ~Course() = default;
 
@@ -107,8 +109,6 @@ public:
     virtual void SetStaffGhost();
     virtual void Render(struct UnkStruct_800DC5EC*);
     virtual void RenderCredits();
-    virtual void SpawnVehicles();
-    virtual void UpdateVehicles();
     virtual void Waypoints(Player* player, int8_t playerId);
     virtual void Collision();
     virtual void ScrollingTextures();

@@ -180,8 +180,6 @@ void MarioRaceway::BeginPlay() {
     Vec3f velocity = { 0.0f, 0.0f, 0.0f };
     Vec3s rotation = { 0, 0, 0 };
 
-    gWorldInstance.AddActor(new AFinishline());
-
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_mario_raceway_tree_spawns));
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_mario_raceway_piranha_plant_spawns));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_mario_raceway_item_box_spawns));
@@ -202,10 +200,6 @@ void MarioRaceway::BeginPlay() {
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
     }
-}
-
-void MarioRaceway::SpawnVehicles() {
-
 }
 
 // Likely sets minimap boundaries

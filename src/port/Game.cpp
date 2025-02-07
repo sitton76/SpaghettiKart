@@ -93,6 +93,8 @@ Cup* gBattleCup;
 
 ModelLoader gModelLoader;
 
+s32 gTrophyIndex = NULL;
+
 void CustomEngineInit() {
 
     gMarioRaceway = new MarioRaceway();
@@ -348,8 +350,16 @@ void CM_DrawActors(Camera* camera, struct Actor* actor) {
 }
 
 void CM_BeginPlay() {
-    if (gWorldInstance.CurrentCourse) {
-        gWorldInstance.CurrentCourse->BeginPlay();
+    Course* course = gWorldInstance.CurrentCourse;
+
+    if (course) {
+
+        // Do not spawn finishline in credits or battle mode. And if bSpawnFinishline.
+        if ((gGamestate != CREDITS_SEQUENCE) && (gGamestate != BATTLE) && (course->bSpawnFinishline)) {
+            gWorldInstance.AddActor(new AFinishline(course->FinishlineSpawnPoint));
+        }
+
+        course->BeginPlay();
     }
 }
 
@@ -615,6 +625,7 @@ void CM_CleanWorld(void) {
     gWorldInstance.Objects.clear();
     gWorldInstance.Emitters.clear();
     gWorldInstance.Lakitus.clear();
+    gWorldInstance.Reset();
 }
 
 struct Actor* CM_AddBaseActor(void) {

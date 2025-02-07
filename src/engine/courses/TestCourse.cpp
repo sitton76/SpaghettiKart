@@ -25,7 +25,6 @@
 #include "engine/objects/HotAirBalloon.h"
 #include "engine/objects/Crab.h"
 #include "engine/objects/Boos.h"
-#include "engine/particles/StarEmitter.h"
 
 extern "C" {
     #include "main.h"
@@ -151,91 +150,6 @@ void TestCourse::LoadTextures() {
     dma_textures(gTexturePiranhaPlant9, 0x000003E8U, 0x00000800U);
 }
 
-void TestCourse::BeginPlay() {
-    struct ActorSpawnData itemboxes[] = {
-        {   200, 1500, 200 , 0},
-        {   350, 2500, 300 , 1},
-        {   400, 2000, 350 , 2},
-        {    40, 0, -800, 0},
-        {    -40, 0, -800, 0},
-        {    0, 0, -800, 0},
-        {    999, 6, 482, 0},
-        {    1064, 8, 275, {0}},
-        {   1028, 5, -39 , {0}},
-        {    320, 0, 1020, {0}},
-        {   293, 0, 950, {0}},
-        {{ -32768, 0,    0 }, {0}},
-    };
-
-    struct ActorSpawnData rocks[] = {
-        {{   200, 1500, 200 }, {0}},
-        {{   350, 2500, 300 }, {1}},
-        {{   400, 2000, 350 }, {2}},
-        {{ -32768,   0,   0 }, {0}},
-    };
-
-    gWorldInstance.AddActor(new AFinishline());
-
-    spawn_all_item_boxes(itemboxes);
-    spawn_falling_rocks(rocks);
-
-    Vec3f test = {-100, 0, -150};
-    Vec3s rot = {0, 0, 0};
-    Vec3f vel = {0, 0, 0};
-
-    add_actor_to_empty_slot(test, rot, vel, ACTOR_TREE_MARIO_RACEWAY);
-
-    struct RailroadCrossing* rrxing;
-    Vec3f position;
-    Vec3f velocity = { 0.0f, 0.0f, 0.0f };
-    Vec3s rotation = { 0, 0, 0 };
-    vec3f_set(position, 50.0f, 2.0f, 50.0f);
-
-    Vec3f crossingPos = {0, 2, 0};
-    uintptr_t* crossing1 = (uintptr_t*) gWorldInstance.AddCrossing(crossingPos, 0, 2, 900.0f, 650.0f);
-
-    position[0] *= gCourseDirection;
-    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
-                                                                            ACTOR_RAILROAD_CROSSING));
-    rrxing->crossingTrigger = crossing1;
-
-    Vec3f pos = {0, 80, 0};
-    // gWorldInstance.AddActor(new ACloud(pos));
-
-    // gWorldInstance.AddActor(new OSeagull(0, pos));
-    // gWorldInstance.AddActor(new OSeagull(1, pos));
-    // gWorldInstance.AddActor(new OSeagull(2, pos));
-    // gWorldInstance.AddActor(new OSeagull(3, pos));
-    // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
-    // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
-    //gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
-    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f, OTrashBin::Behaviour::MUNCHING));
-
-//gWorldInstance.AddEmitter(new StarEmitter(FVector(0,50,0)));
-    //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
-    //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
-//    gWorldInstance.AddObject(new OHotAirBalloon(FVector(0.0, 20.0f, -200.0f)));
-
-    //gWorldInstance.AddObject(new OCrab(FVector2D(0, 0), FVector2D(0, -200)));
-//    gWorldInstance.AddActor(new ABowserStatue(FVector(-200, 0, 0), ABowserStatue::Behaviour::CRUSH));
-
-//    gWorldInstance.AddObject(new OBoos(10, IPathSpan(0, 5), IPathSpan(18, 23), IPathSpan(25, 50)));
-
-}
-
-// Likely sets minimap boundaries
-void TestCourse::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust5, 0x443, 0x1000));
-    D_8018D2A0 = 0.022f;
-    D_8018D2E0 = 6;
-    D_8018D2E8 = 28;
-    D_8018D2C0[0] = 260;
-    D_8018D2D8[0] = 170;
-    D_80165718 = 0;
-    D_80165720 = 5;
-    D_80165728 = -240;
-}
-
 Path2D test_course_path2D[] = {
     {    0, 0},
     {    0, -100},
@@ -294,22 +208,98 @@ Path2D test_course_path2D[] = {
     { -32768, -32768 } // Terminator
 };
 
-void TestCourse::SpawnVehicles() {
+void TestCourse::BeginPlay() {
+    struct ActorSpawnData itemboxes[] = {
+        {   200, 1500, 200 , 0},
+        {   350, 2500, 300 , 1},
+        {   400, 2000, 350 , 2},
+        {    40, 0, -800, 0},
+        {    -40, 0, -800, 0},
+        {    0, 0, -800, 0},
+        {    999, 6, 482, 0},
+        {    1064, 8, 275, {0}},
+        {   1028, 5, -39 , {0}},
+        {    320, 0, 1020, {0}},
+        {   293, 0, 950, {0}},
+        {{ -32768, 0,    0 }, {0}},
+    };
+
+    struct ActorSpawnData rocks[] = {
+        {{   200, 1500, 200 }, {0}},
+        {{   350, 2500, 300 }, {1}},
+        {{   400, 2000, 350 }, {2}},
+        {{ -32768,   0,   0 }, {0}},
+    };
+
+    spawn_all_item_boxes(itemboxes);
+    spawn_falling_rocks(rocks);
+
+    Vec3f test = {-100, 0, -150};
+    Vec3s rot = {0, 0, 0};
+    Vec3f vel = {0, 0, 0};
+
+    add_actor_to_empty_slot(test, rot, vel, ACTOR_TREE_MARIO_RACEWAY);
+
+    struct RailroadCrossing* rrxing;
+    Vec3f position;
+    Vec3f velocity = { 0.0f, 0.0f, 0.0f };
+    Vec3s rotation = { 0, 0, 0 };
+    vec3f_set(position, 50.0f, 2.0f, 50.0f);
+
+    Vec3f crossingPos = {0, 2, 0};
+    uintptr_t* crossing1 = (uintptr_t*) gWorldInstance.AddCrossing(crossingPos, 0, 2, 900.0f, 650.0f);
+
+    position[0] *= gCourseDirection;
+    rrxing = (struct RailroadCrossing*) GET_ACTOR(add_actor_to_empty_slot(position, rotation, velocity,
+                                                                            ACTOR_RAILROAD_CROSSING));
+    rrxing->crossingTrigger = crossing1;
+
+    Vec3f pos = {0, 80, 0};
+    // gWorldInstance.AddActor(new ACloud(pos));
+
+    // gWorldInstance.AddActor(new OSeagull(0, pos));
+    // gWorldInstance.AddActor(new OSeagull(1, pos));
+    // gWorldInstance.AddActor(new OSeagull(2, pos));
+    // gWorldInstance.AddActor(new OSeagull(3, pos));
+    // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
+    // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
+    //gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
+    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f, OTrashBin::Behaviour::MUNCHING));
+
+    //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
+    //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
+//    gWorldInstance.AddObject(new OHotAirBalloon(FVector(0.0, 20.0f, -200.0f)));
+
+    //gWorldInstance.AddObject(new OCrab(FVector2D(0, 0), FVector2D(0, -200)));
+//    gWorldInstance.AddActor(new ABowserStatue(FVector(-200, 0, 0), ABowserStatue::Behaviour::CRUSH));
+
+//    gWorldInstance.AddObject(new OBoos(10, IPathSpan(0, 5), IPathSpan(18, 23), IPathSpan(25, 50)));
+
     gVehicle2DWaypoint = test_course_path2D;
     gVehicle2DWaypointLength = 53;
     D_80162EB0 = spawn_actor_on_surface(test_course_path2D[0].x, 2000.0f, test_course_path2D[0].z);
-    
+
     //gWorldInstance.AddTrain(ATrain::TenderStatus::HAS_TENDER, 5, 2.5f, 0);
     //gWorldInstance.AddTrain(ATrain::TenderStatus::HAS_TENDER, 5, 2.5f, 8);
 
-    Vec3f pos = {0, 0, 0};
+    Vec3f pos2 = {0, 0, 0};
 
-    gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][25], 25, 4, 0.8333333f));
-    gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][45], 45, 4, 0.8333333f));
+    gWorldInstance.AddObject(new OBombKart(pos2, &D_80164550[0][25], 25, 4, 0.8333333f));
+    gWorldInstance.AddObject(new OBombKart(pos2, &D_80164550[0][45], 45, 4, 0.8333333f));
+
 }
 
-void TestCourse::UpdateVehicles() {
-    update_vehicle_trains();
+// Likely sets minimap boundaries
+void TestCourse::MinimapSettings() {
+    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust5, 0x443, 0x1000));
+    D_8018D2A0 = 0.022f;
+    D_8018D2E0 = 6;
+    D_8018D2E8 = 28;
+    D_8018D2C0[0] = 260;
+    D_8018D2D8[0] = 170;
+    D_80165718 = 0;
+    D_80165720 = 5;
+    D_80165728 = -240;
 }
 
 void TestCourse::InitCourseObjects() {}

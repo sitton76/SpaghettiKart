@@ -130,22 +130,13 @@ void SherbetLand::LoadTextures() {
 }
 
 void SherbetLand::BeginPlay() {
-    gWorldInstance.AddActor(new AFinishline());
-
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_sherbet_land_item_box_spawns));
 
-
-
-// Originally, multiplayer did not spawn the big penguin
-//    if (gPlayerCountSelection1 == 1) {
+    // Multiplayer does not spawn the big penguin
+//  if (gPlayerCountSelection1 == 1) {
         Vec3f pos = {-383.0f, 2.0f, -690.0f};
         gWorldInstance.AddObject(new OPenguin(pos, 0, OPenguin::PenguinType::EMPEROR, OPenguin::Behaviour::STRUT));
-//    }
-
-    //! @bug Skip spawning penguins due to animation crash for now
-    if (gGamestate == CREDITS_SEQUENCE) {
-        return;
-    }
+//  }
 
     Vec3f pos2 = {-2960.0f, -80.0f, 1521.0f};
     auto penguin = reinterpret_cast<OPenguin*>(gWorldInstance.AddObject(new OPenguin(pos2, 0x150, OPenguin::PenguinType::ADULT, OPenguin::Behaviour::CIRCLE)));
@@ -199,15 +190,17 @@ void SherbetLand::BeginPlay() {
     auto penguin14 = reinterpret_cast<OPenguin*>(gWorldInstance.AddObject(new OPenguin(pos11, 0x9000, OPenguin::PenguinType::CHICK, OPenguin::Behaviour::SLIDE6)));
     penguin14->MirrorModeAngleOffset = -0x4000;
 
-    if (gModeSelection == VERSUS) {
-        Vec3f kart = {0, 0, 0};
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][50], 50, 3, 0.8333333f));
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][100], 100, 1, 0.8333333f));
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][150], 150, 3, 0.8333333f));
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][200], 200, 1, 0.8333333f));
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][250], 250, 3, 0.8333333f));
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][0], 0, 0, 0.8333333f));
-        gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][0], 0, 0, 0.8333333f));
+    if (gGamestate != CREDITS_SEQUENCE) {
+        if (gModeSelection == VERSUS) {
+            Vec3f kart = {0, 0, 0};
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][50], 50, 3, 0.8333333f));
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][100], 100, 1, 0.8333333f));
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][150], 150, 3, 0.8333333f));
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][200], 200, 1, 0.8333333f));
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][250], 250, 3, 0.8333333f));
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][0], 0, 0, 0.8333333f));
+            gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[0][0], 0, 0, 0.8333333f));
+        }
     }
 }
 
