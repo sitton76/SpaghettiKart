@@ -22,14 +22,14 @@ extern "C" {
 // } FreeCam;
 
 extern f32 gDampValue;
+extern f32 gRotDampValue;
 extern f32 gFreecamSpeed;
 extern f32 gFreecamSpeedMultiplier;
-extern f32 gFreecamRotateSmoothingFactor;
 extern f32 gFreecamFollowFactor;
 extern char* D_800E76A8[];
 extern u32 fRankIndex;
 extern u32 fTargetPlayer;
-extern u32 gFreecamControllerType;
+extern u32 bFreecamUseController;
 void freecam_get_player_from_character(s32 characterId);
 }
 
@@ -58,12 +58,13 @@ void RegisterFreecamWidgets() {
     //mPortMenu->AddWidget(path, "Controller mode is not configured yet.", WIDGET_TEXT);
 
     //static int current_item = 0;
-    mPortMenu->AddWidget(path, "Control Type", WIDGET_COMBOBOX)
+    mPortMenu->AddWidget(path, "Human Interface Device", WIDGET_COMBOBOX)
         .ValuePointer(&controllerType)
-        .Callback([](WidgetInfo& info) { gFreecamControllerType = (uint32_t)*std::get<int32_t*>(info.valuePointer); })
+        .Callback([](WidgetInfo& info) { bFreecamUseController = (uint32_t)*std::get<int32_t*>(info.valuePointer); })
         .Options(UIWidgets::ComboboxOptions().ComboMap(controlType));
 
-    mPortMenu->AddWidget(path, "Move: W,A,S,D\nUp: Space, Down: Shift\nFaster: Ctrl\nLook: Right-mouse button\nTarget Player Mode: F, Next: M, Previous: N", WIDGET_TEXT);
+    mPortMenu->AddWidget(path, "Keyboard: Move: W,A,S,D, Up: Space, Down: Shift\n  Faster: Ctrl, Look: Right-mouse button\n  Target Player Mode: F, Next: M, Previous: N", WIDGET_TEXT);
+    mPortMenu->AddWidget(path, "Controller: Up: A, Down: B, Faster: Z\n  Target Player Mode: R, Next: Right DPad, Previous: Left DPad\n  Driving Mode: L and R Buttons", WIDGET_TEXT);
     mPortMenu->AddWidget(path, "Enable Flycam", WIDGET_CVAR_CHECKBOX)
         .CVar("gFreecam")
         .Options(UIWidgets::CheckboxOptions({{ .tooltip = "Allows you to fly around the course"}}));
@@ -77,8 +78,8 @@ void RegisterFreecamWidgets() {
     mPortMenu->AddWidget(path, "Camera Speed Multiplier", WIDGET_SLIDER_FLOAT)
         .ValuePointer(&gFreecamSpeedMultiplier)
         .Options(UIWidgets::FloatSliderOptions().Min(1.5f).Max(15.0f).Step(0.1f).Format("%.1f"));
-    mPortMenu->AddWidget(path, "Camera Rotation Smoothing", WIDGET_SLIDER_FLOAT)
-        .ValuePointer(&gFreecamRotateSmoothingFactor)
+    mPortMenu->AddWidget(path, "Camera Rotator Damping", WIDGET_SLIDER_FLOAT)
+        .ValuePointer(&gRotDampValue)
         .Options(UIWidgets::FloatSliderOptions().Min(0.0f).Max(1.0f).Step(0.01f).Format("%.2f"));
     mPortMenu->AddWidget(path, "Follow Factor", WIDGET_SLIDER_FLOAT)
         .ValuePointer(&gFreecamFollowFactor)
