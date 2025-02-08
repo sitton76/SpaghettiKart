@@ -77,9 +77,9 @@ execute_process(
     ${LINUXDEPLOY_EXECUTABLE}
     --appimage-extract-and-run
     --appdir=${CPACK_TEMPORARY_DIRECTORY}
-    --executable=$<TARGET_FILE:Starship>
-    $<$<BOOL:$<TARGET_PROPERTY:Starship,APPIMAGE_DESKTOP_FILE>>:--desktop-file=$<TARGET_PROPERTY:Starship,APPIMAGE_DESKTOP_FILE>>
-    $<$<BOOL:$<TARGET_PROPERTY:Starship,APPIMAGE_ICON_FILE>>:--icon-file=$<TARGET_PROPERTY:Starship,APPIMAGE_ICON_FILE>>
+    --executable=$<TARGET_FILE:Spaghettify>
+    $<$<BOOL:$<TARGET_PROPERTY:Spaghettify,APPIMAGE_DESKTOP_FILE>>:--desktop-file=$<TARGET_PROPERTY:Spaghettify,APPIMAGE_DESKTOP_FILE>>
+    $<$<BOOL:$<TARGET_PROPERTY:Spaghettify,APPIMAGE_ICON_FILE>>:--icon-file=$<TARGET_PROPERTY:Spaghettify,APPIMAGE_ICON_FILE>>
     --output=appimage
     --verbosity=2
 )
