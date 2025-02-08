@@ -235,6 +235,7 @@ file(DOWNLOAD "https://raw.githubusercontent.com/DLTcollab/sse2neon/refs/heads/m
 include_directories(${SSE2NEON_DIR})
 
 #=================== DRLibs ===================
+include(FetchContent)
 FetchContent_Declare(
     dr_libs
     GIT_REPOSITORY https://github.com/mackron/dr_libs.git
@@ -636,4 +637,3 @@ add_custom_target(
     COMMAND ${TORCH_EXECUTABLE} pack port spaghetti.o2r o2r
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/spaghetti.o2r" "${CMAKE_BINARY_DIR}/spaghetti.o2r"
 )
-
