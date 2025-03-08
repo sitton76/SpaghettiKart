@@ -430,6 +430,7 @@ nx_generate_nacp(${PROJECT_NAME}.nacp
 
 nx_create_nro(${PROJECT_NAME}
     NACP ${PROJECT_NAME}.nacp
+    ICON ${CMAKE_CURRENT_SOURCE_DIR}/icon.png
 )
 
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.nro DESTINATION . COMPONENT ${PROJECT_NAME})
@@ -665,16 +666,16 @@ add_custom_target(
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
 add_custom_target(CreateOSXIcons
     COMMAND mkdir -p ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset
-    COMMAND sips -z 16 16     logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_16x16.png
-    COMMAND sips -z 32 32     logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_16x16@2x.png
-    COMMAND sips -z 32 32     logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_32x32.png
-    COMMAND sips -z 64 64     logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_32x32@2x.png
-    COMMAND sips -z 128 128   logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_128x128.png
-    COMMAND sips -z 256 256   logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_128x128@2x.png
-    COMMAND sips -z 256 256   logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_256x256.png
-    COMMAND sips -z 512 512   logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_256x256@2x.png
-    COMMAND sips -z 512 512   logo.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_512x512.png
-    COMMAND cp                logo.png ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_512x512@2x.png
+    COMMAND sips -z 16 16     icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_16x16.png
+    COMMAND sips -z 32 32     icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_16x16@2x.png
+    COMMAND sips -z 32 32     icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_32x32.png
+    COMMAND sips -z 64 64     icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_32x32@2x.png
+    COMMAND sips -z 128 128   icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_128x128.png
+    COMMAND sips -z 256 256   icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_128x128@2x.png
+    COMMAND sips -z 256 256   icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_256x256.png
+    COMMAND sips -z 512 512   icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_256x256@2x.png
+    COMMAND sips -z 512 512   icon.png --out ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_512x512.png
+    COMMAND cp                icon.png ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset/icon_512x512@2x.png
     COMMAND iconutil -c icns -o ${CMAKE_BINARY_DIR}/macosx/spaghettikart.icns ${CMAKE_BINARY_DIR}/macosx/spaghettikart.iconset
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Creating OSX icons ..."
@@ -685,7 +686,7 @@ endif()
 
 set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE_TERMINAL YES)
 set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_DESKTOP_FILE "${CMAKE_SOURCE_DIR}/SpaghettiKart.desktop")
-set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_ICON_FILE "${CMAKE_SOURCE_DIR}/logo.png")
+set_property(TARGET ${PROJECT_NAME} PROPERTY APPIMAGE_ICON_FILE "${CMAKE_SOURCE_DIR}/icon.png")
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")

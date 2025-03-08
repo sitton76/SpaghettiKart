@@ -57,7 +57,7 @@ xml/*
 .assets-local.txt
 
 # Torch
-include/assets/*
+# include/assets/*
 torch/*
 debug/*
 /debug/*
