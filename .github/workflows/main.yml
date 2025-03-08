@@ -62,7 +62,7 @@ jobs:
       - name: Create Package
         run: |
           mkdir spaghetti-release
-          mv build/x64/Release/Spaghetti.exe spaghetti-release/
+          mv build/x64/Release/Spaghettify.exe spaghetti-release/
           mv build/x64/Release/spaghetti.o2r spaghetti-release/
           mv config.yml spaghetti-release/
           mv assets spaghetti-release/
@@ -94,7 +94,7 @@ jobs:
       - name: Create Package
         run: |
           mkdir spaghetti-release
-          mv build-cmake/Spaghetti spaghetti-release/
+          mv build-cmake/Spaghettify spaghetti-release/
           mv build-cmake/spaghetti.o2r spaghetti-release/
           mv config.yml spaghetti-release/
           mv assets spaghetti-release/
@@ -187,7 +187,7 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
-          name: Spaghetti-linux
+          name: Spaghettify-linux
           path: |
             spaghetti.appimage
             config.yml
