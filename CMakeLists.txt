@@ -94,11 +94,8 @@ set(VERSION us)
 set(USE_NETWORKING ON)
 set(SKIP_XCODE_VERSION_CHECK ON)
 
-if(CMAKE_SYSTEM_NAME STREQUAL "NintendoSwitch")
+# TODO: Sorry i broke this
 set(GFX_DEBUG_DISASSEMBLER OFF)
-else()
-set(GFX_DEBUG_DISASSEMBLER ON)
-endif()
 
 # Add compile definitions for the target
 add_compile_definitions(
