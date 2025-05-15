@@ -5,9 +5,10 @@
 
 #include "MarioRaceway.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/Object.h"
 #include "engine/objects/BombKart.h"
+#include "engine/objects/GrandPrixBalloons.h"
 
 extern "C" {
     #include "main.h"
@@ -31,6 +32,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "courses/staff_ghost_data.h"
+    #include "course.h"
     extern const char *mario_raceway_dls[];
 }
 
@@ -72,19 +74,28 @@ MarioRaceway::MarioRaceway() {
     this->vtx = d_course_mario_raceway_vertex;
     this->gfx = d_course_mario_raceway_packed_dls;
     this->gfxSize = 3367;
-    Props.textures = mario_raceway_textures;
-    Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
 
-    Props.Id = "mk:mario_raceway";
-    Props.Name = "Mario Raceway";
-    Props.DebugName = "m circuit";
-    Props.CourseLength = "567m";
+    Props.textures = mario_raceway_textures;
+    Props.Minimap.Texture = gTextureCourseOutlineMarioRaceway;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 260;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 6;
+    Props.Minimap.PlayerY = 28;
+    Props.Minimap.PlayerScaleFactor = 0.022f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = -2.0;
+
+    Id = "mk:mario_raceway";
+    Props.SetText(Props.Name, "mario raceway", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "m circuit", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "567m", sizeof(Props.CourseLength));
 
     Props.AIBehaviour = D_0D008F28;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;
-    Props.SomePtr = D_800DCB34;
+    Props.AIDistance = gMarioRacewayAIDistances;
     Props.AISteeringSensitivity = 48;
 
     Props.NearPersp = 9.0f;
@@ -122,10 +133,9 @@ MarioRaceway::MarioRaceway() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (uint8_t*) LOAD_ASSET_RAW(gTextureExhaust5);
     Props.Clouds = gKalimariDesertClouds;
     Props.CloudList = gLuigiRacewayClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {0, 184, 248};
     Props.Skybox.BottomRight = {216, 232, 248};
@@ -156,9 +166,9 @@ void MarioRaceway::Load() {
         }
     }
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_mario_raceway_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_mario_raceway_addr));
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void MarioRaceway::LoadTextures() {
@@ -191,7 +201,7 @@ void MarioRaceway::BeginPlay() {
     add_actor_to_empty_slot(position, rotation, velocity, ACTOR_MARIO_SIGN);
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][40], 40, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][100], 100, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][265], 265, 3, 0.8333333f));
@@ -200,29 +210,16 @@ void MarioRaceway::BeginPlay() {
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
     }
-}
 
-// Likely sets minimap boundaries
-void MarioRaceway::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust5, 0x443, 0x1000));
-    D_8018D2A0 = 0.022f;
-    D_8018D2E0 = 6;
-    D_8018D2E8 = 28;
-    D_8018D2C0[0] = 260;
-    D_8018D2D8[0] = 170;
-    D_80165718 = 0;
-    D_80165720 = 5;
-    D_80165728 = -240;
+    if (gGamestate != CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OGrandPrixBalloons(FVector(0, 5, -240)));
+    }
 }
 
 void MarioRaceway::InitCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
         if (gModeSelection == GRAND_PRIX) {
             func_80070714();
-        }
-        for (size_t i = 0; i < D_80165738; i++) {
-            find_unused_obj_index(&gObjectParticle3[i]);
-            init_object(gObjectParticle3[i], 0);
         }
     }
 }
@@ -260,12 +257,6 @@ void MarioRaceway::WhatDoesThisDoAI(Player* player, int8_t playerId) {
             D_80165300[playerId] = 0;
         }
     }
-}
-
-// Positions the finishline on the minimap
-void MarioRaceway::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
 void MarioRaceway::SetStaffGhost() {
@@ -389,8 +380,6 @@ void MarioRaceway::Render(struct UnkStruct_800DC5EC* arg0) {
 void MarioRaceway::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_mario_raceway_dl_9348));
 }
-
-void MarioRaceway::Collision() {}
 
 void MarioRaceway::CreditsSpawnActors() {
     dma_textures(gTextureTrees1, 0x35B, 0x800);

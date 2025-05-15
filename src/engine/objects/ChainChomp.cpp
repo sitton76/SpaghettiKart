@@ -17,9 +17,10 @@ extern "C" {
 size_t OChainChomp::_count = 0;
 
 OChainChomp::OChainChomp() {
+    Name = "Chain Chomp";
     _idx = _count;
     init_object(indexObjectList2[_count], 0);
-
+    _objectIndex = indexObjectList2[_count];
 
     _count++;
 }

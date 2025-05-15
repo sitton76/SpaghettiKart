@@ -43,16 +43,24 @@ BigDonut::BigDonut() {
     this->gfx = d_course_big_donut_packed_dls;
     this->gfxSize = 528;
     Props.textures = big_donut_textures;
-    Props.MinimapTexture = gTextureCourseOutlineBigDonut;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineBigDonut;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 257;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 32;
+    Props.Minimap.PlayerY = 31;
+    Props.Minimap.PlayerScaleFactor = 0.0257f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "big donut";
-    Props.DebugName = "doughnut";
-    Props.CourseLength = "";
+    Props.SetText(Props.Name, "big donut", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "doughnut", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D008F18;
     Props.AIMaximumSeparation = -1.0f;
     Props.AIMinimumSeparation = 0.5f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 40;
 
     Props.PathSizes = {1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0};
@@ -89,8 +97,6 @@ BigDonut::BigDonut() {
 
     Props.Clouds = NULL; // no clouds
     Props.CloudList = NULL;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {0, 0, 0};
     Props.Skybox.BottomRight = {0, 0, 0};
@@ -101,6 +107,8 @@ BigDonut::BigDonut() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 0, 0};
     Props.Sequence = MusicSeq::MUSIC_SEQ_BATTLE_ARENAS;
+
+    Props.WaterLevel = 100.0f;
 }
 
 void BigDonut::Load() {
@@ -117,17 +125,13 @@ void BigDonut::Load() {
     // d_course_big_donut_packed_dl_230
     generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000230), 6);
     func_80295C6C();
-    D_8015F8E4 = 100.0f;
-}
-
-void BigDonut::LoadTextures() {
 }
 
 void BigDonut::BeginPlay() {
     spawn_all_item_boxes((ActorSpawnData*)LOAD_ASSET_RAW(d_course_big_donut_item_box_spawns));
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = {0, 0, 0};
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][20], 20, 0, 1.0f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][40], 40, 0, 1.0f));
@@ -139,31 +143,10 @@ void BigDonut::BeginPlay() {
     }
 }
 
-// Likely sets minimap boundaries
-void BigDonut::MinimapSettings() {
-    D_8018D2A0 = 0.0257f;
-    D_8018D2E0 = 32;
-    D_8018D2E8 = 31;
-}
-
-void BigDonut::InitCourseObjects() {}
-
-void BigDonut::SomeSounds() {}
-
-void BigDonut::WhatDoesThisDo(Player* player, int8_t playerId) {}
-
-void BigDonut::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
-
-// Positions the finishline on the minimap
-void BigDonut::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void BigDonut::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
 
@@ -184,8 +167,6 @@ void BigDonut::Render(struct UnkStruct_800DC5EC* arg0) {
 }
 
 void BigDonut::RenderCredits() {}
-
-void BigDonut::Collision() {}
 
 void BigDonut::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = 0;

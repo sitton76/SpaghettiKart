@@ -135,6 +135,7 @@ void actor_init(struct Actor* actor, Vec3f startingPos, Vec3s startingRot, Vec3f
     actor->state = 0;
     actor->unk_08 = 0.0f;
     actor->boundingBoxSize = 0.0f;
+    actor->model = NULL;
     func_802AAAAC(&actor->unk30);
     switch (actorType) {
         case ACTOR_BOX_TRUCK:
@@ -151,6 +152,7 @@ void actor_init(struct Actor* actor, Vec3f startingPos, Vec3s startingRot, Vec3f
             actor->velocity[0] = actor->pos[0];
             actor->velocity[1] = actor->pos[1];
             actor->velocity[2] = actor->pos[2] + 70.0f;
+            actor->model = d_course_yoshi_valley_dl_egg_lod0;
             break;
         case ACTOR_KIWANO_FRUIT:
             actor->state = 0;
@@ -158,10 +160,12 @@ void actor_init(struct Actor* actor, Vec3f startingPos, Vec3s startingRot, Vec3f
             actor->rot[1] = 0;
             actor->rot[2] = 0;
             actor->boundingBoxSize = 2.0f;
+            actor->model = d_course_dks_jungle_parkway_dl_kiwano_fruit;
             break;
         case ACTOR_FALLING_ROCK:
             actor->flags |= 0x4000;
             actor->boundingBoxSize = 10.0f;
+            actor->model = d_course_choco_mountain_dl_falling_rock;
             break;
         case ACTOR_TRAIN_ENGINE:
             actor->unk_08 = 10.0f;
@@ -169,6 +173,7 @@ void actor_init(struct Actor* actor, Vec3f startingPos, Vec3s startingRot, Vec3f
         case ACTOR_BANANA:
             actor->flags = actor->flags | 0x4000 | 0x1000;
             actor->boundingBoxSize = 2.0f;
+            actor->model = common_model_flat_banana;
             break;
         case ACTOR_GREEN_SHELL:
             gNumSpawnedShells += 1;
@@ -194,27 +199,32 @@ void actor_init(struct Actor* actor, Vec3f startingPos, Vec3s startingRot, Vec3f
             actor->state = 0x0043;
             actor->boundingBoxSize = 3.0f;
             actor->unk_08 = 20.0f;
+            actor->model = d_course_mario_raceway_dl_tree;
             break;
         case ACTOR_MARIO_SIGN:
             actor->flags |= 0x4000;
+            actor->model = d_course_mario_raceway_dl_sign;
             break;
         case ACTOR_TREE_YOSHI_VALLEY:
             actor->flags |= 0x4000;
             actor->state = 0x0043;
             actor->boundingBoxSize = 3.0f;
             actor->unk_08 = 23.0f;
+            actor->model = d_course_yoshi_valley_dl_tree;
             break;
         case ACTOR_TREE_ROYAL_RACEWAY:
             actor->flags |= 0x4000;
             actor->state = 0x0043;
             actor->boundingBoxSize = 3.0f;
             actor->unk_08 = 17.0f;
+            actor->model = d_course_royal_raceway_dl_tree;
             break;
         case ACTOR_TREE_MOO_MOO_FARM:
             actor->state = 0x0043;
             actor->flags = -0x8000;
             actor->boundingBoxSize = 3.0f;
             actor->unk_08 = 17.0f;
+            actor->model = d_course_moo_moo_farm_dl_tree;
             break;
         case 26:
             actor->flags |= 0x4000;
@@ -275,17 +285,20 @@ void actor_init(struct Actor* actor, Vec3f startingPos, Vec3s startingRot, Vec3f
             actor->unk_04 = 0;
             actor->state = 5;
             actor->boundingBoxSize = 5.5f;
+            actor->model = D_0D003090;
             break;
         case ACTOR_ITEM_BOX:
             actor->flags |= 0x4000;
             actor->unk_04 = 0;
             actor->state = 0;
             actor->boundingBoxSize = 5.5f;
+            actor->model = D_0D003090;
             break;
         case ACTOR_PIRANHA_PLANT:
             actor->flags |= 0x4000;
             actor->state = 0x001E;
             actor->boundingBoxSize = 5.0f;
+            actor->model = d_course_mario_raceway_dl_piranha_plant;
             break;
         default:
             break;
@@ -1053,15 +1066,6 @@ void spawn_course_actors(void) {
 
     gNumPermanentActors = 0;
 
-    if (gModeSelection != BATTLE) {
-        if (!CM_DoesFinishlineExist()) {
-            printf("\n[actors.c] COURSE MISSING THE FINISHLINE\n");
-            printf("  In the Course class BeginPlay() function make sure to include:\n");
-            printf("  gWorldInstance.AddActor(new AFinishline());\n\n");
-            printf("\n  Otherwise, course textures may glitch out or other strange issues may occur.\n");
-        }
-    }
-
     // switch (gCurrentCourseId) {
     //     case COURSE_MARIO_RACEWAY:
     //         // spawn_foliage(d_course_mario_raceway_tree_spawns);
@@ -1224,6 +1228,7 @@ void init_actors_and_load_textures(void) {
     destroy_all_actors();
     CM_CleanWorld();
 
+    CM_SpawnFromLevelProps();
     CM_BeginPlay();
     spawn_course_actors();
 }
@@ -1383,7 +1388,7 @@ s16 try_remove_destructable_item(Vec3f pos, Vec3s rot, Vec3f velocity, s16 actor
     return -1;
 }
 
-// returns actor index if any slot avaible returns -1
+// returns actor index if any available actor type is -1
 s16 add_actor_to_empty_slot(Vec3f pos, Vec3s rot, Vec3f velocity, s16 actorType) {
     size_t index;
 
@@ -1402,6 +1407,7 @@ s16 add_actor_to_empty_slot(Vec3f pos, Vec3s rot, Vec3f velocity, s16 actorType)
     gNumActors++;
     struct Actor* actor = CM_AddBaseActor();
     actor_init(actor, pos, rot, velocity, actorType);
+    CM_AddEditorObject(actor, get_actor_name(actor->type));
     return (s16) CM_GetActorSize() - 1; // Return current index;
 }
 
@@ -2636,4 +2642,79 @@ void update_course_actors(void) {
     }
     evaluate_collision_for_destructible_actors();
     check_player_use_item();
+}
+
+const char* get_actor_name(s32 id) {
+    switch(id) {
+        case ACTOR_FALLING_ROCK:
+            return "Falling Rock";
+        case ACTOR_GREEN_SHELL:
+            return "Green Shell";
+        case ACTOR_RED_SHELL:
+            return "Red Shell";
+        case ACTOR_BLUE_SPINY_SHELL:
+            return "Blue Spiny Shell";
+        case ACTOR_KIWANO_FRUIT:
+            return "Kiwano Fruit";
+        case ACTOR_BANANA:
+            return "Banana";
+        case ACTOR_PADDLE_BOAT:
+            return "Paddle Boat";
+        case ACTOR_TRAIN_ENGINE:
+            return "Train Engine";
+        case ACTOR_TRAIN_TENDER:
+            return "Train Tender";
+        case ACTOR_TRAIN_PASSENGER_CAR:
+            return "Train Passenger Car";
+        case ACTOR_ITEM_BOX:
+            return "Item Box";
+        case ACTOR_HOT_AIR_BALLOON_ITEM_BOX:
+            return "Hot Air Balloon Item Box";
+        case ACTOR_FAKE_ITEM_BOX:
+            return "Fake Item Box";
+        case ACTOR_PIRANHA_PLANT:
+            return "Piranha Plant";
+        case ACTOR_BANANA_BUNCH:
+            return "Banana Bunch";
+        case ACTOR_TRIPLE_GREEN_SHELL:
+            return "Triple Green Shell";
+        case ACTOR_TRIPLE_RED_SHELL:
+            return "Triple Red Shell";
+        case ACTOR_MARIO_SIGN:
+            return "Mario Sign";
+        case ACTOR_WARIO_SIGN:
+            return "Wario Sign";
+        case ACTOR_RAILROAD_CROSSING:
+            return "Railroad Crossing";
+        case ACTOR_TREE_MARIO_RACEWAY:
+            return "Tree (Mario Raceway)";
+        case ACTOR_TREE_YOSHI_VALLEY:
+            return "Tree (Yoshi Valley)";
+        case ACTOR_TREE_ROYAL_RACEWAY:
+            return "Tree (Royal Raceway)";
+        case ACTOR_TREE_MOO_MOO_FARM:
+            return "Tree (Moo Moo Farm)";
+        case ACTOR_PALM_TREE:
+            return "Palm Tree";
+        case ACTOR_UNKNOWN_0x1A:
+            return "Unknown Plant (0x1A)";
+        case ACTOR_UNKNOWN_0x1B:
+            return "Unknown (0x1B)";
+        case ACTOR_TREE_BOWSERS_CASTLE:
+            return "Tree (Bowser's Castle)";
+        case ACTOR_TREE_FRAPPE_SNOWLAND:
+            return "Tree (Frappe Snowland)";
+        case ACTOR_CACTUS1_KALAMARI_DESERT:
+            return "Cactus 1 (Kalamari Desert)";
+        case ACTOR_CACTUS2_KALAMARI_DESERT:
+            return "Cactus 2 (Kalamari Desert)";
+        case ACTOR_CACTUS3_KALAMARI_DESERT:
+            return "Cactus 3 (Kalamari Desert)";
+        case ACTOR_BUSH_BOWSERS_CASTLE:
+            return "Bush (Bowser's Castle)";
+        case ACTOR_YOSHI_EGG:
+            return "Yoshi Egg";
+        default:
+            return "Obj";
+    }
 }

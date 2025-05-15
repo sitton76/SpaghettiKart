@@ -4,6 +4,8 @@
 
 extern "C" {
 #include "common_structs.h"
+#include "math_util.h"
+#include "math_util_2.h"
 }
 
 void AddMatrix(std::vector<Mtx>& stack, Mat4 mtx, s32 flags) {
@@ -26,7 +28,7 @@ Mtx* GetMatrix(std::vector<Mtx>& stack) {
 }
 
 /**
- * Use GetMatrix first
+ * Use GetMatrix() first
  */
 void AddMatrixFixed(std::vector<Mtx>& stack, s32 flags) {
     // Load the matrix
@@ -57,6 +59,76 @@ Mtx* SetTextMatrix(f32 arg1, f32 arg2, f32 arg3, f32 arg4) {
 
     return mtx;
 }
+
+void ApplyMatrixTransformations(Mat4 mtx, FVector pos, IRotator rot, FVector scale) {
+    f32 sine1, cosine1;
+    f32 sine2, cosine2;
+    f32 sine3, cosine3;
+
+    // Compute the sine and cosine of the orientation (Euler angles)
+    sine1 = sins(rot.pitch);
+    cosine1 = coss(rot.pitch);
+    sine2 = sins(rot.yaw);
+    cosine2 = coss(rot.yaw);
+    sine3 = sins(rot.roll);
+    cosine3 = coss(rot.roll);
+
+    // Compute the rotation matrix
+    mtx[0][0] = (cosine2 * cosine3) + ((sine1 * sine2) * sine3);
+    mtx[1][0] = (-cosine2 * sine3) + ((sine1 * sine2) * cosine3);
+    mtx[2][0] = cosine1 * sine2;
+    mtx[3][0] = pos.x;
+
+    mtx[0][1] = cosine1 * sine3;
+    mtx[1][1] = cosine1 * cosine3;
+    mtx[2][1] = -sine1;
+    mtx[3][1] = pos.y;
+
+    mtx[0][2] = (-sine2 * cosine3) + ((sine1 * cosine2) * sine3);
+    mtx[1][2] = (sine2 * sine3) + ((sine1 * cosine2) * cosine3);
+    mtx[2][2] = cosine1 * cosine2;
+    mtx[3][2] = pos.z;
+
+    // Apply scaling
+    mtx[0][0] *= scale.x;
+    mtx[1][0] *= scale.x;
+    mtx[2][0] *= scale.x;
+    mtx[0][1] *= scale.y;
+    mtx[1][1] *= scale.y;
+    mtx[2][1] *= scale.y;
+    mtx[0][2] *= scale.z;
+    mtx[1][2] *= scale.z;
+    mtx[2][2] *= scale.z;
+    
+    // Set the last row and column for the homogeneous coordinate system
+    mtx[0][3] = 0.0f;
+    mtx[1][3] = 0.0f;
+    mtx[2][3] = 0.0f;
+    mtx[3][3] = 1.0f;
+}
+
+void AddLocalRotation(Mat4 mat, IRotator rot) {
+    f32 sin_pitch = sins(rot.pitch);
+    f32 cos_pitch = coss(rot.pitch);
+    f32 sin_yaw = sins(rot.yaw);
+    f32 cos_yaw = coss(rot.yaw);
+    f32 sin_roll = sins(rot.roll);
+    f32 cos_roll = coss(rot.roll);
+
+    // Modify only the rotation part (keep translation intact)
+    mat[0][0] = (cos_yaw * cos_roll) + (sin_pitch * sin_yaw * sin_roll);
+    mat[0][1] = (cos_pitch * sin_roll);
+    mat[0][2] = (-sin_yaw * cos_roll) + (sin_pitch * cos_yaw * sin_roll);
+    
+    mat[1][0] = (-cos_yaw * sin_roll) + (sin_pitch * sin_yaw * cos_roll);
+    mat[1][1] = (cos_pitch * cos_roll);
+    mat[1][2] = (sin_yaw * sin_roll) + (sin_pitch * cos_yaw * cos_roll);
+    
+    mat[2][0] = (cos_pitch * sin_yaw);
+    mat[2][1] = -sin_pitch;
+    mat[2][2] = (cos_pitch * cos_yaw);
+}
+
 
 // API
 extern "C" {
@@ -122,3 +194,4 @@ extern "C" {
         gWorldInstance.Mtx.Objects.clear();
     }
 }
+

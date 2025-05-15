@@ -5,7 +5,7 @@
 
 #include "MooMooFarm.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "assets/moo_moo_farm_data.h"
 #include "engine/objects/MoleGroup.h"
@@ -32,6 +32,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "code_80086E70.h"
+    #include "course.h"
     extern const char *moo_moo_farm_dls[];
     extern s16 currentScreenSection;
     extern s8 gPlayerCount;
@@ -74,16 +75,24 @@ MooMooFarm::MooMooFarm() {
     this->gfx = d_course_moo_moo_farm_packed_dls;
     this->gfxSize = 3304;
     Props.textures = moo_moo_farm_textures;
-    Props.MinimapTexture = gTextureCourseOutlineMooMooFarm;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineMooMooFarm;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 271;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 18;
+    Props.Minimap.PlayerY = 36;
+    Props.Minimap.PlayerScaleFactor = 0.0155f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "moo moo farm";
-    Props.DebugName = "farm";
-    Props.CourseLength = "527m";
+    Props.SetText(Props.Name, "moo moo farm", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "farm", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "527m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009210;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.5f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 48;
 
     Props.NearPersp = 9.0f;
@@ -121,10 +130,9 @@ MooMooFarm::MooMooFarm() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust0);
     Props.Clouds = gYoshiValleyMooMooFarmClouds;
     Props.CloudList = gYoshiValleyMooMooFarmClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {0, 18, 255};
     Props.Skybox.BottomRight = {197, 211, 255};
@@ -140,9 +148,9 @@ MooMooFarm::MooMooFarm() {
 void MooMooFarm::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_moo_moo_farm_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_moo_moo_farm_addr));
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void MooMooFarm::LoadTextures() {
@@ -311,7 +319,7 @@ void MooMooFarm::BeginPlay() {
     }
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][140], 140, 3, 0.8333333f));
@@ -321,15 +329,6 @@ void MooMooFarm::BeginPlay() {
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
     }
-}
-
-// Likely sets minimap boundaries
-void MooMooFarm::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust0, 0x479, 0xC00));
-    D_8018D2A0 = 0.0155f;
-    D_8018D2C0[0] = 271;
-    D_8018D2E0 = 18;
-    D_8018D2E8 = 36;
 }
 
 void MooMooFarm::WhatDoesThisDo(Player* player, int8_t playerId) {
@@ -362,17 +361,11 @@ void MooMooFarm::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-// Positions the finishline on the minimap
-void MooMooFarm::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void MooMooFarm::Render(struct UnkStruct_800DC5EC* arg0) {
     s16 temp_s0 = arg0->pathCounter;
     s16 temp_s1 = arg0->playerDirection;
 
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -444,8 +437,6 @@ void MooMooFarm::Render(struct UnkStruct_800DC5EC* arg0) {
 void MooMooFarm::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_moo_moo_farm_dl_14088));
 }
-
-void MooMooFarm::Collision() {}
 
 void MooMooFarm::CreditsSpawnActors() {
     dma_textures(gTextureTrees4Left, 0x3E8, 0x800);

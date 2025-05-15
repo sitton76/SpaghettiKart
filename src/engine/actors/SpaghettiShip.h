@@ -20,9 +20,5 @@ public:
     virtual bool IsMod() override;
 
     FVector Spawn;
-    FVector Pos;
-    FRotation Rot = {0, 0, 0};
-    FRotation WheelRot = {0, 0, 0};
-private:
-    f32 scale;
+    IRotator WheelRot = {0, 0, 0};
 };

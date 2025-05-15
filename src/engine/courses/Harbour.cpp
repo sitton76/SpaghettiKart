@@ -6,7 +6,7 @@
 
 #include "Harbour.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/actors/BowserStatue.h"
 #include "engine/actors/Ship.h"
 #include "engine/actors/SpaghettiShip.h"
@@ -16,8 +16,8 @@
 #include "assets/mario_raceway_data.h"
 #include "assets/bowsers_castle_data.h"
 #include "assets/bowsers_castle_displaylists.h"
-#include "engine/actors/ATree.h"
-#include "engine/actors/ACloud.h"
+#include "engine/actors/Tree.h"
+#include "engine/actors/Cloud.h"
 #include "engine/vehicles/Train.h"
 #include "engine/objects/Trophy.h"
 #include "engine/objects/CheepCheep.h"
@@ -28,6 +28,7 @@
 #include "engine/objects/HotAirBalloon.h"
 #include "engine/objects/Crab.h"
 #include "engine/objects/Boos.h"
+#include "engine/objects/GrandPrixBalloons.h"
 
 extern "C" {
     #include "main.h"
@@ -50,12 +51,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "courses/harbour/track.h"
-    typedef struct {
-        Gfx* addr;
-        u8 surfaceType;
-        u8 sectionId;
-        u16 flags;
-    } TrackSections;
+    #include "course.h"
 }
 
 TrackWaypoint harbour_path[] = {
@@ -518,27 +514,28 @@ TrackWaypoint harbour_path[] = {
     {13,-121,0,0},
     {15,-121,-14,0},
     {-32768, -32768, -32768, 0}
-
-
-
-
 };
 
 Harbour::Harbour() {
     this->gfxSize = 100;
     this->textures = NULL;
-    Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineMarioRaceway;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 260;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 6;
+    Props.Minimap.PlayerY = 28;
+    Props.Minimap.PlayerScaleFactor = 0.022f;
 
-    Props.Id = "mk:harbour";
-    Props.Name = "Harbour";
-    Props.DebugName = "harbour";
-    Props.CourseLength = "99m";
+    Id = "mk:harbour";
+    Props.SetText(Props.Name, "Harbour", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "harbour", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "99m", sizeof(Props.CourseLength));
 
     Props.AIBehaviour = D_0D008F28;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;
-    Props.SomePtr = D_800DCB34;
     Props.AISteeringSensitivity = 48;
 
     Props.NearPersp = 9.0f;
@@ -576,10 +573,11 @@ Harbour::Harbour() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust5);
     Props.Clouds = gKalimariDesertClouds;
     Props.CloudList = gLuigiRacewayClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
     Props.Skybox.TopRight = {120, 140, 188};
     Props.Skybox.BottomRight = {216, 232, 248};
@@ -601,6 +599,12 @@ TrackSections harbour_surfaces[] = {
 void Harbour::Load() {
     Course::Load(road_map_001_mesh_vtx_0, NULL);
 
+    // The light gets overridden in hm_intro, reset to normal
+    ground_f3d_material_013_lights = gdSPDefLights1(
+        0x7F, 0x7F, 0x7F,
+        0xFF, 0xFF, 0xFF, 0x49, 0x49, 0x49
+    );
+
     generate_collision_mesh_with_default_section_id(ground_map_mesh, 8);
     generate_collision_mesh_with_default_section_id(road_map_001_mesh, 1);
     generate_collision_mesh_with_defaults(castle_map_002_mesh);
@@ -608,9 +612,9 @@ void Harbour::Load() {
     generate_collision_mesh_with_defaults(bush_map_004_mesh);
     generate_collision_mesh_with_defaults(statue_map_005_mesh);
 
-    parse_course_displaylists((TrackSectionsI*)harbour_surfaces);
+    parse_course_displaylists((TrackSections*)harbour_surfaces);
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void Harbour::LoadTextures() {
@@ -726,7 +730,7 @@ void Harbour::BeginPlay() {
     // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
     // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
     //gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
-    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f, OTrashBin::Behaviour::MUNCHING));
+    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), IRotator(0, 90, 0), 1.0f, OTrashBin::Behaviour::MUNCHING));
 
     //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
     //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
@@ -750,33 +754,10 @@ void Harbour::BeginPlay() {
     //         add_actor_to_empty_slot(itemPos, rot, vel, ACTOR_ITEM_BOX);
     //     }
     // }
-    gWorldInstance.AddActor(new AShip(FVector(-1694, -111, 1451), AShip::Skin::GHOSTSHIP));
-    gWorldInstance.AddActor(new AShip(FVector(2811, -83, 966), AShip::Skin::SHIP2));
-    gWorldInstance.AddActor(new AShip(FVector(1526, -36, -2228), AShip::Skin::SHIP3));
-
-
-    gWorldInstance.AddActor(new ASpaghettiShip(FVector(582, -70, -650)));
-    //gWorldInstance.AddActor(new ASpaghettiShip(FVector(2811, -83, 966   )));
-    gWorldInstance.AddActor(new AStarship(FVector(1019, 160, 1987)));
-
+    //gWorldInstance.AddActor(new AShip(FVector(-1694, -111, 1451), AShip::Skin::GHOSTSHIP));
+    //gWorldInstance.AddActor(new AShip(FVector(2811, -83, 966), AShip::Skin::SHIP2));                                                                                                                                                
+    //gWorldInstance.AddObject(new OGrandPrixBalloons(FVector(16, -136, -34)));
 }
-
-// Likely sets minimap boundaries
-void Harbour::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust5, 0x443, 0x1000));
-    D_8018D2A0 = 0.022f;
-    D_8018D2E0 = 6;
-    D_8018D2E8 = 28;
-    D_8018D2C0[0] = 260;
-    D_8018D2D8[0] = 170;
-    D_80165718 = 0;
-    D_80165720 = 5;
-    D_80165728 = -240;
-}
-
-void Harbour::InitCourseObjects() {}
-
-void Harbour::SomeSounds() {}
 
 void Harbour::WhatDoesThisDo(Player* player, int8_t playerId) {
     if (((s16) gNearestWaypointByPlayerId[playerId] >= 0x19B) &&
@@ -808,16 +789,10 @@ void Harbour::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-// Positions the finishline on the minimap
-void Harbour::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void Harbour::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
 
@@ -835,13 +810,6 @@ void Harbour::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPDisplayList(gDisplayListHead++, water_water1_mesh);
     gSPDisplayList(gDisplayListHead++, moon_moon_mesh);
 }
-
-void Harbour::RenderCredits() {
-}
-
-void Harbour::Collision() {}
-
-void Harbour::Destroy() { }
 
 bool Harbour::IsMod() {
     return true;

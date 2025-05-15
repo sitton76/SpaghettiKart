@@ -17,11 +17,13 @@ static const char* sSnowmanHeadList[] = { d_course_frappe_snowland_snowman_head 
 size_t OSnowman::_count = 0;
 
 OSnowman::OSnowman(const FVector& pos) {
+    Name = "Snowman";
     _idx = _count;
     _pos = pos;
 
     find_unused_obj_index(&_headIndex);
     init_object(_headIndex, 0);
+    _objectIndex = _headIndex;
     gObjectList[_headIndex].origin_pos[0] = pos.x * xOrientation;
     gObjectList[_headIndex].origin_pos[1] = pos.y + 5.0 + 3.0;
     gObjectList[_headIndex].origin_pos[2] = pos.z;

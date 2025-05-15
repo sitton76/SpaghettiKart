@@ -12,6 +12,7 @@
 #include "engine/objects/Podium.h"
 #include "engine/objects/CheepCheep.h"
 #include "engine/particles/StarEmitter.h"
+#include "engine/objects/GrandPrixBalloons.h"
 
 extern "C" {
     #include "main.h"
@@ -35,6 +36,7 @@ extern "C" {
     #include "memory.h"
     #include "courses/staff_ghost_data.h"
     #include "podium_ceremony_actors.h"
+    #include "course.h"
     extern const char *royal_raceway_dls[];
 }
 
@@ -90,15 +92,23 @@ PodiumCeremony::PodiumCeremony() {
     this->gfx = d_course_royal_raceway_packed_dls;
     this->gfxSize = 5670;
     Props.textures = podium_ceremony_textures;
-    Props.MinimapDimensions = IVector2D(0, 0);
+    Props.Minimap.Width = 0;
+    Props.Minimap.Height = 0;
+    Props.Minimap.Pos[0].X = 262;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 37;
+    Props.Minimap.PlayerY = 50;
+    Props.Minimap.PlayerScaleFactor = 0.014f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "royal raceway";
-    Props.DebugName = "p circuit";
-    Props.CourseLength = "1025m";
+    Props.SetText(Props.Name, "royal raceway", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "p circuit", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "1025m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009188;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.4f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.PathSizes = {500, 500, 500, 500, 1, 0, 0, 0, 0, 0, 0};
@@ -133,10 +143,9 @@ PodiumCeremony::PodiumCeremony() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust4);
     Props.Clouds = NULL; // no clouds
     Props.CloudList = NULL;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {238, 144, 255};
     Props.Skybox.BottomRight = {255, 224, 240};
@@ -147,14 +156,15 @@ PodiumCeremony::PodiumCeremony() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {255, 224, 240};
     Props.Sequence = MusicSeq::MUSIC_SEQ_UNKNOWN;
+
+    Props.WaterLevel = -60.0f;
 }
 
 void PodiumCeremony::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
     func_80295C6C();
-    D_8015F8E4 = -60.0f;
 }
 
 void PodiumCeremony::LoadTextures() {
@@ -189,7 +199,7 @@ void PodiumCeremony::BeginPlay() {
 
     OTrophy* trophy = reinterpret_cast<OTrophy*>(gWorldInstance.AddObject(new OTrophy(pos, type, OTrophy::Behaviour::PODIUM_CEREMONY)));
 
-    Vec3f kart = {0, 0, 0};
+    FVector kart = { 0, 0, 0 };
     gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[3][3], 3, 5, 1.25f));
     gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[3][40], 40, 0, 1.0f));
     gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[3][60], 60, 0, 1.0f));
@@ -197,18 +207,10 @@ void PodiumCeremony::BeginPlay() {
     gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[3][100], 100, 0, 1.0f));
     gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[3][120], 120, 0, 1.0f));
     gWorldInstance.AddObject(new OBombKart(kart, &D_80164550[3][140], 140, 0, 1.0f));
-}
 
-// Likely sets minimap boundaries
-void PodiumCeremony::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust4, 0x3F8, 0x1000));
-    D_8018D2C0[0] = 262;
-    D_8018D2A0 = 0.014f;
-    D_8018D2E0 = 37;
-    D_8018D2E8 = 50;
-    D_80165718 = -64;
-    D_80165720 = 5;
-    D_80165728 = -330;
+    if (gGamestate != CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OGrandPrixBalloons(FVector(-64, 5, -330)));
+    }
 }
 
 void PodiumCeremony::InitCourseObjects() {
@@ -216,10 +218,6 @@ void PodiumCeremony::InitCourseObjects() {
     if (gGamestate != CREDITS_SEQUENCE) {
         if (gModeSelection == GRAND_PRIX) {
             func_80070714();
-        }
-        for (i = 0; i < D_80165738; i++) {
-            find_unused_obj_index(&gObjectParticle3[i]);
-            init_object(gObjectParticle3[i], 0);
         }
     }
 }
@@ -257,12 +255,6 @@ void PodiumCeremony::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-// Positions the finishline on the minimap
-void PodiumCeremony::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void PodiumCeremony::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
@@ -295,7 +287,5 @@ void PodiumCeremony::Render(struct UnkStruct_800DC5EC* arg0) {
 void PodiumCeremony::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_royal_raceway_dl_D8E8));
 }
-
-void PodiumCeremony::Collision() {}
 
 void PodiumCeremony::Destroy() { }

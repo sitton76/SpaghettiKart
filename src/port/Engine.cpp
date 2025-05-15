@@ -18,10 +18,12 @@
 #include "resource/importers/ActorSpawnDataFactory.h"
 #include "resource/importers/UnkActorSpawnDataFactory.h"
 #include "resource/importers/ArrayFactory.h"
+#include "resource/importers/MinimapFactory.h"
 #include <Fast3D/Fast3dWindow.h>
 #include <Fonts.h>
 #include "window/gui/resource/Font.h"
 #include "window/gui/resource/FontFactory.h"
+#include "SpaghettiGui.h"
 
 #include <Fast3D/gfx_pc.h>
 #include <Fast3D/gfx_rendering_api.h>
@@ -50,14 +52,17 @@ float gInterpolationStep = 0.0f;
 GameEngine* GameEngine::Instance;
 
 GameEngine::GameEngine() {
+
+    const std::string main_path = Ship::Context::GetPathRelativeToAppDirectory("mk64.o2r");
+    const std::string assets_path = Ship::Context::LocateFileAcrossAppDirs("spaghetti.o2r");
+  
+    std::vector<std::string> archiveFiles;
+
 #ifdef __SWITCH__
     Ship::Switch::Init(Ship::PreInitPhase);
     Ship::Switch::Init(Ship::PostInitPhase);
 #endif
-    std::vector<std::string> archiveFiles;
 
-    const std::string main_path = Ship::Context::GetPathRelativeToAppDirectory("spaghetti.o2r");
-    const std::string assets_path = Ship::Context::GetPathRelativeToAppDirectory("ship.o2r");
 
 #ifdef _WIN32
     AllocConsole();
@@ -87,7 +92,7 @@ GameEngine::GameEngine() {
         if (std::filesystem::is_directory(patches_path)) {
             for (const auto& p : std::filesystem::recursive_directory_iterator(patches_path)) {
                 auto ext = p.path().extension().string();
-                if (StringHelper::IEquals(ext, ".otr") || StringHelper::IEquals(ext, ".o2r")) {
+                if (StringHelper::IEquals(ext, ".zip") || StringHelper::IEquals(ext, ".o2r")) {
                     archiveFiles.push_back(p.path().generic_string());
                 }
             }
@@ -105,7 +110,10 @@ GameEngine::GameEngine() {
     this->context->InitResourceManager(archiveFiles, {}, 3); // without this line InitWindow fails in Gui::Init()
     this->context->InitConsole(); // without this line the GuiWindow constructor fails in ConsoleWindow::InitElement()
 
-    auto wnd = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    auto gui = std::make_shared<Ship::SpaghettiGui>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    auto wnd = std::make_shared<Fast::Fast3dWindow>(gui);
+
+    //auto wnd = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
     //auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
     this->context->Init(archiveFiles, {}, 3, { 26800, 512, 1100 }, wnd, controlDeck);
@@ -163,8 +171,14 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackSectionsV0>(),
                                     RESOURCE_FORMAT_BINARY, "TrackSections",
                                     static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryXMLTrackSectionsV0>(),
+                                    RESOURCE_FORMAT_XML, "TrackSections",
+                                    static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackWaypointsV0>(),
                                     RESOURCE_FORMAT_BINARY, "Waypoints",
+                                    static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryXMLTrackWaypointsV0>(),
+                                    RESOURCE_FORMAT_XML, "Paths",
                                     static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryActorSpawnDataV0>(),
                                     RESOURCE_FORMAT_BINARY, "SpawnData",
@@ -172,6 +186,9 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryUnkActorSpawnDataV0>(),
                                     RESOURCE_FORMAT_BINARY, "UnkSpawnData",
                                     static_cast<uint32_t>(MK64::ResourceType::UnkSpawnData), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryMinimapV0>(),
+                                    RESOURCE_FORMAT_BINARY, "Minimap",
+                                    static_cast<uint32_t>(MK64::ResourceType::Minimap), 0);
 
     fontMono = CreateFontWithSize(16.0f, "fonts/Inconsolata-Regular.ttf");
     fontMonoLarger = CreateFontWithSize(20.0f, "fonts/Inconsolata-Regular.ttf");
@@ -280,11 +297,10 @@ void GameEngine::StartFrame() const {
 void GameEngine::RunCommands(Gfx* Commands) {
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
-    if (wnd == nullptr) {
+    if (nullptr == wnd) {
         return;
     }
 
-    // Process window events for resize, mouse, keyboard events
     wnd->HandleEvents();
 
     wnd->DrawAndRunGraphicsCommands(Commands, {});
@@ -298,12 +314,12 @@ void GameEngine::RunCommands(Gfx* Commands) {
 }
 
 void GameEngine::ProcessGfxCommands(Gfx* commands) {
-    RunCommands(commands);
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
     if (wnd != nullptr) {
         wnd->SetTargetFps(CVarGetInteger("gInterpolationFPS", 30));
         wnd->SetMaximumFrameLatency(1);
     }
+    RunCommands(commands);
 }
 
 // Audio
@@ -639,4 +655,12 @@ extern "C" uint32_t OTRGetGameRenderWidth() {
 // Gets the height of the current render target area
 extern "C" uint32_t OTRGetGameRenderHeight() {
     return gfx_current_dimensions.height;
+}
+
+extern "C" uint32_t OTRGetGameViewportWidth() {
+    return gfx_current_game_window_viewport.width;
+}
+
+extern "C" uint32_t OTRGetGameViewportHeight() {
+    return gfx_current_game_window_viewport.height;
 }

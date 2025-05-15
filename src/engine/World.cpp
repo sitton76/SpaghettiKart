@@ -6,14 +6,19 @@
 #include "TrainCrossing.h"
 #include <memory>
 #include "objects/Object.h"
+#include "port/Game.h"
+
+#include "editor/GameObject.h"
 
 extern "C" {
-   #include "camera.h"
-   #include "objects.h"
-   #include "main.h"
-   #include "defines.h"
-   #include "audio/external.h"
-   #include "menus.h"
+#include "camera.h"
+#include "objects.h"
+#include "main.h"
+#include "defines.h"
+#include "audio/external.h"
+#include "menus.h"
+#include "common_data.h"
+#include "mario_raceway_data.h"
 }
 
 World::World() {}
@@ -112,13 +117,32 @@ void World::PreviousCourse() {
 
 AActor* World::AddActor(AActor* actor) {
     Actors.push_back(actor);
+
+    if (actor->Model != NULL) {
+        gEditor.AddObject(actor->Name, (FVector*) &actor->Pos, (IRotator*)&actor->Rot, &actor->Scale,
+                          (Gfx*) LOAD_ASSET_RAW(actor->Model), 1.0f, Editor::GameObject::CollisionType::VTX_INTERSECT,
+                          0.0f, (int32_t*) &actor->Type, 0);
+    } else {
+        gEditor.AddObject(actor->Name, (FVector*) &actor->Pos, (IRotator*)&actor->Rot, &actor->Scale, nullptr, 1.0f, Editor::GameObject::CollisionType::VTX_INTERSECT, 0.0f, (int32_t*)&actor->Type, 0);
+    }
     return Actors.back();
 }
 
 struct Actor* World::AddBaseActor() {
     Actors.push_back(new AActor());
+
+    AActor* actor = Actors.back();
+
     // Skip C++ vtable to access variables in C
     return reinterpret_cast<struct Actor*>(reinterpret_cast<char*>(Actors.back()) + sizeof(void*));
+}
+
+void World::AddEditorObject(Actor* actor, const char* name) {
+    if (actor->model != NULL) {
+        gEditor.AddObject(name, (FVector*) &actor->pos, (IRotator*)&actor->rot, nullptr, (Gfx*)LOAD_ASSET_RAW(actor->model), 1.0f, Editor::GameObject::CollisionType::VTX_INTERSECT, 0.0f, (int32_t*)&actor->type, 0);
+    } else {
+        gEditor.AddObject(name, (FVector*) &actor->pos, (IRotator*)&actor->rot, nullptr, nullptr, 1.0f, Editor::GameObject::CollisionType::VTX_INTERSECT, 0.0f, (int32_t*)&actor->type, 0);
+    }
 }
 
 /**
@@ -153,8 +177,44 @@ void World::TickActors() {
     }
 }
 
+StaticMeshActor* World::AddStaticMeshActor(std::string name, FVector pos, IRotator rot, FVector scale, std::string model, int32_t* collision) {
+    StaticMeshActors.push_back(new StaticMeshActor(name, pos, rot, scale, model, collision));
+    auto actor = StaticMeshActors.back();
+    auto gameObj = gEditor.AddObject(actor->Name.c_str(), &actor->Pos, &actor->Rot, &actor->Scale, (Gfx*) LOAD_ASSET_RAW(actor->Model.c_str()), 1.0f,
+                      Editor::GameObject::CollisionType::VTX_INTERSECT, 0.0f, (int32_t*) &actor->bPendingDestroy, (int32_t) true);
+    return actor;
+}
+
+void World::DrawStaticMeshActors() {
+    for (const auto& actor: StaticMeshActors) {
+        actor->Draw();
+    }
+}
+
+void World::DeleteStaticMeshActors() {
+    for (auto it = StaticMeshActors.begin(); it != StaticMeshActors.end();) {
+        if ((*it)->bPendingDestroy) {
+            delete *it;  // Deallocate memory for the actor
+            it = StaticMeshActors.erase(it);  // Remove the pointer from the vector
+        } else {
+            ++it;  // Only increment the iterator if we didn't erase an element
+        }
+    }
+}
+
 OObject* World::AddObject(OObject* object) {
     Objects.push_back(object);
+
+    if (object->_objectIndex != -1) {
+        Object* cObj = &gObjectList[object->_objectIndex];
+
+        if (cObj->model != NULL) {
+            gEditor.AddObject(object->Name, (FVector*) &cObj->origin_pos[0], (IRotator*)&cObj->orientation, nullptr, (Gfx*)LOAD_ASSET_RAW(cObj->model), 1.0f, Editor::GameObject::CollisionType::VTX_INTERSECT, 0.0f, &object->_objectIndex, -1);
+        } else {
+            gEditor.AddObject(object->Name, (FVector*) &cObj->origin_pos[0], (IRotator*)&cObj->orientation, nullptr, nullptr, 1.0f, Editor::GameObject::CollisionType::VTX_INTERSECT, 0.0f, &object->_objectIndex, -1);
+        }
+    }
+
     return Objects.back();
 }
 
@@ -208,4 +268,16 @@ Object* World::GetObjectByIndex(size_t index) {
     //    return reinterpret_cast<Object*>(&this->Objects[index]->o);
     //}
     return nullptr; // Or handle the error as needed
+}
+
+void World::ClearWorld(void) {
+    World::DeleteStaticMeshActors();
+    CM_CleanWorld();
+
+    // for (size_t i = 0; i < ARRAY_COUNT(gCollisionMesh); i++) {
+
+    // }
+
+    // gCollisionMesh
+    // Paths
 }

@@ -1762,7 +1762,7 @@ void func_8002C17C(Player* player, s8 playerId) {
 }
 
 void func_8002C4F8(Player* player, s8 arg1) {
-    D_801652A0[arg1] = func_802AAB4C(player);
+    D_801652A0[arg1] = get_water_level(player);
     if (player->pos[1] <= D_801652A0[arg1]) {
         player->unk_0DE |= 0x0002;
     } else {
@@ -2361,7 +2361,7 @@ void func_8002D268(Player* player, UNUSED Camera* camera, s8 screenId, s8 player
     func_8002C4F8(player, playerId);
 }
 
-void func_8002E4C4(Player* player) {
+void set_player_height(Player* player) {
     s32 player_index;
 
     player_index = get_player_index_for_player(player);

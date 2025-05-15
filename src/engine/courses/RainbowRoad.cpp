@@ -5,7 +5,7 @@
 
 #include "RainbowRoad.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/ChainChomp.h"
 #include "engine/objects/BombKart.h"
 #include "assets/rainbow_road_data.h"
@@ -30,6 +30,7 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "course.h"
     extern const char *rainbow_road_dls[];
 }
 
@@ -48,16 +49,24 @@ RainbowRoad::RainbowRoad() {
     this->gfx = d_course_rainbow_road_packed_dls;
     this->gfxSize = 5670;
     Props.textures = rainbow_road_textures;
-    Props.MinimapTexture = gTextureCourseOutlineRainbowRoad;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineRainbowRoad;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 261;
+    Props.Minimap.Pos[0].Y = 166;
+    Props.Minimap.PlayerX = 39;
+    Props.Minimap.PlayerY = 55;
+    Props.Minimap.PlayerScaleFactor = 0.0103f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "rainbow road";
-    Props.DebugName = "rainbow";
-    Props.CourseLength = "2000m";
+    Props.SetText(Props.Name, "rainbow road", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "rainbow", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "2000m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D0092C8;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.4f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 38;
 
     Props.NearPersp = 2.0f;
@@ -97,8 +106,6 @@ RainbowRoad::RainbowRoad() {
 
     Props.Clouds = gToadsTurnpikeRainbowRoadStars;
     Props.CloudList = gToadsTurnpikeRainbowRoadStars;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {0, 0, 0};
     Props.Skybox.BottomRight = {0, 0, 0};
@@ -109,15 +116,16 @@ RainbowRoad::RainbowRoad() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 0, 0};
     Props.Sequence = MusicSeq::MUSIC_SEQ_RAINBOW_ROAD;
+    
+    Props.WaterLevel = 0.0f;
 }
 
 void RainbowRoad::Load() {
     Course::Load();
 
     D_800DC5C8 = 1;
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_rainbow_road_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_rainbow_road_addr));
     func_80295C6C();
-    D_8015F8E4 = 0.0f;
     // d_course_rainbow_road_packed_dl_2068
     find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07002068), -0x6A, 255, 255, 255);
     // d_course_rainbow_road_packed_dl_1E18
@@ -147,7 +155,7 @@ void RainbowRoad::BeginPlay() {
     }
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f));
@@ -165,15 +173,6 @@ void RainbowRoad::InitClouds() {
 
 void RainbowRoad::UpdateClouds(s32 sp1C, Camera* camera) {
     update_stars(sp1C, camera, this->Props.CloudList);
-}
-
-// Likely sets minimap boundaries
-void RainbowRoad::MinimapSettings() {
-    D_8018D2A0 = 0.0103f;
-    D_8018D2C0[0] = 261;
-    D_8018D2D8[0] = 166;
-    D_8018D2E0 = 39;
-    D_8018D2E8 = 55;
 }
 
 void RainbowRoad::InitCourseObjects() {
@@ -206,12 +205,6 @@ void RainbowRoad::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void RainbowRoad::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-// Positions the finishline on the minimap
-void RainbowRoad::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void RainbowRoad::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
@@ -223,8 +216,6 @@ void RainbowRoad::Render(struct UnkStruct_800DC5EC* arg0) {
 void RainbowRoad::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_rainbow_road_dl_16220));
 }
-
-void RainbowRoad::Collision() {}
 
 void RainbowRoad::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = gCopyNearestWaypointByPlayerId[playerId];

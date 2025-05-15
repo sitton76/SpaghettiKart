@@ -5,9 +5,10 @@
 
 #include "RoyalRaceway.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "assets/royal_raceway_data.h"
+#include "engine/objects/GrandPrixBalloons.h"
 
 extern "C" {
     #include "main.h"
@@ -30,6 +31,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "courses/staff_ghost_data.h"
+    #include "course.h"
     extern const char *royal_raceway_dls[];
 }
 
@@ -85,16 +87,24 @@ RoyalRaceway::RoyalRaceway() {
     this->gfx = d_course_royal_raceway_packed_dls;
     this->gfxSize = 5670;
     Props.textures = royal_raceway_textures;
-    Props.MinimapTexture = gTextureCourseOutlineRoyalRaceway;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineRoyalRaceway;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 262;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 37;
+    Props.Minimap.PlayerY = 50;
+    Props.Minimap.PlayerScaleFactor = 0.014f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "royal raceway";
-    Props.DebugName = "p circuit";
-    Props.CourseLength = "1025m";
+    Props.SetText(Props.Name, "royal raceway", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "p circuit", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "1025m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009188;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.4f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 9.0f;
@@ -132,10 +142,9 @@ RoyalRaceway::RoyalRaceway() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust4);
     Props.Clouds = gRoyalRacewayClouds;
     Props.CloudList = gRoyalRacewayClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {238, 144, 255};
     Props.Skybox.BottomRight = {255, 224, 240};
@@ -146,14 +155,15 @@ RoyalRaceway::RoyalRaceway() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {255, 224, 240};
     Props.Sequence = MusicSeq::MUSIC_SEQ_RACEWAYS_WARIO_STADIUM;
+
+    Props.WaterLevel = -60.0f;
 }
 
 void RoyalRaceway::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_royal_raceway_addr));
     func_80295C6C();
-    D_8015F8E4 = -60.0f;
 }
 
 void RoyalRaceway::LoadTextures() {
@@ -176,7 +186,7 @@ void RoyalRaceway::BeginPlay() {
     spawn_piranha_plants((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_royal_raceway_piranha_plant_spawn));
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][100], 100, 3, 0.8333333f));
@@ -186,18 +196,9 @@ void RoyalRaceway::BeginPlay() {
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
     }
-}
-
-// Likely sets minimap boundaries
-void RoyalRaceway::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust4, 0x3F8, 0x1000));
-    D_8018D2C0[0] = 262;
-    D_8018D2A0 = 0.014f;
-    D_8018D2E0 = 37;
-    D_8018D2E8 = 50;
-    D_80165718 = -64;
-    D_80165720 = 5;
-    D_80165728 = -330;
+    if (gGamestate != CREDITS_SEQUENCE) {
+        gWorldInstance.AddObject(new OGrandPrixBalloons(FVector(-64, 5, -330)));
+    }
 }
 
 void RoyalRaceway::InitCourseObjects() {
@@ -206,14 +207,7 @@ void RoyalRaceway::InitCourseObjects() {
         if (gModeSelection == GRAND_PRIX) {
             func_80070714();
         }
-        for (i = 0; i < D_80165738; i++) {
-            find_unused_obj_index(&gObjectParticle3[i]);
-            init_object(gObjectParticle3[i], 0);
-        }
     }
-}
-
-void RoyalRaceway::SomeSounds() {
 }
 
 void RoyalRaceway::WhatDoesThisDo(Player* player, int8_t playerId) {
@@ -244,12 +238,6 @@ void RoyalRaceway::WhatDoesThisDoAI(Player* player, int8_t playerId) {
             D_80165300[playerId] = 0;
         }
     }
-}
-
-// Positions the finishline on the minimap
-void RoyalRaceway::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
 void RoyalRaceway::SetStaffGhost() {
@@ -298,8 +286,6 @@ void RoyalRaceway::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_royal_raceway_dl_D8E8));
 }
 
-void RoyalRaceway::Collision() {}
-
 void RoyalRaceway::Waypoints(Player* player, int8_t playerId) {
     s16 waypoint = gNearestWaypointByPlayerId[playerId];
     if ((waypoint >= 0x258) && (waypoint < 0x2A4)) {
@@ -322,5 +308,3 @@ void RoyalRaceway::ScrollingTextures() {
     // d_course_royal_raceway_packed_dl_A648
     find_and_set_tile_size((uintptr_t) segmented_gfx_to_virtual((void*)0x0700A648), 0, D_802B87BC);
 }
-
-void RoyalRaceway::Destroy() { }

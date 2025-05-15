@@ -6,7 +6,7 @@
 
 #include "KoopaTroopaBeach.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "engine/objects/Crab.h"
 #include "assets/koopa_troopa_beach_data.h"
@@ -32,6 +32,7 @@ extern "C" {
     #include "collision.h"
     #include "code_8003DC40.h"
     #include "memory.h"
+    #include "course.h"
     extern const char *koopa_troopa_beach_dls[];
     extern s8 gPlayerCount;
 }
@@ -61,17 +62,25 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     this->gfx = d_course_koopa_troopa_beach_packed_dls;
     this->gfxSize = 5720;
     Props.textures = koopa_troopa_beach_textures;
-    Props.MinimapTexture = gTextureCourseOutlineKoopaTroopaBeach;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineKoopaTroopaBeach;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 268;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 40;
+    Props.Minimap.PlayerY = 21;
+    Props.Minimap.PlayerScaleFactor = 0.014f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Id = "mk:koopa_beach";
-    Props.Name = "koopa troopa beach";
-    Props.DebugName = "beach";
-    Props.CourseLength = "691m";
+    Id = "mk:koopa_beach";
+    Props.SetText(Props.Name, "koopa troopa beach", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "beach", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "691m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009158;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.5f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 1.0f;
@@ -109,10 +118,9 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust3);
     Props.Clouds = gKoopaTroopaBeachClouds;
     Props.CloudList = gKoopaTroopaBeachClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {48, 152, 120};
     Props.Skybox.BottomRight = {216, 232, 248};
@@ -123,12 +131,16 @@ KoopaTroopaBeach::KoopaTroopaBeach() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {48, 152, 120};
     Props.Sequence = MusicSeq::MUSIC_SEQ_KOOPA_TROOPA_BEACH;
+
+    Props.WaterLevel = 0.0f;
+    gWaterVelocity = -0.1f;
+    WaterVolumes.push_back({0.8f, 67.0f, 239.0f, 2233.0f, 2405.0f});
 }
 
 void KoopaTroopaBeach::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_koopa_troopa_beach_addr));
     func_80295C6C();
     find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x0700ADE0), -0x6A, 255, 255, 255);
     find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x0700A540), -0x6A, 255, 255, 255);
@@ -172,7 +184,7 @@ void KoopaTroopaBeach::BeginPlay() {
     }
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][60], 60, 1, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][120], 120, 1, 0.8333333f));
@@ -182,15 +194,6 @@ void KoopaTroopaBeach::BeginPlay() {
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
     }
-}
-
-// Likely sets minimap boundaries
-void KoopaTroopaBeach::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust3, 0x3C8U, 0x1000));
-    D_8018D2A0 = 0.014f;
-    D_8018D2C0[0] = 268;
-    D_8018D2E0 = 40;
-    D_8018D2E8 = 21;
 }
 
 void KoopaTroopaBeach::InitCourseObjects() {
@@ -228,12 +231,6 @@ void KoopaTroopaBeach::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void KoopaTroopaBeach::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-// Positions the finishline on the minimap
-void KoopaTroopaBeach::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void KoopaTroopaBeach::Render(struct UnkStruct_800DC5EC* arg0) {
     gDPPipeSync(gDisplayListHead++);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
@@ -264,21 +261,20 @@ void KoopaTroopaBeach::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_koopa_troopa_beach_dl_18D68));
 }
 
-void KoopaTroopaBeach::Collision() {}
-
 void KoopaTroopaBeach::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
     func_8003E37C(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 
 void KoopaTroopaBeach::ScrollingTextures() {
     // clang-format off
-    if (D_8015F8E8 < 0.0f) {
-        if (D_8015F8E4 < -20.0f) { D_8015F8E8 *= -1.0f; }
+    // This flips the velocity from 0.1f to -0.1f
+    if (gWaterVelocity < 0.0f) {
+        if (Props.WaterLevel < -20.0f) { gWaterVelocity *= -1.0f; }
     } else {
-        if (D_8015F8E4 > 0.0f) { D_8015F8E8 *= -1.0f; }
+        if (Props.WaterLevel > 0.0f) { gWaterVelocity *= -1.0f; }
     }
     // clang-format on
-    D_8015F8E4 += D_8015F8E8;
+    Props.WaterLevel += gWaterVelocity;
 
     D_802B87BC += 9;
     if (D_802B87BC > 255) {
@@ -330,7 +326,7 @@ void KoopaTroopaBeach::DrawWater(struct UnkStruct_800DC5EC* screen, uint16_t pat
             break;
     }
     vector[0] = 0.0f;
-    vector[1] = D_8015F8E4;
+    vector[1] = Props.WaterLevel;
     vector[2] = 0.0f;
     mtxf_translate(matrix, vector);
     render_set_position(matrix, 0);

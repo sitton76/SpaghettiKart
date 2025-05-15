@@ -47,11 +47,10 @@ public:
     u16 Unk_4A = 0;
     s16 Unk_4C = 1;
     f32 CenterY; // Center of the circle
-    s32 ObjectIndex = 0; // Index into gObjectList
     Collision _Collision;
 
     // Set waypoint to NULL if using a spawn position and not a waypoint.
-    explicit OBombKart(Vec3f pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
+    explicit OBombKart(FVector pos, TrackWaypoint* waypoint, uint16_t waypointIndex, uint16_t state, f32 unk_3C);
 
     ~OBombKart() {
         _count--;

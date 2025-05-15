@@ -19,6 +19,7 @@
 #include "math_util.h"
 #include <string.h>
 
+#include "src/port/Game.h"
 #include "engine/Matrix.h"
 
 s32 fireworkConeColour[] = {
@@ -452,6 +453,7 @@ void func_80281540(void) {
 
 void podium_ceremony_loop(void) {
     ClearMatrixPools();
+    Editor_ClearMatrix();
     gMatrixObjectCount = 0;
     D_802874FC = 0;
     update_camera_podium_ceremony();

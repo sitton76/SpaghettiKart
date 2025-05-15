@@ -6,7 +6,7 @@
 
 #include "TestCourse.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/actors/BowserStatue.h"
 #include "engine/actors/Ship.h"
 #include "engine/actors/SpaghettiShip.h"
@@ -16,8 +16,8 @@
 #include "assets/mario_raceway_data.h"
 #include "assets/bowsers_castle_data.h"
 #include "assets/bowsers_castle_displaylists.h"
-#include "engine/actors/ATree.h"
-#include "engine/actors/ACloud.h"
+#include "engine/actors/Tree.h"
+#include "engine/actors/Cloud.h"
 #include "engine/vehicles/Train.h"
 #include "engine/objects/Trophy.h"
 #include "engine/objects/CheepCheep.h"
@@ -28,6 +28,7 @@
 #include "engine/objects/HotAirBalloon.h"
 #include "engine/objects/Crab.h"
 #include "engine/objects/Boos.h"
+#include "engine/objects/GrandPrixBalloons.h"
 
 extern "C" {
     #include "main.h"
@@ -49,12 +50,7 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
-    typedef struct {
-        Gfx* addr;
-        u8 surfaceType;
-        u8 sectionId;
-        u16 flags;
-    } TrackSections;
+    #include "course.h"
     extern Gfx test_course_dls[];
     extern Vtx mario_Plane_001_mesh_vtx_1[];
     extern Gfx mario_Plane_001_mesh[];
@@ -65,18 +61,27 @@ extern "C" {
 TestCourse::TestCourse() {
     this->gfxSize = 100;
     this->textures = NULL;
-    Props.MinimapTexture = gTextureCourseOutlineMarioRaceway;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineMarioRaceway;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 260;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 6;
+    Props.Minimap.PlayerY = 28;
+    Props.Minimap.PlayerScaleFactor = 0.022f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
+    Props.Minimap.Colour = {255, 255, 255};
 
-    Props.Id = "mk:test_course";
-    Props.Name = "Test Course";
-    Props.DebugName = "test track";
-    Props.CourseLength = "100m";
+    Id = "mk:test_course";
+
+    Props.SetText(Props.Name, "Test Course", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "test track", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "100m", sizeof(Props.CourseLength));
 
     Props.AIBehaviour = D_0D008F28;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;
-    Props.SomePtr = D_800DCB34;
     Props.AISteeringSensitivity = 48;
 
     Props.NearPersp = 9.0f;
@@ -114,10 +119,9 @@ TestCourse::TestCourse() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust5);
     Props.Clouds = gKalimariDesertClouds;
     Props.CloudList = gLuigiRacewayClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {120, 140, 188};
     Props.Skybox.BottomRight = {216, 232, 248};
@@ -135,9 +139,9 @@ void TestCourse::Load() {
 
     generate_collision_mesh_with_defaults(mario_Plane_001_mesh);
 
-    parse_course_displaylists((TrackSectionsI*)test_course_addr);
+    parse_course_displaylists((TrackSections*)test_course_addr);
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void TestCourse::LoadTextures() {
@@ -267,7 +271,7 @@ void TestCourse::BeginPlay() {
     // gWorldInstance.AddObject(new OCheepCheep(FVector(0, 40, 0), OCheepCheep::CheepType::RACE, IPathSpan(0, 10)));
     // gWorldInstance.AddObject(new OTrophy(FVector(0,0,0), OTrophy::TrophyType::GOLD, OTrophy::Behaviour::GO_FISH));
     //gWorldInstance.AddObject(new OSnowman(FVector(0, 0, 0)));
-    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), FRotation(0, 90, 0), 1.0f, OTrashBin::Behaviour::MUNCHING));
+    //gWorldInstance.AddObject(new OTrashBin(FVector(0.0f, 0.0f, 0.0f), IRotator(0, 90, 0), 1.0f, OTrashBin::Behaviour::MUNCHING));
 
     //gWorldInstance.AddObject(new OHedgehog(FVector(0, 0, 0), FVector2D(0, -200), 9));
     //gWorldInstance.AddObject(new OFlagpole(FVector(0, 0, -200), 0x400));
@@ -285,31 +289,15 @@ void TestCourse::BeginPlay() {
     //gWorldInstance.AddTrain(ATrain::TenderStatus::HAS_TENDER, 5, 2.5f, 0);
     //gWorldInstance.AddTrain(ATrain::TenderStatus::HAS_TENDER, 5, 2.5f, 8);
 
-    Vec3f pos2 = {0, 0, 0};
+    FVector pos2 = { 0, 0, 0 };
 
     gWorldInstance.AddObject(new OBombKart(pos2, &D_80164550[0][25], 25, 4, 0.8333333f));
     gWorldInstance.AddObject(new OBombKart(pos2, &D_80164550[0][45], 45, 4, 0.8333333f));
 
     gWorldInstance.AddActor(new AShip(FVector(0, 0, 0), AShip::Skin::SHIP3));
 
+    gWorldInstance.AddObject(new OGrandPrixBalloons(FVector(0, 0, 0)));
 }
-
-// Likely sets minimap boundaries
-void TestCourse::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust5, 0x443, 0x1000));
-    D_8018D2A0 = 0.022f;
-    D_8018D2E0 = 6;
-    D_8018D2E8 = 28;
-    D_8018D2C0[0] = 260;
-    D_8018D2D8[0] = 170;
-    D_80165718 = 0;
-    D_80165720 = 5;
-    D_80165728 = -240;
-}
-
-void TestCourse::InitCourseObjects() {}
-
-void TestCourse::SomeSounds() {}
 
 void TestCourse::WhatDoesThisDo(Player* player, int8_t playerId) {
     if (((s16) gNearestWaypointByPlayerId[playerId] >= 0x19B) &&
@@ -341,16 +329,10 @@ void TestCourse::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-// Positions the finishline on the minimap
-void TestCourse::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void TestCourse::Render(struct UnkStruct_800DC5EC* arg0) {
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
 
@@ -361,13 +343,6 @@ void TestCourse::Render(struct UnkStruct_800DC5EC* arg0) {
     }
     gSPDisplayList(gDisplayListHead++, mario_Plane_001_mesh);
 }
-
-void TestCourse::RenderCredits() {
-}
-
-void TestCourse::Collision() {}
-
-void TestCourse::Destroy() { }
 
 bool TestCourse::IsMod() {
     return true;

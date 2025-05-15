@@ -18,8 +18,8 @@ const char* sBoardwalkTexList[] = { gTextureBat1, gTextureBat2, gTextureBat3, gT
 
 size_t OBat::_count = 0;
 
-OBat::OBat(const FVector& pos, const FRotation& rot) {
-
+OBat::OBat(const FVector& pos, const IRotator& rot) {
+    Name = "Bat";
     find_unused_obj_index(&_objectIndex);
 
     init_texture_object(_objectIndex, (uint8_t*)d_course_banshee_boardwalk_bat_tlut, sBoardwalkTexList, 0x20U,

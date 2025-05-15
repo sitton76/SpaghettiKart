@@ -15,10 +15,12 @@ extern "C" {
 size_t OHedgehog::_count = 0;
 
 OHedgehog::OHedgehog(const FVector& pos, const FVector2D& patrolPoint, s16 unk) {
+    Name = "Hedgehog";
     _idx = _count;
     _pos = pos;
 
     s32 objectId = indexObjectList2[_idx];
+    _objectIndex = objectId;
     init_object(objectId, 0);
     gObjectList[objectId].pos[0] = gObjectList[objectId].origin_pos[0] = pos.x * xOrientation;
     gObjectList[objectId].pos[1] = gObjectList[objectId].surfaceHeight = pos.y + 6.0;

@@ -9,12 +9,14 @@ void* segmented_uintptr_t_to_virtual(uintptr_t);
 }
 
 namespace MK64 {
-std::shared_ptr<Ship::IResource> ResourceFactoryBinaryTrackSectionsV0::ReadResource(std::shared_ptr<Ship::File> file) {
-    if (!FileHasValidFormatAndReader(file)) {
+std::shared_ptr<Ship::IResource>
+ResourceFactoryBinaryTrackSectionsV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                   std::shared_ptr<Ship::ResourceInitData> initData) {
+    if (!FileHasValidFormatAndReader(file, initData)) {
         return nullptr;
     }
 
-    auto section = std::make_shared<TrackSectionsClass>(file->InitData);
+    auto section = std::make_shared<TrackSectionsClass>(initData);
     auto reader = std::get<std::shared_ptr<Ship::BinaryReader>>(file->Reader);
 
     uint32_t count = reader->ReadUInt32();
@@ -29,6 +31,37 @@ std::shared_ptr<Ship::IResource> ResourceFactoryBinaryTrackSectionsV0::ReadResou
         data.flags = reader->ReadUInt16();
 
         section->TrackSectionsList.push_back(data);
+    }
+
+    return section;
+}
+
+std::shared_ptr<Ship::IResource>
+ResourceFactoryXMLTrackSectionsV0::ReadResource(std::shared_ptr<Ship::File> file,
+                                                   std::shared_ptr<Ship::ResourceInitData> initData) {
+
+    if (!FileHasValidFormatAndReader(file, initData)) {
+        return nullptr;
+    }
+
+    auto section = std::make_shared<TrackSectionsO2RClass>(initData);
+    auto child =
+    std::get<std::shared_ptr<tinyxml2::XMLDocument>>(file->Reader)->FirstChildElement()->FirstChildElement();
+
+    while (child != nullptr) {
+        std::string childName = child->Name();
+
+        if (childName == "Section") {
+            TrackSectionsO2R data;
+            //                      Convert n64 addr to native addr
+            data.addr = std::string(child->Attribute("gfx_path"));
+            data.surfaceType = child->IntAttribute("surface");
+            data.sectionId = child->IntAttribute("section");
+            data.flags = child->IntAttribute("flags");
+
+            section->TrackSectionsList.push_back(data);
+        }
+        child = child->NextSiblingElement();
     }
 
     return section;

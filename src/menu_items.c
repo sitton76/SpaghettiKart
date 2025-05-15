@@ -46,6 +46,7 @@
 
 #include "engine/courses/Course.h"
 #include "engine/Matrix.h"
+#include "src/engine/HM_Intro.h"
 
 const char* GetCupName(void);
 
@@ -2312,6 +2313,7 @@ void func_80094A64(struct GfxPool* pool) {
         case OPTIONS_MENU:
         case DATA_MENU:
         case COURSE_DATA_MENU:
+        case HARBOUR_MASTERS_MENU:
         case LOGO_INTRO_MENU:
         case CONTROLLER_PAK_MENU:
         case MAIN_MENU:
@@ -2371,6 +2373,9 @@ void setup_menus(void) {
                 add_menu_item(MENU_ITEM_DATA_COURSE_SELECTABLE, 0, 0, MENU_ITEM_PRIORITY_8);
                 add_menu_item(MENU_ITEM_TYPE_0E9, 0, 0, MENU_ITEM_PRIORITY_8);
                 add_menu_item(MENU_ITEM_TYPE_0EA, 0, 0, MENU_ITEM_PRIORITY_8);
+                break;
+            case HARBOUR_MASTERS_MENU:
+                add_menu_item(MENU_ITEM_UI_HARBOUR_MASTERS, 0, 0, MENU_ITEM_PRIORITY_0);
                 break;
             case LOGO_INTRO_MENU:
                 add_menu_item(MENU_ITEM_UI_LOGO_INTRO, 0, 0, MENU_ITEM_PRIORITY_0);
@@ -4746,7 +4751,7 @@ void func_8009CE64(s32 arg0) {
             gCreditsCourseId = COURSE_LUIGI_RACEWAY;
         } else {
             gGotoMenu = 1;
-            gMenuSelection = 0x0000000B;
+            gMenuSelection = MAIN_MENU;
         }
     } else if (gGamestate == 4) {
         if (D_8018E7AC[arg0] == 2) {
@@ -4864,8 +4869,11 @@ void func_8009CE64(s32 arg0) {
         if (gDebugMenuSelection != 0x40) {
             switch (gMenuFadeType) {
                 case 0:
-                    if (gMenuSelection == 8) {
-                        gMenuSelection = 0x0000000A;
+                    if (gMenuSelection == HARBOUR_MASTERS_MENU) {
+                        gMenuSelection = LOGO_INTRO_MENU;
+                        gFadeModeSelection = 0;
+                    } else if (gMenuSelection == LOGO_INTRO_MENU) {
+                        gMenuSelection = START_MENU;
                         gFadeModeSelection = 2;
                     } else {
                         gMenuSelection++;
@@ -5530,6 +5538,11 @@ void add_menu_item(s32 type, s32 column, s32 row, s8 priority) {
     var_ra->param1 = 0;
     var_ra->param2 = 0;
     switch (type) {
+        case MENU_ITEM_UI_HARBOUR_MASTERS:
+            HM_InitIntro();
+            var_ra->param1 = -1;
+            var_ra->param2 = one;
+            break;
         case MENU_ITEM_UI_LOGO_INTRO:
             sIntroLogoTimer = 0;
             sIntroModelMotionSpeed = 0.0f;
@@ -5965,6 +5978,9 @@ void render_menus(MenuItem* arg0) {
     if ((s8) arg0->visible) {
         gDPPipeSync(gDisplayListHead++);
         switch (arg0->type) {
+            case MENU_ITEM_UI_HARBOUR_MASTERS:
+                HM_DrawIntro();
+                break;
             case MENU_ITEM_UI_LOGO_INTRO:
                 func_80094660(gGfxPool, arg0->param1);
                 break;
@@ -6904,7 +6920,7 @@ void menu_item_data_course_selectable(MenuItem* arg0) {
     }
     sp78.column = 0x001F;
     sp78.row = (gCourseRecordsMenuSelection * 0xD) + 0x3A;
-    func_800A66A8(arg0, (Unk_D_800E70A0*) &sp78);
+    pause_menu_item_box_cursor(arg0, (Unk_D_800E70A0*) &sp78);
 }
 
 void func_800A1DE0(MenuItem* arg0) {
@@ -6940,7 +6956,7 @@ void func_800A1DE0(MenuItem* arg0) {
 
     sp58.column = 0x003B;
     sp58.row = (gCourseRecordsSubMenuSelection * 0xD) + 0x66;
-    func_800A66A8(arg0, &sp58);
+    pause_menu_item_box_cursor(arg0, &sp58);
 }
 
 void func_800A1F30(UNUSED MenuItem* unused) {
@@ -7195,7 +7211,7 @@ void func_800A1FB0(MenuItem* arg0) {
             spE0.row -= 8;
             break;
     }
-    func_800A66A8(arg0, (Unk_D_800E70A0*) &spE0);
+    pause_menu_item_box_cursor(arg0, (Unk_D_800E70A0*) &spE0);
 }
 #else
 GLOBAL_ASM("asm/non_matchings/menu_items/func_800A1FB0.s")
@@ -7631,7 +7647,7 @@ void func_800A3E60(MenuItem* arg0) {
     }
     sp84.column = var_v0_5->column - arg0->column;
     sp84.row = var_v0_5->row + arg0->row;
-    func_800A66A8(arg0, &sp84);
+    pause_menu_item_box_cursor(arg0, &sp84);
 }
 
 void render_lap_time(s32 lapNumber, s32 column, s32 row) {
@@ -8044,7 +8060,7 @@ void func_800A54EC(void) {
     whyTheSequel = D_800F0B50[why];
     sp50.column = var_v1->column - 8;
     sp50.row = (var_v1->row + ((sp48->state - whyTheSequel) * 0xD)) - 8;
-    func_800A66A8(sp48, &sp50);
+    pause_menu_item_box_cursor(sp48, &sp50);
 }
 
 // Also used to render the replay text box in time trials replay mode
@@ -8201,7 +8217,7 @@ void render_menu_item_end_course_option(MenuItem* arg0) {
         }
         sp98.column = var_v0_9->column;
         sp98.row = var_v0_9->row;
-        func_800A66A8(arg0, &sp98);
+        pause_menu_item_box_cursor(arg0, &sp98);
     }
 }
 
@@ -8245,7 +8261,7 @@ void func_800A6154(MenuItem* arg0) {
     if (arg0->state >= 0xB) {
         sp6C.column = 0x0084;
         sp6C.row = (arg0->state * 0x14) - 0x4E;
-        func_800A66A8(arg0, &sp6C);
+        pause_menu_item_box_cursor(arg0, &sp6C);
     }
     if (arg0->param2 > 0) {
         gDisplayListHead = func_80098FC8(gDisplayListHead, 0, 0, 0x0000013F, arg0->param2);
@@ -8301,11 +8317,11 @@ void func_800A638C(MenuItem* arg0) {
             text_rainbow_effect(arg0->state - 0xA, var_s1, TEXT_GREEN);
             print_text_mode_1(0x00000069, 0xAE + (0xF * var_s1), gTextPauseButton[var_s1 + 1], 0, 0.8f, 0.8f);
         }
-        func_800A66A8(arg0, &D_800E7360[arg0->state - 10]);
+        pause_menu_item_box_cursor(arg0, &D_800E7360[arg0->state - 10]);
     }
 }
 
-void func_800A66A8(MenuItem* arg0, Unk_D_800E70A0* arg1) {
+void pause_menu_item_box_cursor(MenuItem* arg0, Unk_D_800E70A0* arg1) {
     Mtx* mtx;
     Mtx* mtx2;
     f32 tmp;
@@ -8343,9 +8359,7 @@ void func_800A66A8(MenuItem* arg0, Unk_D_800E70A0* arg1) {
     guMtxCatL(mtx, mtx2, mtx);
     guTranslate(mtx2, arg1->column, arg1->row, 0.0f);
     guMtxCatL(mtx, mtx2, mtx);
-    // gSPMatrix(gDisplayListHead++, VIRTUAL_TO_PHYSICAL(&gGfxPool->mtxEffect[gMatrixEffectCount++]),
-    //           (G_MTX_NOPUSH | G_MTX_LOAD) | G_MTX_MODELVIEW);
-    AddEffectMatrixFixed(G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+    gSPMatrix(gDisplayListHead++, mtx, G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEIA, G_CC_MODULATEIA);
     gDPNoOp(gDisplayListHead++);
@@ -8698,6 +8712,10 @@ void handle_menus_with_pri_arg(s32 priSpecial) {
         }
 
         switch (type) {
+            case MENU_ITEM_UI_HARBOUR_MASTERS:
+                HM_TickIntro();
+                menuItem->param1++;
+                break;
             case MENU_ITEM_UI_LOGO_INTRO:
                 if (sIntroLogoTimer < 80) {
                     sIntroModelSpeed = 3.0f;

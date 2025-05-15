@@ -64,16 +64,24 @@ Skyscraper::Skyscraper() {
     this->gfx = d_course_skyscraper_packed_dls;
     this->gfxSize = 548;
     Props.textures = skyscraper_textures;
-    Props.MinimapTexture = gTextureCourseOutlineSkyscraper;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineSkyscraper;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 257;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 32;
+    Props.Minimap.PlayerY = 32;
+    Props.Minimap.PlayerScaleFactor = 0.0445f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "skyscraper";
-    Props.DebugName = "skyscraper";
-    Props.CourseLength = "";
+    Props.SetText(Props.Name, "skyscraper", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "skyscraper", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D008F18;
     Props.AIMaximumSeparation = -1.0f;
     Props.AIMinimumSeparation = 0.5f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 2.0f;
@@ -113,8 +121,6 @@ Skyscraper::Skyscraper() {
 
     Props.Clouds = NULL; // no clouds
     Props.CloudList = NULL;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {0, 0, 0};
     Props.Skybox.BottomRight = {0, 0, 0};
@@ -125,6 +131,8 @@ Skyscraper::Skyscraper() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 0, 0};
     Props.Sequence = MusicSeq::MUSIC_SEQ_BATTLE_ARENAS;
+
+    Props.WaterLevel = -480.0f;
 }
 
 void Skyscraper::Load() {
@@ -135,8 +143,6 @@ void Skyscraper::Load() {
     // d_course_skyscraper_packed_dl_258
     generate_collision_mesh_with_default_section_id((Gfx*) segmented_gfx_to_virtual((void*)0x07000258), 1);
     func_80295C6C();
-
-    D_8015F8E4 = -480.0f;
 }
 
 void Skyscraper::LoadTextures() {
@@ -146,7 +152,7 @@ void Skyscraper::BeginPlay() {
     spawn_all_item_boxes((ActorSpawnData*)LOAD_ASSET_RAW(d_course_skyscraper_item_box_spawns));
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][20], 20, 0, 1.0f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][40], 40, 0, 1.0f));
@@ -158,13 +164,6 @@ void Skyscraper::BeginPlay() {
     }
 }
 
-// Likely sets minimap boundaries
-void Skyscraper::MinimapSettings() {
-    D_8018D2A0 = 0.0445f;
-    D_8018D2E0 = 32;
-    D_8018D2E8 = 32;
-}
-
 void Skyscraper::InitCourseObjects() {}
 
 void Skyscraper::SomeSounds() {}
@@ -173,14 +172,8 @@ void Skyscraper::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void Skyscraper::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-// Positions the finishline on the minimap
-void Skyscraper::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void Skyscraper::Render(struct UnkStruct_800DC5EC* arg0) {
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -203,8 +196,6 @@ void Skyscraper::Render(struct UnkStruct_800DC5EC* arg0) {
 }
 
 void Skyscraper::RenderCredits() {}
-
-void Skyscraper::Collision() {}
 
 void Skyscraper::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = 0;

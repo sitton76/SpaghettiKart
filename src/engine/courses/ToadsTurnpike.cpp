@@ -7,7 +7,7 @@
 #include "World.h"
 #include "engine/objects/BombKart.h"
 #include "assets/toads_turnpike_data.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/vehicles/Bus.h"
 #include "engine/vehicles/Car.h"
 #include "engine/vehicles/Truck.h"
@@ -36,6 +36,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "code_80086E70.h"
+    #include "course.h"
     extern const char *d_course_toads_turnpike_dl_list[];
     extern s16 currentScreenSection;
     extern s8 gPlayerCount;
@@ -69,16 +70,24 @@ ToadsTurnpike::ToadsTurnpike() {
     this->gfx = d_course_toads_turnpike_packed_dls;
     this->gfxSize = 3427;
     Props.textures = toads_turnpike_textures;
-    Props.MinimapTexture = gTextureCourseOutlineToadsTurnpike;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineToadsTurnpike;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 252;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 57;
+    Props.Minimap.PlayerY = 44;
+    Props.Minimap.PlayerScaleFactor = 0.013f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "toad's turnpike";
-    Props.DebugName = "highway";
-    Props.CourseLength = "1036m";
+    Props.SetText(Props.Name, "toad's turnpike", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "highway", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "1036m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009238;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.5f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 40;
 
     Props.NearPersp = 9.0f;
@@ -126,9 +135,6 @@ ToadsTurnpike::ToadsTurnpike() {
 
     this->FinishlineSpawnPoint = finish;
 
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
-
     Props.Skybox.TopRight = {0, 2, 94};
     Props.Skybox.BottomRight = {209, 65, 23};
     Props.Skybox.BottomLeft = {209, 65, 23};
@@ -148,9 +154,9 @@ void ToadsTurnpike::Load() {
     D_801625F0 = 4;
     D_802B87B0 = 993;
     D_802B87B4 = 1000;
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_toads_turnpike_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_toads_turnpike_addr));
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void ToadsTurnpike::LoadTextures() {
@@ -195,7 +201,7 @@ void ToadsTurnpike::BeginPlay() {
         }
 
         if (gModeSelection == VERSUS) {
-            Vec3f pos = {0, 0, 0};
+            FVector pos = { 0, 0, 0 };
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f));
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][150], 150, 3, 0.8333333f));
@@ -213,14 +219,6 @@ void ToadsTurnpike::InitClouds() {
 
 void ToadsTurnpike::UpdateClouds(s32 sp1C, Camera* camera) {
     update_stars(sp1C, camera, this->Props.CloudList);
-}
-
-// Likely sets minimap boundaries
-void ToadsTurnpike::MinimapSettings() {
-    D_8018D2A0 = 0.013f;
-    D_8018D2C0[0] = 252;
-    D_8018D2E0 = 57;
-    D_8018D2E8 = 44;
 }
 
 void ToadsTurnpike::SomeSounds() {}
@@ -253,14 +251,8 @@ void ToadsTurnpike::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-// Positions the finishline on the minimap
-void ToadsTurnpike::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void ToadsTurnpike::Render(struct UnkStruct_800DC5EC* arg0) {
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -288,7 +280,5 @@ void ToadsTurnpike::Render(struct UnkStruct_800DC5EC* arg0) {
 void ToadsTurnpike::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_toads_turnpike_dl_23930));
 }
-
-void ToadsTurnpike::Collision() {}
 
 void ToadsTurnpike::Destroy() { }

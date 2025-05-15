@@ -40,8 +40,6 @@ u32 fTargetPlayer = false;
 u32 fMode; // freecam mode should probably be an enum
 u32 fModeInit = false;
 
-int rightMouseButtonDown = 0; // Track if right mouse button is held down
-
 u32 bFreecamUseController = false;
 
 /**
@@ -84,7 +82,7 @@ void freecam(Camera* camera, Player* player, s8 index) {
     }
 
     // Freecam mode is enabled
-    if (enabled) {
+    if (enabled && (player == gPlayerOne)) {
         freecam_loop(camera, player, index);
     } else {
         func_8001E45C(camera, player, index);
@@ -127,6 +125,7 @@ void freecam_loop(Camera* camera, Player* player, s8 index) {
 void freecam_mouse_manager(Camera* camera, Vec3f forwardVector) {
     auto wnd = GameEngine::Instance->context->GetWindow();
     Ship::Coords mouse = wnd->GetMouseDelta();
+    wnd->SetMouseCapture(false);
 
     f32 yawChange = 0.0f;
     f32 pitchChange = 0.0f;

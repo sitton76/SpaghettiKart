@@ -6,7 +6,7 @@
 #include "FrappeSnowland.h"
 #include "World.h"
 #include "CoreMath.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "engine/objects/Snowman.h"
 #include "assets/frappe_snowland_data.h"
@@ -34,6 +34,7 @@ extern "C" {
     #include "memory.h"
     #include "update_objects.h"
     #include "course_offsets.h"
+    #include "course.h"
     extern const char *d_course_frappe_snowland_dl_list[];
     extern s8 gPlayerCount;
 }
@@ -51,16 +52,25 @@ FrappeSnowland::FrappeSnowland() {
     this->gfx = d_course_frappe_snowland_packed_dls;
     this->gfxSize = 4140;
     Props.textures = frappe_snowland_textures;
-    Props.MinimapTexture = gTextureCourseOutlineFrappeSnowland;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineFrappeSnowland;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 262;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 36;
+    Props.Minimap.PlayerY = 40;
+    Props.Minimap.PlayerScaleFactor = 0.016f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
+    Props.Minimap.Colour = {72, 100, 255};
 
-    Props.Name = "frappe snowland";
-    Props.DebugName = "snow";
-    Props.CourseLength = "734m";
+    Props.SetText(Props.Name, "frappe snowland", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "snow", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "734m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D0090F8;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 9.0f;
@@ -100,8 +110,6 @@ FrappeSnowland::FrappeSnowland() {
 
     Props.Clouds = NULL; // not used for frappe
     Props.CloudList = NULL;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {28, 11, 90};
     Props.Skybox.BottomRight = {0, 99, 164};
@@ -112,14 +120,15 @@ FrappeSnowland::FrappeSnowland() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 99, 164};
     Props.Sequence = MusicSeq::MUSIC_SEQ_FRAPPE_SNOWLAND;
+
+    Props.WaterLevel = -50.0f;
 }
 
 void FrappeSnowland::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_frappe_snowland_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_frappe_snowland_addr));
     func_80295C6C();
-    D_8015F8E4 = -50.0f;
 }
 
 void FrappeSnowland::LoadTextures() {
@@ -130,7 +139,7 @@ void FrappeSnowland::LoadTextures() {
 void FrappeSnowland::BeginPlay() {
     spawn_foliage((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_frappe_snowland_tree_spawns));
     spawn_all_item_boxes((struct ActorSpawnData*)LOAD_ASSET_RAW(d_course_frappe_snowland_item_box_spawns));
-    
+
     if (gGamestate != CREDITS_SEQUENCE) {
         gWorldInstance.AddObject(new OSnowman(FVector(697, 0, -1684)));
         gWorldInstance.AddObject(new OSnowman(FVector(82, 0, -2245)));
@@ -154,7 +163,7 @@ void FrappeSnowland::BeginPlay() {
     }
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f));
@@ -186,17 +195,6 @@ void FrappeSnowland::UpdateClouds(s32 sp1C, Camera* camera) {
     func_80078170(sp1C, camera);
 }
 
-// Likely sets minimap boundaries
-void FrappeSnowland::MinimapSettings() {
-    D_8018D2C0[0] = 262;
-    D_8018D2A0 = 0.016f;
-    D_8018D2E0 = 36;
-    D_8018D2E8 = 40;
-    D_8018D300 = 72;
-    D_8018D308 = 100;
-    D_8018D310 = 255;
-}
-
 void FrappeSnowland::InitCourseObjects() {
     size_t objectId;
     size_t i;
@@ -207,22 +205,6 @@ void FrappeSnowland::InitCourseObjects() {
 
 void FrappeSnowland::UpdateCourseObjects() {
     update_snowflakes();
-}
-
-void FrappeSnowland::RenderCourseObjects(s32 cameraId) {
-}
-
-void FrappeSnowland::SomeSounds() {
-}
-
-void FrappeSnowland::WhatDoesThisDo(Player* player, int8_t playerId) {}
-
-void FrappeSnowland::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
-
-// Positions the finishline on the minimap
-void FrappeSnowland::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
 void FrappeSnowland::Render(struct UnkStruct_800DC5EC* arg0) {
@@ -246,8 +228,6 @@ void FrappeSnowland::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_frappe_snowland_dl_76A0));
 }
 
-void FrappeSnowland::Collision() {}
-
 void FrappeSnowland::Waypoints(Player* player, int8_t playerId) {
     s16 waypoint = gNearestWaypointByPlayerId[playerId];
 
@@ -260,7 +240,3 @@ void FrappeSnowland::Waypoints(Player* player, int8_t playerId) {
         }
     }
 }
-
-void FrappeSnowland::ScrollingTextures() {}
-
-void FrappeSnowland::Destroy() {}

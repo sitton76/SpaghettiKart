@@ -6,7 +6,7 @@
 
 #include "YoshiValley.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "engine/objects/Hedgehog.h"
 #include "engine/objects/Flagpole.h"
@@ -33,6 +33,7 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "course.h"
     extern const char *d_course_yoshi_valley_dl_list[];
 }
 
@@ -60,16 +61,22 @@ YoshiValley::YoshiValley() {
     this->gfxSize = 4140;
     Props.textures = yoshi_valley_textures;
 
-    Props.MinimapTexture = gTextureCourseOutlineYoshiValley;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineYoshiValley;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.PlayerX = 61;
+    Props.Minimap.PlayerY = 38;
+    Props.Minimap.PlayerScaleFactor = 0.018f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "yoshi valley";
-    Props.DebugName = "maze";
-    Props.CourseLength = "772m";
+    Props.SetText(Props.Name, "yoshi valley", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "maze", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "772m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D0090B8;
     Props.AIMaximumSeparation = 35.0f;
     Props.AIMinimumSeparation = 0.0f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 9.0f;
@@ -107,10 +114,9 @@ YoshiValley::YoshiValley() {
     Props.PathTable2[2] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_yoshi_valley_track_waypoints_3);
     Props.PathTable2[3] = (TrackWaypoint*)LOAD_ASSET_RAW(d_course_yoshi_valley_track_waypoints_4);
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust0);
     Props.Clouds = gYoshiValleyMooMooFarmClouds;
     Props.CloudList = gYoshiValleyMooMooFarmClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {113, 70, 255};
     Props.Skybox.BottomRight = {255, 184, 99};
@@ -127,10 +133,10 @@ void YoshiValley::Load() {
     Course::Load();
 
     Lights1 lights4 = gdSPDefLights1(100, 100, 100, 255, 254, 254, 0, 0, 120);
-    func_802B5D64(&lights4, -0x38F0, 0x1C70, 1);
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_yoshi_valley_addr));
+    set_track_light_direction(&lights4, -0x38F0, 0x1C70, 1);
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_yoshi_valley_addr));
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void YoshiValley::LoadTextures() {
@@ -177,29 +183,21 @@ void YoshiValley::BeginPlay() {
         // the original data has values here.
 
         // Note that the Y height is calculated automatically to place the kart on the surface
-        Vec3f pos = {-1533, 0, -682};
+        FVector pos = { -1533, 0, -682 };
         gWorldInstance.AddObject(new OBombKart(pos, NULL, 0, 0, 0.8333333f));
-        Vec3f pos2 = {-1565, 0, -619};
+        FVector pos2 = { -1565, 0, -619 };
         gWorldInstance.AddObject(new OBombKart(pos2, NULL, 10, 0, 0.8333333f));
-        Vec3f pos3 = {-1529, 0, -579};
+        FVector pos3 = { -1529, 0, -579 };
         gWorldInstance.AddObject(new OBombKart(pos3, NULL, 20, 0, 0.8333333f));
-        Vec3f pos4 = {-1588, 0, -534};
+        FVector pos4 = { -1588, 0, -534 };
         gWorldInstance.AddObject(new OBombKart(pos4, NULL, 30, 0, 0.8333333f));
-        Vec3f pos5 = {-1598, 0, -207};
+        FVector pos5 = { -1598, 0, -207 };
         gWorldInstance.AddObject(new OBombKart(pos5, NULL, 40, 0, 0.8333333f));
-        Vec3f pos6 = {-1646, 0, -147};
+        FVector pos6 = { -1646, 0, -147 };
         gWorldInstance.AddObject(new OBombKart(pos6, NULL, 50, 0, 0.8333333f));
-        Vec3f pos7 = {-2532, 0, -445};
+        FVector pos7 = { -2532, 0, -445 };
         gWorldInstance.AddObject(new OBombKart(pos7, NULL, 60, 0, 0.8333333f));
     }
-}
-
-// Likely sets minimap boundaries
-void YoshiValley::MinimapSettings() {
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust0, 0x479, 0xC00));
-    D_8018D2A0 = 0.018f;
-    D_8018D2E0 = 61;
-    D_8018D2E8 = 38;
 }
 
 void YoshiValley::InitCourseObjects() {
@@ -218,12 +216,6 @@ void YoshiValley::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void YoshiValley::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-// Positions the finishline on the minimap
-void YoshiValley::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void YoshiValley::Render(struct UnkStruct_800DC5EC* arg0) {
     gDPPipeSync(gDisplayListHead++);
     gDPSetCombineMode(gDisplayListHead++, G_CC_MODULATEI, G_CC_MODULATEI);
@@ -236,8 +228,6 @@ void YoshiValley::Render(struct UnkStruct_800DC5EC* arg0) {
 void YoshiValley::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_yoshi_valley_dl_18020));
 }
-
-void YoshiValley::Collision() {}
 
 void YoshiValley::Waypoints(Player* player, int8_t playerId) {
     player->nearestWaypointId = gCopyNearestWaypointByPlayerId[playerId];

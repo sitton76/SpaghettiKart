@@ -5,7 +5,7 @@
 
 #include "DKJungle.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "assets/dks_jungle_parkway_data.h"
 
@@ -14,6 +14,7 @@
 
 extern "C" {
     #include "main.h"
+    #include "common_structs.h"
     #include "camera.h"
     #include "course_offsets.h"
     #include "code_800029B0.h"
@@ -34,6 +35,7 @@ extern "C" {
     #include "code_8003DC40.h"
     #include "memory.h"
     #include "sounds.h"
+    #include "course.h"
     extern const char *d_course_dks_jungle_parkway_unknown_dl_list[];
     extern s16 currentScreenSection;
 }
@@ -71,16 +73,24 @@ DKJungle::DKJungle() {
     this->gfx = d_course_dks_jungle_parkway_packed_dls;
     this->gfxSize = 4997;
     Props.textures = dks_jungle_parkway_textures;
-    Props.MinimapTexture = gTextureCourseOutlineDksJungleParkway;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineDksJungleParkway;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 255;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 29;
+    Props.Minimap.PlayerY = 47;
+    Props.Minimap.PlayerScaleFactor = 0.0155f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Name = "d.k.'s jungle parkway";
-    Props.DebugName = "jungle";
-    Props.CourseLength = "893m";
+    Props.SetText(Props.Name, "d.k.'s jungle parkway", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "jungle", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "893m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D0093C0;
     Props.AIMaximumSeparation = 40.0f;
     Props.AIMinimumSeparation = 0.1f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 9.0f;
@@ -120,8 +130,6 @@ DKJungle::DKJungle() {
 
     Props.Clouds = NULL; // no clouds
     Props.CloudList = NULL;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {255, 174, 0};
     Props.Skybox.BottomRight = {255, 229, 124};
@@ -132,16 +140,48 @@ DKJungle::DKJungle() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {22, 145, 22};
     Props.Sequence = MusicSeq::MUSIC_SEQ_DK_JUNGLE;
+
+    Props.WaterLevel = -475.0f;
 }
 
 void DKJungle::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_dks_jungle_parkway_addr));
     func_80295C6C();
-    D_8015F8E4 = -475.0f;
     // d_course_dks_jungle_parkway_packed_dl_3FA8
     find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07003FA8), 120, 255, 255, 255);
+}
+
+f32 DKJungle::GetWaterLevel(FVector pos, Collision* collision) {
+    int32_t temp_v1 = get_track_section_id(collision->meshIndexZX) & 0xFF;
+
+    if (temp_v1 == 0xFF) {
+        if ((get_surface_type(collision->meshIndexZX) & 0xFF) == CAVE) {
+            return -475.0f;
+        }
+        if (pos.x > -478.0f) {
+            return -33.9f;
+        }
+        if (pos.x < -838.0f) {
+            return -475.0f;
+        }
+        if (pos.z > -436.0f) {
+            return -475.0f;
+        }
+        if (pos.z < -993.0f) {
+            return -33.9f;
+        }
+        if (pos.z < pos.x) {
+            return -475.0f;
+        }
+
+        return -33.9f;
+    }
+    if (temp_v1 >= 0x14) {
+        return -475.0f;
+    }
+    return -33.9f;
 }
 
 void DKJungle::LoadTextures() {
@@ -164,7 +204,7 @@ void DKJungle::BeginPlay() {
         gWorldInstance.AddActor(new ABoat((0.6666666f)/4, 0));
 
         if (gModeSelection == VERSUS) {
-            Vec3f pos = {0, 0, 0};
+            FVector pos = { 0, 0, 0 };
 
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][100], 100, 1, 0.8333333f));
@@ -175,14 +215,6 @@ void DKJungle::BeginPlay() {
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         }
     }
-}
-
-// Likely sets minimap boundaries
-void DKJungle::MinimapSettings() {
-    D_8018D2A0 = 0.0155f;
-    D_8018D2C0[0] = 255;
-    D_8018D2E0 = 29;
-    D_8018D2E8 = 47;
 }
 
 void DKJungle::InitCourseObjects() {
@@ -253,15 +285,9 @@ void DKJungle::WhatDoesThisDoAI(Player* player, int8_t playerId) {
     }
 }
 
-// Positions the finishline on the minimap
-void DKJungle::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void DKJungle::Render(struct UnkStruct_800DC5EC* arg0) {
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
-    func_802B5D64(&D_800DC610[1], D_802B87D4, D_802B87D0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(&D_800DC610[1], D_802B87D4, D_802B87D0, 1);
 
     gSPSetGeometryMode(gDisplayListHead++, G_SHADING_SMOOTH);
     gSPClearGeometryMode(gDisplayListHead++, G_CULL_BACK | G_LIGHTING);
@@ -285,8 +311,6 @@ void DKJungle::Render(struct UnkStruct_800DC5EC* arg0) {
 void DKJungle::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_dks_jungle_parkway_dl_13C30));
 }
-
-void DKJungle::Collision() {}
 
 void DKJungle::SomeCollisionThing(Player *player, Vec3f arg1, Vec3f arg2, Vec3f arg3, f32* arg4, f32* arg5, f32* arg6, f32* arg7) {
     func_8003F138(player, arg1, arg2, arg3, arg4, arg5, arg6, arg7);

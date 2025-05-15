@@ -5,7 +5,7 @@
 
 #include "KalimariDesert.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "kalimari_desert_data.h"
 #include "engine/vehicles/Utils.h"
@@ -32,6 +32,7 @@ extern "C" {
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
+    #include "course.h"
     extern const char *kalimari_desert_dls[];
 }
 
@@ -56,16 +57,24 @@ KalimariDesert::KalimariDesert() {
     this->gfx = d_course_kalimari_desert_packed_dls;
     this->gfxSize = 5328;
     Props.textures = kalimari_desert_textures;
-    Props.MinimapTexture = gTextureCourseOutlineKalimariDesert;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineKalimariDesert;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 263;
+    Props.Minimap.Pos[0].Y = 165;
+    Props.Minimap.PlayerX = 55;
+    Props.Minimap.PlayerY = 27;
+    Props.Minimap.PlayerScaleFactor = 0.015f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 4.0;
 
-    Props.Name = "kalimari desert";
-    Props.DebugName = "desert";
-    Props.CourseLength = "753m";
+    Props.SetText(Props.Name, "kalimari desert", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "desert", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "753m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009260;
     Props.AIMaximumSeparation = 50.0f;
     Props.AIMinimumSeparation = 0.3f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 10.0f;
@@ -103,10 +112,9 @@ KalimariDesert::KalimariDesert() {
     Props.PathTable2[2] = NULL;
     Props.PathTable2[3] = NULL;
 
+    Props.CloudTexture = (u8*) LOAD_ASSET_RAW(gTextureExhaust5);
     Props.Clouds = gKalimariDesertClouds;
     Props.CloudList = gKalimariDesertClouds;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {195, 231, 255};
     Props.Skybox.BottomRight = {255, 192, 0};
@@ -122,9 +130,9 @@ KalimariDesert::KalimariDesert() {
 void KalimariDesert::Load() {
     Course::Load();
 
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_kalimari_desert_addr));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_kalimari_desert_addr));
     func_80295C6C();
-    D_8015F8E4 = gCourseMinY - 10.0f;
+    Props.WaterLevel = gCourseMinY - 10.0f;
 }
 
 void KalimariDesert::LoadTextures() {
@@ -202,7 +210,7 @@ void KalimariDesert::BeginPlay() {
         }
 
         if (gModeSelection == VERSUS) {
-            Vec3f pos = {0, 0, 0};
+            FVector pos = { 0, 0, 0 };
 
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][50], 50, 3, 0.8333333f));
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][138], 138, 1, 0.8333333f));
@@ -213,16 +221,6 @@ void KalimariDesert::BeginPlay() {
             gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         }
     }
-}
-
-// Likely sets minimap boundaries
-void KalimariDesert::MinimapSettings() {
-    D_8018D2C0[0] = 263;
-    D_8018D2D8[0] = 165;
-    D_8018D220 = reinterpret_cast<uint8_t (*)[1024]>(dma_textures(gTextureExhaust5, 0x443, 0x1000));
-    D_8018D2A0 = 0.015f;
-    D_8018D2E0 = 55;
-    D_8018D2E8 = 27;
 }
 
 void KalimariDesert::InitCourseObjects() {
@@ -248,14 +246,8 @@ void KalimariDesert::WhatDoesThisDo(Player* player, int8_t playerId) {}
 
 void KalimariDesert::WhatDoesThisDoAI(Player* player, int8_t playerId) {}
 
-// Positions the finishline on the minimap
-void KalimariDesert::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
-}
-
 void KalimariDesert::Render(struct UnkStruct_800DC5EC* arg0) {
-    func_802B5D64(D_800DC610, D_802B87D4, 0, 1);
+    set_track_light_direction(D_800DC610, D_802B87D4, 0, 1);
 
     gSPTexture(gDisplayListHead++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gSPClearGeometryMode(gDisplayListHead++, G_LIGHTING);
@@ -290,7 +282,5 @@ void KalimariDesert::Render(struct UnkStruct_800DC5EC* arg0) {
 void KalimariDesert::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_kalimari_desert_dl_22E00));
 }
-
-void KalimariDesert::Collision() {}
 
 void KalimariDesert::Destroy() { }

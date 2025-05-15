@@ -5,7 +5,7 @@
 
 #include "BansheeBoardwalk.h"
 #include "World.h"
-#include "engine/actors/AFinishline.h"
+#include "engine/actors/Finishline.h"
 #include "engine/objects/BombKart.h"
 #include "engine/objects/CheepCheep.h"
 #include "engine/objects/TrashBin.h"
@@ -35,6 +35,7 @@ extern "C" {
     #include "collision.h"
     #include "memory.h"
     #include "course_offsets.h"
+    #include "course.h"
     extern const char *banshee_boardwalk_dls[];
 }
 
@@ -69,17 +70,26 @@ BansheeBoardwalk::BansheeBoardwalk() {
     this->gfx = d_course_banshee_boardwalk_packed_dls;
     this->gfxSize = 3689;
     Props.textures = banshee_boardwalk_textures;
-    Props.MinimapTexture = gTextureCourseOutlineBansheeBoardwalk;
-    Props.MinimapDimensions = IVector2D(ResourceGetTexWidthByName(Props.MinimapTexture), ResourceGetTexHeightByName(Props.MinimapTexture));
+    Props.Minimap.Texture = gTextureCourseOutlineBansheeBoardwalk;
+    Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
+    Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
+    Props.Minimap.Pos[0].X = 262;
+    Props.Minimap.Pos[0].Y = 170;
+    Props.Minimap.PlayerX = 55;
+    Props.Minimap.PlayerY = 39;
+    Props.Minimap.PlayerScaleFactor = 0.016f;
+    Props.Minimap.FinishlineX = 0;
+    Props.Minimap.FinishlineY = 0;
 
-    Props.Id = "mk:banshee_boardwalk";
-    Props.Name = "banshee boardwalk";
-    Props.DebugName = "ghost";
-    Props.CourseLength = "747m";
+    Id = "mk:banshee_boardwalk";
+
+    Props.SetText(Props.Name, "banshee boardwalk", sizeof(Props.Name));
+    Props.SetText(Props.DebugName, "ghost", sizeof(Props.DebugName));
+    Props.SetText(Props.CourseLength, "747m", sizeof(Props.CourseLength));
+
     Props.AIBehaviour = D_0D009058;
     Props.AIMaximumSeparation = 40.0f;
     Props.AIMinimumSeparation = 0.4f;
-    Props.SomePtr = D_800DCAF4;
     Props.AISteeringSensitivity = 53;
 
     Props.NearPersp = 2.0f;
@@ -119,8 +129,6 @@ BansheeBoardwalk::BansheeBoardwalk() {
 
     Props.Clouds = NULL; // no clouds
     Props.CloudList = NULL;
-    Props.MinimapFinishlineX = 0;
-    Props.MinimapFinishlineY = 0;
 
     Props.Skybox.TopRight = {0, 0, 0};
     Props.Skybox.BottomRight = {0, 0, 0};
@@ -131,6 +139,8 @@ BansheeBoardwalk::BansheeBoardwalk() {
     Props.Skybox.FloorBottomLeft = {0, 0, 0};
     Props.Skybox.FloorTopLeft = {0, 0, 0};
     Props.Sequence = MusicSeq::MUSIC_SEQ_BANSHEE_BOARDWALK;
+
+    Props.WaterLevel = -80.0f;
 }
 
 void BansheeBoardwalk::Load() {
@@ -140,10 +150,9 @@ void BansheeBoardwalk::Load() {
     D_801625EC = 0;
     D_801625F4 = 0;
     D_801625F0 = 0;
-    parse_course_displaylists((TrackSectionsI*)LOAD_ASSET_RAW(d_course_banshee_boardwalk_track_sections));
+    parse_course_displaylists((TrackSections*)LOAD_ASSET_RAW(d_course_banshee_boardwalk_track_sections));
     func_80295C6C();
     find_vtx_and_set_colours(segmented_gfx_to_virtual((void*)0x07000878), 128, 0, 0, 0);
-    D_8015F8E4 = -80.0f;
 }
 
 void BansheeBoardwalk::LoadTextures() {
@@ -163,19 +172,19 @@ void BansheeBoardwalk::BeginPlay() {
     }
 
     if (gIsMirrorMode) {
-        gWorldInstance.AddObject(new OTrashBin(FVector(1765.0f, 45.0f, 195.0f), FRotation(0, 180.0f, 0), 1.0f, bhv));
+        gWorldInstance.AddObject(new OTrashBin(FVector(1765.0f, 45.0f, 195.0f), IRotator(0, 180, 0), 1.0f, bhv));
     } else {
-        gWorldInstance.AddObject(new OTrashBin(FVector(-1765.0f, 45.0f, 70.0f), FRotation(0, 0, 0), 1.0f, bhv));
+        gWorldInstance.AddObject(new OTrashBin(FVector(-1765.0f, 45.0f, 70.0f), IRotator(0, 0, 0), 1.0f, bhv));
     }
 
     if ((gGamestate != CREDITS_SEQUENCE) && (gModeSelection != TIME_TRIALS)) {
-        gWorldInstance.AddObject(new OBat(FVector(0,0,0), FRotation(0, 0, 90.0f)));
+        gWorldInstance.AddObject(new OBat(FVector(0,0,0), IRotator(0, 0, 90)));
         gWorldInstance.AddObject(new OBoos(5, IPathSpan(180, 190), IPathSpan(200, 210), IPathSpan(280, 290)));
         gWorldInstance.AddObject(new OBoos(5, IPathSpan(490, 500), IPathSpan(510, 520), IPathSpan(620, 630)));
     }
 
     if (gModeSelection == VERSUS) {
-        Vec3f pos = {0, 0, 0};
+        FVector pos = { 0, 0, 0 };
 
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][110], 110, 3, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][190], 190, 1, 0.8333333f));
@@ -185,15 +194,6 @@ void BansheeBoardwalk::BeginPlay() {
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
         gWorldInstance.AddObject(new OBombKart(pos, &D_80164550[0][0], 0, 0, 0.8333333f));
     }
-}
-
-// Likely sets minimap boundaries
-void BansheeBoardwalk::MinimapSettings() {
-    D_80165880 = dma_textures((const char*)gTextureGhosts, 0x4CC2, 0xD980);
-    D_8018D2A0 = 0.016f;
-    D_8018D2C0[0] = 0x0106;
-    D_8018D2E0 = 55;
-    D_8018D2E8 = 39;
 }
 
 void BansheeBoardwalk::InitCourseObjects() {
@@ -251,12 +251,6 @@ void BansheeBoardwalk::WhatDoesThisDoAI(Player* player, int8_t playerId) {
             D_80165300[playerId] = 0;
         }
     }
-}
-
-// Positions the finishline on the minimap
-void BansheeBoardwalk::MinimapFinishlinePosition() {
-    //! todo: Place hard-coded values here.
-    draw_hud_2d_texture_8x8(this->Props.MinimapFinishlineX, this->Props.MinimapFinishlineY, (u8*) common_texture_minimap_finish_line);
 }
 
 void BansheeBoardwalk::Render(struct UnkStruct_800DC5EC* arg0) {
@@ -321,8 +315,6 @@ void BansheeBoardwalk::Render(struct UnkStruct_800DC5EC* arg0) {
 void BansheeBoardwalk::RenderCredits() {
     gSPDisplayList(gDisplayListHead++, (Gfx*)(d_course_banshee_boardwalk_dl_B308));
 }
-
-void BansheeBoardwalk::Collision() {}
 
 void BansheeBoardwalk::ScrollingTextures() {
     D_802B87BC++;
