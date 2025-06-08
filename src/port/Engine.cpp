@@ -24,9 +24,10 @@
 #include "window/gui/resource/FontFactory.h"
 #include "SpaghettiGui.h"
 
+#include "port/interpolation/FrameInterpolation.h"
 #include <graphic/Fast3D/Fast3dWindow.h>
 #include <graphic/Fast3D/interpreter.h>
-//#include <Fast3D/gfx_rendering_api.h>
+// #include <Fast3D/gfx_rendering_api.h>
 #include <SDL2/SDL.h>
 
 #include <utility>
@@ -51,9 +52,9 @@ float gInterpolationStep = 0.0f;
 
 Fast::Interpreter* GetInterpreter() {
     return static_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow())
-             ->GetInterpreterWeak()
-             .lock()
-             .get();
+        ->GetInterpreterWeak()
+        .lock()
+        .get();
 }
 
 GameEngine* GameEngine::Instance;
@@ -62,14 +63,13 @@ GameEngine::GameEngine() {
 
     const std::string main_path = Ship::Context::GetPathRelativeToAppDirectory("mk64.o2r");
     const std::string assets_path = Ship::Context::LocateFileAcrossAppDirs("spaghetti.o2r");
-  
+
     std::vector<std::string> archiveFiles;
 
 #ifdef __SWITCH__
     Ship::Switch::Init(Ship::PreInitPhase);
     Ship::Switch::Init(Ship::PostInitPhase);
 #endif
-
 
 #ifdef _WIN32
     AllocConsole();
@@ -79,7 +79,7 @@ GameEngine::GameEngine() {
         archiveFiles.push_back(main_path);
     } else {
         if (ShowYesNoBox("No O2R Files", "No O2R files found. Generate one now?") == IDYES) {
-            if(!GenAssetFile()){
+            if (!GenAssetFile()) {
                 ShowMessage("Error", "An error occured, no O2R file was generated.\n\nExiting...");
                 exit(1);
             } else {
@@ -106,11 +106,11 @@ GameEngine::GameEngine() {
         }
     }
 
-    this->context =
-        Ship::Context::CreateUninitializedInstance("Spaghetti Kart", "spaghettify", "spaghettify.cfg.json");
+    this->context = Ship::Context::CreateUninitializedInstance("Spaghetti Kart", "spaghettify", "spaghettify.cfg.json");
 
-    this->context->InitConfiguration(); // without this line InitConsoleVariables fails at Config::Reload()
-    this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
+    this->context->InitConfiguration();    // without this line InitConsoleVariables fails at Config::Reload()
+    this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
+                                           // ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
     auto controlDeck = std::make_shared<LUS::ControlDeck>();
 
@@ -120,8 +120,8 @@ GameEngine::GameEngine() {
     auto gui = std::make_shared<Ship::SpaghettiGui>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
     auto wnd = std::make_shared<Fast::Fast3dWindow>(gui);
 
-    //auto wnd = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
-    //auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
+    // auto wnd = std::make_shared<Fast::Fast3dWindow>(std::vector<std::shared_ptr<Ship::GuiWindow>>({}));
+    // auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
     this->context->Init(archiveFiles, {}, 3, { 26800, 512, 1100 }, wnd, controlDeck);
 
@@ -158,8 +158,9 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<Fast::ResourceFactoryXMLVertexV0>(), RESOURCE_FORMAT_XML, "Vertex",
                                     static_cast<uint32_t>(Fast::ResourceType::Vertex), 0);
 
-    loader->RegisterResourceFactory(std::make_shared<Fast::ResourceFactoryBinaryDisplayListV0>(), RESOURCE_FORMAT_BINARY,
-                                    "DisplayList", static_cast<uint32_t>(Fast::ResourceType::DisplayList), 0);
+    loader->RegisterResourceFactory(std::make_shared<Fast::ResourceFactoryBinaryDisplayListV0>(),
+                                    RESOURCE_FORMAT_BINARY, "DisplayList",
+                                    static_cast<uint32_t>(Fast::ResourceType::DisplayList), 0);
     loader->RegisterResourceFactory(std::make_shared<Fast::ResourceFactoryXMLDisplayListV0>(), RESOURCE_FORMAT_XML,
                                     "DisplayList", static_cast<uint32_t>(Fast::ResourceType::DisplayList), 0);
 
@@ -178,24 +179,21 @@ GameEngine::GameEngine() {
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackSectionsV0>(),
                                     RESOURCE_FORMAT_BINARY, "TrackSections",
                                     static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryXMLTrackSectionsV0>(),
-                                    RESOURCE_FORMAT_XML, "TrackSections",
-                                    static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryXMLTrackSectionsV0>(), RESOURCE_FORMAT_XML,
+                                    "TrackSections", static_cast<uint32_t>(MK64::ResourceType::TrackSection), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryTrackWaypointsV0>(),
                                     RESOURCE_FORMAT_BINARY, "Waypoints",
                                     static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryXMLTrackWaypointsV0>(),
-                                    RESOURCE_FORMAT_XML, "Paths",
-                                    static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryXMLTrackWaypointsV0>(), RESOURCE_FORMAT_XML,
+                                    "Paths", static_cast<uint32_t>(MK64::ResourceType::Waypoints), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryActorSpawnDataV0>(),
                                     RESOURCE_FORMAT_BINARY, "SpawnData",
                                     static_cast<uint32_t>(MK64::ResourceType::SpawnData), 0);
     loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryUnkActorSpawnDataV0>(),
                                     RESOURCE_FORMAT_BINARY, "UnkSpawnData",
                                     static_cast<uint32_t>(MK64::ResourceType::UnkSpawnData), 0);
-    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryMinimapV0>(),
-                                    RESOURCE_FORMAT_BINARY, "Minimap",
-                                    static_cast<uint32_t>(MK64::ResourceType::Minimap), 0);
+    loader->RegisterResourceFactory(std::make_shared<MK64::ResourceFactoryBinaryMinimapV0>(), RESOURCE_FORMAT_BINARY,
+                                    "Minimap", static_cast<uint32_t>(MK64::ResourceType::Minimap), 0);
 
     fontMono = CreateFontWithSize(16.0f, "fonts/Inconsolata-Regular.ttf");
     fontMonoLarger = CreateFontWithSize(20.0f, "fonts/Inconsolata-Regular.ttf");
@@ -216,13 +214,36 @@ bool GameEngine::GenAssetFile() {
 
     auto game = extractor->ValidateChecksum();
     if (!game.has_value()) {
-        ShowMessage("Unsupported ROM", "The provided ROM is not supported.\n\nCheck the readme for a list of supported versions.");
+        ShowMessage("Unsupported ROM",
+                    "The provided ROM is not supported.\n\nCheck the readme for a list of supported versions.");
         exit(1);
     }
 
-    ShowMessage(("Found " + game.value()).c_str(), "The extraction process will now begin.\n\nThis may take a few minutes.", SDL_MESSAGEBOX_INFORMATION);
+    ShowMessage(("Found " + game.value()).c_str(),
+                "The extraction process will now begin.\n\nThis may take a few minutes.", SDL_MESSAGEBOX_INFORMATION);
 
     return extractor->GenerateOTR();
+}
+
+uint32_t GameEngine::GetInterpolationFPS() {
+    if (CVarGetInteger("gMatchRefreshRate", 0)) {
+        return Ship::Context::GetInstance()->GetWindow()->GetCurrentRefreshRate();
+
+    } else if (CVarGetInteger("gVsyncEnabled", 1) ||
+               !Ship::Context::GetInstance()->GetWindow()->CanDisableVerticalSync()) {
+        return std::min<uint32_t>(Ship::Context::GetInstance()->GetWindow()->GetCurrentRefreshRate(),
+                                  CVarGetInteger("gInterpolationFPS", 30));
+    }
+
+    return CVarGetInteger("gInterpolationFPS", 30);
+}
+
+uint32_t GameEngine::GetInterpolationFrameCount() {
+    return ceil((float) GetInterpolationFPS() / (60.0f / 2 /*gVIsPerFrame*/));
+}
+
+extern "C" uint32_t GameEngine_GetInterpolationFrameCount() {
+    return GameEngine::GetInterpolationFrameCount();
 }
 
 void GameEngine::ShowMessage(const char* title, const char* message, SDL_MessageBoxFlags type) {
@@ -275,6 +296,9 @@ void GameEngine::Destroy() {
 #ifdef __SWITCH__
     Ship::Switch::Exit();
 #endif
+    GameUI::Destroy();
+    delete GameEngine::Instance;
+    GameEngine::Instance = nullptr;
 }
 
 bool ShouldClearTextureCacheAtEndOfFrame = false;
@@ -301,16 +325,24 @@ void GameEngine::StartFrame() const {
 //     Instance->context->GetWindow()->MainLoop(run_one_game_iter);
 // }
 
-void GameEngine::RunCommands(Gfx* Commands) {
+void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements) {
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
 
-    if (nullptr == wnd) {
+    if (wnd == nullptr) {
         return;
     }
 
+    auto interpreter = wnd->GetInterpreterWeak().lock().get();
+
+    // Process window events for resize, mouse, keyboard events
     wnd->HandleEvents();
 
-    wnd->DrawAndRunGraphicsCommands(Commands, {});
+    interpreter->mInterpolationIndex = 0;
+
+    for (const auto& m : mtx_replacements) {
+        wnd->DrawAndRunGraphicsCommands(Commands, m);
+        interpreter->mInterpolationIndex++;
+    }
 
     bool curAltAssets = CVarGetInteger("gEnhancements.Mods.AlternateAssets", 0);
     if (prevAltAssets != curAltAssets) {
@@ -321,12 +353,49 @@ void GameEngine::RunCommands(Gfx* Commands) {
 }
 
 void GameEngine::ProcessGfxCommands(Gfx* commands) {
+    std::vector<std::unordered_map<Mtx*, MtxF>> mtx_replacements;
+    int target_fps = GameEngine::Instance->GetInterpolationFPS();
+    if (CVarGetInteger("gModifyInterpolationTargetFPS", 0)) {
+        target_fps = CVarGetInteger("gInterpolationTargetFPS", 60);
+    }
+    static int last_fps;
+    static int last_update_rate;
+    static int time;
+    int fps = target_fps;
+    int original_fps = 60 / 2 /*gVIsPerFrame*/;
+
+    if (target_fps == 30 || original_fps > target_fps) {
+        fps = original_fps;
+    }
+
+    if (last_fps != fps || last_update_rate != 2 /*gVIsPerFrame*/) {
+        time = 0;
+    }
+
+    // time_base = fps * original_fps (one second)
+    int next_original_frame = fps;
+
+    while (time + original_fps <= next_original_frame) {
+        time += original_fps;
+        if (time != next_original_frame) {
+            mtx_replacements.push_back(FrameInterpolation_Interpolate((float) time / next_original_frame));
+        } else {
+            mtx_replacements.emplace_back();
+        }
+    }
+    // printf("mtxf size: %d\n", mtx_replacements.size());
+
+    time -= fps;
+
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetInstance()->GetWindow());
     if (wnd != nullptr) {
-        wnd->SetTargetFps(CVarGetInteger("gInterpolationFPS", 30));
+        wnd->SetTargetFps(GetInterpolationFPS());
         wnd->SetMaximumFrameLatency(1);
     }
-    RunCommands(commands);
+    RunCommands(commands, mtx_replacements);
+
+    last_fps = fps;
+    last_update_rate = 2;
 }
 
 // Audio
@@ -444,7 +513,9 @@ ImFont* GameEngine::CreateFontWithSize(float size, std::string fontPath) {
         initData->Path = fontPath;
         std::shared_ptr<Ship::Font> fontData = std::static_pointer_cast<Ship::Font>(
             Ship::Context::GetInstance()->GetResourceManager()->LoadResource(fontPath, false, initData));
-        font = mImGuiIo->Fonts->AddFontFromMemoryTTF(fontData->Data, fontData->DataSize, size);
+        char* fontDataPtr = (char*) malloc(fontData->DataSize);
+        memcpy(fontDataPtr, fontData->Data, fontData->DataSize);
+        font = mImGuiIo->Fonts->AddFontFromMemoryTTF(fontDataPtr, fontData->DataSize, size);
     }
     // FontAwesome fonts need to have their sizes reduced by 2.0f/3.0f in order to align correctly
     float iconFontSize = size * 2.0f / 3.0f;
@@ -635,14 +706,14 @@ extern "C" int16_t OTRGetRectDimensionFromRightEdge(float v) {
 
 /**
  * Centers an item in a given area.
- * 
+ *
  * Adds the number of extended screen pixels to the location to center.
  * This allows stretching the game window really wide, and the item will stay in-place.
- * 
+ *
  * This is not for centering in the direct center of the screen.
- * 
+ *
  * How to use:
- * 
+ *
  * s32 center = OTRCalculateCenterOfAreaFromRightEdge((SCREEN_WIDTH / 4) + (SCREEN_WIDTH / 2));
  * x = center - (texWidth / 2)
  * x2 = center + (texWidth / 2)

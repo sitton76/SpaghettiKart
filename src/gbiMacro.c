@@ -3,6 +3,7 @@
 #include "main.h"
 #include <mk64.h>
 #include <assets/common_data.h>
+#include "src/port/interpolation/matrix.h"
 
 #include "math_util.h"
 
