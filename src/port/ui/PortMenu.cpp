@@ -339,9 +339,9 @@ void PortMenu::AddEnhancements() {
     AddWidget(path, "No multiplayer feature cuts", WIDGET_CVAR_CHECKBOX)
         .CVar("gMultiplayerNoFeatureCuts")
         .Options(CheckboxOptions().Tooltip("Allows full train and jumbotron in multiplayer, etc."));
-    AddWidget(path, "General Improvements", WIDGET_CVAR_CHECKBOX)
-        .CVar("gImprovements")
-        .Options(CheckboxOptions().Tooltip("General improvements to the game experience."));
+    AddWidget(path, "Widescreen portrait spacing", WIDGET_CVAR_CHECKBOX)
+        .CVar("gBetterResultPortraits")
+        .Options(CheckboxOptions().Tooltip("Alters result portrait spacing for better aesthetics on widescreen"));
     AddWidget(path, "No Level of Detail (LOD)", WIDGET_CVAR_CHECKBOX)
         .CVar("gDisableLod")
         .Options(CheckboxOptions().Tooltip(
@@ -351,6 +351,7 @@ void PortMenu::AddEnhancements() {
         .Options(CheckboxOptions().Tooltip("Disable original culling of mk64"));
     AddWidget(path, "Far Frustrum", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gFarFrustrum")
+        .PreFunc([](WidgetInfo& info) { info.isHidden = !CVarGetInteger("gNoCulling", 0); })
         .Options(FloatSliderOptions()
                      .Min(0.0f)
                      .Max(10000.0f)
@@ -364,18 +365,21 @@ void PortMenu::AddEnhancements() {
     AddWidget(path, "Enable Custom CC", WIDGET_CVAR_CHECKBOX).CVar("gEnableCustomCC");
     AddWidget(path, "Custom CC", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gCustomCC")
+        .PreFunc([](WidgetInfo& info) { info.isHidden = !CVarGetInteger("gEnableCustomCC", 0); })
         .Options(FloatSliderOptions().Min(0.0f).Max(1000.0f).DefaultValue(150.0f).Step(10.0f));
     AddWidget(path, "Disable Wall Collision", WIDGET_CVAR_CHECKBOX)
         .CVar("gNoWallColision")
         .Options(CheckboxOptions().Tooltip("Disable wall collision."));
     AddWidget(path, "Min Height", WIDGET_CVAR_SLIDER_FLOAT)
         .CVar("gMinHeight")
+        .PreFunc([](WidgetInfo& info) { info.isHidden = !CVarGetInteger("gNoWallColision", 0); })
         .Options(FloatSliderOptions().Min(-50.0f).Max(50.0f).DefaultValue(0.0f).Tooltip(
             "When Disable Wall Collision are enable what is the minimal height you can get."));
 
 #if not defined(__SWITCH__) and not defined(__WIIU__)
     path = { "Enhancements", "HM64 Lab", SECTION_COLUMN_1 };
     AddSidebarEntry("Enhancements", "HM64 Lab", 4);
+    AddWidget(path, "Work in progress.", WIDGET_TEXT);
     AddWidget(path, "Enable HM64 Labs", WIDGET_CVAR_CHECKBOX)
         .CVar("gEditorEnabled")
         .Callback([](WidgetInfo& info) {
@@ -422,7 +426,7 @@ void PortMenu::AddDevTools() {
         .Options(CheckboxOptions().Tooltip("Enables Debug Mode."));
     AddWidget(path, "Modify Interpolation Target FPS", WIDGET_CVAR_CHECKBOX)
         .CVar("gModifyInterpolationTargetFPS")
-        .Options(CheckboxOptions().Tooltip("Enables Debug Mode."));
+        .Options(CheckboxOptions().Tooltip("For testing frame interpolation."));
     AddWidget(path, "Interpolation Target FPS", WIDGET_CVAR_SLIDER_INT)
         .CVar("gInterpolationTargetFPS")
         .PreFunc([](WidgetInfo& info) { info.isHidden = !CVarGetInteger("gModifyInterpolationTargetFPS", 0); })
