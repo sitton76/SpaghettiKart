@@ -4241,7 +4241,12 @@ void adjust_img_colour(s32 index, s32 screenSize, s32 r, s32 g, s32 b) {
     gSPInvalidateTexCache(gDisplayListHead++, sMenuTextureMap[index].offset);
 }
 
+/**
+ * Searches the menu texture cache for a texture. If not cached then return NULL
+ * This function is no longer required so the ptr can be returned back.
+ */
 u16* func_8009B8C4(u64* arg0) {
+    return arg0; // Prevent random CI8 crash in the menus
     UNUSED s32 pad[2];
     s32 offset;
     s32 found;

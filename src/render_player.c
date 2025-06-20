@@ -1664,12 +1664,14 @@ void render_kart(Player* player, s8 playerId, s8 screenId, s8 arg3) {
         (struct_D_802F1F80*) &gPlayerPalettesList[D_801651D0[screenId][playerId]][screenId][playerId * 0x100];
 #endif
     if ((screenId == 0) || (screenId == 1)) {
+        load_kart_texture(player, playerId, screenId, screenId, 0);
         sKartUpperTexture = gEncodedKartTexture[D_801651D0[screenId][playerId]][screenId][playerId].unk_00;
 #ifdef TARGET_N64
         sKartLowerTexture =
             &D_802BFB80.arraySize8[D_801651D0[screenId][playerId]][screenId][playerId].pixel_index_array[0x7C0];
 #endif
     } else {
+        load_kart_texture(player, playerId - 4, screenId - 1, screenId - 1, 0);
         sKartUpperTexture = gEncodedKartTexture[D_801651D0[screenId][playerId]][screenId - 1][playerId - 4].unk_00;
 #ifdef TARGET_N64
         sKartLowerTexture =

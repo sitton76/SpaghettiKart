@@ -5924,15 +5924,12 @@ void func_80016C3C(UNUSED s32 playerId, UNUSED f32 arg1, s32 cameraId) {
 }
 
 void func_80017054(Camera* camera, UNUSED Player* player, UNUSED s32 index, s32 cameraId);
-#ifdef NON_MATCHING
-// https://decomp.me/scratch/Ck7hV
-// Really crazy diff, permuter only able to find fakematches for improvements (and they're big improvements)
-// There's something really, really wrong with the empty `if` statement
 void func_80017054(Camera* camera, UNUSED Player* player, UNUSED s32 index, s32 cameraId) {
-    s32 pad5[2];
-    f32 diffX2;
-    f32 diffY2;
-    f32 diffZ2;
+    s32 stackPadding0;
+    s32 stackPadding1;
+    f32 spAC;
+    f32 spA8;
+    f32 spA4;
     s32 stackPadding2;
     s32 stackPadding3;
     f32 camX;
@@ -5942,36 +5939,33 @@ void func_80017054(Camera* camera, UNUSED Player* player, UNUSED s32 index, s32 
     f32 lookAtY;
     f32 lookAtZ;
     f32 diffX;
-    f32 diffZ;
     f32 diffY;
-    f32 distance;
-    s32 pad;
+    f32 diffZ;
+    s32 stackPadding7;
+    s32 stackPadding8;
     s16 waypoint1;
     s16 waypoint2;
-    s32 pad2[3];
+    f32 stackPadding9;
+    s32 playerId;
+    f32 distance;
     s32 pathIndex;
-    s32 pad3;
     s32 sp58;
     s16 sp56;
-    s32 playerId;
 
     playerId = camera->playerId;
-    pathIndex = D_80163DD8[cameraId];
     D_80164648[cameraId] += (D_80164658[cameraId] - D_80164648[cameraId]) * 0.5f;
+    pathIndex = D_80163DD8[cameraId];
     sp58 = gPathCountByPathIndex[pathIndex];
     D_80163238 = playerId;
     sp56 = gNearestPathPointByCameraId[cameraId];
-    gNearestPathPointByCameraId[cameraId] =
-        func_8000D33C(camera->pos[0], camera->pos[1], camera->pos[2], gNearestPathPointByCameraId[cameraId], pathIndex);
+    gNearestPathPointByCameraId[cameraId] = func_8000D33C(camera->pos[0], camera->pos[1], camera->pos[2], gNearestPathPointByCameraId[cameraId], pathIndex);
     if (IsYoshiValley()) {
         if ((sp56 != gNearestPathPointByCameraId[cameraId]) && (gNearestPathPointByCameraId[cameraId] == 1)) {
-            pathIndex = (D_80163DD8[cameraId] = random_int(4U));
-            gNearestPathPointByCameraId[cameraId] = func_8000D33C(camera->pos[0], camera->pos[1], camera->pos[2],
-                                                                  gNearestPathPointByCameraId[cameraId], pathIndex);
+            D_80163DD8[cameraId] = random_int(4);
+            pathIndex = D_80163DD8[cameraId];
+            gNearestPathPointByCameraId[cameraId] = func_8000D33C(camera->pos[0], camera->pos[1], camera->pos[2], gNearestPathPointByCameraId[cameraId], pathIndex);
         }
     }
-
-    // LookAt XZ 0xA points ahead
     waypoint1 = (gNearestPathPointByCameraId[cameraId] + 0xA) % sp58;
     waypoint2 = (gNearestPathPointByCameraId[cameraId] + 0xB) % sp58;
     set_track_offset_position(waypoint1, D_80164688[cameraId], pathIndex);
@@ -5981,7 +5975,6 @@ void func_80017054(Camera* camera, UNUSED Player* player, UNUSED s32 index, s32 
     lookAtX += gOffsetPosition[0] * 0.5;
     lookAtZ += gOffsetPosition[2] * 0.5;
 
-    // LookAt Y 5 points ahead
     waypoint1 = (gNearestPathPointByCameraId[cameraId] + 5) % sp58;
     waypoint2 = (gNearestPathPointByCameraId[cameraId] + 6) % sp58;
     lookAtY = (gTrackPaths[pathIndex][waypoint1].posY + gTrackPaths[pathIndex][waypoint2].posY) * 0.5f;
@@ -5998,49 +5991,42 @@ void func_80017054(Camera* camera, UNUSED Player* player, UNUSED s32 index, s32 
     diffX = camX - D_801645F8[cameraId];
     diffY = camY - D_80164618[cameraId];
     diffZ = camZ - D_80164638[cameraId];
-// magnitude
-#define SQ(x) (x * x)
-    distance = sqrtf(SQ(diffX) + SQ(diffY) + SQ(diffZ));
+
+    distance = sqrtf(((diffX * diffX) + (diffY * diffY)) + (diffZ * diffZ));
     if (distance != 0.0) {
-        diffX = D_801645F8[cameraId] + ((D_80164648[cameraId] * diffX) / distance);
-        diffY = D_80164618[cameraId] + ((D_80164648[cameraId] * diffY) / distance);
-        diffZ = D_80164638[cameraId] + ((D_80164648[cameraId] * diffZ) / distance);
+        camX = D_801645F8[cameraId] + (((stackPadding9 = D_80164648[cameraId]) * diffX) / distance);
+        camY = D_80164618[cameraId] + ((D_80164648[cameraId] * diffY) / distance);
+        camZ = D_80164638[cameraId] + ((D_80164648[cameraId] * diffZ) / distance);
     } else {
-        diffX = D_801645F8[cameraId];
-        diffY = D_80164618[cameraId];
-        diffZ = D_80164638[cameraId];
+        camX = D_801645F8[cameraId];
+        camY = D_80164618[cameraId];
+        camZ = D_80164638[cameraId];
     }
 
-    if (((diffX > (-10000.0))) && ((diffX < 10000.0))) {
-        camera->pos[0] = diffX;
-        camera->pos[2] = diffZ;
+    if (camX < -10000.0 || camX > 10000.0) {
+        if (lookAtX < -10000.0 || lookAtX > 10000.0) {}
     }
+    camera->pos[0] = camX;
+    camera->pos[2] = camZ;
+    camera->pos[1] = camY + 10.0;
 
-    // camera->pos[0] = camX;
-    camera->pos[1] = diffY + 10.0; // Set camera 10 points above the ground
-
-    if (1) {}
-    if (1) {}
-    if (1) {}
-    if (1) {}
-    if (1) {}
-    D_801645F8[cameraId] = diffX;
-    D_80164638[cameraId] = diffZ;
+    D_801645F8[cameraId] = camX;
     D_80164618[cameraId] = camY;
+    D_80164638[cameraId] = camZ;
+
+    if (lookAtX < -10000.0 || lookAtX > 10000.0) {}
+    if (lookAtZ < -10000.0 || lookAtZ > 10000.0) {}
     camera->lookAt[0] = lookAtX;
     camera->lookAt[1] = lookAtY + 8.0;
     camera->lookAt[2] = lookAtZ;
     func_80014D30(cameraId, pathIndex);
-    diffX2 = camera->lookAt[0] - camera->pos[0];
-    diffY2 = camera->lookAt[1] - camera->pos[1];
-    diffZ2 = camera->lookAt[2] - camera->pos[2];
-    camera->rot[1] = atan2s(diffX2, diffZ2);
-    camera->rot[0] = atan2s(sqrtf((diffX2 * diffX2) + (diffZ2 * diffZ2)), diffY2);
+    spAC = camera->lookAt[0] - camera->pos[0];
+    spA8 = camera->lookAt[1] - camera->pos[1];
+    spA4 = camera->lookAt[2] - camera->pos[2];
+    camera->rot[1] = atan2s(spAC, spA4);
+    camera->rot[0] = atan2s(sqrtf((spAC * spAC) + (spA4 * spA4)), spA8);
     camera->rot[2] = 0;
 }
-#else
-GLOBAL_ASM("asm/non_matchings/code_80005FD0/func_80017054.s")
-#endif
 
 void func_80017720(s32 playerId, UNUSED f32 arg1, s32 cameraId, s16 pathIndex) {
     Camera* camera = cameras + cameraId;
