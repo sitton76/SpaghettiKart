@@ -1,11 +1,5 @@
-[comment]: <> (Todo: Make Light Mode Image)
-[comment]: <> (Todo: Make Dark Mode Image)
-
-# SpaghettiKart
-
-Developed by: 
-* [MegaMech](https://www.github.com/MegaMech)
-* [Coco](https://www.github.com/coco875)
+![Spaghetti Kart](docs/spaghettigithublight.png#gh-light-mode-only)
+![Spaghetti Kart](docs/spaghettigithubnight.png#gh-dark-mode-only)
 
 ## Discord
 
@@ -80,6 +74,8 @@ If you want to playtest a continuous integration build, you can find them at the
 * [Windows](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/spaghettify-windows.zip)
 * [Linux](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/SpaghettiKart-linux.zip)
 * [Switch](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/Spaghettify-switch.zip)
+
+Maintainers: [MegaMech](https://www.github.com/MegaMech), [Coco](https://www.github.com/coco875), [Kirito](https://github.com/KiritoDv)
 
 <a href="https://github.com/Kenix3/libultraship/">
   <picture>
