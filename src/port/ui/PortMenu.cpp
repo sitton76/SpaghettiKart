@@ -365,6 +365,9 @@ void PortMenu::AddEnhancements() {
         .Options(FloatSliderOptions().Min(0.0f).Max(1000.0f).DefaultValue(150.0f).Step(10.0f));
 
     AddWidget(path, "Harder CPU", WIDGET_CVAR_CHECKBOX).CVar("gHarderCPU");
+    AddWidget(path, "Use regular intro.", WIDGET_CVAR_CHECKBOX)
+        .CVar("gHarbourIntroSkip")
+        .Options(CheckboxOptions().Tooltip("Skips ports Harbour intro on startup."));
 
     path = { "Enhancements", "Cheats", SECTION_COLUMN_1 };
     AddSidebarEntry("Enhancements", "Cheats", 3);
