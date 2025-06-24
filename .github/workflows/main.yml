@@ -314,7 +314,7 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v4
         with:
-          name: Spaghettify-linux
+          name: Spaghettify-linux-docker
           path: |
             spaghetti.appimage
             config.yml
