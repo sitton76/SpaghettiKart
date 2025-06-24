@@ -80,8 +80,10 @@ C:\Program Files\CMake\bin\cmake.exe --build build-cmake --target clean
 
 ## Linux
 ### Clone the repo and enter the directory
+```sh
 git clone https://github.com/HarbourMasters/SpaghettiKart.git
 cd SpaghettiKart
+```
 
 ### Manual
 #### Install dependencies
@@ -122,7 +124,7 @@ zypper in clang libstdc++-devel git cmake ninja SDL2-devel libpng16-devel libzip
 
 _Note: If you're using Visual Studio Code, the [CMake Tools plugin](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cmake-tools) makes it very easy to just press run and debug._
 
-```bash
+```sh
 # Clone the submodules
 git submodule update --init
 
@@ -144,14 +146,18 @@ cmake --build build-cmake
 
 ### Docker
 #### Create the docker container
+```sh
 docker build . -t spaghetti
+```
 
 #### Compile the project
+```sh
 docker run --rm -v ${PWD}:/project spaghetti ./build.sh
+```
 
 ### Generate a distributable
 After compiling the project you can generate a distributable by running of the following:
-```bash
+```sh
 # Go to build folder
 cd build-cmake
 # Generate
