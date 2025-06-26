@@ -309,7 +309,7 @@ jobs:
       - name: Confiure
         run: docker run --rm -v ${PWD}:/project spaghetti cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
       - name: Build spaghetti
-        run: cmake --build build-cmake --config Release -j$(nproc)
+        run: docker run --rm -v ${PWD}:/project spaghetti cmake --build build-cmake --config Release -j$(nproc)
 
   build-switch:
     needs: generate-port-o2r
