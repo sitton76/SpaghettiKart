@@ -3266,11 +3266,11 @@ u8 gen_random_item(s16 rank, s16 option) {
                     verify_probability_table("Human", distributionTable, rank);
                     break;
                 case CPU_TABLE:
-                    distributionTable = &grandPrixEasyCPUProbabilityTable[rank];
+                    distributionTable = &grandPrixCPUProbabilityTable[rank];
                     verify_probability_table("CPU", distributionTable, rank);
                     break;
                 case HARD_CPU_TABLE:
-                    distributionTable = &grandPrixNormalCPUProbabilityTable[rank];
+                    distributionTable = &grandPrixHardCPUProbabilityTable[rank];
                     verify_probability_table("Hard CPU", distributionTable, rank);
                     break;
             }
