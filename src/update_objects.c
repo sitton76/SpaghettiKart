@@ -3,6 +3,7 @@
 #include <defines.h>
 #include <decode.h>
 #include <mk64.h>
+#include <stdio.h>
 
 #include "update_objects.h"
 #include "main.h"
