@@ -3312,7 +3312,11 @@ u8 gen_random_item(s16 rank, s16 isCpu) {
 }
 
 u8 gen_random_item_human(UNUSED s16 arg0, s16 rank) {
-    return gen_random_item(rank, HUMAN_TABLE);
+    if (CVarGetInteger("gHarderCPU", 0) == true) {
+        return gen_random_item(rank, HARD_CPU_TABLE);
+    } else {
+        return gen_random_item(rank, HUMAN_TABLE);
+    }
 }
 
 u8 cpu_gen_random_item(UNUSED s32 arg0, s16 rank) {
