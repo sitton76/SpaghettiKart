@@ -301,25 +301,20 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
       - name: Build docker image
         if: steps.cache.outputs.cache-hit != 'true'
         run: docker build . -t spaghetti
-      - name: Build AppImage
-        run: docker run --rm -v ${PWD}:/project spaghetti ./build.sh
-      - name: Prepare Artifact
-        run: |
-            wget -O gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
-            mv README.md readme.txt
-            cp build-cmake/*.appimage spaghetti.appimage
-      - name: Upload build
-        uses: actions/upload-artifact@v4
+      - name: Confiure
+        run: docker run --rm -v ${PWD}:/project spaghetti cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+      - name: Download spaghetti.o2r
+        uses: actions/download-artifact@v4
         with:
-          name: Spaghettify-linux-docker
-          path: |
-            spaghetti.appimage
-            config.yml
-            yamls
-            gamecontrollerdb.txt
+          name: spaghetti.o2r
+          path: ./build-cmake
+      - name: Build spaghetti
+        run: cmake --build build-cmake --config Release -j$(nproc)
 
   build-switch:
     needs: generate-port-o2r
