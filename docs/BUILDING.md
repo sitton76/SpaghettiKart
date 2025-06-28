@@ -1,4 +1,4 @@
-# Building Starship
+# Building SpagettiKart
 
 ## Windows
 
@@ -139,6 +139,8 @@ cmake --build build-cmake
 
 # Now you can run the executable in ./build-cmake/Spaghettify
 # To develop the project open the repository in VSCode (or your preferred editor)
+
+# System wide freezes may be due to low memory, add "-j4" to the end of the build command to use four cores.
 ```
 
 ### Generate a distributable
