@@ -150,9 +150,14 @@ cmake --build build-cmake
 docker build . -t spaghetti
 ```
 
+#### Configure the project
+```sh
+docker run --rm -v ${PWD}:/project spaghetti cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
+```
+
 #### Compile the project
 ```sh
-docker run --rm -v ${PWD}:/project spaghetti ./build.sh
+docker run --rm -v ${PWD}:/project spaghetti cmake --build build-cmake --config Release -j$(nproc)
 ```
 
 ### Generate a distributable
