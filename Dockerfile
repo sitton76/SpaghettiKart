@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM ubuntu:22.04
 
 # Install dependencies
 RUN apt-get update -y && apt-get -y upgrade && apt-get -y install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libsdl2-net-dev libpng-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev libogg-dev libvorbis-dev wget file
