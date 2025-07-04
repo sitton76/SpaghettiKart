@@ -1,4 +1,4 @@
-# Building Starship
+# Building SpagettiKart
 
 ## Windows
 
@@ -22,7 +22,7 @@ It is recommended that you install Python and Git standalone, the install proces
 
 _Note: Be sure to either clone with the ``--recursive`` flag or do ``git submodule update --init`` after cloning to pull in the libultraship submodule!_
 
-2. After setup and initial build, use the built-in OTR extraction to make your sf64.o2r file.
+2. After setup and initial build, use the built-in OTR extraction to make your mk64.o2r file.
 
 _Note: Instructions assume using powershell_
 ```powershell
@@ -33,7 +33,7 @@ cd spaghetti
 # Add `-DCMAKE_BUILD_TYPE:STRING=Release` if you're packaging
 & 'C:\Program Files\CMake\bin\cmake' -S . -B "build/x64" -G "Visual Studio 17 2022" -T v143 -A x64
 
-# Generate sf64.o2r
+# Generate mk64.o2r
 & 'C:\Program Files\CMake\bin\cmake.exe' --build .\build\x64 --target ExtractAssets
 
 # Compile project
@@ -43,7 +43,7 @@ cd spaghetti
 # Now you can run the executable in .\build\x64 or run in Visual Studio
 ```
 
-### Developing Starship
+### Developing SpaghettiKart
 With the cmake build system you have two options for working on the project:
 
 #### Visual Studio
@@ -133,15 +133,17 @@ git submodule update --init
 # Add `-DPython3_EXECUTABLE=$(which python3)` if you are using non-standard Python installations such as PyEnv
 cmake -H. -Bbuild-cmake -GNinja
 
-# Generate sf64.o2r
+# Generate mk64.o2r
 cmake --build build-cmake --target ExtractAssets
 
 # Compile the project
 # Add `--config Release` if you're packaging
 cmake --build build-cmake
 
-# Now you can run the executable in ./build-cmake/mm/2s2h.elf
+# Now you can run the executable in ./build-cmake/Spaghettify
 # To develop the project open the repository in VSCode (or your preferred editor)
+
+# System wide freezes may be due to low memory, add "-j4" to the end of the build command to use four cores.
 ```
 
 ### Docker
@@ -179,7 +181,7 @@ cmake --build build-cmake --target clean
 ```
 
 ## macOS
-Requires Xcode (or xcode-tools) && `sdl2, libpng, glew, ninja, cmake, nlohmann-json, libzip, vorbis-tools` (can be installed via homebrew, macports, etc)
+Requires Xcode (or xcode-tools) && `sdl2, libpng, glew, ninja, cmake, nlohmann-json, libzip, vorbis-tools, sdl2_net, tinyxml2` (can be installed via homebrew, macports, etc)
 
 **Important: For maximum performance make sure you have ninja build tools installed!**
 
@@ -196,7 +198,7 @@ git submodule update --init
 # Add `-DCMAKE_BUILD_TYPE:STRING=Release` if you're packaging
 cmake -H. -Bbuild-cmake -GNinja
 
-# Generate sf64.o2r
+# Generate mk64.o2r
 cmake --build build-cmake --target ExtractAssets
 
 # Compile the project

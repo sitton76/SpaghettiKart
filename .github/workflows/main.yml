@@ -82,10 +82,14 @@ jobs:
         with:
           submodules: recursive
       - name: Install dependencies
-        run: brew install sdl2 sdl2_net libpng glew ninja cmake libzip nlohmann-json tinyxml2 spdlog vorbis-tools
+        run: brew install ninja cmake
+      - name: Install vcpkg
+        uses: lukka/run-vcpkg@v11.5
+        with:
+          vcpkgDirectory: '${{ github.workspace }}/vcpkg'
       - name: Build
         run: |
-          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release
+          cmake -H. -Bbuild-cmake -GNinja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${{ github.workspace }}/vcpkg/scripts/buildsystems/vcpkg.cmake
           cmake --build build-cmake --config Release -j3
       - name: Download spaghetti.o2r
         uses: actions/download-artifact@v4
@@ -99,7 +103,7 @@ jobs:
           mv build-cmake/spaghetti.o2r spaghetti-release/
           mv config.yml spaghetti-release/
           mv yamls spaghetti-release/
-          wget -O spaghetti-release/gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
+          wget -O spaghetti-release/gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
       - name: Publish packaged artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -182,7 +186,7 @@ jobs:
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build build-cmake --config Release -j3
           (cd build-cmake && cpack -G External)
-          wget -O gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
+          wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt
           mv build-cmake/*.appimage spaghetti.appimage
       # - name: Upload build
@@ -283,7 +287,7 @@ jobs:
           cmake -H. -Bbuild-cmake -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build build-cmake --config Release -j3
           (cd build-cmake && cpack -G External)
-          wget -O gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
+          wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt
           mv build-cmake/*.appimage spaghetti.appimage
       - name: Upload build
@@ -339,7 +343,7 @@ jobs:
           sudo sh /tmp/cmake.sh --prefix=/usr/local/ --exclude-subdir
           cmake -H. -Bbuild-switch -GNinja -DCMAKE_TOOLCHAIN_FILE=/opt/devkitpro/cmake/Switch.cmake
           cmake --build build-switch --config Release -j3
-          wget -O gamecontrollerdb.txt https://github.com/mdqinc/SDL_GameControllerDB/blob/master/gamecontrollerdb.txt
+          wget -O gamecontrollerdb.txt https://raw.githubusercontent.com/mdqinc/SDL_GameControllerDB/master/gamecontrollerdb.txt
           mv README.md readme.txt
           mv build-switch/*.nro Spaghettify.nro
       - name: Upload build
