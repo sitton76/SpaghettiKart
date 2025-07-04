@@ -304,6 +304,12 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
+      - name: Docker caching
+        uses: ScribeMD/docker-cache@0.5.0
+        id: cache
+        continue-on-error: true
+        with:
+          key: sk-docker-cache-${{ hashFiles('Dockerfile') }}
       - name: Build docker image
         if: steps.cache.outputs.cache-hit != 'true'
         run: docker build . -t spaghetti
