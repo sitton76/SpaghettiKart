@@ -1,7 +1,18 @@
 FROM ubuntu:22.04
 
+ENV DOCKER_CMAKE_VERSION="4.0.3"
+
 # Install dependencies
 RUN apt-get update -y && apt-get -y upgrade && apt-get -y install gcc g++ git cmake ninja-build lsb-release libsdl2-dev libsdl2-net-dev libpng-dev libzip-dev zipcmp zipmerge ziptool nlohmann-json3-dev libtinyxml2-dev libspdlog-dev libboost-dev libopengl-dev libogg-dev libvorbis-dev wget file
+
+# Install libultraship compatible cmake
+# This is based on https://askubuntu.com/questions/829310/how-to-upgrade-cmake-in-ubuntu
+RUN apt-get remove -y cmake && \
+    wget https://github.com/Kitware/CMake/releases/download/v4.0.3/cmake-${DOCKER_CMAKE_VERSION}-linux-x86_64.sh && \
+    chmod +x cmake-${DOCKER_CMAKE_VERSION}-linux-x86_64.sh && \
+    ./cmake-${DOCKER_CMAKE_VERSION}-linux-x86_64.sh --prefix=/opt/ --include-subdir --skip-license && \
+    ln -s /opt/cmake-${DOCKER_CMAKE_VERSION}-linux-x86_64/bin/* /usr/bin && \
+    rm cmake-${DOCKER_CMAKE_VERSION}-linux-x86_64.sh
 
 # Install latest SDL
 RUN wget https://www.libsdl.org/release/SDL2-2.30.3.tar.gz && \
