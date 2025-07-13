@@ -680,7 +680,7 @@ s32 use_red_shell_item(Player* player) {
 
 // Interestingly blue shells start their life as a red shell,
 // and then just change the type from red to blue shell
-void use_blue_shell_item(Player* player) {
+s32 use_blue_shell_item(Player* player) {
     GET_ACTOR(use_red_shell_item(player))->type = ACTOR_BLUE_SPINY_SHELL;
 }
 
@@ -721,7 +721,7 @@ void func_802B2914(struct BananaBunchParent* banana_bunch, Player* player, s16 b
         func_802B4E30((struct Actor*) newBanana);
         newBanana->flags = 0x9000;
         newBanana->playerId = player - gPlayerOne;
-        newBanana->parentIndex = (struct Actor*) CM_FindActorIndex(banana_bunch);
+        newBanana->parentIndex = CM_FindActorIndex(banana_bunch);
         newBanana->youngerIndex = -1;
         newBanana->unk_04 = 0x0014;
         newBanana->bananaId = bananaId;
@@ -878,7 +878,7 @@ void use_thunder_item(Player* player) {
     }
 }
 
-// Handles item use?
+// Handles item use
 void player_use_item(Player* player) {
     s32 playerId = player - gPlayerOne;
 

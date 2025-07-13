@@ -1,6 +1,9 @@
 ![Spaghetti Kart](docs/spaghettigithublight.png#gh-light-mode-only)
 ![Spaghetti Kart](docs/spaghettigithubnight.png#gh-dark-mode-only)
 
+## Help Wanted!
+This project is looking for a C or C++ coder interested in making a couple scrollable menus that can have lots of items in it. As a method to display custom content does not exist. A tick/render system for custom menus already exists. So just someone willing to build out the menu.
+
 ## Discord
 
 Official Discord: https://discord.com/invite/shipofharkinian
@@ -26,6 +29,7 @@ Your ROM needs to be in .z64 format. If it's in .n64 format, use the following t
 
 #### Linux
 * Extract every file from the zip into a folder of your choosing.
+* Ensure `zenity` or `kdialog` package is installed.
 * Run "spaghetti.appimage" and select your US ROM. You may have to chmod +x the appimage via terminal.
 
 #### Nintendo Switch
@@ -38,18 +42,19 @@ Congratulations, you are now sailing with SpaghettiKart! Have fun!
 
 # Configuration
 
-### Default keyboard configuration
-| N64 | A | B | Z | Start | Analog stick | C buttons | D-Pad |
-| - | - | - | - | - | - | - | - |
-| Keyboard | X | C | Z | Space | WASD | Arrow keys | TFGH |
+### Default controls configuration
+| N64 | A | B | L | R | Z | Start | Analogue stick | C buttons | D-Pad |
+| - | - | - | - | - | - | - | - | - | - |
+| Keyboard | Shift | Ctrl | Q | Space | Z | Enter | Arrow keys | TGFH (↑ ↓ ← →) | Num 8 2 4 6 |
+| SDL Gamepad | A | X | LB | RB | LT | Start | L-Stick | R-Stick Up, B, Y, R-Stick Right (↑ ↓ ← →) | D-Pad |
 
 ### Other shortcuts
 | Keys | Action |
 | - | - |
-| F1 | Toggle menubar |
 | F11 | Fullscreen |
 | Tab | Toggle Alternate assets |
 | Ctrl+R | Reset |
+| Esc | Settings |
 
 ### Graphics Backends
 Currently, there are three rendering APIs supported: DirectX11 (Windows), OpenGL (all platforms), and Metal (macOS). You can change which API to use in the `Settings` menu of the menubar, which requires a restart.  If you're having an issue with crashing, you can change the API in the `spaghettify.cfg.json` file by finding the line `"Backend":{`... and changing the `id` value to `3` and set the `Name` to `OpenGL`. `DirectX 11` with id `2` is the default on Windows. `Metal` with id `4` is the default on macOS.
@@ -71,9 +76,10 @@ If you want to manually compile SpaghettiKart, please consult the [building inst
 ### Playtesting
 If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes. 
 
-* [Windows](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/spaghettify-windows.zip)
-* [Linux](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/SpaghettiKart-linux.zip)
-* [Switch](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/Spaghettify-switch.zip)
+* [Windows](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/spaghetti-windows.zip?status=completed)
+* [Linux](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/Spaghettify-linux.zip?status=completed)
+* [macOS](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/spaghetti-mac-x64.zip?status=completed)
+* [Switch](https://nightly.link/HarbourMasters/SpaghettiKart/workflows/main/main/Spaghettify-switch.zip?status=completed)
 
 Maintainers: [MegaMech](https://www.github.com/MegaMech), [Coco](https://www.github.com/coco875), [Kirito](https://github.com/KiritoDv)
 

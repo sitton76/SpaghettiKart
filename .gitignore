@@ -106,11 +106,10 @@ mingw64/
 !tools/ido-recomp/*/*
 
 # models
-*.blend
+models/**.blend
 
 # torch
 torch.hash.yml
-build*
 .idea
 
 # the game
@@ -126,3 +125,4 @@ cmake-build-*/
 .vs
 build*/
 .DS_Store
+.cache/
