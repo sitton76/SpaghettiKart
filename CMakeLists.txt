@@ -27,6 +27,9 @@ endif()
 # Set the minimum version of CMake and the deployment target for macOS
 set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15" CACHE STRING "Minimum OS X deployment version")
 
+# Set CMake to build as Universal Binary for macOS
+set(CMAKE_OSX_ARCHITECTURES=arm64;x86_64)
+
 # Set the C++ standard and enable the MSVC parallel build option
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "The C++ standard to use")
 set(CMAKE_C_STANDARD 11 CACHE STRING "The C standard to use")
@@ -55,10 +58,8 @@ set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${PROJECT
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()
 
-if(NOT EXISTS ${CMAKE_BINARY_DIR}/config.yml)
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/config.yml" "${CMAKE_BINARY_DIR}/config.yml")
-	execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/yamls/" "${CMAKE_BINARY_DIR}/yamls/")
-endif()
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/config.yml" "${CMAKE_BINARY_DIR}/config.yml")
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_SOURCE_DIR}/yamls/" "${CMAKE_BINARY_DIR}/yamls/")
 
 if (MSVC)
 set(CPP "${CMAKE_C_COMPILER}" "/EP")
@@ -284,6 +285,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(dr_libs)
 
+#=================== STB ===================
+include_directories(${STB_DIR})
+
 #==============================================================================#
 # Libultraship Integration                                                     #
 #==============================================================================#
@@ -387,7 +391,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     find_package(Vorbis CONFIG REQUIRED)
     link_libraries(Vorbis::vorbisfile)
 	set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net-static>"
         "Ogg::ogg"
         "Vorbis::vorbis"
         "Vorbis::vorbisenc"
@@ -410,7 +413,6 @@ else()
     find_package(Ogg REQUIRED)
     find_package(Vorbis REQUIRED)
  	set(ADDITIONAL_LIBRARY_DEPENDENCIES
-        "$<$<BOOL:${USE_NETWORKING}>:SDL2_net::SDL2_net>"
         "Ogg::ogg"
         "Vorbis::vorbis"
         "Vorbis::vorbisenc"
@@ -429,7 +431,7 @@ if(USE_NETWORKING)
         target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_net)
     elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
         find_package(SDL2_net REQUIRED)
-        target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_net::SDL2_net) 
+        target_link_libraries(${PROJECT_NAME} PRIVATE $<IF:$<TARGET_EXISTS:SDL2_net::SDL2_net>,SDL2_net::SDL2_net,SDL2_net::SDL2_net-static>) 
     else()
         find_package(SDL2_net REQUIRED)
         target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_net::SDL2_net-static)

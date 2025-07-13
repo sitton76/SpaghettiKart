@@ -26,7 +26,7 @@ extern "C" {
     #include "render_objects.h"
     #include "assets/common_data.h"
     #include "save.h"
-    #include "staff_ghosts.h"
+    #include "replays.h"
     #include "actors.h"
     #include "collision.h"
     #include "memory.h"
@@ -49,7 +49,7 @@ RainbowRoad::RainbowRoad() {
     this->gfx = d_course_rainbow_road_packed_dls;
     this->gfxSize = 5670;
     Props.textures = rainbow_road_textures;
-    Props.Minimap.Texture = gTextureCourseOutlineRainbowRoad;
+    Props.Minimap.Texture = minimap_rainbow_road;
     Props.Minimap.Width = ResourceGetTexWidthByName(Props.Minimap.Texture);
     Props.Minimap.Height = ResourceGetTexHeightByName(Props.Minimap.Texture);
     Props.Minimap.Pos[0].X = 261;
@@ -59,6 +59,7 @@ RainbowRoad::RainbowRoad() {
     Props.Minimap.PlayerScaleFactor = 0.0103f;
     Props.Minimap.FinishlineX = 0;
     Props.Minimap.FinishlineY = 0;
+    ResizeMinimap(&Props.Minimap);
 
     Props.SetText(Props.Name, "rainbow road", sizeof(Props.Name));
     Props.SetText(Props.DebugName, "rainbow", sizeof(Props.DebugName));
