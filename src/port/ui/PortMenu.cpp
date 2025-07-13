@@ -105,10 +105,6 @@ void PortMenu::AddSettings() {
             .ComboMap(introBehaviourOptions)
             .Tooltip("Select which scene or menu the game launch to."));
 
-    AddWidget(path, "Use regular intro.", WIDGET_CVAR_CHECKBOX)
-        .CVar("gHarbourIntroSkip")
-        .Options(CheckboxOptions().Tooltip("Skips ports Harbour intro on startup."));
-
     AddWidget(path, "Menu Theme", WIDGET_CVAR_COMBOBOX)
         .CVar("gSettings.Menu.Theme")
         .Options(ComboboxOptions()

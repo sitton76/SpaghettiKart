@@ -805,6 +805,10 @@ extern "C"
             break;
         case 2:
             gMenuSelection = START_MENU;
+            break;
+        case 3:
+            gMenuSelection = MAIN_MENU;
+            break;
     }
 
     // Debug mode override gSkipIntro
